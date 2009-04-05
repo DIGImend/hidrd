@@ -33,6 +33,15 @@ typedef enum hidrd_item_global_tag {
     HIDRD_ITEM_GLOBAL_TAG_POP
 } hidrd_item_global_tag;
 
+#define HIDRD_ITEM_GLOBAL_TAG_MAX   HIDRD_ITEM_SHORT_TAG_MAX
+
+#define HIDRD_ITEM_GLOBAL_TAG_KNOWN_MAX HIDRD_ITEM_GLOBAL_TAG_POP
+
+#define HIDRD_ITEM_GLOBAL_TAG_RESERVED_MIN  \
+            (HIDRD_ITEM_GLOBAL_TAG_KNOWN_MAX + 1)
+#define HIDRD_ITEM_GLOBAL_TAG_RESERVED_MAX  \
+            HIDRD_ITEM_GLOBAL_TAG_MAX
+
 typedef struct hidrd_item_global {
     hidrd_item_short        item_short;
     hidrd_item_global_tag   tag;

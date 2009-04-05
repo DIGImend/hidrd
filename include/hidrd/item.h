@@ -65,6 +65,14 @@ hidrd_item_short_valid(const hidrd_item_short *item_short)
            hidrd_item_short_type_valid(item_short->type);
 }
 
+#define HIDRD_ITEM_SHORT_TAG_MAX    0xF
+
+static inline bool
+hidrd_item_short_tag_valid(uint8_t tag)
+{
+    return (tag <= HIDRD_ITEM_SHORT_TAG_MAX);
+}
+
 /*
  * Long item
  */
@@ -96,7 +104,7 @@ hidrd_item_short_reserved_valid(const hidrd_item_short_reserved *reserved)
 {
     return hidrd_item_short_valid(&reserved->item_short) &&
            hidrd_item_short_type_reserved(reserved->item_short.type) &&
-           (reserved->tag < 0x10);
+           hidrd_item_short_tag_valid(reserved->tag);
 }
 
 #ifdef __cplusplus
