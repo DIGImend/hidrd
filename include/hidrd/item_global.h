@@ -42,10 +42,39 @@ typedef enum hidrd_item_global_tag {
 #define HIDRD_ITEM_GLOBAL_TAG_RESERVED_MAX  \
             HIDRD_ITEM_GLOBAL_TAG_MAX
 
+static inline bool
+hidrd_item_global_tag_valid(hidrd_item_global_tag tag)
+{
+    return (tag <= HIDRD_ITEM_GLOBAL_TAG_MAX);
+}
+
+static inline bool
+hidrd_item_global_tag_known(hidrd_item_global_tag tag)
+{
+    assert(hidrd_item_global_tag_valid(tag));
+
+    return (tag <= HIDRD_ITEM_GLOBAL_TAG_KNOWN_MAX);
+}
+
+static inline bool
+hidrd_item_global_tag_reserved(hidrd_item_global_tag tag)
+{
+    return (tag >= HIDRD_ITEM_GLOBAL_TAG_RESERVED_MIN) &&
+           (tag <= HIDRD_ITEM_GLOBAL_TAG_RESERVED_MAX);
+}
+
 typedef struct hidrd_item_global {
     hidrd_item_short        item_short;
     hidrd_item_global_tag   tag;
 } hidrd_item_global;
+
+static inline bool
+hidrd_item_global_valid(const hidrd_item_global *global)
+{
+    return hidrd_item_short_valid(&global->item_short) &&
+           global->item_short.type == HIDRD_ITEM_SHORT_TYPE_GLOBAL &&
+           hidrd_item_global_tag_valid(global->tag);
+}
 
 /*
  * Usage page
@@ -54,6 +83,13 @@ typedef struct hidrd_item_usage_page {
     hidrd_item_global   item_global;
     uint16_t            page;
 } hidrd_item_usage_page;
+
+static inline bool
+hidrd_item_usage_page_valid(const hidrd_item_usage_page *usage_page)
+{
+    return hidrd_item_global_valid(&usage_page->item_global) &&
+           usage_page->item_global.tag == HIDRD_ITEM_GLOBAL_TAG_USAGE_PAGE;
+}
 
 /*
  * Logical and physical minimum/maximum
@@ -64,9 +100,45 @@ typedef struct _hidrd_item_extent {
 } _hidrd_item_extent;
 
 typedef _hidrd_item_extent  hidrd_item_logical_minimum;
+static inline bool
+hidrd_item_logical_minimum_valid(const hidrd_item_logical_minimum
+                                            *logical_minimum)
+{
+    return hidrd_item_global_valid(&logical_minimum->item_global) &&
+           logical_minimum->item_global.tag ==
+               HIDRD_ITEM_GLOBAL_TAG_LOGICAL_MINIMUM;
+}
+
 typedef _hidrd_item_extent  hidrd_item_logical_maximum;
+static inline bool
+hidrd_item_logical_maximum_valid(const hidrd_item_logical_maximum
+                                            *logical_maximum)
+{
+    return hidrd_item_global_valid(&logical_maximum->item_global) &&
+           logical_maximum->item_global.tag ==
+               HIDRD_ITEM_GLOBAL_TAG_LOGICAL_MAXIMUM;
+}
+
 typedef _hidrd_item_extent  hidrd_item_physical_minimum;
+static inline bool
+hidrd_item_physical_minimum_valid(const hidrd_item_physical_minimum
+                                            *physical_minimum)
+{
+    return hidrd_item_global_valid(&physical_minimum->item_global) &&
+           physical_minimum->item_global.tag ==
+               HIDRD_ITEM_GLOBAL_TAG_PHYSICAL_MINIMUM;
+}
+
 typedef _hidrd_item_extent  hidrd_item_physical_maximum;
+static inline bool
+hidrd_item_physical_maximum_valid(const hidrd_item_physical_maximum
+                                            *physical_maximum)
+{
+    return hidrd_item_global_valid(&physical_maximum->item_global) &&
+           physical_maximum->item_global.tag ==
+               HIDRD_ITEM_GLOBAL_TAG_PHYSICAL_MAXIMUM;
+}
+
 
 /*
  * Unit exponent
@@ -115,8 +187,27 @@ typedef _hidrd_item_global_uint hidrd_item_report_count;
 /*
  * Push and pop
  */
-typedef hidrd_item_global   hidrd_item_push;
-typedef hidrd_item_global   hidrd_item_pop;
+typedef struct _hidrd_item_global_void {
+    hidrd_item_global   item_global;
+} _hidrd_item_global_void;
+
+typedef _hidrd_item_global_void hidrd_item_push;
+typedef _hidrd_item_global_void hidrd_item_pop;
+
+/*
+ * Reserved
+ */
+typedef struct hidrd_item_global_reserved {
+    hidrd_item_global   item_global;
+    uint32_t            data;
+} hidrd_item_global_reserved;
+
+static inline bool
+hidrd_item_global_reserved_valid(const hidrd_item_global_reserved *reserved)
+{
+    return hidrd_item_global_valid(&reserved->item_global) &&
+           hidrd_item_global_tag_reserved(reserved->item_global.tag);
+}
 
 #ifdef __cplusplus
 } /* extern "C" */
