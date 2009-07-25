@@ -1,5 +1,5 @@
 /** @file
- * @brief HID report descriptor - item prefix tag field.
+ * @brief HID report descriptor - usage page item
  *
  * Copyright (C) 2009 Nikolai Kondrashov
  *
@@ -24,35 +24,27 @@
  * @(#) $Id$
  */
 
-#ifndef __HIDRD_ITEM_PFX_TAG_H__
-#define __HIDRD_ITEM_PFX_TAG_H__
+#ifndef __HIDRD_ITEM_USAGE_PAGE_H__
+#define __HIDRD_ITEM_USAGE_PAGE_H__
 
-#include <stdint.h>
+#include "hidrd/bit.h"
+#include "hidrd/item/global.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define HIDRD_ITEM_PFX_TAG_MASK  0x0F
-#define HIDRD_ITEM_PFX_TAG_SHFT  4
-
-typedef uint8_t hidrd_item_pfx_tag;
-
-#define HIDRD_ITEM_PFX_TAG_MIN  0x00
-#define HIDRD_ITEM_PFX_TAG_MAX  HIDRD_ITEM_PFX_TAG_MASK
-
 static inline bool
-hidrd_item_pfx_tag_valid(hidrd_item_pfx_tag tag)
+hidrd_item_unit_page_value_valid(uint16_t value)
 {
-    return (tag & ~HIDRD_ITEM_PFX_TAG_MASK) == 0;
+    (void)value;
+    return true;
 }
 
-#define HIDRD_ITEM_PFX_TAG_LONG     0x7
+HIDRD_ITEM_GLOBAL_FUNCS(usage_page, USAGE_PAGE, uint16_t, u16)
 
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
 
-#endif /* __HIDRD_ITEM_PFX_TAG_H__ */
-
-
+#endif /* __HIDRD_ITEM_USAGE_PAGE_H__ */

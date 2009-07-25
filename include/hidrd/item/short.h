@@ -57,6 +57,7 @@ hidrd_item_short_type_valid(hidrd_item_short_type type)
 
 typedef hidrd_item_pfx_tag hidrd_item_short_tag;
 
+#define HIDRD_ITEM_SHORT_TAG_MIN    HIDRD_ITEM_PFX_TAG_MIN
 #define HIDRD_ITEM_SHORT_TAG_MAX    HIDRD_ITEM_PFX_TAG_MAX
 
 static inline bool
@@ -167,6 +168,14 @@ extern hidrd_item *hidrd_item_short_set_u16(hidrd_item *item,
                                            uint16_t     data);
 extern hidrd_item *hidrd_item_short_set_u32(hidrd_item *item,
                                             uint32_t    data);
+
+extern uint32_t hidrd_item_short_get_unsigned(const hidrd_item *item);
+extern hidrd_item* hidrd_item_short_set_unsigned(hidrd_item *item,
+                                                 uint32_t data);
+
+extern int32_t hidrd_item_short_get_signed(const hidrd_item *item);
+extern hidrd_item* hidrd_item_short_set_signed(hidrd_item *item,
+                                               int32_t data);
 
 static inline bool
 hidrd_item_short_get_bit(const hidrd_item *item, uint8_t idx)
