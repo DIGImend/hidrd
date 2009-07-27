@@ -27,81 +27,80 @@
 #include <arpa/inet.h>
 #include "hidrd/item/short.h"
 
-uint8_t
-hidrd_item_short_get_u8(const hidrd_item *item)
-{
-    hidrd_item_short_size   size;
-
-    assert(hidrd_item_short_valid(item));
-    size = hidrd_item_short_get_size(item)
-    assert(size <= HIDRD_ITEM_SHORT_SIZE_1B);
-
-    return (size < HIDRD_ITEM_SHORT_SIZE_1B)
-                ? 0
-                : *(uint8_t *)hidrd_item_short_get_data((hidrd_item *)item);
-}
-
-
-uint16_t
-hidrd_item_short_get_u16(const hidrd_item *item)
-{
-    hidrd_item_short_size   size;
-
-    assert(hidrd_item_short_valid(item));
-    size = hidrd_item_short_get_size(item)
-    assert(size <= HIDRD_ITEM_SHORT_SIZE_2B);
-
-    return (size < HIDRD_ITEM_SHORT_SIZE_2B)
-                ? hidrd_item_short_get_u8(item)
-                : ntohs(*(uint16_t *)hidrd_item_short_get_data(
-                                                (hidrd_item *)item));
-}
-
 
 uint32_t
-hidrd_item_short_get_u32(const hidrd_item *item)
+hidrd_item_short_get_unsigned(const hidrd_item *item)
 {
     hidrd_item_short_size   size;
+    void                   *data;
 
     assert(hidrd_item_short_valid(item));
-    size = hidrd_item_short_get_size(item)
-    assert(size <= HIDRD_ITEM_SHORT_SIZE_4B);
 
-    return (size < HIDRD_ITEM_SHORT_SIZE_4B)
-                ? hidrd_item_short_get_u16(item)
-                : ntohl(*(uint32_t *)hidrd_item_short_get_data(
-                                                (hidrd_item *)item));
+    size = hidrd_item_short_get_size(item);
+    assert(hidrd_item_short_size_valid(size));
+    data = hidrd_item_short_get_data(item);
+
+    switch (size)
+    {
+        case HIDRD_ITEM_SHORT_SIZE_0B:
+            return 0;
+        case HIDRD_ITEM_SHORT_SIZE_1B:
+            return *(uint8_t *)data;
+        case HIDRD_ITEM_SHORT_SIZE_2B:
+            return ntohs(*(uint16_t *)data);
+        case HIDRD_ITEM_SHORT_SIZE_4B:
+            return ntohl(*(uint32_t *)data);
+    }
+}
+
+
+int32_t
+hidrd_item_short_get_signed(const hidrd_item *item)
+{
+    hidrd_item_short_size   size;
+    void                   *data;
+
+    assert(hidrd_item_short_valid(item));
+
+    size = hidrd_item_short_get_size(item);
+    assert(hidrd_item_short_size_valid(size));
+    data = hidrd_item_short_get_data(item);
+
+    switch (size)
+    {
+        case HIDRD_ITEM_SHORT_SIZE_0B:
+            return 0;
+        case HIDRD_ITEM_SHORT_SIZE_1B:
+            return *(int8_t *)data;
+        case HIDRD_ITEM_SHORT_SIZE_2B:
+            return (int16_t)ntohs(*(uint16_t *)data);
+        case HIDRD_ITEM_SHORT_SIZE_4B:
+            return (int32_t)ntohl(*(uint32_t *)data);
+    }
 }
 
 
 hidrd_item *
-hidrd_item_short_set_u8(hidrd_item *item, uint8_t data)
+hidrd_item_short_set_unsigned(hidrd_item *item, uint32_t data)
 {
     assert(hidrd_item_short_valid(item));
 
     if (data == 0)
         hidrd_item_short_set_size(item, HIDRD_ITEM_SHORT_SIZE_0B);
-    else
+    else if (data <= UINT8_MAX)
     {
         hidrd_item_short_set_size(item, HIDRD_ITEM_SHORT_SIZE_1B);
         *(uint8_t *)hidrd_item_short_get_data(item) = data;
     }
-
-    return item;
-}
-
-
-hidrd_item *
-hidrd_item_short_set_u16(hidrd_item *item, uint16_t data)
-{
-    assert(hidrd_item_short_valid(item));
-
-    if (data <= UINT8_MAX)
-        return hidrd_item_short_set_u8(item, (uint8_t)data);
-    else
+    else if (data <= UINT16_MAX)
     {
         hidrd_item_short_set_size(item, HIDRD_ITEM_SHORT_SIZE_2B);
         *(uint16_t *)hidrd_item_short_get_data(item) = htons(data);
+    }
+    else
+    {
+        hidrd_item_short_set_size(item, HIDRD_ITEM_SHORT_SIZE_4B);
+        *(uint32_t *)hidrd_item_short_get_data(item) = htonl(data);
     }
 
     return item;
@@ -109,15 +108,25 @@ hidrd_item_short_set_u16(hidrd_item *item, uint16_t data)
 
 
 hidrd_item *
-hidrd_item_short_set_u32(hidrd_item *item, uint32_t data)
+hidrd_item_short_set_signed(hidrd_item *item, int32_t data)
 {
     assert(hidrd_item_short_valid(item));
 
-    if (data <= UINT16_MAX)
-        return hidrd_item_short_set_u16(item, (uint16_t)data);
-    else
+    if (data == 0)
+        hidrd_item_short_set_size(item, HIDRD_ITEM_SHORT_SIZE_0B);
+    else if (data >= INT8_MIN && data <= INT8_MAX)
+    {
+        hidrd_item_short_set_size(item, HIDRD_ITEM_SHORT_SIZE_1B);
+        *(int8_t *)hidrd_item_short_get_data(item) = data;
+    }
+    else if (data >= INT16_MIN && data <= INT16_MAX)
     {
         hidrd_item_short_set_size(item, HIDRD_ITEM_SHORT_SIZE_2B);
+        *(uint16_t *)hidrd_item_short_get_data(item) = htons(data);
+    }
+    else
+    {
+        hidrd_item_short_set_size(item, HIDRD_ITEM_SHORT_SIZE_4B);
         *(uint32_t *)hidrd_item_short_get_data(item) = htonl(data);
     }
 

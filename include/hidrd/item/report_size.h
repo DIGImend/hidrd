@@ -27,7 +27,6 @@
 #ifndef __HIDRD_ITEM_REPORT_SIZE_H__
 #define __HIDRD_ITEM_REPORT_SIZE_H__
 
-#include "hidrd/bit.h"
 #include "hidrd/item/global.h"
 
 #ifdef __cplusplus
@@ -42,7 +41,8 @@ hidrd_item_report_size_value_valid(uint32_t value)
     return true;
 }
 
-HIDRD_ITEM_GLOBAL_FUNCS(report_size, REPORT_SIZE, uint32_t, u32)
+HIDRD_ITEM_GLOBAL_FUNCS(report_size, REPORT_SIZE,
+                        unsigned, uint32_t, uint32_t)
 
 #ifdef __cplusplus
 } /* extern "C" */

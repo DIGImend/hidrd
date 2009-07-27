@@ -27,7 +27,6 @@
 #ifndef __HIDRD_ITEM_REPORT_ID_H__
 #define __HIDRD_ITEM_REPORT_ID_H__
 
-#include "hidrd/bit.h"
 #include "hidrd/item/global.h"
 
 #ifdef __cplusplus
@@ -37,16 +36,14 @@ extern "C" {
 static inline bool
 hidrd_item_report_id_value_valid(uint32_t value)
 {
-    /* TODO figure out the correct values */
-    (void)value;
-    return true;
+    return (value > 0) && (value <= UINT8_MAX);
 }
 
-HIDRD_ITEM_GLOBAL_FUNCS(report_id, REPORT_ID, uint32_t, u32)
+HIDRD_ITEM_GLOBAL_FUNCS(report_id, REPORT_ID,
+                        unsigned, uint32_t, uint8_t)
 
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
 
 #endif /* __HIDRD_ITEM_REPORT_ID_H__ */
-

@@ -108,33 +108,35 @@ hidrd_item_global_set_tag(hidrd_item *item, hidrd_item_global_tag tag)
 }
 
 
-#define HIDRD_ITEM_GLOBAL_FUNCS(_name, _NAME, _type, _t) \
-    static inline bool                                              \
-    hidrd_item_##_name##_valid(const hidrd_item *item)              \
-    {                                                               \
-        return hidrd_item_global_valid(item) &&                     \
-               hidrd_item_global_get_tag(item) ==                   \
-               HIDRD_ITEM_GLOBAL_TAG_##_NAME &&                     \
-               hidrd_item_##_name##_value_valid(                    \
-                    hidrd_item_short_get_u32(item))                 \
-    }                                                               \
-                                                                    \
-    static inline _type                                             \
-    hidrd_item_##_name##_get_value(const hidrd_item *item)          \
-    {                                                               \
-        assert(hidrd_item_unit_valid(item));                        \
-        assert(hidrd_item_unit_value_valid(value));                 \
-        return hidrd_item_short_get_##_t(item);                     \
-    }                                                               \
-                                                                    \
-    static inline hidrd_item *                                      \
-    hidrd_item_##_name##_set_value(hidrd_item *item, _type value)   \
-    {                                                               \
-        assert(hidrd_item_##_name##_valid(item));                   \
-        assert(hidrd_item_##_name##_value_valid(value));            \
-        return hidrd_item_short_set_##_t(item, value);              \
+#define HIDRD_ITEM_GLOBAL_FUNCS(_name, _NAME, \
+                                _sign, _int_type, _ext_type)            \
+    static inline bool                                                  \
+    hidrd_item_##_name##_valid(const hidrd_item *item)                  \
+    {                                                                   \
+        return hidrd_item_global_valid(item) &&                         \
+               hidrd_item_global_get_tag(item) ==                       \
+               HIDRD_ITEM_GLOBAL_TAG_##_NAME &&                         \
+               hidrd_item_##_name##_value_valid(                        \
+                    (_int_type)hidrd_item_short_get_##_sign(item))      \
+    }                                                                   \
+                                                                        \
+    static inline _ext_type                                             \
+    hidrd_item_##_name##_get_value(const hidrd_item *item)              \
+    {                                                                   \
+        _int_type value;                                                \
+        assert(hidrd_item_unit_valid(item));                            \
+        value = (_int_type)hidrd_item_short_get_##_sign(item);          \
+        assert(hidrd_item_unit_value_valid(value));                     \
+        return (_ext_type)value;                                        \
+    }                                                                   \
+                                                                        \
+    static inline hidrd_item *                                          \
+    hidrd_item_##_name##_set_value(hidrd_item *item, _ext_type value)   \
+    {                                                                   \
+        assert(hidrd_item_##_name##_valid(item));                       \
+        assert(hidrd_item_##_name##_value_valid((_int_type)value));     \
+        return hidrd_item_short_set_##_sign(item, (_int_type)value);    \
     }
-
 
 
 #ifdef __cplusplus

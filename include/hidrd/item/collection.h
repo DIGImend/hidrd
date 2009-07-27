@@ -99,7 +99,7 @@ hidrd_item_collection_valid(const hidrd_item *item)
     return hidrd_item_main_valid(item) &&
            (hidrd_item_main_get_tag(item) ==
             HIDRD_ITEM_MAIN_TAG_COLLECTION) &&
-           hidrd_item_collection_type_valid(hidrd_item_short_get_u32(item));
+           hidrd_item_collection_type_valid(hidrd_item_short_get_unsigned(item));
 }
 
 
@@ -107,7 +107,7 @@ static inline hidrd_item_collection_type
 hidrd_item_collection_get_type(const hidrd_item *item)
 {
     assert(hidrd_item_collection_valid(item));
-    return hidrd_item_short_get_u32(item);
+    return hidrd_item_short_get_unsigned(item);
 }
 
 
@@ -117,7 +117,7 @@ hidrd_item_collection_set_type(hidrd_item *item,
 {
     assert(hidrd_item_collection_valid(item));
     assert(hidrd_item_collection_type_valid(item));
-    return hidrd_item_short_set_u32(item, type);
+    return hidrd_item_short_set_unsigned(item, type);
 }
 
 

@@ -1,5 +1,5 @@
 /** @file
- * @brief HID report descriptor - report_size item
+ * @brief HID report descriptor - report count item
  *
  * Copyright (C) 2009 Nikolai Kondrashov
  *
@@ -27,7 +27,6 @@
 #ifndef __HIDRD_ITEM_REPORT_SIZE_H__
 #define __HIDRD_ITEM_REPORT_SIZE_H__
 
-#include "hidrd/bit.h"
 #include "hidrd/item/global.h"
 
 #ifdef __cplusplus
@@ -35,14 +34,15 @@ extern "C" {
 #endif
 
 static inline bool
-hidrd_item_report_size_value_valid(uint32_t value)
+hidrd_item_report_count_value_valid(uint32_t value)
 {
     /* TODO figure out the correct values */
     (void)value;
     return true;
 }
 
-HIDRD_ITEM_GLOBAL_FUNCS(report_size, REPORT_SIZE, uint32_t, u32)
+HIDRD_ITEM_GLOBAL_FUNCS(report_count, REPORT_SIZE,
+                        unsigned, uint32_t, uint32_t)
 
 #ifdef __cplusplus
 } /* extern "C" */

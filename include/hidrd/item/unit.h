@@ -27,7 +27,6 @@
 #ifndef __HIDRD_ITEM_UNIT_H__
 #define __HIDRD_ITEM_UNIT_H__
 
-#include "hidrd/bit.h"
 #include "hidrd/item/global.h"
 
 #ifdef __cplusplus
@@ -42,7 +41,8 @@ hidrd_item_unit_value_valid(uint32_t value)
     return true;
 }
 
-HIDRD_ITEM_GLOBAL_FUNCS(unit, UNIT, uint32_t, u32)
+HIDRD_ITEM_GLOBAL_FUNCS(unit, UNIT,
+                        unsigned, uint32_t, uint32_t)
 
 #ifdef __cplusplus
 } /* extern "C" */

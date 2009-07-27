@@ -27,7 +27,6 @@
 #ifndef __HIDRD_ITEM_USAGE_PAGE_H__
 #define __HIDRD_ITEM_USAGE_PAGE_H__
 
-#include "hidrd/bit.h"
 #include "hidrd/item/global.h"
 
 #ifdef __cplusplus
@@ -35,13 +34,13 @@ extern "C" {
 #endif
 
 static inline bool
-hidrd_item_unit_page_value_valid(uint16_t value)
+hidrd_item_usage_page_value_valid(uint32_t value)
 {
-    (void)value;
-    return true;
+    return (value <= UINT16_MAX);
 }
 
-HIDRD_ITEM_GLOBAL_FUNCS(usage_page, USAGE_PAGE, uint16_t, u16)
+HIDRD_ITEM_GLOBAL_FUNCS(usage_page, USAGE_PAGE,
+                        unsigned, uint32_t, uint16_t)
 
 #ifdef __cplusplus
 } /* extern "C" */

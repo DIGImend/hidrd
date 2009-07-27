@@ -158,17 +158,6 @@ hidrd_item_short_get_data(hidrd_item *item)
     return &item[1];
 }
 
-extern uint8_t hidrd_item_short_get_u8(const hidrd_item    *item);
-extern uint16_t hidrd_item_short_get_u16(const hidrd_item  *item);
-extern uint32_t hidrd_item_short_get_u32(const hidrd_item  *item);
-
-extern hidrd_item *hidrd_item_short_set_u8(hidrd_item  *item,
-                                           uint8_t      data);
-extern hidrd_item *hidrd_item_short_set_u16(hidrd_item *item,
-                                           uint16_t     data);
-extern hidrd_item *hidrd_item_short_set_u32(hidrd_item *item,
-                                            uint32_t    data);
-
 extern uint32_t hidrd_item_short_get_unsigned(const hidrd_item *item);
 extern hidrd_item* hidrd_item_short_set_unsigned(hidrd_item *item,
                                                  uint32_t data);
@@ -182,7 +171,7 @@ hidrd_item_short_get_bit(const hidrd_item *item, uint8_t idx)
 {
     assert(hidrd_item_short_valid(item));
     assert(idx <= 31);
-    return HIDRD_BIT_GET(hidrd_item_short_get_u32(item), idx) != 0;
+    return HIDRD_BIT_GET(hidrd_item_short_get_unsigned(item), idx) != 0;
 }
 
 
@@ -191,9 +180,9 @@ hidrd_item_short_set_bit(hidrd_item *item, uint8_t idx, bool val)
 {
     assert(hidrd_item_short_valid(item));
     assert(idx <= 31);
-    return hidrd_item_short_set_u32(item,
-                                    HIDRD_BIT_SET(hidrd_item_short_get_u32(item),
-                                                  idx, val));
+    return hidrd_item_short_set_unsigned(
+            item,
+            HIDRD_BIT_SET(hidrd_item_short_get_unsigned(item), idx, val));
 }
 
 

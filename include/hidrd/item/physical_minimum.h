@@ -27,7 +27,6 @@
 #ifndef __HIDRD_ITEM_PHYSICAL_MINIMUM_H__
 #define __HIDRD_ITEM_PHYSICAL_MINIMUM_H__
 
-#include "hidrd/bit.h"
 #include "hidrd/item/global.h"
 
 #ifdef __cplusplus
@@ -41,7 +40,8 @@ hidrd_item_physical_minimum_value_valid(int32_t value)
     return true;
 }
 
-HIDRD_ITEM_GLOBAL_FUNCS(physical_minimum, PHYSICAL_MINIMUM, int32_t, s32)
+HIDRD_ITEM_GLOBAL_FUNCS(physical_minimum, PHYSICAL_MINIMUM,
+                        signed, int32_t, int32_t)
 
 #ifdef __cplusplus
 } /* extern "C" */
