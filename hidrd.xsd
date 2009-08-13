@@ -1,0 +1,449 @@
+<?xml version="1.0"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://digimend.sourceforge.net"
+            xmlns="http://digimend.sourceforge.net"
+            elementFormDefault="qualified">
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
+        BASIC ITEM
+    - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <xsd:simpleType name="basic_size">
+        <xsd:restriction base="xsd:nonNegativeInteger">
+            <xsd:enumeration value="0" />
+            <xsd:enumeration value="1" />
+            <xsd:enumeration value="2" />
+            <xsd:enumeration value="4" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="basic_type">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="main" />
+            <xsd:enumeration value="global" />
+            <xsd:enumeration value="local" />
+            <xsd:enumeration value="reserved" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="basic_tag">
+        <xsd:restriction base="xsd:nonNegativeInteger">
+            <xsd:maxInclusive value="15" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="basic_data">
+        <xsd:restriction base="xsd:hexBinary">
+            <xsd:maxLength value="514" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:element name="basic">
+        <xsd:complexType>
+            <xsd:simpleContent>
+                <xsd:extension base="basic_data">
+                    <xsd:attribute name="type" type="basic_type"
+                                   use="required" />
+                    <xsd:attribute name="size" type="basic_size"
+                                   use="required" />
+                    <xsd:attribute name="tag" type="basic_tag"
+                                   use="required" />
+                </xsd:extension>
+            </xsd:simpleContent>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:group name="basic">
+        <xsd:choice>
+            <xsd:element ref="short" />
+            <xsd:group ref="short" />
+            <xsd:element ref="long" />
+        </xsd:choice>
+    </xsd:group>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
+        SHORT ITEM
+    - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <xsd:simpleType name="short_type">
+        <xsd:restriction base="basic_type">
+            <xsd:enumeration value="main" />
+            <xsd:enumeration value="global" />
+            <xsd:enumeration value="local" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="short_tag">
+        <xsd:restriction base="basic_tag" />
+    </xsd:simpleType>
+
+    <xsd:simpleType name="short_data">
+        <xsd:restriction base="basic_data">
+            <xsd:maxLength value="8" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:element name="short">
+        <xsd:complexType>
+            <xsd:simpleContent>
+                <xsd:extension base="short_data">
+                    <xsd:attribute name="type" type="short_type"
+                                   use="required" />
+                    <xsd:attribute name="tag" type="short_tag"
+                                   use="required" />
+                </xsd:extension>
+            </xsd:simpleContent>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:group name="short">
+        <xsd:choice>
+            <xsd:element ref="main" />
+            <xsd:group ref="main" />
+            <xsd:element ref="global" />
+            <xsd:group ref="global" />
+            <xsd:element ref="local" />
+            <xsd:group ref="local" />
+        </xsd:choice>
+    </xsd:group>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
+        MAIN ITEM
+    - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <xsd:simpleType name="main_tag">
+        <xsd:union memberTypes="short_tag">
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                    <xsd:enumeration value="input" />
+                    <xsd:enumeration value="output" />
+                    <xsd:enumeration value="feature" />
+                    <xsd:enumeration value="collection" />
+                    <xsd:enumeration value="end_collection" />
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:union>
+    </xsd:simpleType>
+
+    <xsd:element name="main">
+        <xsd:complexType>
+            <xsd:simpleContent>
+                <xsd:extension base="short_data">
+                    <xsd:attribute name="tag" type="main_tag"
+                                   use="required" />
+                </xsd:extension>
+            </xsd:simpleContent>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:group name="main">
+        <xsd:choice>
+            <xsd:element ref="input" />
+            <xsd:element ref="output" />
+            <xsd:element ref="feature" />
+            <xsd:element ref="collection" />
+        </xsd:choice>
+    </xsd:group>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
+        MAIN ITEM: INPUT
+    - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <xsd:element name="input">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:choice minOccurs="0">
+                    <xsd:element name="bit0" type="xsd:boolean" default="1" />
+                    <xsd:element name="data" type="xsd:boolean" default="true" />
+                    <xsd:element name="constant" type="xsd:boolean" default="true" />
+                </xsd:choice>
+                <xsd:choice minOccurs="0">
+                    <xsd:element name="bit1" type="xsd:boolean" default="1" />
+                    <xsd:element name="array" type="xsd:boolean" default="true" />
+                    <xsd:element name="variable" type="xsd:boolean" default="true" />
+                </xsd:choice>
+                <xsd:choice minOccurs="0">
+                    <xsd:element name="bit2" type="xsd:boolean" default="1" />
+                    <xsd:element name="absolute" type="xsd:boolean" default="true" />
+                    <xsd:element name="relative" type="xsd:boolean" default="true" />
+                </xsd:choice>
+                <xsd:choice minOccurs="0">
+                    <xsd:element name="bit3" type="xsd:boolean" default="1" />
+                    <xsd:element name="no_wrap" type="xsd:boolean" default="true" />
+                    <xsd:element name="wrap" type="xsd:boolean" default="true" />
+                </xsd:choice>
+                <xsd:choice minOccurs="0">
+                    <xsd:element name="bit4" type="xsd:boolean" default="1" />
+                    <xsd:element name="linear" type="xsd:boolean" default="true" />
+                    <xsd:element name="non_linear" type="xsd:boolean" default="true" />
+                </xsd:choice>
+                <xsd:choice minOccurs="0">
+                    <xsd:element name="bit5" type="xsd:boolean" default="1" />
+                    <xsd:element name="preferred_state" type="xsd:boolean" default="true" />
+                    <xsd:element name="no_preferred" type="xsd:boolean" default="true" />
+                </xsd:choice>
+                <xsd:choice minOccurs="0">
+                    <xsd:element name="bit6" type="xsd:boolean" default="1" />
+                    <xsd:element name="no_null_position" type="xsd:boolean" default="true" />
+                    <xsd:element name="null_state" type="xsd:boolean" default="true" />
+                </xsd:choice>
+                <xsd:element name="bit7" type="xsd:boolean" default="1" minOccurs="0" />
+                <xsd:choice minOccurs="0">
+                    <xsd:element name="bit8" type="xsd:boolean" default="1" />
+                    <xsd:element name="bit_field" type="xsd:boolean" default="true" />
+                    <xsd:element name="buffered_bytes" type="xsd:boolean" default="true" />
+                </xsd:choice>
+                <xsd:element name="bit9" type="xsd:boolean" default="1" minOccurs="0" />
+                <xsd:element name="bit10" type="xsd:boolean" default="1" minOccurs="0" />
+                <xsd:element name="bit11" type="xsd:boolean" default="1" minOccurs="0" />
+                <xsd:element name="bit12" type="xsd:boolean" default="1" minOccurs="0" />
+                <xsd:element name="bit13" type="xsd:boolean" default="1" minOccurs="0" />
+                <xsd:element name="bit14" type="xsd:boolean" default="1" minOccurs="0" />
+                <xsd:element name="bit15" type="xsd:boolean" default="1" minOccurs="0" />
+                <xsd:element name="bit16" type="xsd:boolean" default="1" minOccurs="0" />
+                <xsd:element name="bit17" type="xsd:boolean" default="1" minOccurs="0" />
+                <xsd:element name="bit18" type="xsd:boolean" default="1" minOccurs="0" />
+                <xsd:element name="bit19" type="xsd:boolean" default="1" minOccurs="0" />
+                <xsd:element name="bit20" type="xsd:boolean" default="1" minOccurs="0" />
+                <xsd:element name="bit21" type="xsd:boolean" default="1" minOccurs="0" />
+                <xsd:element name="bit22" type="xsd:boolean" default="1" minOccurs="0" />
+                <xsd:element name="bit23" type="xsd:boolean" default="1" minOccurs="0" />
+                <xsd:element name="bit24" type="xsd:boolean" default="1" minOccurs="0" />
+                <xsd:element name="bit25" type="xsd:boolean" default="1" minOccurs="0" />
+                <xsd:element name="bit26" type="xsd:boolean" default="1" minOccurs="0" />
+                <xsd:element name="bit27" type="xsd:boolean" default="1" minOccurs="0" />
+                <xsd:element name="bit28" type="xsd:boolean" default="1" minOccurs="0" />
+                <xsd:element name="bit29" type="xsd:boolean" default="1" minOccurs="0" />
+                <xsd:element name="bit30" type="xsd:boolean" default="1" minOccurs="0" />
+                <xsd:element name="bit31" type="xsd:boolean" default="1" minOccurs="0" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
+        MAIN ITEM: OUTPUT AND FEATURE
+    - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <xsd:complexType name="output_or_feature">
+        <xsd:sequence>
+            <xsd:choice minOccurs="0">
+                <xsd:element name="bit0" type="xsd:boolean" default="1" />
+                <xsd:element name="data" type="xsd:boolean" default="true" />
+                <xsd:element name="constant" type="xsd:boolean" default="true" />
+            </xsd:choice>
+            <xsd:choice minOccurs="0">
+                <xsd:element name="bit1" type="xsd:boolean" default="1" />
+                <xsd:element name="array" type="xsd:boolean" default="true" />
+                <xsd:element name="variable" type="xsd:boolean" default="true" />
+            </xsd:choice>
+            <xsd:choice minOccurs="0">
+                <xsd:element name="bit2" type="xsd:boolean" default="1" />
+                <xsd:element name="absolute" type="xsd:boolean" default="true" />
+                <xsd:element name="relative" type="xsd:boolean" default="true" />
+            </xsd:choice>
+            <xsd:choice minOccurs="0">
+                <xsd:element name="bit3" type="xsd:boolean" default="1" />
+                <xsd:element name="no_wrap" type="xsd:boolean" default="true" />
+                <xsd:element name="wrap" type="xsd:boolean" default="true" />
+            </xsd:choice>
+            <xsd:choice minOccurs="0">
+                <xsd:element name="bit4" type="xsd:boolean" default="1" />
+                <xsd:element name="linear" type="xsd:boolean" default="true" />
+                <xsd:element name="non_linear" type="xsd:boolean" default="true" />
+            </xsd:choice>
+            <xsd:choice minOccurs="0">
+                <xsd:element name="bit5" type="xsd:boolean" default="1" />
+                <xsd:element name="preferred_state" type="xsd:boolean" default="true" />
+                <xsd:element name="no_preferred" type="xsd:boolean" default="true" />
+            </xsd:choice>
+            <xsd:choice minOccurs="0">
+                <xsd:element name="bit6" type="xsd:boolean" default="1" />
+                <xsd:element name="no_null_position" type="xsd:boolean" default="true" />
+                <xsd:element name="null_state" type="xsd:boolean" default="true" />
+            </xsd:choice>
+            <xsd:choice minOccurs="0">
+                <xsd:element name="bit7" type="xsd:boolean" default="1" />
+                <xsd:element name="non_volatile" type="xsd:boolean" default="true" />
+                <xsd:element name="volatile" type="xsd:boolean" default="true" />
+            </xsd:choice>
+            <xsd:choice minOccurs="0">
+                <xsd:element name="bit8" type="xsd:boolean" default="1" />
+                <xsd:element name="bit_field" type="xsd:boolean" default="true" />
+                <xsd:element name="buffered_bytes" type="xsd:boolean" default="true" />
+            </xsd:choice>
+            <xsd:element name="bit9" type="xsd:boolean" default="1" minOccurs="0" />
+            <xsd:element name="bit10" type="xsd:boolean" default="1" minOccurs="0" />
+            <xsd:element name="bit11" type="xsd:boolean" default="1" minOccurs="0" />
+            <xsd:element name="bit12" type="xsd:boolean" default="1" minOccurs="0" />
+            <xsd:element name="bit13" type="xsd:boolean" default="1" minOccurs="0" />
+            <xsd:element name="bit14" type="xsd:boolean" default="1" minOccurs="0" />
+            <xsd:element name="bit15" type="xsd:boolean" default="1" minOccurs="0" />
+            <xsd:element name="bit16" type="xsd:boolean" default="1" minOccurs="0" />
+            <xsd:element name="bit17" type="xsd:boolean" default="1" minOccurs="0" />
+            <xsd:element name="bit18" type="xsd:boolean" default="1" minOccurs="0" />
+            <xsd:element name="bit19" type="xsd:boolean" default="1" minOccurs="0" />
+            <xsd:element name="bit20" type="xsd:boolean" default="1" minOccurs="0" />
+            <xsd:element name="bit21" type="xsd:boolean" default="1" minOccurs="0" />
+            <xsd:element name="bit22" type="xsd:boolean" default="1" minOccurs="0" />
+            <xsd:element name="bit23" type="xsd:boolean" default="1" minOccurs="0" />
+            <xsd:element name="bit24" type="xsd:boolean" default="1" minOccurs="0" />
+            <xsd:element name="bit25" type="xsd:boolean" default="1" minOccurs="0" />
+            <xsd:element name="bit26" type="xsd:boolean" default="1" minOccurs="0" />
+            <xsd:element name="bit27" type="xsd:boolean" default="1" minOccurs="0" />
+            <xsd:element name="bit28" type="xsd:boolean" default="1" minOccurs="0" />
+            <xsd:element name="bit29" type="xsd:boolean" default="1" minOccurs="0" />
+            <xsd:element name="bit30" type="xsd:boolean" default="1" minOccurs="0" />
+            <xsd:element name="bit31" type="xsd:boolean" default="1" minOccurs="0" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:element name="output" type="output_or_feature" />
+    <xsd:element name="feature" type="output_or_feature" />
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
+        MAIN ITEM: COLLECTION (AND END COLLECTION)
+    - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <xsd:element name="collection" type="basic_sequence" />
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
+        GLOBAL ITEM
+    - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <xsd:simpleType name="global_tag">
+        <xsd:union memberTypes="short_tag">
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                    <xsd:enumeration value="usage_page" />
+                    <xsd:enumeration value="logical_minimum" />
+                    <xsd:enumeration value="logical_maximum" />
+                    <xsd:enumeration value="physical_minimum" />
+                    <xsd:enumeration value="physical_maximum" />
+                    <xsd:enumeration value="unit_exponent" />
+                    <xsd:enumeration value="unit" />
+                    <xsd:enumeration value="report_size" />
+                    <xsd:enumeration value="report_id" />
+                    <xsd:enumeration value="report_count" />
+                    <xsd:enumeration value="push" />
+                    <xsd:enumeration value="pop" />
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:union>
+    </xsd:simpleType>
+
+    <xsd:element name="global">
+        <xsd:complexType>
+            <xsd:simpleContent>
+                <xsd:extension base="short_data">
+                    <xsd:attribute name="tag" type="global_tag"
+                                   use="required" />
+                </xsd:extension>
+            </xsd:simpleContent>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:group name="global">
+        <xsd:choice>
+            <!--
+            <xsd:element ref="usage_page" />
+            <xsd:element ref="logical_minimum" />
+            <xsd:element ref="logical_maximum" />
+            <xsd:element ref="physical_minimum" />
+            <xsd:element ref="physical_maximum" />
+            <xsd:element ref="unit_exponent" />
+            <xsd:element ref="unit" />
+            <xsd:element ref="report_size" />
+            <xsd:element ref="report_id" />
+            <xsd:element ref="report_count" />
+            <xsd:element ref="push" />
+            -->
+        </xsd:choice>
+    </xsd:group>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
+        LOCAL ITEM
+    - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <xsd:simpleType name="local_tag">
+        <xsd:union memberTypes="short_tag">
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                    <xsd:enumeration value="usage" />
+                    <xsd:enumeration value="usage_minimum" />
+                    <xsd:enumeration value="usage_maximum" />
+                    <xsd:enumeration value="designator_index" />
+                    <xsd:enumeration value="designator_minimum" />
+                    <xsd:enumeration value="designator_maximum" />
+                    <xsd:enumeration value="string_index" />
+                    <xsd:enumeration value="string_minimum" />
+                    <xsd:enumeration value="string_maximum" />
+                    <xsd:enumeration value="delimiter" />
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:union>
+    </xsd:simpleType>
+
+    <xsd:element name="local">
+        <xsd:complexType>
+            <xsd:simpleContent>
+                <xsd:extension base="short_data">
+                    <xsd:attribute name="tag" type="local_tag"
+                                   use="required" />
+                </xsd:extension>
+            </xsd:simpleContent>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:group name="local">
+        <xsd:choice>
+            <!--
+            <xsd:element ref="usage" />
+            <xsd:element ref="usage_minimum" />
+            <xsd:element ref="usage_maximum" />
+            <xsd:element ref="designator_index" />
+            <xsd:element ref="designator_minimum" />
+            <xsd:element ref="designator_maximum" />
+            <xsd:element ref="string_index" />
+            <xsd:element ref="string_minimum" />
+            <xsd:element ref="string_maximum" />
+            <xsd:element ref="set" />
+            -->
+        </xsd:choice>
+    </xsd:group>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
+        LONG ITEM
+    - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <xsd:simpleType name="long_tag">
+        <xsd:restriction base="xsd:nonNegativeInteger">
+            <xsd:maxInclusive value="255" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="long_data">
+        <xsd:restriction base="basic_data">
+            <xsd:maxLength value="510" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:element name="long">
+        <xsd:complexType>
+            <xsd:simpleContent>
+                <xsd:extension base="long_data">
+                    <xsd:attribute name="tag" type="long_tag"
+                                   use="required" />
+                </xsd:extension>
+            </xsd:simpleContent>
+        </xsd:complexType>
+    </xsd:element>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
+        DESCRIPTOR
+    - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <xsd:group name="basic_choice">
+        <xsd:choice>
+            <xsd:element ref="basic" />
+            <xsd:group ref="basic" />
+        </xsd:choice>
+    </xsd:group>
+
+    <xsd:complexType name="basic_sequence">
+        <xsd:sequence>
+            <xsd:group ref="basic_choice" maxOccurs="unbounded" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:element name="descriptor" type="basic_sequence" />
+</xsd:schema>

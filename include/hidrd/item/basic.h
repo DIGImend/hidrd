@@ -45,8 +45,7 @@ hidrd_item_basic_valid(const hidrd_item *item)
 static inline hidrd_item_pfx
 hidrd_item_basic_get_pfx(const hidrd_item *item)
 {
-    assert(item != NULL);
-
+    assert(hidrd_item_basic_valid(item));
     return item[0];
 }
 
@@ -54,10 +53,8 @@ hidrd_item_basic_get_pfx(const hidrd_item *item)
 static inline hidrd_item *
 hidrd_item_basic_set_pfx(hidrd_item *item, hidrd_item_pfx pfx)
 {
-    assert(item != NULL);
-
+    assert(hidrd_item_basic_valid(item));
     item[0] = pfx;
-
     return item;
 }
 
@@ -71,6 +68,7 @@ typedef enum hidrd_item_basic_type {
 static inline hidrd_item_basic_type
 hidrd_item_basic_get_type(const hidrd_item *item)
 {
+    assert(hidrd_item_basic_valid(item));
     /* Check if bTag indicates long item */
     return (hidrd_item_pfx_get_tag(hidrd_item_basic_get_pfx(item)) ==
             HIDRD_ITEM_PFX_TAG_LONG)
@@ -81,12 +79,14 @@ hidrd_item_basic_get_type(const hidrd_item *item)
 static inline bool
 hidrd_item_basic_is_short(const hidrd_item *item)
 {
+    assert(hidrd_item_basic_valid(item));
     return hidrd_item_basic_get_type(item) == HIDRD_ITEM_BASIC_TYPE_SHORT;
 }
 
 static inline bool
 hidrd_item_basic_is_long(const hidrd_item *item)
 {
+    assert(hidrd_item_basic_valid(item));
     return hidrd_item_basic_get_type(item) == HIDRD_ITEM_BASIC_TYPE_LONG;
 }
 
