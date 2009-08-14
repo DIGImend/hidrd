@@ -298,7 +298,32 @@
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
         MAIN ITEM: COLLECTION (AND END COLLECTION)
     - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-    <xsd:element name="collection" type="basic_sequence" />
+    <xsd:simpleType name="collection_type">
+        <xsd:union memberTypes="xsd:unsignedByte">
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                    <xsd:enumeration value="physical" />
+                    <xsd:enumeration value="application" />
+                    <xsd:enumeration value="logical" />
+                    <xsd:enumeration value="report" />
+                    <xsd:enumeration value="named_array" />
+                    <xsd:enumeration value="usage_switch" />
+                    <xsd:enumeration value="usage_modifier" />
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:union>
+    </xsd:simpleType>
+
+    <xsd:element name="collection">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="basic_sequence">
+                    <xsd:attribute name="type" type="collection_type"
+                                   use="required" />
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
         GLOBAL ITEM
@@ -337,21 +362,122 @@
 
     <xsd:group name="global">
         <xsd:choice>
-            <!--
             <xsd:element ref="usage_page" />
             <xsd:element ref="logical_minimum" />
             <xsd:element ref="logical_maximum" />
             <xsd:element ref="physical_minimum" />
             <xsd:element ref="physical_maximum" />
+            <!--
             <xsd:element ref="unit_exponent" />
+            -->
             <xsd:element ref="unit" />
             <xsd:element ref="report_size" />
             <xsd:element ref="report_id" />
             <xsd:element ref="report_count" />
             <xsd:element ref="push" />
-            -->
         </xsd:choice>
     </xsd:group>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
+        GLOBAL ITEM: USAGE PAGE
+    - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <!-- FIXME provide symbolic usage page reference -->
+    <xsd:element name="usage_page" type="xsd:unsignedShort" />
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
+        GLOBAL ITEM: LOGICAL MINIMUM
+                     LOGICAL MAXIMUM
+                     PHYSICAL MINIMUM
+                     PHYSICAL MAXIMUM
+                     UNIT EXPONENT
+    - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <xsd:element name="logical_minimum" type="xsd:int" />
+    <xsd:element name="logical_maximum" type="xsd:int" />
+    <xsd:element name="physical_minimum" type="xsd:int" />
+    <xsd:element name="physical_maximum" type="xsd:int" />
+    <xsd:element name="unit_exponent" type="xsd:int" />
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
+        GLOBAL ITEM: UNIT
+    - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <xsd:simpleType name="unit_data_exp">
+        <xsd:restriction base="xsd:integer">
+            <xsd:enumeration value="-8" />
+            <xsd:enumeration value="-7" />
+            <xsd:enumeration value="-6" />
+            <xsd:enumeration value="-5" />
+            <xsd:enumeration value="-4" />
+            <xsd:enumeration value="-3" />
+            <xsd:enumeration value="-2" />
+            <xsd:enumeration value="-1" />
+            <xsd:enumeration value="1" />
+            <xsd:enumeration value="2" />
+            <xsd:enumeration value="3" />
+            <xsd:enumeration value="4" />
+            <xsd:enumeration value="5" />
+            <xsd:enumeration value="6" />
+            <xsd:enumeration value="7" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:element name="unit">
+        <xsd:complexType>
+            <xsd:choice minOccurs="0">
+                <xsd:element name="value">
+                    <xsd:simpleType>
+                        <xsd:restriction base="xsd:hexBinary">
+                            <xsd:maxLength value="8" />
+                        </xsd:restriction>
+                    </xsd:simpleType>
+                </xsd:element>
+                <xsd:sequence>
+                    <xsd:choice minOccurs="0">
+                        <xsd:element name="centimeter" type="unit_data_exp" default="1" />
+                        <xsd:element name="radians" type="unit_data_exp" default="1" />
+                        <xsd:element name="inch" type="unit_data_exp" default="1" />
+                        <xsd:element name="degrees" type="unit_data_exp" default="1" />
+                    </xsd:choice>
+                    <xsd:choice minOccurs="0">
+                        <xsd:element name="gram" type="unit_data_exp" default="1" />
+                        <xsd:element name="slug" type="unit_data_exp" default="1" />
+                    </xsd:choice>
+                    <xsd:element name="seconds" type="unit_data_exp" minOccurs="0"
+                                 default="1"/>
+                    <xsd:choice minOccurs="0">
+                        <xsd:element name="kelvin" type="unit_data_exp" default="1" />
+                        <xsd:element name="fahrenheit" type="unit_data_exp" default="1" />
+                    </xsd:choice>
+                    <xsd:element name="ampere" type="unit_data_exp" minOccurs="0"
+                                 default="1" />
+                    <xsd:element name="candela" type="unit_data_exp" minOccurs="0"
+                                 default="1" />
+                </xsd:sequence>
+            </xsd:choice>
+        </xsd:complexType>
+    </xsd:element>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
+        GLOBAL ITEM: REPORT SIZE
+                     REPORT COUNT
+    - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <xsd:element name="report_size" type="xsd:unsignedInt" />
+    <xsd:element name="report_count" type="xsd:unsignedInt" />
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
+        GLOBAL ITEM: REPORT ID
+    - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <xsd:element name="report_id">
+        <xsd:simpleType>
+            <xsd:restriction base="xsd:unsignedByte">
+                <xsd:minInclusive value="1" />
+            </xsd:restriction>
+        </xsd:simpleType>
+    </xsd:element>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
+        GLOBAL ITEM: PUSH (AND POP)
+    - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <xsd:element name="push" type="basic_sequence" />
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
         LOCAL ITEM
@@ -388,7 +514,6 @@
 
     <xsd:group name="local">
         <xsd:choice>
-            <!--
             <xsd:element ref="usage" />
             <xsd:element ref="usage_minimum" />
             <xsd:element ref="usage_maximum" />
@@ -399,9 +524,40 @@
             <xsd:element ref="string_minimum" />
             <xsd:element ref="string_maximum" />
             <xsd:element ref="set" />
-            -->
         </xsd:choice>
     </xsd:group>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
+        LOCAL ITEM: USAGE
+                    USAGE MINIMUM
+                    USAGE MAXIMUM
+                    DESIGNATOR INDEX
+                    DESIGNATOR MINIMUM
+                    DESIGNATOR MAXIMUM
+                    STRING INDEX
+                    STRING MINIMUM
+                    STRING MAXIMUM
+    - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <xsd:element name="usage" type="xsd:unsignedInt" />
+    <xsd:element name="usage_minimum" type="xsd:unsignedInt" />
+    <xsd:element name="usage_maximum" type="xsd:unsignedInt" />
+    <xsd:element name="designator_index" type="xsd:unsignedInt" />
+    <xsd:element name="designator_minimum" type="xsd:unsignedInt" />
+    <xsd:element name="designator_maximum" type="xsd:unsignedInt" />
+    <xsd:element name="string_index" type="xsd:unsignedInt" />
+    <xsd:element name="string_minimum" type="xsd:unsignedInt" />
+    <xsd:element name="string_maximum" type="xsd:unsignedInt" />
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
+        LOCAL ITEM: SET
+    - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <xsd:element name="set">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="usage" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
         LONG ITEM
