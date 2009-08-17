@@ -420,6 +420,26 @@
         </xsd:restriction>
     </xsd:simpleType>
 
+    <xsd:simpleType name="unit_data_system_code">
+        <xsd:restriction base="xsd:integer">
+            <xsd:minInclusive value="1" />
+            <xsd:maxInclusive value="15" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="unit_data_system_name">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="si_linear" />
+            <xsd:enumeration value="si_rotation" />
+            <xsd:enumeration value="english_linear" />
+            <xsd:enumeration value="english_rotation" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="unit_data_system">
+        <xsd:union memberTypes="unit_data_system_code unit_data_system_name" />
+    </xsd:simpleType>
+
     <xsd:element name="unit">
         <xsd:complexType>
             <xsd:choice minOccurs="0">
@@ -430,28 +450,78 @@
                         </xsd:restriction>
                     </xsd:simpleType>
                 </xsd:element>
-                <xsd:sequence>
-                    <xsd:choice minOccurs="0">
-                        <xsd:element name="centimeter" type="unit_data_exp" default="1" />
-                        <xsd:element name="radians" type="unit_data_exp" default="1" />
-                        <xsd:element name="inch" type="unit_data_exp" default="1" />
-                        <xsd:element name="degrees" type="unit_data_exp" default="1" />
-                    </xsd:choice>
-                    <xsd:choice minOccurs="0">
-                        <xsd:element name="gram" type="unit_data_exp" default="1" />
-                        <xsd:element name="slug" type="unit_data_exp" default="1" />
-                    </xsd:choice>
-                    <xsd:element name="seconds" type="unit_data_exp" minOccurs="0"
-                                 default="1"/>
-                    <xsd:choice minOccurs="0">
-                        <xsd:element name="kelvin" type="unit_data_exp" default="1" />
-                        <xsd:element name="fahrenheit" type="unit_data_exp" default="1" />
-                    </xsd:choice>
-                    <xsd:element name="ampere" type="unit_data_exp" minOccurs="0"
-                                 default="1" />
-                    <xsd:element name="candela" type="unit_data_exp" minOccurs="0"
-                                 default="1" />
-                </xsd:sequence>
+                <xsd:element name="si_linear">
+                    <xsd:complexType>
+                        <xsd:sequence minOccurs="1">
+                            <xsd:element name="centimeter" type="unit_data_exp"
+                                         default="1" minOccurs="0" />
+                            <xsd:element name="gram" type="unit_data_exp"
+                                         default="1" minOccurs="0" />
+                            <xsd:element name="seconds" type="unit_data_exp"
+                                         default="1" minOccurs="0" />
+                            <xsd:element name="kelvin" type="unit_data_exp"
+                                         default="1" minOccurs="0" />
+                            <xsd:element name="ampere" type="unit_data_exp"
+                                         default="1" minOccurs="0" />
+                            <xsd:element name="candela" type="unit_data_exp"
+                                         default="1" minOccurs="0" />
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element name="si_rotation">
+                    <xsd:complexType>
+                        <xsd:sequence minOccurs="1">
+                            <xsd:element name="radians" type="unit_data_exp"
+                                         default="1" minOccurs="0" />
+                            <xsd:element name="gram" type="unit_data_exp"
+                                         default="1" minOccurs="0" />
+                            <xsd:element name="seconds" type="unit_data_exp"
+                                         default="1" minOccurs="0" />
+                            <xsd:element name="kelvin" type="unit_data_exp"
+                                         default="1" minOccurs="0" />
+                            <xsd:element name="ampere" type="unit_data_exp"
+                                         default="1" minOccurs="0" />
+                            <xsd:element name="candela" type="unit_data_exp"
+                                         default="1" minOccurs="0" />
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element name="english_linear">
+                    <xsd:complexType>
+                        <xsd:sequence minOccurs="1">
+                            <xsd:element name="inch" type="unit_data_exp"
+                                         default="1" minOccurs="0" />
+                            <xsd:element name="slug" type="unit_data_exp"
+                                         default="1" minOccurs="0" />
+                            <xsd:element name="seconds" type="unit_data_exp"
+                                         default="1" minOccurs="0" />
+                            <xsd:element name="fahrenheit" type="unit_data_exp"
+                                         default="1" minOccurs="0" />
+                            <xsd:element name="ampere" type="unit_data_exp"
+                                         default="1" minOccurs="0" />
+                            <xsd:element name="candela" type="unit_data_exp"
+                                         default="1" minOccurs="0" />
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element name="english_rotation">
+                    <xsd:complexType>
+                        <xsd:sequence minOccurs="1">
+                            <xsd:element name="degrees" type="unit_data_exp"
+                                         default="1" minOccurs="0" />
+                            <xsd:element name="slug" type="unit_data_exp"
+                                         default="1" minOccurs="0" />
+                            <xsd:element name="seconds" type="unit_data_exp"
+                                         default="1" minOccurs="0" />
+                            <xsd:element name="fahrenheit" type="unit_data_exp"
+                                         default="1" minOccurs="0" />
+                            <xsd:element name="ampere" type="unit_data_exp"
+                                         default="1" minOccurs="0" />
+                            <xsd:element name="candela" type="unit_data_exp"
+                                         default="1" minOccurs="0" />
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
             </xsd:choice>
         </xsd:complexType>
     </xsd:element>
