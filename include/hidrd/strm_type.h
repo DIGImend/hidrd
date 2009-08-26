@@ -1,5 +1,5 @@
 /** @file
- * @brief HID report descriptor - item prefix size field.
+ * @brief HID report descriptor - stream type
  *
  * Copyright (C) 2009 Nikolai Kondrashov
  *
@@ -24,40 +24,40 @@
  * @(#) $Id$
  */
 
-#ifndef __HIDRD_ITEM_PFX_SIZE_H__
-#define __HIDRD_ITEM_PFX_SIZE_H__
+#ifndef __HIDRD_STRM_TYPE_H__
+#define __HIDRD_STRM_TYPE_H__
 
-#include <stdint.h>
+#include <assert.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define HIDRD_ITEM_PFX_SIZE_MASK 0x03
-#define HIDRD_ITEM_PFX_SIZE_SHFT 0
+typedef bool hidrd_strm_init_fn(hidrd_strm             *strm,
+                                va_list                 ap);
 
-typedef hidrd_item_pfx_size {
-    HIDRD_ITEM_PFX_SIZE_0B  = 0,
-    HIDRD_ITEM_PFX_SIZE_1B  = 1,
-    HIDRD_ITEM_PFX_SIZE_2B  = 2,
-    HIDRD_ITEM_PFX_SIZE_4B  = 3,
-} hidrd_item_pfx_size;
+typedef hidrd_item *hidrd_strm_read_fn(hidrd_strm  *strm);
 
-static inline bool
-hidrd_item_pfx_size_valid(hidrd_item_pfx_size size)
-{
-    return (size & ~HIDRD_ITEM_PFX_SIZE_MASK) == 0;
-}
+typedef bool hidrd_strm_write_fn(hidrd_strm        *strm,
+                                 const hidrd_item  *item);
 
-extern size_t hidrd_item_pfx_size_to_bytes(hidrd_item_pfx_size size);
+typedef bool hidrd_strm_flush_fn(hidrd_strm    *strm);
 
-#define HIDRD_ITEM_PFX_SIZE_LONG    HIDRD_ITEM_PFX_SIZE_2B
+typedef void hidrd_strm_clnp_fn(hidrd_strm     *strm);
+
+typedef struct hidrd_strm_type {
+    size_t              size;
+    hidrd_strm_init_fn  init;
+    hidrd_strm_init_fn  read;
+    hidrd_strm_init_fn  write;
+    hidrd_strm_init_fn  flush;
+    hidrd_strm_init_fn  clnp;
+} hidrd_strm_type;
 
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
 
-#endif /* __HIDRD_ITEM_PFX_SIZE_H__ */
-
+#endif /* __HIDRD_STRM_TYPE_H__ */
 
 

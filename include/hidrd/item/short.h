@@ -67,14 +67,22 @@ hidrd_item_short_tag_valid(hidrd_item_short_tag tag)
 }
 
 
-typedef hidrd_item_pfx_size hidrd_item_short_size;
-#define HIDRD_ITEM_SHORT_SIZE_0B    HIDRD_ITEM_PFX_SIZE_0B
-#define HIDRD_ITEM_SHORT_SIZE_1B    HIDRD_ITEM_PFX_SIZE_1B
-#define HIDRD_ITEM_SHORT_SIZE_2B    HIDRD_ITEM_PFX_SIZE_2B
-#define HIDRD_ITEM_SHORT_SIZE_4B    HIDRD_ITEM_PFX_SIZE_4B
+typedef hidrd_item_pfx_size hidrd_item_short_data_size;
+#define HIDRD_ITEM_SHORT_DATA_SIZE_0B   HIDRD_ITEM_PFX_SIZE_0B
+#define HIDRD_ITEM_SHORT_DATA_SIZE_1B   HIDRD_ITEM_PFX_SIZE_1B
+#define HIDRD_ITEM_SHORT_DATA_SIZE_2B   HIDRD_ITEM_PFX_SIZE_2B
+#define HIDRD_ITEM_SHORT_DATA_SIZE_4B   HIDRD_ITEM_PFX_SIZE_4B
+
+
+static inline size_t
+hidrd_item_short_data_size_to_bytes(hidrd_item_short_data_size size)
+{
+    return hidrd_item_pfx_size_to_bytes(size);
+}
+
 
 static inline bool
-hidrd_item_short_size_valid(hidrd_item_short_size size)
+hidrd_item_short_data_size_valid(hidrd_item_short_data_size size)
 {
     return hidrd_item_pfx_size_valid(size);
 }
@@ -104,8 +112,8 @@ hidrd_item_short_get_tag(const hidrd_item *item)
 }
 
 
-static inline hidrd_item_short_size
-hidrd_item_short_get_size(const hidrd_item *item)
+static inline hidrd_item_short_data_size
+hidrd_item_short_get_data_size(const hidrd_item *item)
 {
     assert(hidrd_item_short_valid(item));
     return hidrd_item_pfx_get_size(hidrd_item_basic_get_pfx(item));
@@ -139,10 +147,10 @@ hidrd_item_short_set_tag(hidrd_item *item, hidrd_item_short_tag tag)
 
 
 static inline hidrd_item *
-hidrd_item_short_set_size(hidrd_item *item, hidrd_item_short_size size)
+hidrd_item_short_set_data_size(hidrd_item *item, hidrd_item_short_data_size size)
 {
     assert(hidrd_item_short_valid(item));
-    assert(hidrd_item_short_size_valid(size));
+    assert(hidrd_item_short_data_size_valid(size));
     return hidrd_basic_set_pfx(
                 item,
                 hidrd_pfx_set_size(
@@ -157,6 +165,18 @@ hidrd_item_short_get_data(hidrd_item *item)
     assert(hidrd_item_short_valid(item));
     return &item[1];
 }
+
+
+#define HIDRD_ITEM_SHORT_MAX_SIZE   (1 + 4)
+
+static inline size_t
+hidrd_item_short_get_size(const hidrd_item *item)
+{
+    assert(hidrd_item_short_valid(item));
+    return 1 + hidrd_item_short_data_size_to_bytes(
+                hidrd_item_short_get_data_size(item));
+}
+
 
 extern uint32_t hidrd_item_short_get_unsigned(const hidrd_item *item);
 extern hidrd_item* hidrd_item_short_set_unsigned(hidrd_item *item,

@@ -1,5 +1,5 @@
 /** @file
- * @brief HID report descriptor - item prefix size field.
+ * @brief HID report descriptor - item prefix.
  *
  * Copyright (C) 2009 Nikolai Kondrashov
  *
@@ -24,40 +24,12 @@
  * @(#) $Id$
  */
 
-#ifndef __HIDRD_ITEM_PFX_SIZE_H__
-#define __HIDRD_ITEM_PFX_SIZE_H__
+#include "hidrd/item/pfx.h"
 
-#include <stdint.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#define HIDRD_ITEM_PFX_SIZE_MASK 0x03
-#define HIDRD_ITEM_PFX_SIZE_SHFT 0
-
-typedef hidrd_item_pfx_size {
-    HIDRD_ITEM_PFX_SIZE_0B  = 0,
-    HIDRD_ITEM_PFX_SIZE_1B  = 1,
-    HIDRD_ITEM_PFX_SIZE_2B  = 2,
-    HIDRD_ITEM_PFX_SIZE_4B  = 3,
-} hidrd_item_pfx_size;
-
-static inline bool
-hidrd_item_pfx_size_valid(hidrd_item_pfx_size size)
+size_t
+hidrd_item_pfx_size_to_bytes(hidrd_item_pfx_size size)
 {
-    return (size & ~HIDRD_ITEM_PFX_SIZE_MASK) == 0;
+    assert(hidrd_item_pfx_size_valid(size));
+
+    return (size == HIDRD_ITEM_PFX_SIZE_4B) ? 4 : size;
 }
-
-extern size_t hidrd_item_pfx_size_to_bytes(hidrd_item_pfx_size size);
-
-#define HIDRD_ITEM_PFX_SIZE_LONG    HIDRD_ITEM_PFX_SIZE_2B
-
-#ifdef __cplusplus
-} /* extern "C" */
-#endif
-
-#endif /* __HIDRD_ITEM_PFX_SIZE_H__ */
-
-
-

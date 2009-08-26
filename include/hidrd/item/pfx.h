@@ -38,12 +38,14 @@ extern "C" {
 
 typedef uint8_t hidrd_item_pfx;
 
+/* Default short item prefix */
+#define HIDRD_ITEM_PFX_SHORT 0
+
 /* Long item prefix (0xFE) */
 #define HIDRD_ITEM_PFX_LONG \
     ((HIDRD_ITEM_PFX_SIZE_LONG << HIDRD_ITEM_PFX_SIZE_SHFT) |   \
      (HIDRD_ITEM_PFX_TYPE_LONG << HIDRD_ITEM_PFX_TYPE_SHFT) |   \
      (HIDRD_ITEM_PFX_TAG_LONG << HIDRD_ITEM_PFX_TAG_SHFT))
-
 
 static inline hidrd_item_pfx_size
 hidrd_item_pfx_get_size(hidrd_item_pfx pfx)

@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<descriptor xmlns="http://digimend.sourceforge.net"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://digimend.sourceforge.net hidrd.xsd">
+    <basic type="reserved" tag="12" size="2">DEADBEEF</basic>
+    <collection type="application">
+        <short type="main" tag="15" />
+        <long tag="255" />
+        <main tag="input" />
+        <global tag="usage_page" />
+        <local tag="usage" />
+        <set>
+            <usage>12</usage>
+            <usage>22</usage>
+        </set>
+        <unit>
+            <si_linear>
+                <centimeter>2</centimeter>
+                <seconds>-2</seconds>
+            </si_linear>
+        </unit>
+        <unit>
+            <si_linear>
+                <centimeter>2</centimeter>
+                <gram>1</gram>
+                <seconds>-3</seconds>
+                <ampere>-1</ampere>
+            </si_linear>
+        </unit>
+        <unit>
+            <si_linear>
+                <centimeter/>
+            </si_linear>
+        </unit>
+        <unit>
+            <value>00F0D121</value>
+        </unit>
+        <input>
+            <bit0/>
+            <variable/>
+            <relative/>
+            <wrap/>
+            <linear/>
+        </input>
+    </collection>
+</descriptor>

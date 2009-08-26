@@ -76,6 +76,25 @@ hidrd_item_basic_get_type(const hidrd_item *item)
             : HIDRD_ITEM_BASIC_TYPE_SHORT;
 }
 
+
+static inline hidrd_item *
+hidrd_item_basic_set_type(hidrd_item *item, hidrd_item_basic_type type)
+{
+    assert(hidrd_item_basic_valid(item));
+
+    if (type != hidrd_item_basic_get_type(item))
+    {
+        return hidrd_item_basic_set_pfx(
+                    item,
+                    (type == HIDRD_ITEM_BASIC_TYPE_SHORT)
+                        ? HIDRD_ITEM_PFX_SHORT
+                        : HIDRD_ITEM_PFX_LONG);
+    }
+    else
+        return item;
+}
+
+
 static inline bool
 hidrd_item_basic_is_short(const hidrd_item *item)
 {
@@ -89,6 +108,7 @@ hidrd_item_basic_is_long(const hidrd_item *item)
     assert(hidrd_item_basic_valid(item));
     return hidrd_item_basic_get_type(item) == HIDRD_ITEM_BASIC_TYPE_LONG;
 }
+
 
 #ifdef __cplusplus
 } /* extern "C" */

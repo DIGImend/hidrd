@@ -46,24 +46,49 @@ hidrd_item_long_valid(const hidrd_item *item)
 typedef uint8_t hidrd_item_long_tag;
 
 static inline uint8_t
-hidrd_item_long_get_size(const hidrd_item *item)
+hidrd_item_long_get_data_size(const hidrd_item *item)
 {
     assert(webui_hidrd_item_basic_is_long(item));
     return item[1];
 }
 
+static inline hidrd_item *
+hidrd_item_long_set_data_size(hidrd_item *item, uint8_t size)
+{
+    assert(hidrd_item_long_valid(item));
+    item[1] = size;
+    return item;
+}
+
 static inline hidrd_item_long_tag
 hidrd_item_long_get_tag(const hidrd_item *item)
 {
-    assert(webui_hidrd_item_basic_is_long(item));
+    assert(hidrd_item_long_valid(item));
     return item[2];
+}
+
+static inline hidrd_item *
+hidrd_item_long_set_tag(hidrd_item *item, hidrd_item_long_tag tag)
+{
+    assert(hidrd_item_long_valid(item));
+    item[2] = tag;
+    return item;
 }
 
 static inline void *
 hidrd_item_long_get_data(hidrd_item *item)
 {
-    assert(webui_hidrd_item_basic_is_long(item));
+    assert(hidrd_item_long_valid(item));
     return &item[3];
+}
+
+#define HIDRD_ITEM_LONG_MAX_SIZE    (3 + UINT8_MAX)
+
+static inline size_t
+hidrd_item_long_get_size(hidrd_item *item)
+{
+    assert(hidrd_item_long_valid(item));
+    return 3 + hidrd_item_long_get_data_size(item);
 }
 
 #ifdef __cplusplus
