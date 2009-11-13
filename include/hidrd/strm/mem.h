@@ -1,5 +1,5 @@
 /** @file
- * @brief HID report descriptor - memory stream
+ * @brief HID report descriptor - memory stream type
  *
  * Copyright (C) 2009 Nikolai Kondrashov
  *
@@ -27,14 +27,13 @@
 #ifndef __HIDRD_STRM_MEM_H__
 #define __HIDRD_STRM_MEM_H__
 
-#include <assert.h>
-#include <hidrd/strm_type.h>
+#include "hidrd/strm/type.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-extern const hidrd_strm_type    hidrd_strm_type_mem;
+extern const hidrd_strm_type    hidrd_strm_mem;
 
 #ifdef __cplusplus
 } /* extern "C" */

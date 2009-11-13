@@ -1,5 +1,5 @@
 /** @file
- * @brief HID report descriptor - stream
+ * @brief HID report descriptor - stream instance
  *
  * Copyright (C) 2009 Nikolai Kondrashov
  *
@@ -24,10 +24,10 @@
  * @(#) $Id$
  */
 
-#ifndef __HIDRD_STRM_H__
-#define __HIDRD_STRM_H__
+#ifndef __HIDRD_STRM_INST_H__
+#define __HIDRD_STRM_INST_H__
 
-#include <assert.h>
+#include "hidrd/strm/type.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -35,24 +35,22 @@ extern "C" {
 
 typedef struct hidrd_strm {
     const hidrd_strm_type  *type;
-    bool                    eof;
-    int                     error;
+    bool                    error;
 } hidrd_strm;
 
-/**
- * Allocate (uninitialized) instance of specified stream type.
- *
- * @param type  Stream type.
- *
- * @return Stream instance with type-specific part uninitialized.
- *
- * @alg Basically, allocates memory of size specified in the type
- * description, initializes generic part, the rest of the memory is filled
- * with zeroes.
- *
- * @sa hidrd_strm_free
- */
+extern bool hidrd_strm_valid(const hidrd_strm *strm);
+
+extern bool hidrd_strm_writable(const hidrd_strm *strm);
+
+extern bool hidrd_strm_readable(const hidrd_strm *strm);
+
+extern bool hidrd_strm_error(const hidrd_strm *strm);
+
 extern hidrd_strm *hidrd_strm_alloc(const hidrd_strm_type *type);
+
+extern bool hidrd_strm_initv(hidrd_strm *strm, va_list ap);
+
+extern bool hidrd_strm_init(hidrd_strm *strm, ...);
 
 extern hidrd_strm *hidrd_strm_open(const hidrd_strm_type *type, ...);
 
@@ -60,26 +58,14 @@ extern bool hidrd_strm_flush(hidrd_strm *strm);
 
 extern void hidrd_strm_free(hidrd_strm *strm);
 
-static inline bool
-hidrd_strm_close(hidrd_strm *strm)
-{
-    if (!hidrd_strm_flush(strm))
-        return false;
+extern bool hidrd_strm_close(hidrd_strm *strm);
 
-    hidrd_strm_free(strm);
-    return true;
-}
-
-extern hidrd_item *hidrd_strm_read(hidrd_strm *strm);
+extern const hidrd_item *hidrd_strm_read(hidrd_strm *strm);
 
 extern bool hidrd_strm_write(hidrd_strm *strm, const hidrd_item *item);
-
-extern bool hidrd_strm_eof(const hidrd_strm *strm);
-extern int hidrd_strm_error(const hidrd_strm *strm);
 
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
 
-#endif /* __HIDRD_STRM_H__ */
-
+#endif /* __HIDRD_STRM_INST_H__ */

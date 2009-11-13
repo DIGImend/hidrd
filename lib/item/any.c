@@ -27,10 +27,26 @@
 #include "hidrd/item.h"
 
 
+#define MAP_MAIN(_NAME, _name) \
+    case HIDRD_ITEM_MAIN_TAG_##_NAME:               \
+        return hidrd_item_##_name##_valid(item);
+
+#define MAP_GLOBAL(_NAME, _name) \
+    case HIDRD_ITEM_GLOBAL_TAG_##_NAME:             \
+        return hidrd_item_##_name##_valid(item);
+
+#define MAP_LOCAL(_NAME, _name) \
+    case HIDRD_ITEM_LOCAL_TAG_##_NAME:              \
+        return hidrd_item_##_name##_valid(item);
+
+
 bool
-hidrd_item_valid(const hidrd_item *item)
+hidrd_item_size_valid(const hidrd_item *item, size_t size)
 {
     assert(hidrd_item_basic_valid(item));
+
+    if (size == 0)
+        return false;
 
     switch (hidrd_item_basic_type(item))
     {
@@ -42,21 +58,63 @@ hidrd_item_valid(const hidrd_item *item)
                 case HIDRD_ITEM_SHORT_TYPE_MAIN:
                     switch (hidrd_item_main_get_tag(item))
                     {
-                        case HIDRD_ITEM_MAIN_TAG_INPUT:
-                            hidrd_item_input_valid(item);
-                        case HIDRD_ITEM_MAIN_TAG_OUTPUT:
-                            hidrd_item_output_valid(item);
-                        case HIDRD_ITEM_MAIN_TAG_COLLECTION:
-                            hidrd_item_collection_valid(item);
-                        case HIDRD_ITEM_MAIN_TAG_FEATURE:
-                            hidrd_item_feature_valid(item);
-                        case HIDRD_ITEM_MAIN_TAG_END_COLLECTION:
-                            hidrd_item_end_collection_valid(item);
+                        MAP_MAIN(INPUT, input)
+                        MAP_MAIN(OUTPUT, output)
+                        MAP_MAIN(COLLECTION, collection)
+                        MAP_MAIN(FEATURE, feature)
+                        MAP_MAIN(END_COLLECTION, end_collection)
                     }
+                    break;
+                case HIDRD_ITEM_SHORT_TYPE_GLOBAL:
+                    switch (hidrd_item_global_get_tag(item))
+                    {
+                        MAP_GLOBAL(USAGE_PAGE, usage_page)
+                        MAP_GLOBAL(LOGICAL_MINIMUM, logical_minimum)
+                        MAP_GLOBAL(LOGICAL_MAXIMUM, logical_maximum)
+                        MAP_GLOBAL(PHYSICAL_MINIMUM, physical_minimum)
+                        MAP_GLOBAL(PHYSICAL_MAXIMUM, physical_maximum)
+                        MAP_GLOBAL(UNIT_EXPONENT, unit_exponent)
+                        MAP_GLOBAL(UNIT, unit)
+                        MAP_GLOBAL(REPORT_SIZE, report_size)
+                        MAP_GLOBAL(REPORT_ID, report_id)
+                        MAP_GLOBAL(REPORT_COUNT, report_count)
+                        MAP_GLOBAL(PUSH, push)
+                        MAP_GLOBAL(POP, pop)
+                    }
+                    break;
+                case HIDRD_ITEM_SHORT_TYPE_LOCAL:
+                    switch (hidrd_item_local_get_tag(item))
+                    {
+                        MAP_LOCAL(USAGE, usage)
+                        MAP_LOCAL(USAGE_MINIMUM, usage_minimum)
+                        MAP_LOCAL(USAGE_MAXIMUM, usage_maximum)
+                        MAP_LOCAL(DESIGNATOR_INDEX, designator_index)
+                        MAP_LOCAL(DESIGNATOR_MINIMUM, designator_minimum)
+                        MAP_LOCAL(DESIGNATOR_MAXIMUM, designator_maximum)
+                        MAP_LOCAL(INVALID, invalid)
+                        MAP_LOCAL(STRING_INDEX, string_index)
+                        MAP_LOCAL(STRING_MINIMUM, string_minimum)
+                        MAP_LOCAL(STRING_MAXIMUM, string_maximum)
+                        MAP_LOCAL(DELIMITER, delimiter)
+                    }
+                    break;
             }
+            break;
     }
+    return false;
 }
 
+
+#undef MAP_LOCAL
+#undef MAP_GLOBAL
+#undef MAP_MAIN
+
+
+bool
+hidrd_item_valid(const hidrd_item *item)
+{
+    return hidrd_item_size_valid(item, SIZE_MAX);
+}
 
 
 size_t 

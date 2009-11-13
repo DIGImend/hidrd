@@ -41,7 +41,7 @@ hidrd_item_report_count_value_valid(uint32_t value)
     return true;
 }
 
-HIDRD_ITEM_GLOBAL_FUNCS(report_count, REPORT_SIZE,
+HIDRD_ITEM_GLOBAL_FUNCS(report_count, REPORT_COUNT,
                         unsigned, uint32_t, uint32_t)
 
 #ifdef __cplusplus

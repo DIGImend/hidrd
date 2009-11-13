@@ -24,40 +24,13 @@
  * @(#) $Id$
  */
 
-#ifndef __HIDRD_STRM_TYPE_H__
-#define __HIDRD_STRM_TYPE_H__
+#include "hidrd/strm/type.h"
+#include "hidrd/strm/inst.h"
 
-#include <assert.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-typedef bool hidrd_strm_init_fn(hidrd_strm             *strm,
-                                va_list                 ap);
-
-typedef hidrd_item *hidrd_strm_read_fn(hidrd_strm  *strm);
-
-typedef bool hidrd_strm_write_fn(hidrd_strm        *strm,
-                                 const hidrd_item  *item);
-
-typedef bool hidrd_strm_flush_fn(hidrd_strm    *strm);
-
-typedef void hidrd_strm_clnp_fn(hidrd_strm     *strm);
-
-typedef struct hidrd_strm_type {
-    size_t              size;
-    hidrd_strm_init_fn  init;
-    hidrd_strm_init_fn  read;
-    hidrd_strm_init_fn  write;
-    hidrd_strm_init_fn  flush;
-    hidrd_strm_init_fn  clnp;
-} hidrd_strm_type;
-
-#ifdef __cplusplus
-} /* extern "C" */
-#endif
-
-#endif /* __HIDRD_STRM_TYPE_H__ */
-
-
+bool
+hidrd_strm_type_valid(const hidrd_strm_type *type)
+{
+    return type != NULL &&
+           type->size >= sizeof(hidrd_strm) &&
+           (type->read != NULL || type->write != NULL);
+}
