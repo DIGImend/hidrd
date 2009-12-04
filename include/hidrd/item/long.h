@@ -35,7 +35,9 @@ extern "C" {
 #endif
 
 
-#define HIDRD_ITEM_LONG_MIN_SIZE   3
+#define HIDRD_ITEM_LONG_MIN_SIZE    3
+#define HIDRD_ITEM_LONG_MAX_SIZE    (3 + UINT8_MAX)
+
 
 static inline bool
 hidrd_item_long_valid(const hidrd_item *item)
@@ -83,8 +85,6 @@ hidrd_item_long_get_data(hidrd_item *item)
     assert(hidrd_item_long_valid(item));
     return &item[3];
 }
-
-#define HIDRD_ITEM_LONG_MAX_SIZE    (3 + UINT8_MAX)
 
 static inline size_t
 hidrd_item_long_get_size(hidrd_item *item)

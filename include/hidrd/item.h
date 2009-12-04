@@ -66,6 +66,16 @@ extern bool hidrd_item_valid(const hidrd_item *item);
 
 extern size_t hidrd_item_get_size(const hidrd_item *item);
 
+/**
+ * Check if an item fits entirely into a buffer, not reading more than
+ * buffer size from the item, optionally returning item size.
+ *
+ * @param item          Item to check.
+ * @param buf_size      Buffer size to check.
+ * @param pitem_size    Location for item size, could be NULL.
+ *
+ * @return True if item fits into a buffer.
+ */
 extern bool hidrd_item_fits(const hidrd_item   *item,
                             size_t              buf_size,
                             size_t             *pitem_size);
