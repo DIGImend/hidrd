@@ -35,6 +35,8 @@ extern "C" {
 #endif
 
 
+#define HIDRD_ITEM_LONG_MIN_SIZE   3
+
 static inline bool
 hidrd_item_long_valid(const hidrd_item *item)
 {

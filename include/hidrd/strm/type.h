@@ -35,18 +35,60 @@
 extern "C" {
 #endif
 
+/**
+ * Prototype for a stream instance initialization function.
+ *
+ * @param strm  Stream instance to initialize.
+ * @param ap    Type-specific variable argument list.
+ *
+ * @return True if the initialization succeeded, false otherwise.
+ */
 typedef bool hidrd_strm_type_init_fn(hidrd_strm    *strm,
                                      va_list        ap);
 
+/**
+ * Prototype for a stream instance validation function.
+ *
+ * @param strm  Stream instance to validate.
+ *
+ * @return True if the instance is valid, false otherwise.
+ */
 typedef bool hidrd_strm_type_valid_fn(const hidrd_strm  *strm);
 
+/**
+ * Prototype for a stream instance reading function.
+ *
+ * @param strm  Stream instance to read from.
+ *
+ * @return Pointer to an item read, or NULL in case of EOF or error.
+ */
 typedef const hidrd_item *hidrd_strm_type_read_fn(hidrd_strm   *strm);
 
+/**
+ * Prototype for a stream instance writing function.
+ *
+ * @param strm  Stream instance to write to.
+ * @param item  Pointer to an item to write.
+ *
+ * @return True if wrote successfully, false otherwise.
+ */
 typedef bool hidrd_strm_type_write_fn(hidrd_strm       *strm,
                                       const hidrd_item *item);
 
+/**
+ * Flush a stream instance cached items (if any).
+ *
+ * @param strm  Stream instance to flush cached items from.
+ *
+ * @return True if flushed successfully, false otherwise.
+ */
 typedef bool hidrd_strm_type_flush_fn(hidrd_strm   *strm);
 
+/**
+ * Cleanup a stream instance (free associated resources).
+ *
+ * @param strm  Stream instance to cleanup.
+ */
 typedef void hidrd_strm_type_clnp_fn(hidrd_strm    *strm);
 
 typedef struct hidrd_strm_type {

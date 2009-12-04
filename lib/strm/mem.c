@@ -33,7 +33,8 @@ typedef struct hidrd_strm_mem_inst {
     size_t      pos;
 } hidrd_strm_mem_inst;
 
-bool
+
+static bool
 hidrd_strm_mem_init(hidrd_strm *strm, va_list ap)
 {
     hidrd_strm_mem_inst    *strm_mem    = (hidrd_strm_mem_inst *)strm;
@@ -55,7 +56,7 @@ hidrd_strm_mem_init(hidrd_strm *strm, va_list ap)
 }
 
 
-bool
+static bool
 hidrd_strm_mem_valid(const hidrd_strm *strm)
 {
     const hidrd_strm_mem_inst  *strm_mem    =
@@ -66,21 +67,19 @@ hidrd_strm_mem_valid(const hidrd_strm *strm)
 }
 
 
-const hidrd_item *
+static const hidrd_item *
 hidrd_strm_mem_read(hidrd_strm *strm)
 {
     hidrd_strm_mem_inst    *strm_mem    = (hidrd_strm_mem_inst *)strm;
     const hidrd_item       *item;
     size_t                  item_size;
-    size_t                  new_pos;
-
-    if (strm_mem->pos >= strm_mem->size)
-        return NULL;
 
     item = (hidrd_item *)((uint8_t *)strm_mem->buf + strm_mem->pos);
-    item_size = hidrd_item_size(item);
-    if ((strm_mem->size - strm_mem->pos) < item_size ||
-        !hidrd_item_valid(item))
+
+    if (!hidrd_item_fits(item, strm_mem->size - strm_mem->pos, &item_size))
+        return NULL;
+
+    if (!hidrd_item_valid(item))
     {
         strm->error = true;
         return NULL;
@@ -92,9 +91,79 @@ hidrd_strm_mem_read(hidrd_strm *strm)
 }
 
 
+static bool
+hidrd_strm_mem_write(hidrd_strm *strm, const hidrd_item *item)
+{
+    hidrd_strm_mem_inst    *strm_mem    = (hidrd_strm_mem_inst *)strm;
+    size_t                  item_size;
+    size_t                  new_pos;
+    size_t                  new_size;
+    void                   *new_buf;
+
+    assert(hidrd_item_valid(item));
+
+    item_size = hidrd_item_size(item);
+    new_pos = strm_mem->pos + item_size;
+
+    if (new_pos >= strm_mem->size)
+    {
+        new_size = (strm_mem->size < HIDRD_ITEM_MAX_SIZE * 2)
+                        ? HIDRD_ITEM_MAX_SIZE * 4
+                        : strm_mem->size * 2;
+        new_buf = realloc(strm_mem->size, new_size);
+        if (new_buf == NULL)
+        {
+            strm->error = true;
+            return false;
+        }
+        strm_mem->buf = new_buf;
+        strm_mem->size = new_size;
+    }
+
+    memcpy((uint8_t *)strm_mem->buf + strm_mem->pos, item, item_size);
+    strm_mem->pos = new_pos;
+
+    return true;
+}
+
+
+static bool
+hidrd_strm_mem_flush(hidrd_strm *strm)
+{
+    hidrd_strm_mem_inst    *strm_mem    = (hidrd_strm_mem_inst *)strm;
+    void                   *new_buf;
+
+    /* Retension buffer */
+    new_buf = realloc(strm_mem->buf, strm_mem->size);
+    if (strm_mem->size != 0 && new_buf == NULL)
+    {
+        strm->error = 1;
+        return false;
+    }
+    strm_mem->buf = new_buf;
+
+    return true;
+}
+
+
+void
+hidrd_strm_mem_clnp(hidrd_strm *strm)
+{
+    free(strm->buf);
+    strm->buf   = NULL;
+    strm->size  = 0;
+    strm->pos   = 0;
+}
+
+
 const hidrd_strm_type hidrd_strm_mem {
     .size   = sizeof(hidrd_strm_mem_inst),
     .init   = hidrd_strm_mem_init,
+    .valid  = hidrd_strm_mem_valid,
+    .read   = hidrd_strm_mem_read,
+    .write  = hidrd_strm_mem_write,
+    .flush  = hidrd_strm_mem_flush,
+    .clnp   = hidrd_strm_mem_clnp,
 } hidrd_strm_mem;
 
 

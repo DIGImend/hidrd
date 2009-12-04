@@ -34,6 +34,8 @@
 extern "C" {
 #endif
 
+#define HIDRD_ITEM_SHORT_MIN_SIZE   1
+#define HIDRD_ITEM_SHORT_MAX_SIZE   (1 + 4)
 
 typedef hidrd_item_pfx_type hidrd_item_short_type;
 #define HIDRD_ITEM_SHORT_TYPE_MAIN      HIDRD_ITEM_PFX_TYPE_MAIN
@@ -166,8 +168,6 @@ hidrd_item_short_get_data(hidrd_item *item)
     return &item[1];
 }
 
-
-#define HIDRD_ITEM_SHORT_MAX_SIZE   (1 + 4)
 
 static inline size_t
 hidrd_item_short_get_size(const hidrd_item *item)

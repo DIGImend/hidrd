@@ -34,6 +34,7 @@
 extern "C" {
 #endif
 
+#define HIDRD_ITEM_BASIC_MIN_SIZE 1
 
 static inline bool
 hidrd_item_basic_valid(const hidrd_item *item)

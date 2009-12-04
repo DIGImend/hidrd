@@ -59,14 +59,16 @@
 extern "C" {
 #endif
 
-#define HIDRD_ITEM_MIN_SIZE HIDRD_ITEM_LONG_MAX_SIZE
+#define HIDRD_ITEM_MIN_SIZE HIDRD_ITEM_SHORT_MIN_SIZE
 #define HIDRD_ITEM_MAX_SIZE HIDRD_ITEM_LONG_MAX_SIZE
-
-extern bool hidrd_item_size_valid(const hidrd_item *item, size_t size);
 
 extern bool hidrd_item_valid(const hidrd_item *item);
 
 extern size_t hidrd_item_get_size(const hidrd_item *item);
+
+extern bool hidrd_item_fits(const hidrd_item   *item,
+                            size_t              buf_size,
+                            size_t             *pitem_size);
 
 #ifdef __cplusplus
 } /* extern "C" */

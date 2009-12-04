@@ -41,12 +41,9 @@
 
 
 bool
-hidrd_item_size_valid(const hidrd_item *item, size_t size)
+hidrd_item_valid(const hidrd_item *item)
 {
     assert(hidrd_item_basic_valid(item));
-
-    if (size == 0)
-        return false;
 
     switch (hidrd_item_basic_type(item))
     {
@@ -110,19 +107,48 @@ hidrd_item_size_valid(const hidrd_item *item, size_t size)
 #undef MAP_MAIN
 
 
-bool
-hidrd_item_valid(const hidrd_item *item)
-{
-    return hidrd_item_size_valid(item, SIZE_MAX);
-}
-
-
 size_t 
 hidrd_item_get_size(const hidrd_item *item)
 {
     return hidrd_item_basic_is_short(item)
             ? hidrd_item_short_get_size(item)
             : hidrd_item_long_get_size(item);
+}
+
+
+bool
+hidrd_item_fits(const hidrd_item   *item,
+                size_t              buf_size,
+                size_t             *pitem_size)
+{
+    size_t item_size;
+
+#define CHECK(_size) \
+    do {                        \
+        if (buf_size < (_size)) \
+            return false;       \
+    } while (0)
+
+
+    CHECK(HIDRD_ITEM_BASIC_MIN_SIZE);
+
+    if (hidrd_item_basic_is_short(item))
+    {
+        CHECK(HIDRD_ITEM_SHORT_MIN_SIZE);
+        CHECK(item_size = hidrd_item_short_get_size(item));
+    }
+    else
+    {
+        CHECK(HIDRD_ITEM_LONG_MIN_SIZE);
+        CHECK(item_size = hidrd_item_long_get_size(item));
+    }
+
+#undef CHECK
+
+    if (pitem_size != NULL)
+        *pitem_size = item_size;
+
+    return true;
 }
 
 
