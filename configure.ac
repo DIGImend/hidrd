@@ -23,6 +23,7 @@ AC_INIT([hidrd], [0.1])
 AC_CONFIG_AUX_DIR([auxdir])
 AM_INIT_AUTOMAKE([1.10.1 -Wall foreign])
 AC_CONFIG_HEADER([config.h])
+AC_CONFIG_MACRO_DIR([m4])
 
 # To have empty CFLAGS instead of undefined and '-g -O2' by default
 CFLAGS=$CFLAGS
