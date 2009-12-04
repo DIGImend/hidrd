@@ -33,8 +33,8 @@
 extern "C" {
 #endif
 
-typedef hidrd_item_delimiter_set {
-    HIDRD_ITEM_DELIMITER_SET_CLOSE  = 0
+typedef enum hidrd_item_delimiter_set {
+    HIDRD_ITEM_DELIMITER_SET_CLOSE  = 0,
     HIDRD_ITEM_DELIMITER_SET_OPEN   = 1,
 } hidrd_item_delimiter_set;
 

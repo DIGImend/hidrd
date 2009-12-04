@@ -24,8 +24,8 @@
  * @(#) $Id$
  */
 
-#ifndef __HIDRD_ITEM_REPORT_SIZE_H__
-#define __HIDRD_ITEM_REPORT_SIZE_H__
+#ifndef __HIDRD_ITEM_REPORT_COUNT_H__
+#define __HIDRD_ITEM_REPORT_COUNT_H__
 
 #include "hidrd/item/global.h"
 
@@ -48,5 +48,5 @@ HIDRD_ITEM_GLOBAL_FUNCS(report_count, REPORT_COUNT,
 } /* extern "C" */
 #endif
 
-#endif /* __HIDRD_ITEM_REPORT_SIZE_H__ */
+#endif /* __HIDRD_ITEM_REPORT_COUNT_H__ */
 

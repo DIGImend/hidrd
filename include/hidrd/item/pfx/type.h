@@ -37,7 +37,7 @@ extern "C" {
 #define HIDRD_ITEM_PFX_TYPE_MASK 0x03
 #define HIDRD_ITEM_PFX_TYPE_SHFT 2
 
-typedef hidrd_item_pfx_type {
+typedef enum hidrd_item_pfx_type {
     HIDRD_ITEM_PFX_TYPE_MAIN        = 0,
     HIDRD_ITEM_PFX_TYPE_GLOBAL      = 1,
     HIDRD_ITEM_PFX_TYPE_LOCAL       = 2,

@@ -24,7 +24,9 @@
  * @(#) $Id$
  */
 
-#include "hidrd/strm_mem.h"
+#include <string.h>
+#include "hidrd/strm/mem.h"
+#include "hidrd/strm/inst.h"
 
 typedef struct hidrd_strm_mem_inst {
     hidrd_strm  strm;
@@ -102,7 +104,7 @@ hidrd_strm_mem_write(hidrd_strm *strm, const hidrd_item *item)
 
     assert(hidrd_item_valid(item));
 
-    item_size = hidrd_item_size(item);
+    item_size = hidrd_item_get_size(item);
     new_pos = strm_mem->pos + item_size;
 
     if (new_pos >= strm_mem->size)
@@ -110,7 +112,7 @@ hidrd_strm_mem_write(hidrd_strm *strm, const hidrd_item *item)
         new_size = (strm_mem->size < HIDRD_ITEM_MAX_SIZE * 2)
                         ? HIDRD_ITEM_MAX_SIZE * 4
                         : strm_mem->size * 2;
-        new_buf = realloc(strm_mem->size, new_size);
+        new_buf = realloc(strm_mem->buf, new_size);
         if (new_buf == NULL)
         {
             strm->error = true;
@@ -146,17 +148,19 @@ hidrd_strm_mem_flush(hidrd_strm *strm)
 }
 
 
-void
+static void
 hidrd_strm_mem_clnp(hidrd_strm *strm)
 {
-    free(strm->buf);
-    strm->buf   = NULL;
-    strm->size  = 0;
-    strm->pos   = 0;
+    hidrd_strm_mem_inst    *strm_mem    = (hidrd_strm_mem_inst *)strm;
+
+    free(strm_mem->buf);
+    strm_mem->buf   = NULL;
+    strm_mem->size  = 0;
+    strm_mem->pos   = 0;
 }
 
 
-const hidrd_strm_type hidrd_strm_mem {
+const hidrd_strm_type hidrd_strm_mem = {
     .size   = sizeof(hidrd_strm_mem_inst),
     .init   = hidrd_strm_mem_init,
     .valid  = hidrd_strm_mem_valid,
@@ -164,6 +168,6 @@ const hidrd_strm_type hidrd_strm_mem {
     .write  = hidrd_strm_mem_write,
     .flush  = hidrd_strm_mem_flush,
     .clnp   = hidrd_strm_mem_clnp,
-} hidrd_strm_mem;
+};
 
 

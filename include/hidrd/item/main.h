@@ -111,6 +111,7 @@ hidrd_item_main_set_tag(hidrd_item *item, hidrd_item_main_tag tag)
     }
 
 #define HIDRD_ITEM_MAIN_BIT_FUNCS(_name) \
+    static inline bool                                      \
     hidrd_item_##_name##_get_bit(const hidrd_item *item,    \
                                  uint8_t idx)               \
     {                                                       \
@@ -119,6 +120,7 @@ hidrd_item_main_set_tag(hidrd_item *item, hidrd_item_main_tag tag)
         return hidrd_item_short_get_bit(item, idx);         \
     }                                                       \
                                                             \
+    static inline hidrd_item *                              \
     hidrd_item_##_name##_set_bit(hidrd_item *item,          \
                                  uint8_t idx, bool val)     \
     {                                                       \
@@ -128,30 +130,32 @@ hidrd_item_main_set_tag(hidrd_item *item, hidrd_item_main_tag tag)
     }
 
 #define HIDRD_ITEM_MAIN_BIT_ACC(_name, _idx, _off_name, _on_name) \
-    static inline bool                                                  \
-    hidrd_item_##_name##_is_##_off_name(const hidrd_item *item)         \
-    {                                                                   \
-        return !hidrd_item_##_name##_get_bit(item, _i);                 \
-    }                                                                   \
-                                                                        \
-    static inline bool                                                  \
-    hidrd_item_##_name##_is_##_on_name(const hidrd_item *item)          \
-    {                                                                   \
-        return hidrd_item_##_name##_get_bit(item, _i);                  \
-    }                                                                   \
-                                                                        \
-    static inline hidrd_item *                                          \
-    hidrd_item_##_name##_set_##_off_name(hidrd_item *item,              \
-                                         bool is_##_off_name)           \
-    {                                                                   \
-        return hidrd_item_##_name##_set_bit(item, _i, !is_##_off_name); \
-    }                                                                   \
-                                                                        \
-    static inline hidrd_item *                                          \
-    hidrd_item_##_name##_set_##_on_name(hidrd_item *item,               \
-                                        bool is_##_on_name)             \
-    {                                                                   \
-        return hidrd_item_##_name##_set_bit(item, _i, !is_##_on_name);  \
+    static inline bool                                              \
+    hidrd_item_##_name##_is_##_off_name(const hidrd_item *item)     \
+    {                                                               \
+        return !hidrd_item_##_name##_get_bit(item, _idx);           \
+    }                                                               \
+                                                                    \
+    static inline bool                                              \
+    hidrd_item_##_name##_is_##_on_name(const hidrd_item *item)      \
+    {                                                               \
+        return hidrd_item_##_name##_get_bit(item, _idx);            \
+    }                                                               \
+                                                                    \
+    static inline hidrd_item *                                      \
+    hidrd_item_##_name##_set_##_off_name(hidrd_item *item,          \
+                                         bool is_##_off_name)       \
+    {                                                               \
+        return hidrd_item_##_name##_set_bit(item, _idx,             \
+                                            !is_##_off_name);       \
+    }                                                               \
+                                                                    \
+    static inline hidrd_item *                                      \
+    hidrd_item_##_name##_set_##_on_name(hidrd_item *item,           \
+                                        bool is_##_on_name)         \
+    {                                                               \
+        return hidrd_item_##_name##_set_bit(item, _idx,             \
+                                            !is_##_on_name);        \
     }
 
 #ifdef __cplusplus

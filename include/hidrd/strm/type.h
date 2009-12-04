@@ -35,6 +35,9 @@
 extern "C" {
 #endif
 
+/* Forward declaration */
+typedef struct hidrd_strm hidrd_strm;
+
 /**
  * Prototype for a stream instance initialization function.
  *
@@ -93,12 +96,12 @@ typedef void hidrd_strm_type_clnp_fn(hidrd_strm    *strm);
 
 typedef struct hidrd_strm_type {
     size_t                      size;
-    hidrd_strm_type_init_fn     init;
-    hidrd_strm_type_valid_fn    valid;
-    hidrd_strm_type_read_fn     read;
-    hidrd_strm_type_write_fn    write;
-    hidrd_strm_type_flush_fn    flush;
-    hidrd_strm_type_clnp_fn     clnp;
+    hidrd_strm_type_init_fn    *init;
+    hidrd_strm_type_valid_fn   *valid;
+    hidrd_strm_type_read_fn    *read;
+    hidrd_strm_type_write_fn   *write;
+    hidrd_strm_type_flush_fn   *flush;
+    hidrd_strm_type_clnp_fn    *clnp;
 } hidrd_strm_type;
 
 extern bool hidrd_strm_type_valid(const hidrd_strm_type *type);

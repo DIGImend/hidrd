@@ -27,6 +27,7 @@
 #ifndef __HIDRD_ITEM_TYPE_H__
 #define __HIDRD_ITEM_TYPE_H__
 
+#include <stddef.h>
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -35,11 +36,6 @@ extern "C" {
 #endif
 
 typedef uint8_t hidrd_item;
-
-static inline hidrd_item_valid(const hidrd_item *item)
-{
-    return (item != NULL);
-}
 
 #ifdef __cplusplus
 } /* extern "C" */

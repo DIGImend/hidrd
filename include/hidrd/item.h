@@ -27,6 +27,7 @@
 #ifndef __HIDRD_ITEM_H__
 #define __HIDRD_ITEM_H__
 
+#include "hidrd/item/long.h"
 #include "hidrd/item/collection.h"
 #include "hidrd/item/delimiter.h"
 #include "hidrd/item/designator_index.h"

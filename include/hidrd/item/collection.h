@@ -24,8 +24,8 @@
  * @(#) $Id$
  */
 
-#ifndef __HIDRD_ITEM_FEATURE_H__
-#define __HIDRD_ITEM_FEATURE_H__
+#ifndef __HIDRD_ITEM_COLLECTION_H__
+#define __HIDRD_ITEM_COLLECTION_H__
 
 #include "hidrd/bit.h"
 #include "hidrd/item/main.h"
@@ -125,4 +125,4 @@ hidrd_item_collection_set_type(hidrd_item *item,
 } /* extern "C" */
 #endif
 
-#endif /* __HIDRD_ITEM_FEATURE_H__ */
+#endif /* __HIDRD_ITEM_COLLECTION_H__ */

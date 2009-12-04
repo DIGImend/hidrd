@@ -115,7 +115,7 @@ hidrd_item_local_set_tag(hidrd_item *item, hidrd_item_local_tag tag)
                hidrd_item_local_get_tag(item) ==                        \
                HIDRD_ITEM_LOCAL_TAG_##_NAME &&                          \
                hidrd_item_##_name##_value_valid(                        \
-                    (_int_type)hidrd_item_short_get_unsigned(item))     \
+                    (_int_type)hidrd_item_short_get_unsigned(item));    \
     }                                                                   \
                                                                         \
     static inline _ext_type                                             \

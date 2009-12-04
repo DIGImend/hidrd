@@ -33,10 +33,10 @@
 extern "C" {
 #endif
 
-typedef struct hidrd_strm {
+struct hidrd_strm {
     const hidrd_strm_type  *type;
     bool                    error;
-} hidrd_strm;
+};
 
 extern bool hidrd_strm_valid(const hidrd_strm *strm);
 

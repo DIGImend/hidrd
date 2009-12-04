@@ -87,7 +87,7 @@ hidrd_item_long_get_data(hidrd_item *item)
 }
 
 static inline size_t
-hidrd_item_long_get_size(hidrd_item *item)
+hidrd_item_long_get_size(const hidrd_item *item)
 {
     assert(hidrd_item_long_valid(item));
     return 3 + hidrd_item_long_get_data_size(item);

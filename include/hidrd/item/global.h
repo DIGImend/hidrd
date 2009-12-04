@@ -52,7 +52,7 @@ typedef enum hidrd_item_global_tag {
 
 #define HIDRD_ITEM_GLOBAL_TAG_MAX HIDRD_ITEM_SHORT_TAG_MAX
 
-#define HIDRD_ITEM_GLOBAL_TAG_KNOWN_MAX   HIDRD_ITEM_GLOBAL_TAG_REPORT_POP
+#define HIDRD_ITEM_GLOBAL_TAG_KNOWN_MAX   HIDRD_ITEM_GLOBAL_TAG_POP
 
 #define HIDRD_ITEM_GLOBAL_TAG_RESERVED_MIN \
             (HIDRD_ITEM_GLOBAL_TAG_KNOWN_MAX + 1)
@@ -63,7 +63,9 @@ typedef enum hidrd_item_global_tag {
 static inline bool
 hidrd_item_global_tag_valid(hidrd_item_global_tag tag)
 {
-    return (tag >= HIDRD_ITEM_GLOBAL_TAG_MIN) &&
+    hidrd_item_global_tag   min = HIDRD_ITEM_GLOBAL_TAG_MIN;
+
+    return (tag >= min) &&
            (tag <= HIDRD_ITEM_GLOBAL_TAG_MAX);
 }
 
@@ -117,7 +119,7 @@ hidrd_item_global_set_tag(hidrd_item *item, hidrd_item_global_tag tag)
                hidrd_item_global_get_tag(item) ==                       \
                HIDRD_ITEM_GLOBAL_TAG_##_NAME &&                         \
                hidrd_item_##_name##_value_valid(                        \
-                    (_int_type)hidrd_item_short_get_##_sign(item))      \
+                    (_int_type)hidrd_item_short_get_##_sign(item));     \
     }                                                                   \
                                                                         \
     static inline _ext_type                                             \

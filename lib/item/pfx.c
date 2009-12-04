@@ -24,6 +24,7 @@
  * @(#) $Id$
  */
 
+#include <assert.h>
 #include "hidrd/item/pfx.h"
 
 size_t

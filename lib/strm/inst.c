@@ -85,7 +85,7 @@ hidrd_strm_initv(hidrd_strm *strm, va_list ap)
     assert(hidrd_strm_type_valid(strm->type));
 
     if (strm->type->init != NULL)
-        if (!(*strm->type->init)(ap))
+        if (!(*strm->type->init)(strm, ap))
             return false;
 
     assert(hidrd_strm_valid(strm));
@@ -121,7 +121,7 @@ hidrd_strm_open(const hidrd_strm_type *type, ...)
         return NULL;
 
     /* Initialize */
-    va_start(ap, strm);
+    va_start(ap, type);
     result = hidrd_strm_initv(strm, ap);
     va_end(ap);
     if (!result)
@@ -137,7 +137,7 @@ hidrd_strm_read(hidrd_strm *strm)
     assert(hidrd_strm_valid(strm));
     assert(hidrd_strm_readable(strm));
 
-    return (*strm->type->read(strm));
+    return (*strm->type->read)(strm);
 }
 
 
@@ -147,7 +147,7 @@ hidrd_strm_write(hidrd_strm *strm, const hidrd_item *item)
     assert(hidrd_strm_valid(strm));
     assert(hidrd_strm_writable(strm));
 
-    return (*strm->type->write(strm, item));
+    return (*strm->type->write)(strm, item);
 }
 
 

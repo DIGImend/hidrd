@@ -27,6 +27,7 @@
 #ifndef __HIDRD_ITEM_BASIC_H__
 #define __HIDRD_ITEM_BASIC_H__
 
+#include <assert.h>
 #include "hidrd/item/type.h"
 #include "hidrd/item/pfx.h"
 
@@ -40,7 +41,7 @@ extern "C" {
 static inline bool
 hidrd_item_basic_valid(const hidrd_item *item)
 {
-    return hidrd_item_valid(item);
+    return item != NULL;
 }
 
 

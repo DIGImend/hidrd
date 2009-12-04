@@ -29,6 +29,7 @@
 
 #include <assert.h>
 #include "hidrd/item/basic.h"
+#include "hidrd/bit.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -127,10 +128,10 @@ hidrd_item_short_set_type(hidrd_item *item, hidrd_item_short_type type)
 {
     assert(hidrd_item_short_valid(item));
     assert(hidrd_item_short_type_valid(type));
-    return hidrd_basic_set_pfx(
+    return hidrd_item_basic_set_pfx(
                 item,
-                hidrd_pfx_set_type(
-                    hidrd_basic_get_pfx(item),
+                hidrd_item_pfx_set_type(
+                    hidrd_item_basic_get_pfx(item),
                     type));
 }
 
@@ -140,10 +141,10 @@ hidrd_item_short_set_tag(hidrd_item *item, hidrd_item_short_tag tag)
 {
     assert(hidrd_item_short_valid(item));
     assert(hidrd_item_short_tag_valid(tag));
-    return hidrd_basic_set_pfx(
+    return hidrd_item_basic_set_pfx(
                 item,
-                hidrd_pfx_set_tag(
-                    hidrd_basic_get_pfx(item),
+                hidrd_item_pfx_set_tag(
+                    hidrd_item_basic_get_pfx(item),
                     tag));
 }
 
@@ -153,10 +154,10 @@ hidrd_item_short_set_data_size(hidrd_item *item, hidrd_item_short_data_size size
 {
     assert(hidrd_item_short_valid(item));
     assert(hidrd_item_short_data_size_valid(size));
-    return hidrd_basic_set_pfx(
+    return hidrd_item_basic_set_pfx(
                 item,
-                hidrd_pfx_set_size(
-                    hidrd_basic_get_pfx(item),
+                hidrd_item_pfx_set_size(
+                    hidrd_item_basic_get_pfx(item),
                     size));
 }
 

@@ -27,7 +27,9 @@
 #ifndef __HIDRD_ITEM_PFX_SIZE_H__
 #define __HIDRD_ITEM_PFX_SIZE_H__
 
+#include <stdbool.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,7 +38,7 @@ extern "C" {
 #define HIDRD_ITEM_PFX_SIZE_MASK 0x03
 #define HIDRD_ITEM_PFX_SIZE_SHFT 0
 
-typedef hidrd_item_pfx_size {
+typedef enum hidrd_item_pfx_size {
     HIDRD_ITEM_PFX_SIZE_0B  = 0,
     HIDRD_ITEM_PFX_SIZE_1B  = 1,
     HIDRD_ITEM_PFX_SIZE_2B  = 2,

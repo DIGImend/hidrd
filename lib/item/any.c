@@ -43,27 +43,34 @@
 bool
 hidrd_item_valid(const hidrd_item *item)
 {
+    hidrd_item_short_type   short_type;
+    hidrd_item_main_tag     main_tag;
+    hidrd_item_global_tag   global_tag;
+    hidrd_item_local_tag    local_tag;
+
     assert(hidrd_item_basic_valid(item));
 
-    switch (hidrd_item_basic_type(item))
+    switch (hidrd_item_basic_get_type(item))
     {
         case HIDRD_ITEM_BASIC_TYPE_LONG:
             return hidrd_item_long_valid(item);
         case HIDRD_ITEM_BASIC_TYPE_SHORT:
-            switch (hidrd_item_short_get_type(item))
+            switch (short_type = hidrd_item_short_get_type(item))
             {
                 case HIDRD_ITEM_SHORT_TYPE_MAIN:
-                    switch (hidrd_item_main_get_tag(item))
+                    switch (main_tag = hidrd_item_main_get_tag(item))
                     {
                         MAP_MAIN(INPUT, input)
                         MAP_MAIN(OUTPUT, output)
                         MAP_MAIN(COLLECTION, collection)
                         MAP_MAIN(FEATURE, feature)
                         MAP_MAIN(END_COLLECTION, end_collection)
+                        default:
+                            return hidrd_item_main_tag_valid(main_tag);
                     }
                     break;
                 case HIDRD_ITEM_SHORT_TYPE_GLOBAL:
-                    switch (hidrd_item_global_get_tag(item))
+                    switch (global_tag = hidrd_item_global_get_tag(item))
                     {
                         MAP_GLOBAL(USAGE_PAGE, usage_page)
                         MAP_GLOBAL(LOGICAL_MINIMUM, logical_minimum)
@@ -77,10 +84,12 @@ hidrd_item_valid(const hidrd_item *item)
                         MAP_GLOBAL(REPORT_COUNT, report_count)
                         MAP_GLOBAL(PUSH, push)
                         MAP_GLOBAL(POP, pop)
+                        default:
+                            return hidrd_item_global_tag_valid(global_tag);
                     }
                     break;
                 case HIDRD_ITEM_SHORT_TYPE_LOCAL:
-                    switch (hidrd_item_local_get_tag(item))
+                    switch (local_tag = hidrd_item_local_get_tag(item))
                     {
                         MAP_LOCAL(USAGE, usage)
                         MAP_LOCAL(USAGE_MINIMUM, usage_minimum)
@@ -88,16 +97,20 @@ hidrd_item_valid(const hidrd_item *item)
                         MAP_LOCAL(DESIGNATOR_INDEX, designator_index)
                         MAP_LOCAL(DESIGNATOR_MINIMUM, designator_minimum)
                         MAP_LOCAL(DESIGNATOR_MAXIMUM, designator_maximum)
-                        MAP_LOCAL(INVALID, invalid)
                         MAP_LOCAL(STRING_INDEX, string_index)
                         MAP_LOCAL(STRING_MINIMUM, string_minimum)
                         MAP_LOCAL(STRING_MAXIMUM, string_maximum)
                         MAP_LOCAL(DELIMITER, delimiter)
+                        default:
+                            return hidrd_item_local_tag_valid(local_tag);
                     }
                     break;
+                default:
+                    return hidrd_item_short_type_valid(short_type);
             }
             break;
     }
+
     return false;
 }
 
