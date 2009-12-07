@@ -22,3 +22,9 @@ libhidrd_strm_la_SOURCES = \
     inst.c                  \
     mem.c                   \
     type.c
+
+check_PROGRAMS = mem_test
+TESTS = mem_test
+
+mem_test_SOURCES = mem_test.c
+mem_test_LDADD = $(lib_LTLIBRARIES) ../item/libhidrd_item.la
