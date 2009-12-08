@@ -116,7 +116,7 @@ hidrd_item_collection_set_type(hidrd_item *item,
                                hidrd_item_collection_type type)
 {
     assert(hidrd_item_collection_valid(item));
-    assert(hidrd_item_collection_type_valid(item));
+    assert(hidrd_item_collection_type_valid(type));
     return hidrd_item_short_set_unsigned(item, type);
 }
 

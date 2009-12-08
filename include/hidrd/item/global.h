@@ -126,9 +126,9 @@ hidrd_item_global_set_tag(hidrd_item *item, hidrd_item_global_tag tag)
     hidrd_item_##_name##_get_value(const hidrd_item *item)              \
     {                                                                   \
         _int_type value;                                                \
-        assert(hidrd_item_unit_valid(item));                            \
+        assert(hidrd_item_##_name##_valid(item));                       \
         value = (_int_type)hidrd_item_short_get_##_sign(item);          \
-        assert(hidrd_item_unit_value_valid(value));                     \
+        assert(hidrd_item_##_name##_value_valid(value));                \
         return (_ext_type)value;                                        \
     }                                                                   \
                                                                         \

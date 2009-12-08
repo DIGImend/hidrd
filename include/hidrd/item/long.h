@@ -52,7 +52,7 @@ typedef uint8_t hidrd_item_long_tag;
 static inline uint8_t
 hidrd_item_long_get_data_size(const hidrd_item *item)
 {
-    assert(webui_hidrd_item_basic_is_long(item));
+    assert(hidrd_item_basic_is_long(item));
     return item[1];
 }
 

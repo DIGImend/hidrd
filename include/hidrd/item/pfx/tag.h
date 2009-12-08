@@ -47,7 +47,7 @@ hidrd_item_pfx_tag_valid(hidrd_item_pfx_tag tag)
     return (tag & ~HIDRD_ITEM_PFX_TAG_MASK) == 0;
 }
 
-#define HIDRD_ITEM_PFX_TAG_LONG     0x7
+#define HIDRD_ITEM_PFX_TAG_LONG     0xF
 
 #ifdef __cplusplus
 } /* extern "C" */

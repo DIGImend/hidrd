@@ -33,7 +33,7 @@
 extern "C" {
 #endif
 
-#define HIDRD_ITEM_LOCAL_TAG_MIN 0x8
+#define HIDRD_ITEM_LOCAL_TAG_MIN HIDRD_ITEM_SHORT_TAG_MIN
 
 typedef enum hidrd_item_local_tag {
     HIDRD_ITEM_LOCAL_TAG_USAGE                  = HIDRD_ITEM_LOCAL_TAG_MIN,
@@ -61,8 +61,7 @@ typedef enum hidrd_item_local_tag {
 static inline bool
 hidrd_item_local_tag_valid(hidrd_item_local_tag tag)
 {
-    return (tag >= HIDRD_ITEM_MAIN_TAG_MIN) &&
-           (tag <= HIDRD_ITEM_MAIN_TAG_MAX) &&
+    return (tag <= HIDRD_ITEM_LOCAL_TAG_MAX) &&
            (tag != HIDRD_ITEM_LOCAL_TAG_INVALID);
 }
 
@@ -122,9 +121,9 @@ hidrd_item_local_set_tag(hidrd_item *item, hidrd_item_local_tag tag)
     hidrd_item_##_name##_get_value(const hidrd_item *item)              \
     {                                                                   \
         _int_type value;                                                \
-        assert(hidrd_item_unit_valid(item));                            \
+        assert(hidrd_item_##_name##_valid(item));                       \
         value = (_int_type)hidrd_item_short_get_unsigned(item);         \
-        assert(hidrd_item_unit_value_valid(value));                     \
+        assert(hidrd_item_##_name##_value_valid(value));                \
         return (_ext_type)value;                                        \
     }                                                                   \
                                                                         \

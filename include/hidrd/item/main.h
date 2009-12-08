@@ -33,7 +33,7 @@
 extern "C" {
 #endif
 
-#define HIDRD_ITEM_MAIN_TAG_MIN 0x8
+#define HIDRD_ITEM_MAIN_TAG_MIN (HIDRD_ITEM_SHORT_TAG_MIN + 0x08)
 
 typedef enum hidrd_item_main_tag {
     HIDRD_ITEM_MAIN_TAG_INPUT           = HIDRD_ITEM_MAIN_TAG_MIN,
