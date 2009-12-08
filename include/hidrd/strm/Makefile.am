@@ -18,7 +18,7 @@
 
 hidrd_strmdir = $(includedir)/hidrd/strm
 
-hidrd_strmHEADERS = \
-    inst.h          \
-    mem.h           \
+hidrd_strm_HEADERS = \
+    inst.h              \
+    mem.h               \
     type.h

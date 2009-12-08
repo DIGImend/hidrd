@@ -20,7 +20,7 @@ SUBDIRS = pfx
 
 hidrd_itemdir = $(includedir)/hidrd/item
 
-hidrd_itemHEADERS = \
+hidrd_item_HEADERS = \
     basic.h                 \
     collection.h            \
     delimiter.h             \

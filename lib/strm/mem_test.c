@@ -242,7 +242,7 @@ main(int argc, char **argv)
     {
         error(0, 0, "Invalid test resource descriptor length (%u != %u)",
               test_rd_len, orig_rd_len);
-        fputs("", stderr);
+        fprintf(stderr, "\n");
         hexdump_cmp(stderr, true,
                     orig_rd_buf, orig_rd_len, test_rd_buf, test_rd_len);
         exit(1);

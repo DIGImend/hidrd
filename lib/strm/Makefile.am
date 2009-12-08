@@ -23,8 +23,10 @@ libhidrd_strm_la_SOURCES = \
     mem.c                   \
     type.c
 
+libhidrd_strm_la_LIBADD = ../item/libhidrd_item.la
+
 check_PROGRAMS = mem_test
 TESTS = mem_test
 
 mem_test_SOURCES = mem_test.c
-mem_test_LDADD = $(lib_LTLIBRARIES) ../item/libhidrd_item.la
+mem_test_LDADD = $(lib_LTLIBRARIES)
