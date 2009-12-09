@@ -21,6 +21,7 @@ SUBDIRS = pfx
 hidrd_itemdir = $(includedir)/hidrd/item
 
 hidrd_item_HEADERS = \
+    any.h                   \
     basic.h                 \
     collection.h            \
     delimiter.h             \

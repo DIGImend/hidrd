@@ -24,7 +24,7 @@
  * @(#) $Id$
  */
 
-#include "hidrd/item.h"
+#include "hidrd/item/any.h"
 
 
 #define MAP_MAIN(_NAME, _name) \

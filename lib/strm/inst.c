@@ -24,7 +24,7 @@
  * @(#) $Id$
  */
 
-#include "hidrd/strm.h"
+#include "hidrd/strm/inst.h"
 
 
 bool
