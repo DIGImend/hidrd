@@ -76,39 +76,51 @@ hidrd_item_main_tag_reserved(hidrd_item_main_tag tag)
 }
 
 
-static inline bool
-hidrd_item_main_valid(const hidrd_item *item)
-{
-    return hidrd_item_short_valid(item) &&
-           (hidrd_item_short_get_type(item) ==
-            HIDRD_ITEM_SHORT_TYPE_MAIN) &&
-           hidrd_item_main_tag_valid(hidrd_item_short_get_tag(item));
-}
-
-static inline hidrd_item_main_tag
-hidrd_item_main_get_tag(const hidrd_item *item)
-{
-    assert(hidrd_item_main_valid(item));
-    return hidrd_item_short_get_tag(item);
-}
+HIDRD_ITEM_SHORT_GEN_FUNCS(main, MAIN)
 
 
 static inline hidrd_item *
-hidrd_item_main_set_tag(hidrd_item *item, hidrd_item_main_tag tag)
+hidrd_item_main_set_bit(hidrd_item *item, uint8_t idx, bool val)
 {
     assert(hidrd_item_main_valid(item));
-    return hidrd_item_short_set_tag(item, tag);
+    assert(idx <= 31);
+    return hidrd_item_short_set_bit(item, idx, val);
+}
+
+
+static inline bool
+hidrd_item_main_get_bit(const hidrd_item *item, uint8_t idx)
+{
+    assert(hidrd_item_main_valid(item));
+    assert(idx <= 31);
+    return hidrd_item_short_get_bit(item, idx);
 }
 
 
 #define HIDRD_ITEM_MAIN_GEN_FUNCS(_name, _NAME) \
-    static inline bool                                  \
-    hidrd_item_##_name##_valid(const hidrd_item *item)  \
-    {                                                   \
-        return hidrd_item_main_valid(item) &&           \
-               hidrd_item_main_get_tag(item) ==         \
-               HIDRD_ITEM_MAIN_TAG_##_NAME;             \
+    static inline bool                                          \
+    hidrd_item_##_name##_valid(const hidrd_item *item)          \
+    {                                                           \
+        return hidrd_item_main_valid(item) &&                   \
+               hidrd_item_main_get_tag(item) ==                 \
+               HIDRD_ITEM_MAIN_TAG_##_NAME;                     \
+    }                                                           \
+                                                                \
+    static inline hidrd_item *                                  \
+    hidrd_item_##_name##_validate(hidrd_item *item)             \
+    {                                                           \
+        assert(hidrd_item_##_name##_valid(item));               \
+        return item;                                            \
+    }                                                           \
+                                                                \
+    static inline hidrd_item *                                  \
+    hidrd_item_##_name##_init(hidrd_item *item)                 \
+    {                                                           \
+        return hidrd_item_##_name##_validate(                   \
+            hidrd_item_main_init(item,                          \
+                                 HIDRD_ITEM_MAIN_TAG_##_NAME)); \
     }
+
 
 #define HIDRD_ITEM_MAIN_BIT_FUNCS(_name) \
     static inline bool                                      \

@@ -45,6 +45,14 @@ hidrd_item_basic_valid(const hidrd_item *item)
 }
 
 
+static inline hidrd_item *
+hidrd_item_basic_validate(hidrd_item *item)
+{
+    assert(hidrd_item_basic_valid(item));
+    return item;
+}
+
+
 static inline hidrd_item_pfx
 hidrd_item_basic_get_pfx(const hidrd_item *item)
 {
@@ -68,6 +76,14 @@ typedef enum hidrd_item_basic_type {
 } hidrd_item_basic_type;
 
 
+static inline bool
+hidrd_item_basic_type_valid(hidrd_item_basic_type type)
+{
+    return type == HIDRD_ITEM_BASIC_TYPE_SHORT ||
+           type == HIDRD_ITEM_BASIC_TYPE_LONG;
+}
+
+
 static inline hidrd_item_basic_type
 hidrd_item_basic_get_type(const hidrd_item *item)
 {
@@ -84,6 +100,7 @@ static inline hidrd_item *
 hidrd_item_basic_set_type(hidrd_item *item, hidrd_item_basic_type type)
 {
     assert(hidrd_item_basic_valid(item));
+    assert(hidrd_item_basic_type_valid(type));
 
     if (type != hidrd_item_basic_get_type(item))
     {
@@ -109,7 +126,22 @@ static inline bool
 hidrd_item_basic_is_long(const hidrd_item *item)
 {
     assert(hidrd_item_basic_valid(item));
+
     return hidrd_item_basic_get_type(item) == HIDRD_ITEM_BASIC_TYPE_LONG;
+}
+
+
+static inline hidrd_item *
+hidrd_item_basic_init(hidrd_item *item, hidrd_item_basic_type type)
+{
+    assert(hidrd_item_basic_type_valid(type));
+
+    return hidrd_item_basic_validate(
+        hidrd_item_basic_set_pfx(
+            item,
+            (type == HIDRD_ITEM_BASIC_TYPE_SHORT)
+                ? HIDRD_ITEM_PFX_SHORT
+                : HIDRD_ITEM_PFX_LONG));
 }
 
 

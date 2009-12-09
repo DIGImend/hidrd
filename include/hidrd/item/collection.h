@@ -103,6 +103,14 @@ hidrd_item_collection_valid(const hidrd_item *item)
 }
 
 
+static inline hidrd_item *
+hidrd_item_collection_validate(hidrd_item *item)
+{
+    assert(hidrd_item_collection_valid(item));
+    return item;
+}
+
+
 static inline hidrd_item_collection_type
 hidrd_item_collection_get_type(const hidrd_item *item)
 {
@@ -118,6 +126,18 @@ hidrd_item_collection_set_type(hidrd_item *item,
     assert(hidrd_item_collection_valid(item));
     assert(hidrd_item_collection_type_valid(type));
     return hidrd_item_short_set_unsigned(item, type);
+}
+
+
+static inline hidrd_item *
+hidrd_item_collection_init(hidrd_item *item,
+                           hidrd_item_collection_type type)
+{
+    assert(hidrd_item_collection_type_valid(type));
+    return hidrd_item_collection_validate(
+        hidrd_item_main_init_unsigned(item,
+                                      HIDRD_ITEM_MAIN_TAG_COLLECTION,
+                                      type));
 }
 
 

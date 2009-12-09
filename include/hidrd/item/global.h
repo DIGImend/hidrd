@@ -85,29 +85,7 @@ hidrd_item_global_tag_reserved(hidrd_item_global_tag tag)
 }
 
 
-static inline bool
-hidrd_item_global_valid(const hidrd_item *item)
-{
-    return hidrd_item_short_valid(item) &&
-           (hidrd_item_short_get_type(item) ==
-            HIDRD_ITEM_SHORT_TYPE_GLOBAL) &&
-           hidrd_item_global_tag_valid(hidrd_item_short_get_tag(item));
-}
-
-static inline hidrd_item_global_tag
-hidrd_item_global_get_tag(const hidrd_item *item)
-{
-    assert(hidrd_item_global_valid(item));
-    return hidrd_item_short_get_tag(item);
-}
-
-
-static inline hidrd_item *
-hidrd_item_global_set_tag(hidrd_item *item, hidrd_item_global_tag tag)
-{
-    assert(hidrd_item_global_valid(item));
-    return hidrd_item_short_set_tag(item, tag);
-}
+HIDRD_ITEM_SHORT_GEN_FUNCS(global, GLOBAL)
 
 
 #define HIDRD_ITEM_GLOBAL_FUNCS(_name, _NAME, \
@@ -120,6 +98,13 @@ hidrd_item_global_set_tag(hidrd_item *item, hidrd_item_global_tag tag)
                HIDRD_ITEM_GLOBAL_TAG_##_NAME &&                         \
                hidrd_item_##_name##_value_valid(                        \
                     (_int_type)hidrd_item_short_get_##_sign(item));     \
+    }                                                                   \
+                                                                        \
+    static inline hidrd_item *                                          \
+    hidrd_item_##_name##_validate(hidrd_item *item)                     \
+    {                                                                   \
+        assert(hidrd_item_##_name##_valid(item));                       \
+        return item;                                                    \
     }                                                                   \
                                                                         \
     static inline _ext_type                                             \
@@ -138,6 +123,17 @@ hidrd_item_global_set_tag(hidrd_item *item, hidrd_item_global_tag tag)
         assert(hidrd_item_##_name##_valid(item));                       \
         assert(hidrd_item_##_name##_value_valid((_int_type)value));     \
         return hidrd_item_short_set_##_sign(item, (_int_type)value);    \
+    }                                                                   \
+                                                                        \
+    static inline hidrd_item *                                          \
+    hidrd_item_##_name##_init(hidrd_item *item, _ext_type value)        \
+    {                                                                   \
+        assert(hidrd_item_##_name##_value_valid((_int_type)value));     \
+                                                                        \
+        return hidrd_item_##_name##_validate(                           \
+            hidrd_item_global_init_##_sign(                             \
+                item, HIDRD_ITEM_GLOBAL_TAG_##_NAME,                    \
+                (_int_type)value));                                     \
     }
 
 

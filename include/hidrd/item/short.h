@@ -99,6 +99,14 @@ hidrd_item_short_valid(const hidrd_item *item)
 }
 
 
+static inline hidrd_item *
+hidrd_item_short_validate(hidrd_item *item)
+{
+    assert(hidrd_item_short_valid(item));
+    return item;
+}
+
+
 static inline hidrd_item_short_type
 hidrd_item_short_get_type(const hidrd_item *item)
 {
@@ -205,6 +213,141 @@ hidrd_item_short_set_bit(hidrd_item *item, uint8_t idx, bool val)
             item,
             HIDRD_BIT_SET(hidrd_item_short_get_unsigned(item), idx, val));
 }
+
+
+static inline hidrd_item *
+hidrd_item_short_init(hidrd_item            *item,
+                      hidrd_item_short_type  type,
+                      hidrd_item_short_tag   tag)
+{
+    assert(hidrd_item_short_type_valid(type));
+    assert(hidrd_item_short_tag_valid(tag));
+
+    return hidrd_item_basic_validate(
+        hidrd_item_basic_set_pfx(
+            hidrd_item_basic_init(item, HIDRD_ITEM_BASIC_TYPE_SHORT),
+            hidrd_item_pfx_set_size(
+                hidrd_item_pfx_set_tag(
+                    hidrd_item_pfx_set_type(
+                        hidrd_item_basic_get_pfx(item),
+                        type),
+                    tag),
+                0)));
+}
+
+
+static inline hidrd_item *
+hidrd_item_short_init_signed(hidrd_item            *item,
+                             hidrd_item_short_type  type,
+                             hidrd_item_short_tag   tag,
+                             int32_t                data)
+{
+    assert(hidrd_item_short_type_valid(type));
+    assert(hidrd_item_short_tag_valid(tag));
+
+    return hidrd_item_short_set_signed(
+                hidrd_item_short_init(item, type, tag), data);
+}
+
+
+static inline hidrd_item *
+hidrd_item_short_init_unsigned(hidrd_item              *item,
+                               hidrd_item_short_type    type,
+                               hidrd_item_short_tag     tag,
+                               uint32_t                 data)
+{
+    assert(hidrd_item_short_type_valid(type));
+    assert(hidrd_item_short_tag_valid(tag));
+
+    return hidrd_item_short_set_unsigned(
+                hidrd_item_short_init(item, type, tag), data);
+}
+
+
+#define HIDRD_ITEM_SHORT_GEN_FUNCS(_name, _NAME) \
+    static inline bool                                                  \
+    hidrd_item_##_name##_valid(const hidrd_item *item)                  \
+    {                                                                   \
+        return hidrd_item_short_valid(item) &&                          \
+               (hidrd_item_short_get_type(item) ==                      \
+                HIDRD_ITEM_SHORT_TYPE_##_NAME) &&                       \
+               hidrd_item_##_name##_tag_valid(                          \
+                    hidrd_item_short_get_tag(item));                    \
+    }                                                                   \
+                                                                        \
+    static inline hidrd_item *                                          \
+    hidrd_item_##_name##_validate(hidrd_item *item)                     \
+    {                                                                   \
+        assert(hidrd_item_##_name##_valid(item));                       \
+        return item;                                                    \
+    }                                                                   \
+                                                                        \
+    static inline hidrd_item_##_name##_tag                              \
+    hidrd_item_##_name##_get_tag(const hidrd_item *item)                \
+    {                                                                   \
+        assert(hidrd_item_##_name##_valid(item));                       \
+        return hidrd_item_short_get_tag(item);                          \
+    }                                                                   \
+                                                                        \
+    static inline hidrd_item *                                          \
+    hidrd_item_##_name##_set_tag(hidrd_item                *item,       \
+                                 hidrd_item_##_name##_tag   tag)        \
+    {                                                                   \
+        assert(hidrd_item_##_name##_valid(item));                       \
+        return hidrd_item_short_set_tag(item, tag);                     \
+    }                                                                   \
+                                                                        \
+    static inline hidrd_item *                                          \
+    hidrd_item_##_name##_init(hidrd_item               *item,           \
+                              hidrd_item_##_name##_tag  tag)            \
+    {                                                                   \
+        assert(hidrd_item_##_name##_tag_valid(tag));                    \
+                                                                        \
+        return hidrd_item_##_name##_validate(                           \
+            hidrd_item_short_init(item,                                 \
+                                  HIDRD_ITEM_SHORT_TYPE_##_NAME,        \
+                                  tag));                                \
+    }                                                                   \
+                                                                        \
+    static inline hidrd_item *                                          \
+    hidrd_item_##_name##_set_signed(hidrd_item *item, int32_t data)     \
+    {                                                                   \
+        assert(hidrd_item_##_name##_valid(item));                       \
+                                                                        \
+        return hidrd_item_short_set_signed(item, data);                 \
+    }                                                                   \
+                                                                        \
+    static inline hidrd_item *                                          \
+    hidrd_item_##_name##_set_unsigned(hidrd_item *item, uint32_t data)  \
+    {                                                                   \
+        assert(hidrd_item_##_name##_valid(item));                       \
+                                                                        \
+        return hidrd_item_short_set_unsigned(item, data);               \
+    }                                                                   \
+                                                                        \
+    static inline hidrd_item *                                          \
+    hidrd_item_##_name##_init_signed(hidrd_item                *item,   \
+                                     hidrd_item_##_name##_tag   tag,    \
+                                     int32_t                    data)   \
+    {                                                                   \
+        assert(hidrd_item_##_name##_tag_valid(tag));                    \
+                                                                        \
+        return hidrd_item_##_name##_validate(                           \
+            hidrd_item_##_name##_set_signed(                            \
+                hidrd_item_##_name##_init(item, tag), data));           \
+    }                                                                   \
+                                                                        \
+    static inline hidrd_item *                                          \
+    hidrd_item_##_name##_init_unsigned(hidrd_item               *item,  \
+                                       hidrd_item_##_name##_tag  tag,   \
+                                       uint32_t                  data)  \
+    {                                                                   \
+        assert(hidrd_item_##_name##_tag_valid(tag));                    \
+                                                                        \
+        return hidrd_item_##_name##_validate(                           \
+            hidrd_item_##_name##_set_unsigned(                          \
+                hidrd_item_##_name##_init(item, tag), data));           \
+    }
 
 
 #ifdef __cplusplus

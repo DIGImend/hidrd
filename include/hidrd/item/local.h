@@ -81,29 +81,7 @@ hidrd_item_local_tag_reserved(hidrd_item_local_tag tag)
 }
 
 
-static inline bool
-hidrd_item_local_valid(const hidrd_item *item)
-{
-    return hidrd_item_short_valid(item) &&
-           (hidrd_item_short_get_type(item) ==
-            HIDRD_ITEM_SHORT_TYPE_LOCAL) &&
-           hidrd_item_local_tag_valid(hidrd_item_short_get_tag(item));
-}
-
-static inline hidrd_item_local_tag
-hidrd_item_local_get_tag(const hidrd_item *item)
-{
-    assert(hidrd_item_local_valid(item));
-    return hidrd_item_short_get_tag(item);
-}
-
-
-static inline hidrd_item *
-hidrd_item_local_set_tag(hidrd_item *item, hidrd_item_local_tag tag)
-{
-    assert(hidrd_item_local_valid(item));
-    return hidrd_item_short_set_tag(item, tag);
-}
+HIDRD_ITEM_SHORT_GEN_FUNCS(local, LOCAL)
 
 
 #define HIDRD_ITEM_LOCAL_FUNCS(_name, _NAME, _int_type, _ext_type) \
@@ -115,6 +93,13 @@ hidrd_item_local_set_tag(hidrd_item *item, hidrd_item_local_tag tag)
                HIDRD_ITEM_LOCAL_TAG_##_NAME &&                          \
                hidrd_item_##_name##_value_valid(                        \
                     (_int_type)hidrd_item_short_get_unsigned(item));    \
+    }                                                                   \
+                                                                        \
+    static inline hidrd_item *                                          \
+    hidrd_item_##_name##_validate(hidrd_item *item)                     \
+    {                                                                   \
+        assert(hidrd_item_##_name##_valid(item));                       \
+        return item;                                                    \
     }                                                                   \
                                                                         \
     static inline _ext_type                                             \
@@ -133,6 +118,17 @@ hidrd_item_local_set_tag(hidrd_item *item, hidrd_item_local_tag tag)
         assert(hidrd_item_##_name##_valid(item));                       \
         assert(hidrd_item_##_name##_value_valid((_int_type)value));     \
         return hidrd_item_short_set_unsigned(item, (_int_type)value);   \
+    }                                                                   \
+                                                                        \
+    static inline hidrd_item *                                          \
+    hidrd_item_##_name##_init(hidrd_item *item, _ext_type value)        \
+    {                                                                   \
+        assert(hidrd_item_##_name##_value_valid((_int_type)value));     \
+                                                                        \
+        return hidrd_item_##_name##_validate(                           \
+            hidrd_item_local_init_unsigned(                             \
+                item, HIDRD_ITEM_LOCAL_TAG_##_NAME,                     \
+                (_int_type)value));                                     \
     }
 
 

@@ -41,6 +41,24 @@ hidrd_item_push_valid(const hidrd_item *item)
            HIDRD_ITEM_GLOBAL_TAG_PUSH;
 }
 
+
+static inline hidrd_item *
+hidrd_item_push_validate(hidrd_item *item)
+{
+    assert(hidrd_item_push_valid(item));
+    return item;
+}
+
+
+static inline hidrd_item *
+hidrd_item_push_init(hidrd_item *item)
+{
+    return hidrd_item_push_validate(
+        hidrd_item_global_init(item,
+                               HIDRD_ITEM_GLOBAL_TAG_PUSH));
+}
+
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif

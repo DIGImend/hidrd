@@ -47,6 +47,14 @@ hidrd_item_long_valid(const hidrd_item *item)
 }
 
 
+static inline hidrd_item *
+hidrd_item_long_validate(hidrd_item *item)
+{
+    assert(hidrd_item_long_valid(item));
+    return (hidrd_item *)item;
+}
+
+
 typedef uint8_t hidrd_item_long_tag;
 
 static inline uint8_t
@@ -92,6 +100,20 @@ hidrd_item_long_get_size(const hidrd_item *item)
     assert(hidrd_item_long_valid(item));
     return 3 + hidrd_item_long_get_data_size(item);
 }
+
+static inline hidrd_item *
+hidrd_item_long_init(hidrd_item            *item,
+                     hidrd_item_long_tag    tag,
+                     uint8_t                data_size)
+{
+    return hidrd_item_long_validate(
+        hidrd_item_long_set_tag(
+            hidrd_item_long_set_data_size(
+                hidrd_item_basic_init(item, HIDRD_ITEM_BASIC_TYPE_LONG),
+                data_size),
+            tag));
+}
+
 
 #ifdef __cplusplus
 } /* extern "C" */
