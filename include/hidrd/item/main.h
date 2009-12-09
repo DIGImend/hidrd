@@ -167,7 +167,7 @@ hidrd_item_main_get_bit(const hidrd_item *item, uint8_t idx)
                                         bool is_##_on_name)         \
     {                                                               \
         return hidrd_item_##_name##_set_bit(item, _idx,             \
-                                            !is_##_on_name);        \
+                                            is_##_on_name);         \
     }
 
 #ifdef __cplusplus

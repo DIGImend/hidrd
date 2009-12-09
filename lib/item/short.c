@@ -106,7 +106,7 @@ hidrd_item_short_get_signed(const hidrd_item *item)
 
 
 static hidrd_item_short_data_size
-set(uint8_t *pout, uint32_t in)
+set_unsigned(uint8_t *pout, uint32_t in)
 {
     if (in == 0)
         return HIDRD_ITEM_SHORT_DATA_SIZE_0B;
@@ -138,20 +138,50 @@ hidrd_item_short_set_unsigned(hidrd_item *item, uint32_t data)
 
     return hidrd_item_short_set_data_size(
             item,
-            set((uint8_t *)hidrd_item_short_get_data(item),
-                data));
+            set_unsigned((uint8_t *)hidrd_item_short_get_data(item),
+                         data));
 }
 
 
 hidrd_item *
 hidrd_item_short_set_signed(hidrd_item *item, int32_t data)
 {
+    uint8_t    *pdata   = (uint8_t *)hidrd_item_short_get_data(item);
+
     assert(hidrd_item_short_valid(item));
 
-    return hidrd_item_short_set_data_size(
-            item,
-            set((uint8_t *)hidrd_item_short_get_data(item),
-                (uint32_t)data));
+    if (data == 0)
+        return hidrd_item_short_set_data_size(
+                    item, HIDRD_ITEM_SHORT_DATA_SIZE_0B);
+    else if (data >= INT8_MIN && data <= INT8_MAX)
+    {
+        pdata[0] = (int8_t)data;
+
+        return hidrd_item_short_set_data_size(
+                    item, HIDRD_ITEM_SHORT_DATA_SIZE_1B);
+    }
+    else if (data >= INT16_MIN && data <= INT16_MAX)
+    {
+        uint16_t    data16 = (int16_t)data;
+
+        pdata[0] = data16 & 0xFF;
+        pdata[1] = data16 >> 8;
+
+        return hidrd_item_short_set_data_size(
+                    item, HIDRD_ITEM_SHORT_DATA_SIZE_2B);
+    }
+    else
+    {
+        uint32_t    data32 = data;
+
+        pdata[0] = data32 & 0xFF;
+        pdata[1] = (data32 >> 8) & 0xFF;
+        pdata[2] = (data32 >> 16) & 0xFF;
+        pdata[3] = data32 >> 24;
+
+        return hidrd_item_short_set_data_size(
+                    item, HIDRD_ITEM_SHORT_DATA_SIZE_4B);
+    }
 }
 
 
