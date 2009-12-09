@@ -207,6 +207,8 @@ main(int argc, char **argv)
     void               *test_rd_buf = NULL;
     size_t              test_rd_len = 0;
 
+    const hidrd_item   *test_item;
+
     (void)argc;
     (void)argv;
 
@@ -236,13 +238,19 @@ main(int argc, char **argv)
             error(1, errno, "Failed to write item #%u",
                   (orig_item - item_list));
 
+    if (hidrd_strm_error(strm))
+        error(1, 0, "The test stream has unexpected error indicator");
+
     hidrd_strm_close(strm);
 
+    /*
+     * Compare resulting and original descriptor.
+     */
     if (test_rd_len != orig_rd_len)
     {
-        error(0, 0, "Invalid test resource descriptor length (%u != %u)",
-              test_rd_len, orig_rd_len);
-        fprintf(stderr, "\n");
+        fprintf(stderr,
+                "Invalid test resource descriptor length (%u != %u)\n\n",
+                test_rd_len, orig_rd_len);
         hexdump_cmp(stderr, true,
                     orig_rd_buf, orig_rd_len, test_rd_buf, test_rd_len);
         exit(1);
@@ -250,6 +258,36 @@ main(int argc, char **argv)
 
     if (test_rd_buf == NULL)
         error(1, 0, "Test resource descriptor buffer is NULL");
+
+    if (memcmp(test_rd_buf, orig_rd_buf, orig_rd_len) != 0)
+    {
+        fprintf(stderr, "Test resource descriptor doesn't match\n\n");
+        hexdump_cmp(stderr, true,
+                    orig_rd_buf, orig_rd_len, test_rd_buf, test_rd_len);
+        exit(1);
+    }
+
+    /*
+     * Read test descriptor stream and compare it to the items.
+     */
+    strm = hidrd_strm_open(&hidrd_strm_mem, &test_rd_buf, &test_rd_len);
+    for (orig_item = item_list; orig_item->len != 0; orig_item++)
+    {
+        if ((test_item = hidrd_strm_read(strm)) == NULL)
+            error(1, errno, "Failed to read item #%u from the test stream",
+                  (orig_item - item_list + 1));
+        if (memcmp(test_item, orig_item->buf, orig_item->len) != 0)
+            error(1, 0,
+                  "Item #%u read from the test stream doesn't match "
+                  "original", (orig_item - item_list + 1));
+    }
+    if (hidrd_strm_read(strm) != NULL)
+        error(1, 0, "The test stream still has items to read");
+
+    if (hidrd_strm_error(strm))
+        error(1, 0, "The test stream has unexpected error indicator");
+
+    hidrd_strm_close(strm);
 
     free(test_rd_buf);
 
