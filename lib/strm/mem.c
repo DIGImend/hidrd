@@ -1,5 +1,5 @@
 /** @file
- * @brief HID report descriptor - memory stream
+ * @brief HID report descriptor - memory stream type
  *
  * Copyright (C) 2009 Nikolai Kondrashov
  *

@@ -37,6 +37,31 @@ AC_PROG_INSTALL
 AC_PROG_LIBTOOL
 
 # Checks for libraries.
+AC_ARG_WITH(xml2-config,
+            AC_HELP_STRING([--with-xml2-config=PATH],
+                           [Specify xml2-config location @<:@default=$PATH@:>@]),
+            [],
+            [with_xml2_config=check])
+
+XML2_CONFIG=
+AS_IF([test "x$with_xml2_config" = "xcheck"],
+      [AC_PATH_PROG(XML2_CONFIG, xml2-config)],
+      [test "x$with_xml2_config" != "xno"],
+      [XML2_CONFIG="$with_xml2_config"])
+
+AM_CONDITIONAL([WITH_LIBXML2], [test -n "$XML2_CONFIG"])
+
+LIBXML2_LIBS=
+LIBXML2_CFLAGS=
+if [test -n "$XML2_CONFIG"]; then
+    $XML2_CONFIG --version >/dev/null ||
+        AC_MSG_ERROR([cannot execute $XML2_CONFIG])
+
+    LIBXML2_LIBS="`$XML2_CONFIG --libs`"
+    LIBXML2_CFLAGS="`$XML2_CONFIG --cflags`"
+fi
+AC_SUBST(LIBXML2_LIBS)
+AC_SUBST(LIBXML2_CFLAGS)
 
 # Checks for header files.
 

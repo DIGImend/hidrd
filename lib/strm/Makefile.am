@@ -25,8 +25,15 @@ libhidrd_strm_la_SOURCES = \
 
 libhidrd_strm_la_LIBADD = ../item/libhidrd_item.la
 
+if WITH_LIBXML2
+libhidrd_strm_la_SOURCES += xml.c
+libhidrd_strm_la_CFLAGS = @LIBXML2_CFLAGS@
+libhidrd_strm_la_LDFLAGS = @LIBXML2_LIBS@
+endif
+
 check_PROGRAMS = mem_test
 TESTS = mem_test
 
 mem_test_SOURCES = mem_test.c
 mem_test_LDADD = $(lib_LTLIBRARIES)
+
