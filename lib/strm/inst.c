@@ -146,6 +146,7 @@ hidrd_strm_write(hidrd_strm *strm, const hidrd_item *item)
 {
     assert(hidrd_strm_valid(strm));
     assert(hidrd_strm_writable(strm));
+    assert(hidrd_item_valid(item));
 
     return (*strm->type->write)(strm, item);
 }

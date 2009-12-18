@@ -390,6 +390,19 @@ main(int argc, char **argv)
     ITEM_EMPTY(end_collection,    "END_COLLECTION",                 0xc0);
     ITEM_EMPTY(end_collection,  "END_COLLECTION",                   0xc0);
 
+    /*
+     * TODO When more type-specific value accessors are implemented, use
+     * them.
+     */
+
+    /*
+     * TODO Increase item value coverage.
+     */
+
+    /*
+     * TODO Increase item type coverage.
+     */
+
     return 0;
 }
 

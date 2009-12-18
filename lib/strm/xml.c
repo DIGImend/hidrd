@@ -81,6 +81,26 @@ hidrd_strm_xml_init(hidrd_strm *strm, va_list ap)
 
 
 static bool
+hidrd_strm_xml_being_read(const hidrd_strm *strm)
+{
+    const hidrd_strm_xml_inst  *strm_xml    =
+                                    (const hidrd_strm_xml_inst *)strm;
+
+    return strm_xml->doc != NULL && !strm_xml->changed;
+}
+
+
+static bool
+hidrd_strm_xml_being_written(const hidrd_strm *strm)
+{
+    const hidrd_strm_xml_inst  *strm_xml    =
+                                    (const hidrd_strm_xml_inst *)strm;
+
+    return strm_xml->doc != NULL && strm_xml->changed;
+}
+
+
+static bool
 hidrd_strm_xml_valid(const hidrd_strm *strm)
 {
     const hidrd_strm_xml_inst  *strm_xml    =
@@ -134,6 +154,8 @@ hidrd_strm_xml_read(hidrd_strm *strm)
     hidrd_strm_xml_inst    *strm_xml    = (hidrd_strm_xml_inst *)strm;
     xmlNodePtr              old_prnt;
 
+    assert(!hidrd_strm_xml_being_written(strm));
+
     /* If the document hasn't been parsed yet */
     if (strm_xml->doc == NULL)
     {
@@ -169,7 +191,73 @@ hidrd_strm_xml_read(hidrd_strm *strm)
      * Process element
      */
 
-    return strm_xml->item;
+    return NULL;
+}
+
+
+static bool
+hidrd_strm_xml_write(hidrd_strm *strm, const hidrd_item *item)
+{
+    hidrd_strm_xml_inst    *strm_xml    = (hidrd_strm_xml_inst *)strm;
+
+    assert(!hidrd_strm_xml_being_read(strm));
+
+    if (strm_xml->doc == NULL)
+    {
+        assert(strm_xml->prnt == NULL);
+        assert(strm_xml->cur == NULL);
+
+        strm_xml->doc = xmlNewDoc(BAD_CAST "1.1");
+        if (strm_xml->doc == NULL)
+        {
+            strm->error = true;
+            return false;
+        }
+
+        strm_xml->prnt = xmlNewNode(NULL, BAD_CAST "descriptor");
+        if (strm_xml->prnt == NULL)
+        {
+            xmlFreeDoc(strm_xml->doc);
+            strm_xml->doc = NULL;
+            strm->error = true;
+            return false;
+        }
+
+        xmlDocSetRootElement(strm_xml->doc, strm_xml->prnt);
+    }
+
+    assert(strm_xml->prnt != NULL);
+
+    if (hidrd_item_usage_page_valid(item))
+    {
+        char        buf[6];
+        int         rc;
+
+        rc = snprintf(buf, sizeof(buf), "%hu",
+                      hidrd_item_usage_page_get_value(item));
+        assert(rc < (int)sizeof(buf));
+
+        xmlNewTextChild(strm_xml->prnt, NULL,
+                        BAD_CAST "usage_page",
+                        BAD_CAST buf);
+    }
+    else if (hidrd_item_usage_valid(item))
+    {
+        char        buf[11];
+        int         rc;
+
+        rc = snprintf(buf, sizeof(buf), "%u",
+                      hidrd_item_usage_get_value(item));
+        assert(rc < (int)sizeof(buf));
+
+        xmlNewTextChild(strm_xml->prnt, NULL,
+                        BAD_CAST "usage",
+                        BAD_CAST buf);
+    }
+
+    strm_xml->changed = true;
+
+    return true;
 }
 
 
@@ -243,6 +331,9 @@ hidrd_strm_xml_flush(hidrd_strm *strm)
 {
     hidrd_strm_xml_inst    *strm_xml        = (hidrd_strm_xml_inst *)strm;
 
+    if (!hidrd_strm_xml_being_written(strm))
+        return true;
+
     /* Dump document to the buffer (updates *pbuf also) */
     if (!hidrd_strm_xml_flush_doc(strm))
         return false;
@@ -272,10 +363,8 @@ const hidrd_strm_type hidrd_strm_xml = {
     .size   = sizeof(hidrd_strm_xml_inst),
     .init   = hidrd_strm_xml_init,
     .valid  = hidrd_strm_xml_valid,
-#if 0
     .read   = hidrd_strm_xml_read,
     .write  = hidrd_strm_xml_write,
-#endif
     .flush  = hidrd_strm_xml_flush,
     .clnp   = hidrd_strm_xml_clnp,
 };

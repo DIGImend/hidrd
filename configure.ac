@@ -27,7 +27,7 @@ AC_CONFIG_MACRO_DIR([m4])
 
 # To have empty CFLAGS instead of undefined and '-g -O2' by default
 CFLAGS=$CFLAGS
-CFLAGS="-Wextra -Wall -W $CFLAGS"
+CFLAGS="-Wall -Wextra -Werror $CFLAGS"
 ABS_SRCDIR=`cd ${srcdir} ; pwd`
 CPPFLAGS="-DNDEBUG -I${ABS_SRCDIR}/include $CPPFLAGS"
 
