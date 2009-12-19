@@ -97,7 +97,7 @@ HIDRD_ITEM_SHORT_GEN_FUNCS(global, GLOBAL)
                hidrd_item_global_get_tag(item) ==                       \
                HIDRD_ITEM_GLOBAL_TAG_##_NAME &&                         \
                hidrd_item_##_name##_value_valid(                        \
-                    (_int_type)hidrd_item_short_get_##_sign(item));     \
+                    (_int_type)hidrd_item_global_get_##_sign(item));    \
     }                                                                   \
                                                                         \
     static inline hidrd_item *                                          \
@@ -112,7 +112,7 @@ HIDRD_ITEM_SHORT_GEN_FUNCS(global, GLOBAL)
     {                                                                   \
         _int_type value;                                                \
         assert(hidrd_item_##_name##_valid(item));                       \
-        value = (_int_type)hidrd_item_short_get_##_sign(item);          \
+        value = (_int_type)hidrd_item_global_get_##_sign(item);         \
         assert(hidrd_item_##_name##_value_valid(value));                \
         return (_ext_type)value;                                        \
     }                                                                   \
@@ -122,7 +122,7 @@ HIDRD_ITEM_SHORT_GEN_FUNCS(global, GLOBAL)
     {                                                                   \
         assert(hidrd_item_##_name##_valid(item));                       \
         assert(hidrd_item_##_name##_value_valid((_int_type)value));     \
-        return hidrd_item_short_set_##_sign(item, (_int_type)value);    \
+        return hidrd_item_global_set_##_sign(item, (_int_type)value);   \
     }                                                                   \
                                                                         \
     static inline hidrd_item *                                          \

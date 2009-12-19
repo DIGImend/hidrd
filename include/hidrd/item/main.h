@@ -129,7 +129,7 @@ hidrd_item_main_get_bit(const hidrd_item *item, uint8_t idx)
     {                                                       \
         assert(hidrd_item_##_name##_valid(item));           \
         assert(idx <= 31);                                  \
-        return hidrd_item_short_get_bit(item, idx);         \
+        return hidrd_item_main_get_bit(item, idx);          \
     }                                                       \
                                                             \
     static inline hidrd_item *                              \
@@ -138,7 +138,7 @@ hidrd_item_main_get_bit(const hidrd_item *item, uint8_t idx)
     {                                                       \
         assert(hidrd_item_##_name##_valid(item));           \
         assert(idx <= 31);                                  \
-        return hidrd_item_short_set_bit(item, idx, val);    \
+        return hidrd_item_main_set_bit(item, idx, val);     \
     }
 
 #define HIDRD_ITEM_MAIN_BIT_ACC(_name, _idx, _off_name, _on_name) \

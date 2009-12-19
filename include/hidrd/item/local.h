@@ -92,7 +92,7 @@ HIDRD_ITEM_SHORT_GEN_FUNCS(local, LOCAL)
                hidrd_item_local_get_tag(item) ==                        \
                HIDRD_ITEM_LOCAL_TAG_##_NAME &&                          \
                hidrd_item_##_name##_value_valid(                        \
-                    (_int_type)hidrd_item_short_get_unsigned(item));    \
+                    (_int_type)hidrd_item_local_get_unsigned(item));    \
     }                                                                   \
                                                                         \
     static inline hidrd_item *                                          \
@@ -107,7 +107,7 @@ HIDRD_ITEM_SHORT_GEN_FUNCS(local, LOCAL)
     {                                                                   \
         _int_type value;                                                \
         assert(hidrd_item_##_name##_valid(item));                       \
-        value = (_int_type)hidrd_item_short_get_unsigned(item);         \
+        value = (_int_type)hidrd_item_local_get_unsigned(item);         \
         assert(hidrd_item_##_name##_value_valid(value));                \
         return (_ext_type)value;                                        \
     }                                                                   \
@@ -117,7 +117,7 @@ HIDRD_ITEM_SHORT_GEN_FUNCS(local, LOCAL)
     {                                                                   \
         assert(hidrd_item_##_name##_valid(item));                       \
         assert(hidrd_item_##_name##_value_valid((_int_type)value));     \
-        return hidrd_item_short_set_unsigned(item, (_int_type)value);   \
+        return hidrd_item_local_set_unsigned(item, (_int_type)value);   \
     }                                                                   \
                                                                         \
     static inline hidrd_item *                                          \

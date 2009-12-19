@@ -309,6 +309,22 @@ hidrd_item_short_init_unsigned(hidrd_item              *item,
                                   tag));                                \
     }                                                                   \
                                                                         \
+    static inline int32_t                                               \
+    hidrd_item_##_name##_get_signed(const hidrd_item *item)             \
+    {                                                                   \
+        assert(hidrd_item_##_name##_valid(item));                       \
+                                                                        \
+        return hidrd_item_short_get_signed(item);                       \
+    }                                                                   \
+                                                                        \
+    static inline uint32_t                                              \
+    hidrd_item_##_name##_get_unsigned(const hidrd_item *item)           \
+    {                                                                   \
+        assert(hidrd_item_##_name##_valid(item));                       \
+                                                                        \
+        return hidrd_item_short_get_unsigned(item);                     \
+    }                                                                   \
+                                                                        \
     static inline hidrd_item *                                          \
     hidrd_item_##_name##_set_signed(hidrd_item *item, int32_t data)     \
     {                                                                   \
