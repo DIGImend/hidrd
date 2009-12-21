@@ -28,16 +28,16 @@
 
 
 #define MAP_MAIN(_NAME, _name) \
-    case HIDRD_ITEM_MAIN_TAG_##_NAME:               \
-        return hidrd_item_##_name##_valid(item);
+    case HIDRD_ITEM_MAIN_TAG_##_NAME:                   \
+        return hidrd_item_##_name##_valid_inst(item);
 
 #define MAP_GLOBAL(_NAME, _name) \
-    case HIDRD_ITEM_GLOBAL_TAG_##_NAME:             \
-        return hidrd_item_##_name##_valid(item);
+    case HIDRD_ITEM_GLOBAL_TAG_##_NAME:                 \
+        return hidrd_item_##_name##_valid_inst(item);
 
 #define MAP_LOCAL(_NAME, _name) \
-    case HIDRD_ITEM_LOCAL_TAG_##_NAME:              \
-        return hidrd_item_##_name##_valid(item);
+    case HIDRD_ITEM_LOCAL_TAG_##_NAME:                  \
+        return hidrd_item_##_name##_valid_inst(item);
 
 
 bool
@@ -53,7 +53,7 @@ hidrd_item_valid(const hidrd_item *item)
     switch (hidrd_item_basic_get_type(item))
     {
         case HIDRD_ITEM_BASIC_TYPE_LONG:
-            return hidrd_item_long_valid(item);
+            return hidrd_item_long_valid_inst(item);
         case HIDRD_ITEM_BASIC_TYPE_SHORT:
             switch (short_type = hidrd_item_short_get_type(item))
             {

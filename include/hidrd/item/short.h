@@ -92,10 +92,26 @@ hidrd_item_short_data_size_valid(hidrd_item_short_data_size size)
 
 
 static inline bool
-hidrd_item_short_valid(const hidrd_item *item)
+hidrd_item_short_valid_class(const hidrd_item *item)
 {
     return hidrd_item_basic_valid(item) &&
            hidrd_item_basic_is_short(item);
+}
+
+
+static inline bool
+hidrd_item_short_valid_inst(const hidrd_item *item)
+{
+    assert(hidrd_item_short_valid_class(item));
+    return true;
+}
+
+
+static inline bool
+hidrd_item_short_valid(const hidrd_item *item)
+{
+    return hidrd_item_short_valid_class(item) &&
+           hidrd_item_short_valid_inst(item);
 }
 
 
@@ -266,13 +282,26 @@ hidrd_item_short_init_unsigned(hidrd_item              *item,
 
 #define HIDRD_ITEM_SHORT_GEN_FUNCS(_name, _NAME) \
     static inline bool                                                  \
-    hidrd_item_##_name##_valid(const hidrd_item *item)                  \
+    hidrd_item_##_name##_valid_class(const hidrd_item *item)            \
     {                                                                   \
         return hidrd_item_short_valid(item) &&                          \
                (hidrd_item_short_get_type(item) ==                      \
-                HIDRD_ITEM_SHORT_TYPE_##_NAME) &&                       \
-               hidrd_item_##_name##_tag_valid(                          \
+                HIDRD_ITEM_SHORT_TYPE_##_NAME);                         \
+    }                                                                   \
+                                                                        \
+    static inline bool                                                  \
+    hidrd_item_##_name##_valid_inst(const hidrd_item *item)             \
+    {                                                                   \
+        assert(hidrd_item_##_name##_valid_class(item));                 \
+        return hidrd_item_##_name##_tag_valid(                          \
                     hidrd_item_short_get_tag(item));                    \
+    }                                                                   \
+                                                                        \
+    static inline bool                                                  \
+    hidrd_item_##_name##_valid(const hidrd_item *item)                  \
+    {                                                                   \
+        return hidrd_item_##_name##_valid_class(item) &&                \
+               hidrd_item_##_name##_valid_inst(item);                   \
     }                                                                   \
                                                                         \
     static inline hidrd_item *                                          \

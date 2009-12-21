@@ -40,10 +40,26 @@ extern "C" {
 
 
 static inline bool
-hidrd_item_long_valid(const hidrd_item *item)
+hidrd_item_long_valid_class(const hidrd_item *item)
 {
     return hidrd_item_basic_valid(item) &&
            hidrd_item_basic_is_long(item);
+}
+
+
+static inline bool
+hidrd_item_long_valid_inst(const hidrd_item *item)
+{
+    assert(hidrd_item_long_valid_class(item));
+    return true;
+}
+
+
+static inline bool
+hidrd_item_long_valid(const hidrd_item *item)
+{
+    return hidrd_item_long_valid_class(item) &&
+           hidrd_item_long_valid_inst(item);
 }
 
 
@@ -60,7 +76,7 @@ typedef uint8_t hidrd_item_long_tag;
 static inline uint8_t
 hidrd_item_long_get_data_size(const hidrd_item *item)
 {
-    assert(hidrd_item_basic_is_long(item));
+    assert(hidrd_item_long_valid(item));
     return item[1];
 }
 

@@ -34,11 +34,27 @@ extern "C" {
 #endif
 
 static inline bool
-hidrd_item_push_valid(const hidrd_item *item)
+hidrd_item_push_valid_class(const hidrd_item *item)
 {
     return hidrd_item_global_valid(item) &&
            hidrd_item_global_get_tag(item) ==
            HIDRD_ITEM_GLOBAL_TAG_PUSH;
+}
+
+
+static inline bool
+hidrd_item_push_valid_inst(const hidrd_item *item)
+{
+    assert(hidrd_item_push_valid_class(item));
+    return true;
+}
+
+
+static inline bool
+hidrd_item_push_valid(const hidrd_item *item)
+{
+    return hidrd_item_push_valid_class(item) &&
+           hidrd_item_push_valid_inst(item);
 }
 
 

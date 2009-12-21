@@ -99,11 +99,25 @@ hidrd_item_main_get_bit(const hidrd_item *item, uint8_t idx)
 
 #define HIDRD_ITEM_MAIN_GEN_FUNCS(_name, _NAME) \
     static inline bool                                          \
-    hidrd_item_##_name##_valid(const hidrd_item *item)          \
+    hidrd_item_##_name##_valid_class(const hidrd_item *item)    \
     {                                                           \
         return hidrd_item_main_valid(item) &&                   \
                hidrd_item_main_get_tag(item) ==                 \
                HIDRD_ITEM_MAIN_TAG_##_NAME;                     \
+    }                                                           \
+                                                                \
+    static inline bool                                          \
+    hidrd_item_##_name##_valid_inst(const hidrd_item *item)     \
+    {                                                           \
+        assert(hidrd_item_##_name##_valid_class(item));         \
+        return true;                                            \
+    }                                                           \
+                                                                \
+    static inline bool                                          \
+    hidrd_item_##_name##_valid(const hidrd_item *item)          \
+    {                                                           \
+        return hidrd_item_##_name##_valid_class(item) &&        \
+               hidrd_item_##_name##_valid_inst(item);           \
     }                                                           \
                                                                 \
     static inline hidrd_item *                                  \

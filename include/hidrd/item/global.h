@@ -91,13 +91,26 @@ HIDRD_ITEM_SHORT_GEN_FUNCS(global, GLOBAL)
 #define HIDRD_ITEM_GLOBAL_FUNCS(_name, _NAME, \
                                 _sign, _int_type, _ext_type)            \
     static inline bool                                                  \
-    hidrd_item_##_name##_valid(const hidrd_item *item)                  \
+    hidrd_item_##_name##_valid_class(const hidrd_item *item)            \
     {                                                                   \
         return hidrd_item_global_valid(item) &&                         \
                hidrd_item_global_get_tag(item) ==                       \
-               HIDRD_ITEM_GLOBAL_TAG_##_NAME &&                         \
-               hidrd_item_##_name##_value_valid(                        \
+               HIDRD_ITEM_GLOBAL_TAG_##_NAME;                           \
+    }                                                                   \
+                                                                        \
+    static inline bool                                                  \
+    hidrd_item_##_name##_valid_inst(const hidrd_item *item)             \
+    {                                                                   \
+        assert(hidrd_item_##_name##_valid_class(item));                 \
+        return hidrd_item_##_name##_value_valid(                        \
                     (_int_type)hidrd_item_global_get_##_sign(item));    \
+    }                                                                   \
+                                                                        \
+    static inline bool                                                  \
+    hidrd_item_##_name##_valid(const hidrd_item *item)                  \
+    {                                                                   \
+        return hidrd_item_##_name##_valid_class(item) &&                \
+               hidrd_item_##_name##_valid_inst(item);                   \
     }                                                                   \
                                                                         \
     static inline hidrd_item *                                          \
