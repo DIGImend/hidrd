@@ -1,5 +1,5 @@
 /** @file
- * @brief HID report descriptor - basic item.
+ * @brief HID report descriptor - main item
  *
  * Copyright (C) 2009 Nikolai Kondrashov
  *
@@ -24,49 +24,35 @@
  * @(#) $Id$
  */
 
+
 #include <string.h>
-#include <stdio.h>
-#include "hidrd/item/basic.h"
+#include "hidrd/item/main.h"
 
 
 #ifdef HIDRD_WITH_TOKENS
-
 char *
-hidrd_item_basic_type_to_token(hidrd_item_basic_type type)
+hidrd_item_main_tag_to_token(hidrd_item_main_tag tag)
 {
-    assert(hidrd_item_basic_type_valid(type));
+    assert(hidrd_item_main_tag_valid(tag));
 
-    switch (type)
+    switch (tag)
     {
 #define MAP(_NAME, _name) \
-    case HIDRD_ITEM_BASIC_TYPE_##_NAME: \
+    case HIDRD_ITEM_MAIN_TAG_##_NAME:   \
         return strdup(#_name)
 
-        MAP(MAIN,       main);
-        MAP(GLOBAL,     global);
-        MAP(LOCAL,      local);
-        MAP(RESERVED,   reserved);
+        MAP(INPUT,          input);
+        MAP(OUTPUT,         output);
+        MAP(COLLECTION,     collection);
+        MAP(FEATURE,        feature);
+        MAP(END_COLLECTION, end_collection);
 
 #undef MAP
 
-        default:
-            assert(!"Unknown basic item type");
-            return NULL;
+    default:
+        return hidrd_item_main_tag_valid(tag)
+                ? hidrd_item_basic_tag_to_token(tag)
+                : NULL;
     }
 }
-
-
-char *
-hidrd_item_basic_tag_to_token(hidrd_item_basic_tag tag)
-{
-    char   *token;
-
-    assert(hidrd_item_basic_tag_valid(tag));
-
-    if (asprintf(&token, "%u", tag) < 0)
-        return NULL;
-
-    return token;
-}
-
 #endif /* HIDRD_WITH_TOKENS */

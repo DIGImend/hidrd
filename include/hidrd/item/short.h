@@ -67,6 +67,15 @@ hidrd_item_short_type_valid(hidrd_item_short_type type)
     }
 }
 
+#ifdef HIDRD_WITH_TOKENS
+static inline char *
+hidrd_item_short_type_to_token(hidrd_item_short_type type)
+{
+    assert(hidrd_item_short_type_valid(type));
+    return hidrd_item_basic_type_to_token(type);
+}
+#endif /* HIDRD_WITH_TOKENS */
+
 /** Short item tag */
 typedef hidrd_item_basic_tag hidrd_item_short_tag;
 #define HIDRD_ITEM_SHORT_TAG_MIN    HIDRD_ITEM_BASIC_TAG_MIN
@@ -84,6 +93,15 @@ hidrd_item_short_tag_valid(hidrd_item_short_tag tag)
 {
     return hidrd_item_basic_tag_valid(tag);
 }
+
+#ifdef HIDRD_WITH_TOKENS
+static inline char *
+hidrd_item_short_tag_to_token(hidrd_item_short_tag tag)
+{
+    assert(hidrd_item_short_tag_valid(tag));
+    return hidrd_item_basic_tag_to_token(tag);
+}
+#endif /* HIDRD_WITH_TOKENS */
 
 
 /** Short item data size code */
@@ -196,6 +214,17 @@ hidrd_item_short_get_type(const hidrd_item *item)
 }
 
 
+#ifdef HIDRD_WITH_TOKENS
+static inline char *
+hidrd_item_short_get_type_token(const hidrd_item *item)
+{
+    assert(hidrd_item_short_valid(item));
+    return hidrd_item_short_type_to_token(
+            hidrd_item_short_get_type(item));
+}
+#endif
+
+
 /**
  * Set a short item type.
  *
@@ -228,6 +257,17 @@ hidrd_item_short_get_tag(const hidrd_item *item)
 }
 
 
+#ifdef HIDRD_WITH_TOKENS
+static inline char *
+hidrd_item_short_get_tag_token(const hidrd_item *item)
+{
+    assert(hidrd_item_short_valid(item));
+    return hidrd_item_short_tag_to_token(
+            hidrd_item_short_get_tag(item));
+}
+#endif
+
+
 /**
  * Set a short item tag.
  *
@@ -257,6 +297,15 @@ hidrd_item_short_get_data_size(const hidrd_item *item)
 {
     assert(hidrd_item_short_valid(item));
     return hidrd_item_basic_get_data_size(item);
+}
+
+
+static inline size_t
+hidrd_item_short_get_data_size_bytes(const hidrd_item *item)
+{
+    assert(hidrd_item_short_valid(item));
+    return hidrd_item_short_data_size_to_bytes(
+            hidrd_item_short_get_data_size(item));
 }
 
 
@@ -456,7 +505,7 @@ hidrd_item_short_init_unsigned(hidrd_item              *item,
 }
 
 
-#define HIDRD_ITEM_SHORT_GEN_FUNCS(_name, _NAME) \
+#define HIDRD_ITEM_SHORT_GEN_CORE_FUNCS(_name, _NAME) \
     static inline bool                                                  \
     hidrd_item_##_name##_valid_class(const hidrd_item *item)            \
     {                                                                   \
@@ -571,6 +620,26 @@ hidrd_item_short_init_unsigned(hidrd_item              *item,
                 hidrd_item_##_name##_init(item, tag), data));           \
     }
 
+
+#ifdef HIDRD_WITH_TOKENS
+#define HIDRD_ITEM_SHORT_GEN_TOKEN_FUNCS(_name) \
+    extern char *hidrd_item_##_name##_tag_to_token(             \
+                                hidrd_item_##_name##_tag tag);  \
+                                                                \
+    static inline char *                                        \
+    hidrd_item_##_name##_get_tag_token(const hidrd_item *item)  \
+    {                                                           \
+        assert(hidrd_item_##_name##_valid(item));               \
+        return hidrd_item_##_name##_tag_to_token(               \
+                hidrd_item_##_name##_get_tag(item));            \
+    }
+#else /* HIDRD_WITH_TOKENS */
+#define HIDRD_ITEM_SHORT_GEN_TOKEN_FUNCS(_name)
+#endif /* !HIDRD_WITH_TOKENS */
+
+#define HIDRD_ITEM_SHORT_GEN_FUNCS(_name, _NAME) \
+    HIDRD_ITEM_SHORT_GEN_CORE_FUNCS(_name, _NAME)   \
+    HIDRD_ITEM_SHORT_GEN_TOKEN_FUNCS(_name)
 
 #ifdef __cplusplus
 } /* extern "C" */

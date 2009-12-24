@@ -193,6 +193,8 @@ hidrd_usage_page_pos(hidrd_usage_page page)
            page <= HIDRD_USAGE_PAGE_POS_MAX;
 }
 
+#ifdef HIDRD_WITH_TOKENS
+
 /**
  * Convert a usage page code to a string token.
  *
@@ -212,6 +214,10 @@ extern char *hidrd_usage_page_to_token(hidrd_usage_page page);
  */
 extern hidrd_usage_page hidrd_usage_page_from_token(const char *token);
 
+#endif /* HIDRD_WITH_TOKENS */
+
+#ifdef HIDRD_WITH_NAMES
+
 /**
  * Retrieve usage page name string (close to specification).
  *
@@ -220,6 +226,8 @@ extern hidrd_usage_page hidrd_usage_page_from_token(const char *token);
  * @return Usage page name string.
  */
 extern const char *hidrd_usage_page_name(hidrd_usage_page page);
+
+#endif /* HIDRD_WITH_NAMES */
 
 #ifdef __cplusplus
 } /* extern "C" */

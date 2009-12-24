@@ -29,6 +29,7 @@
 #include <stdio.h>
 #include "hidrd/usage/page.h"
 
+#ifdef HIDRD_WITH_TOKENS
 char *
 hidrd_usage_page_to_token(hidrd_usage_page page)
 {
@@ -96,5 +97,6 @@ hidrd_usage_page_to_token(hidrd_usage_page page)
             return NULL;
     }
 }
+#endif /* HIDRD_WITH_TOKENS */
 
 

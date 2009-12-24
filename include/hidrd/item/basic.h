@@ -60,6 +60,17 @@ hidrd_item_basic_type_valid(hidrd_item_basic_type type)
     return hidrd_item_pfx_type_valid(type);
 }
 
+#ifdef HIDRD_WITH_TOKENS
+/**
+ * Convert a basic item type to a string token.
+ *
+ * @param type  Basic item type.
+ *
+ * @return Dynamically allocated basic item type string token.
+ */
+extern char *hidrd_item_basic_type_to_token(hidrd_item_basic_type type);
+#endif /* HIDRD_WITH_TOKENS */
+
 /** Basic item prefix' tag bitfield value */
 typedef hidrd_item_pfx_tag hidrd_item_basic_tag;
 #define HIDRD_ITEM_BASIC_TAG_MIN    HIDRD_ITEM_PFX_TAG_MIN
@@ -78,6 +89,17 @@ hidrd_item_basic_tag_valid(hidrd_item_basic_tag tag)
 {
     return hidrd_item_pfx_tag_valid(tag);
 }
+
+#ifdef HIDRD_WITH_TOKENS
+/**
+ * Convert a basic item tag to a string token.
+ *
+ * @param tag   Basic item tag.
+ *
+ * @return Dynamically allocated basic item tag string token.
+ */
+extern char *hidrd_item_basic_tag_to_token(hidrd_item_basic_tag tag);
+#endif /* HIDRD_WITH_TOKENS */
 
 /** Basic item prefix' data size bitfield value */
 typedef hidrd_item_pfx_size hidrd_item_basic_data_size;
@@ -358,6 +380,15 @@ hidrd_item_basic_get_type(const hidrd_item *item)
     return hidrd_item_pfx_get_type(hidrd_item_basic_get_pfx(item));
 }
 
+#ifdef HIDRD_WITH_TOKENS
+static inline char *
+hidrd_item_basic_get_type_token(const hidrd_item *item)
+{
+    assert(hidrd_item_basic_valid(item));
+    return hidrd_item_basic_type_to_token(
+            hidrd_item_basic_get_type(item));
+}
+#endif /* HIDRD_WITH_TOKENS */
 
 /**
  * Set type to a basic item's prefix.
@@ -394,6 +425,15 @@ hidrd_item_basic_get_tag(const hidrd_item *item)
     return hidrd_item_pfx_get_tag(hidrd_item_basic_get_pfx(item));
 }
 
+#ifdef HIDRD_WITH_TOKENS
+static inline char *
+hidrd_item_basic_get_tag_token(const hidrd_item *item)
+{
+    assert(hidrd_item_basic_valid(item));
+    return hidrd_item_basic_tag_to_token(
+            hidrd_item_basic_get_tag(item));
+}
+#endif /* HIDRD_WITH_TOKENS */
 
 /**
  * Set tag to a basic item's prefix.
@@ -417,20 +457,29 @@ hidrd_item_basic_set_tag(hidrd_item *item, hidrd_item_basic_tag tag)
 
 
 /**
- * Get data size from a basic item's prefix.
+ * Get data size code from a basic item's prefix.
  *
- * @param item  Item to get the data size from.
+ * @param item  Item to get the data size code from.
  *
- * @return The data size from the item's prefix.
+ * @return The data size code from the item's prefix.
  *
- * @note The data size returned cannot be used to determine the actual item
- *       size directly, without taking the item format into account.
+ * @note The data size code returned cannot be used to determine the actual
+ *       item size directly, without taking the item format into account.
  */
 static inline hidrd_item_basic_data_size
 hidrd_item_basic_get_data_size(const hidrd_item *item)
 {
     assert(hidrd_item_basic_valid(item));
     return hidrd_item_pfx_get_size(hidrd_item_basic_get_pfx(item));
+}
+
+
+static inline size_t
+hidrd_item_basic_get_data_size_bytes(const hidrd_item *item)
+{
+    assert(hidrd_item_basic_valid(item));
+    return hidrd_item_basic_data_size_to_bytes(
+            hidrd_item_basic_get_data_size(item));
 }
 
 

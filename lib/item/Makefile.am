@@ -21,6 +21,9 @@ lib_LTLIBRARIES = libhidrd_item.la
 libhidrd_item_la_SOURCES = \
     any.c                   \
     basic.c                 \
+    global.c                \
+    local.c                 \
+    main.c                  \
     pfx.c                   \
     short.c
 

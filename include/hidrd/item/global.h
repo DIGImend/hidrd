@@ -63,10 +63,7 @@ typedef enum hidrd_item_global_tag {
 static inline bool
 hidrd_item_global_tag_valid(hidrd_item_global_tag tag)
 {
-    hidrd_item_global_tag   min = HIDRD_ITEM_GLOBAL_TAG_MIN;
-
-    return (tag >= min) &&
-           (tag <= HIDRD_ITEM_GLOBAL_TAG_MAX);
+    return (tag <= HIDRD_ITEM_GLOBAL_TAG_MAX);
 }
 
 static inline bool
