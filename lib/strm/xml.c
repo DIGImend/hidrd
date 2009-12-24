@@ -195,6 +195,323 @@ hidrd_strm_xml_read(hidrd_strm *strm)
 }
 
 
+typedef enum str_fmt {
+    STR_FMT_NULL,
+    STR_FMT_UINT,
+    STR_FMT_STRDUP,
+    STR_FMT_STROWN,
+    STR_FMT_HEX
+} str_fmt;
+
+
+static char *
+fmt_str_hex(uint8_t *buf, size_t size)
+{
+    static const char   map[16] = "0123456789ABCDEF";
+    char               *str;
+    uint8_t             b;
+
+    str = malloc((size * 2) + 1);
+    if (str == NULL)
+        return NULL;
+
+    for (; size > 0; size--, buf++)
+    {
+        b = *buf;
+        *str++ = map[b >> 4];
+        *str++ = map[b & 0xF];
+    }
+
+    *str = '\0';
+
+    return str;
+}
+
+
+static bool
+fmt_strv(char     **pstr,
+         str_fmt    fmt,
+         va_list    ap)
+{
+    char       *str;
+
+    switch (fmt)
+    {
+        case STR_FMT_NULL:
+            str = NULL;
+            break;
+        case STR_FMT_UINT:
+            if (asprintf(&str, "%u", va_arg(ap, unsigned int)) < 0)
+                return false;
+            break;
+        case STR_FMT_STRDUP:
+            str = strdup(va_arg(ap, const char *));
+            if (str == NULL)
+                return false;
+            break;
+        case STR_FMT_STROWN:
+            str = va_arg(ap, char *);
+            break;
+        case STR_FMT_HEX:
+            {
+                void   *buf     = va_arg(ap, void *);
+                size_t  size    = va_arg(ap, size_t);
+
+                str = fmt_str_hex(buf, size);
+                if (str == NULL)
+                    return false;
+            }
+            break;
+        default:
+            assert(!"Unknown string format");
+            return false;
+    }
+
+    if (pstr != NULL)
+        *pstr = str;
+    else
+        free(str);
+
+    return true;
+}
+
+
+static bool
+element_new(hidrd_strm_xml_inst        *strm_xml,
+            const char                 *name)
+{
+    assert(strm_xml->cur == NULL);
+
+    strm_xml->cur = xmlNewChild(strm_xml->prnt, NULL, BAD_CAST name, NULL);
+
+    return (strm_xml->cur != NULL);
+}
+
+
+static bool
+element_set_attrv(hidrd_strm_xml_inst  *strm_xml,
+                  const char           *name,
+                  str_fmt               fmt,
+                  va_list               ap)
+{
+    char       *value;
+    xmlAttrPtr  attr;
+
+    assert(strm_xml->cur != NULL);
+
+    if (!fmt_strv(&value, fmt, ap))
+        return false;
+
+    attr = xmlSetProp(strm_xml->cur, BAD_CAST name, BAD_CAST value);
+
+    free(value);
+
+    return (attr != NULL);
+}
+
+
+static bool
+element_set_contentv(hidrd_strm_xml_inst   *strm_xml,
+                     str_fmt                fmt,
+                     va_list                ap)
+{
+    char   *content;
+
+    assert(strm_xml->cur != NULL);
+
+    if (!fmt_strv(&content, fmt, ap))
+        return false;
+
+    xmlNodeSetContent(strm_xml->cur, BAD_CAST content);
+
+    free(content);
+
+    return true;
+}
+
+
+static void
+element_commit(hidrd_strm_xml_inst *strm_xml,
+               bool                 container)
+{
+    assert(strm_xml->cur != NULL);
+    
+    if (container)
+        strm_xml->prnt = strm_xml->cur;
+
+    strm_xml->cur = NULL;
+}
+
+
+/** Node type */
+typedef enum nt {
+    NT_NONE,
+    NT_CONTENT,
+    NT_ATTR
+} nt;
+
+static bool
+element_addv(hidrd_strm_xml_inst   *strm_xml,
+             bool                   container,
+             const char            *name,
+             va_list                ap)
+{
+    bool    success = true;
+    bool    end     = false;
+
+    assert(strm_xml->cur == NULL);
+
+    if (!element_new(strm_xml, name))
+        return false;
+
+    while (success && !end)
+    {
+        nt  node_type = va_arg(ap, nt);
+
+        switch (node_type)
+        {
+            case NT_ATTR:
+                {
+                    const char *name        = va_arg(ap, const char *);
+                    str_fmt     value_fmt   = va_arg(ap, str_fmt);
+
+                    success = element_set_attrv(strm_xml,
+                                                name, value_fmt, ap);
+                }
+                break;
+
+            case NT_CONTENT:
+                {
+                    str_fmt content_fmt  = va_arg(ap, str_fmt);
+
+                    success = element_set_contentv(strm_xml,
+                                                   content_fmt, ap);
+                }
+                break;
+
+            case NT_NONE:
+                end = true;
+                break;
+
+            default:
+                assert(!"Unknown node type");
+                success = false;
+                break;
+        }
+    }
+
+    element_commit(strm_xml, container);
+
+    return success;
+}
+
+
+static bool
+element_add(hidrd_strm_xml_inst    *strm_xml,
+            bool                    container,
+            const char             *name,
+            ...)
+{
+    va_list ap;
+    bool    success;
+
+    va_start(ap, name);
+    success = element_addv(strm_xml, container, name, ap);
+    va_end(ap);
+
+    return success;
+}
+
+
+#if 0
+static void
+element_seal(hidrd_strm_xml_inst   *strm_xml)
+{
+    assert(strm_xml->cur == NULL);
+
+    /*
+     * TODO think about handling invalid nesting
+     */
+
+    if (strm_xml->prnt->parent != NULL)
+        strm_xml->prnt = strm_xml->prnt->parent;
+}
+#endif
+
+
+#define ATTR(_name, _fmt, _args...) \
+    NT_ATTR, #_name, STR_FMT_##_fmt, ##_args
+
+#define CONTENT(_fmt, _args...) \
+    NT_CONTENT, STR_FMT_##_fmt, ##_args
+
+#define SIMPLE(_name, _args...) \
+    element_add(strm_xml, false, #_name, ##_args, NT_NONE)
+
+#define CONTAINER_START(_name, _args...) \
+    element_add(strm_xml, true, #_name, ##_args, NT_NONE)
+
+#define CONTAINER_END \
+    element_seal(strm_xml)
+
+static bool
+hidrd_strm_xml_write_element(hidrd_strm_xml_inst   *strm_xml,
+                             const hidrd_item      *item)
+{
+    switch (hidrd_item_basic_get_format(item))
+    {
+        case HIDRD_ITEM_BASIC_FORMAT_LONG:
+            return SIMPLE(long,
+                          ATTR(tag, UINT, hidrd_item_long_get_tag(item)),
+                          CONTENT(
+                              HEX,
+                              /* We promise we won't change it */
+                              hidrd_item_long_get_data((hidrd_item *)item)),
+                              hidrd_item_long_get_data_size(item));
+
+        case HIDRD_ITEM_BASIC_FORMAT_SHORT:
+            switch (hidrd_item_short_get_type(item))
+            {
+                case HIDRD_ITEM_SHORT_TYPE_MAIN:
+                    switch (hidrd_item_main_get_tag(item))
+                    {
+                        default:
+                            return SIMPLE(
+                                    main,
+                                    ATTR(tag, STROWN,
+                                         hidrd_item_main_get_tag_token(item)),
+                                    CONTENT(
+                                        HEX,
+                                        /* We promise we won't change it */
+                                        hidrd_item_short_get_data((hidrd_item *)item)),
+                                        hidrd_item_short_get_data_size_bytes(item));
+                    }
+                    break;
+                default:
+                    return SIMPLE(short,
+                            ATTR(type, STROWN,
+                                 hidrd_item_short_get_type_token(item)),
+                            ATTR(tag, STROWN,
+                                 hidrd_item_short_get_tag_token(item)),
+                            CONTENT(
+                                HEX,
+                                /* We promise we won't change it */
+                                hidrd_item_short_get_data((hidrd_item *)item)),
+                                hidrd_item_short_get_data_size_bytes(item));
+            }
+            break;
+        default:
+            return SIMPLE(basic,
+                    ATTR(type, STROWN,
+                         hidrd_item_basic_get_type_token(item)),
+                    ATTR(tag, STROWN,
+                         hidrd_item_basic_get_tag_token(item)),
+                    ATTR(tag, UINT,
+                         hidrd_item_basic_get_data_size_bytes(item)));
+    }
+}
+
+
 static bool
 hidrd_strm_xml_write(hidrd_strm *strm, const hidrd_item *item)
 {
@@ -228,36 +545,9 @@ hidrd_strm_xml_write(hidrd_strm *strm, const hidrd_item *item)
 
     assert(strm_xml->prnt != NULL);
 
-    if (hidrd_item_usage_page_valid(item))
-    {
-        char        buf[6];
-        int         rc;
-
-        rc = snprintf(buf, sizeof(buf), "%hu",
-                      hidrd_item_usage_page_get_value(item));
-        assert(rc < (int)sizeof(buf));
-
-        xmlNewTextChild(strm_xml->prnt, NULL,
-                        BAD_CAST "usage_page",
-                        BAD_CAST buf);
-    }
-    else if (hidrd_item_usage_valid(item))
-    {
-        char        buf[11];
-        int         rc;
-
-        rc = snprintf(buf, sizeof(buf), "%u",
-                      hidrd_item_usage_get_value(item));
-        assert(rc < (int)sizeof(buf));
-
-        xmlNewTextChild(strm_xml->prnt, NULL,
-                        BAD_CAST "usage",
-                        BAD_CAST buf);
-    }
-
     strm_xml->changed = true;
 
-    return true;
+    return hidrd_strm_xml_write_element(strm_xml, item);
 }
 
 
