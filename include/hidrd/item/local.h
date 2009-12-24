@@ -88,7 +88,7 @@ HIDRD_ITEM_SHORT_GEN_FUNCS(local, LOCAL)
     static inline bool                                                  \
     hidrd_item_##_name##_valid_class(const hidrd_item *item)            \
     {                                                                   \
-        return hidrd_item_local_valid(item) &&                          \
+        return hidrd_item_local_valid_class(item) &&                    \
                hidrd_item_local_get_tag(item) ==                        \
                HIDRD_ITEM_LOCAL_TAG_##_NAME;                            \
     }                                                                   \
@@ -97,7 +97,8 @@ HIDRD_ITEM_SHORT_GEN_FUNCS(local, LOCAL)
     hidrd_item_##_name##_valid_inst(const hidrd_item *item)             \
     {                                                                   \
         assert(hidrd_item_##_name##_valid_class(item));                 \
-        return hidrd_item_##_name##_value_valid(                        \
+        return hidrd_item_local_valid_inst(item) &&                     \
+               hidrd_item_##_name##_value_valid(                        \
                     (_int_type)hidrd_item_local_get_unsigned(item));    \
     }                                                                   \
                                                                         \

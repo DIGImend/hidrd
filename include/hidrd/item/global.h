@@ -93,7 +93,7 @@ HIDRD_ITEM_SHORT_GEN_FUNCS(global, GLOBAL)
     static inline bool                                                  \
     hidrd_item_##_name##_valid_class(const hidrd_item *item)            \
     {                                                                   \
-        return hidrd_item_global_valid(item) &&                         \
+        return hidrd_item_global_valid_class(item) &&                   \
                hidrd_item_global_get_tag(item) ==                       \
                HIDRD_ITEM_GLOBAL_TAG_##_NAME;                           \
     }                                                                   \
@@ -102,7 +102,8 @@ HIDRD_ITEM_SHORT_GEN_FUNCS(global, GLOBAL)
     hidrd_item_##_name##_valid_inst(const hidrd_item *item)             \
     {                                                                   \
         assert(hidrd_item_##_name##_valid_class(item));                 \
-        return hidrd_item_##_name##_value_valid(                        \
+        return hidrd_item_global_valid_inst(item) &&                    \
+               hidrd_item_##_name##_value_valid(                        \
                     (_int_type)hidrd_item_global_get_##_sign(item));    \
     }                                                                   \
                                                                         \

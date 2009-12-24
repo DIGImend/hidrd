@@ -460,7 +460,7 @@ hidrd_item_short_init_unsigned(hidrd_item              *item,
     static inline bool                                                  \
     hidrd_item_##_name##_valid_class(const hidrd_item *item)            \
     {                                                                   \
-        return hidrd_item_short_valid(item) &&                          \
+        return hidrd_item_short_valid_class(item) &&                    \
                (hidrd_item_short_get_type(item) ==                      \
                 HIDRD_ITEM_SHORT_TYPE_##_NAME);                         \
     }                                                                   \
@@ -469,7 +469,8 @@ hidrd_item_short_init_unsigned(hidrd_item              *item,
     hidrd_item_##_name##_valid_inst(const hidrd_item *item)             \
     {                                                                   \
         assert(hidrd_item_##_name##_valid_class(item));                 \
-        return hidrd_item_##_name##_tag_valid(                          \
+        return hidrd_item_short_valid_inst(item) &&                     \
+               hidrd_item_##_name##_tag_valid(                          \
                     hidrd_item_short_get_tag(item));                    \
     }                                                                   \
                                                                         \

@@ -36,9 +36,8 @@ extern "C" {
 static inline bool
 hidrd_item_pop_valid_class(const hidrd_item *item)
 {
-    return hidrd_item_global_valid(item) &&
-           hidrd_item_global_get_tag(item) ==
-           HIDRD_ITEM_GLOBAL_TAG_POP;
+    return hidrd_item_global_valid_class(item) &&
+           hidrd_item_global_get_tag(item) == HIDRD_ITEM_GLOBAL_TAG_POP;
 }
 
 
@@ -46,7 +45,7 @@ static inline bool
 hidrd_item_pop_valid_inst(const hidrd_item *item)
 {
     assert(hidrd_item_pop_valid_class(item));
-    return true;
+    return hidrd_item_global_valid_inst(item);
 }
 
 

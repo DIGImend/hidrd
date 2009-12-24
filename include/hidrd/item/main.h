@@ -101,7 +101,7 @@ hidrd_item_main_get_bit(const hidrd_item *item, uint8_t idx)
     static inline bool                                          \
     hidrd_item_##_name##_valid_class(const hidrd_item *item)    \
     {                                                           \
-        return hidrd_item_main_valid(item) &&                   \
+        return hidrd_item_main_valid_class(item) &&             \
                hidrd_item_main_get_tag(item) ==                 \
                HIDRD_ITEM_MAIN_TAG_##_NAME;                     \
     }                                                           \
@@ -110,7 +110,7 @@ hidrd_item_main_get_bit(const hidrd_item *item, uint8_t idx)
     hidrd_item_##_name##_valid_inst(const hidrd_item *item)     \
     {                                                           \
         assert(hidrd_item_##_name##_valid_class(item));         \
-        return true;                                            \
+        return hidrd_item_main_valid_inst(item);                \
     }                                                           \
                                                                 \
     static inline bool                                          \

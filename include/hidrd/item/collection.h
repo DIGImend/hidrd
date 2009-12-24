@@ -96,7 +96,7 @@ hidrd_item_collection_type_vendor(hidrd_item_collection_type type)
 static inline bool
 hidrd_item_collection_valid_class(const hidrd_item *item)
 {
-    return hidrd_item_main_valid(item) &&
+    return hidrd_item_main_valid_class(item) &&
            (hidrd_item_main_get_tag(item) ==
             HIDRD_ITEM_MAIN_TAG_COLLECTION);
 }
@@ -106,7 +106,8 @@ static inline bool
 hidrd_item_collection_valid_inst(const hidrd_item *item)
 {
     assert(hidrd_item_collection_valid_class(item));
-    return hidrd_item_collection_type_valid(
+    return hidrd_item_main_valid_inst(item) &&
+           hidrd_item_collection_type_valid(
                 hidrd_item_short_get_unsigned(item));
 }
 
