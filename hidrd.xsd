@@ -375,6 +375,7 @@
             <xsd:element ref="report_id" />
             <xsd:element ref="report_count" />
             <xsd:element ref="push" />
+            <xsd:element ref="pop" />
         </xsd:choice>
     </xsd:group>
 
@@ -545,10 +546,22 @@
     </xsd:element>
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
-        GLOBAL ITEM: PUSH (AND POP)
+        GLOBAL ITEM: PUSH AND POP
     - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-    <xsd:element name="push" type="basic_sequence" />
-
+    <xsd:element name="push">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:restriction base="xsd:anyType" />
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="pop">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:restriction base="xsd:anyType" />
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
         LOCAL ITEM
     - - - - - - - - - - - - - - - - - - - - - - - - - - -->
