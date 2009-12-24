@@ -202,7 +202,7 @@ main(int argc, char **argv)
 
     fprintf(stderr, "%.*s", test_xml_len, test_xml_buf);
 
-    free(text_xml_buf);
+    free(test_xml_buf);
 
     return 0;
 }
