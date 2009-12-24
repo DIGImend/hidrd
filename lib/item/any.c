@@ -50,11 +50,11 @@ hidrd_item_valid(const hidrd_item *item)
 
     assert(hidrd_item_basic_valid(item));
 
-    switch (hidrd_item_basic_get_type(item))
+    switch (hidrd_item_basic_get_format(item))
     {
-        case HIDRD_ITEM_BASIC_TYPE_LONG:
+        case HIDRD_ITEM_BASIC_FORMAT_LONG:
             return hidrd_item_long_valid_inst(item);
-        case HIDRD_ITEM_BASIC_TYPE_SHORT:
+        case HIDRD_ITEM_BASIC_FORMAT_SHORT:
             switch (short_type = hidrd_item_short_get_type(item))
             {
                 case HIDRD_ITEM_SHORT_TYPE_MAIN:

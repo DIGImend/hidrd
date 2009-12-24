@@ -42,7 +42,7 @@ extern "C" {
 static inline bool
 hidrd_item_long_valid_class(const hidrd_item *item)
 {
-    return hidrd_item_basic_valid(item) &&
+    return hidrd_item_basic_valid_class(item) &&
            hidrd_item_basic_is_long(item);
 }
 
@@ -51,7 +51,7 @@ static inline bool
 hidrd_item_long_valid_inst(const hidrd_item *item)
 {
     assert(hidrd_item_long_valid_class(item));
-    return true;
+    return hidrd_item_basic_valid_inst(item);
 }
 
 
@@ -77,14 +77,15 @@ static inline uint8_t
 hidrd_item_long_get_data_size(const hidrd_item *item)
 {
     assert(hidrd_item_long_valid(item));
-    return item[1];
+    /* We promise not to change the item */
+    return ((uint8_t *)hidrd_item_basic_get_data((hidrd_item *)item))[0];
 }
 
 static inline hidrd_item *
 hidrd_item_long_set_data_size(hidrd_item *item, uint8_t size)
 {
     assert(hidrd_item_long_valid(item));
-    item[1] = size;
+    ((uint8_t *)hidrd_item_basic_get_data(item))[0] = size;
     return item;
 }
 
@@ -92,14 +93,15 @@ static inline hidrd_item_long_tag
 hidrd_item_long_get_tag(const hidrd_item *item)
 {
     assert(hidrd_item_long_valid(item));
-    return item[2];
+    /* We promise not to change the item */
+    return ((uint8_t *)hidrd_item_basic_get_data((hidrd_item *)item))[1];
 }
 
 static inline hidrd_item *
 hidrd_item_long_set_tag(hidrd_item *item, hidrd_item_long_tag tag)
 {
     assert(hidrd_item_long_valid(item));
-    item[2] = tag;
+    ((uint8_t *)hidrd_item_basic_get_data(item))[1] = tag;
     return item;
 }
 
@@ -107,14 +109,14 @@ static inline void *
 hidrd_item_long_get_data(hidrd_item *item)
 {
     assert(hidrd_item_long_valid(item));
-    return &item[3];
+    return &((uint8_t *)hidrd_item_basic_get_data(item))[2];
 }
 
 static inline size_t
 hidrd_item_long_get_size(const hidrd_item *item)
 {
     assert(hidrd_item_long_valid(item));
-    return 3 + hidrd_item_long_get_data_size(item);
+    return HIDRD_ITEM_LONG_MIN_SIZE + hidrd_item_long_get_data_size(item);
 }
 
 static inline hidrd_item *
@@ -123,11 +125,14 @@ hidrd_item_long_init(hidrd_item            *item,
                      uint8_t                data_size)
 {
     return hidrd_item_long_validate(
-        hidrd_item_long_set_tag(
-            hidrd_item_long_set_data_size(
-                hidrd_item_basic_init(item, HIDRD_ITEM_BASIC_TYPE_LONG),
-                data_size),
-            tag));
+            hidrd_item_long_set_tag(
+                hidrd_item_long_set_data_size(
+                    hidrd_item_basic_init(item,
+                                          HIDRD_ITEM_BASIC_TYPE_LONG,
+                                          HIDRD_ITEM_BASIC_TAG_LONG,
+                                          HIDRD_ITEM_BASIC_DATA_SIZE_LONG),
+                    data_size),
+                tag));
 }
 
 
