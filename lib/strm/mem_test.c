@@ -267,6 +267,9 @@ main(int argc, char **argv)
         exit(1);
     }
 
+    /* Free original report descriptor buffer as not needed anymore */
+    free(orig_rd_buf);
+
     /*
      * Read test descriptor stream and compare it to the items.
      */

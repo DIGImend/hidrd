@@ -29,6 +29,20 @@
 #include "hidrd/strm/xml.h"
 #include "xml.h"
 
+void
+hidrd_strm_xml_init_parser(void)
+{
+    xmlInitParser();
+}
+
+
+void
+hidrd_strm_xml_clnp_parser(void)
+{
+    xmlCleanupParser();
+}
+
+
 static bool
 hidrd_strm_xml_init(hidrd_strm *strm, va_list ap)
 {

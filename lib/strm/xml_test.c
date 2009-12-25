@@ -153,9 +153,6 @@ int
 main(int argc, char **argv)
 {
     const item_desc    *orig_item;
-    void               *orig_rd_buf;
-    size_t              orig_rd_len;
-    void               *p;
 
     hidrd_strm         *strm            = NULL;
     char               *test_xml_buf    = NULL;
@@ -168,19 +165,7 @@ main(int argc, char **argv)
     (void)argc;
     (void)argv;
 
-    /*
-     * Generate original report descriptor
-     */
-    for (orig_rd_len = 0, orig_item = item_list;
-         orig_item->len != 0; orig_item++)
-        orig_rd_len += orig_item->len;
-
-    orig_rd_buf = malloc(orig_rd_len);
-
-    for (p = orig_rd_buf, orig_item = item_list;
-         orig_item->len != 0;
-         p += orig_item->len, orig_item++)
-        memcpy(p, orig_item->buf, orig_item->len);
+    hidrd_strm_xml_init_parser();
 
     /*
      * Write report descriptor to an XML stream
@@ -203,6 +188,8 @@ main(int argc, char **argv)
     fprintf(stderr, "%.*s", test_xml_len, test_xml_buf);
 
     free(test_xml_buf);
+
+    hidrd_strm_xml_clnp_parser();
 
     return 0;
 }

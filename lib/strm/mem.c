@@ -162,6 +162,8 @@ hidrd_strm_mem_flush(hidrd_strm *strm)
             return false;
         }
         strm_mem->buf = new_buf;
+        if (strm_mem->pbuf != NULL)
+            *strm_mem->pbuf = new_buf;
         strm_mem->alloc = strm_mem->size;
     }
 

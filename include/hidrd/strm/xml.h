@@ -36,6 +36,16 @@ extern "C" {
 
 extern const hidrd_strm_type    hidrd_strm_xml;
 
+/**
+ * Initialize global state of the XML parser.
+ */
+void hidrd_strm_xml_init_parser(void);
+
+/**
+ * Cleanup global state of the XML parser.
+ */
+void hidrd_strm_xml_clnp_parser(void);
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
