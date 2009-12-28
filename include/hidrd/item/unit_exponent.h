@@ -38,7 +38,7 @@ extern "C" {
  */
 
 static inline bool
-hidrd_item_unit_exponent_value_valid(uint32_t value)
+hidrd_item_unit_exponent_value_valid(int32_t value)
 {
     /* TODO figure out the correct values */
     (void)value;
@@ -46,7 +46,7 @@ hidrd_item_unit_exponent_value_valid(uint32_t value)
 }
 
 HIDRD_ITEM_GLOBAL_FUNCS(unit_exponent, UNIT_EXPONENT,
-                        unsigned, uint32_t, uint32_t)
+                        unsigned, uint32_t, int32_t)
 
 #ifdef __cplusplus
 } /* extern "C" */
