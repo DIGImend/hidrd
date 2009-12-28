@@ -1,5 +1,5 @@
 /** @file
- * @brief HID report descriptor - memory stream type
+ * @brief HID report descriptor - native stream type
  *
  * Copyright (C) 2009 Nikolai Kondrashov
  *
@@ -24,8 +24,8 @@
  * @(#) $Id$
  */
 
-#ifndef __HIDRD_STRM_MEM_H__
-#define __HIDRD_STRM_MEM_H__
+#ifndef __HIDRD_STRM_NATV_H__
+#define __HIDRD_STRM_NATV_H__
 
 #include "hidrd/strm/type.h"
 
@@ -33,10 +33,10 @@
 extern "C" {
 #endif
 
-extern const hidrd_strm_type    hidrd_strm_mem;
+extern const hidrd_strm_type    hidrd_strm_natv;
 
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
 
-#endif /* __HIDRD_STRM_MEM_H__ */
+#endif /* __HIDRD_STRM_NATV_H__ */

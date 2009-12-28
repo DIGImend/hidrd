@@ -1,5 +1,5 @@
 /** @file
- * @brief HID report descriptor - memory stream test
+ * @brief HID report descriptor - native stream test
  *
  * Copyright (C) 2009 Nikolai Kondrashov
  *
@@ -30,7 +30,7 @@
 #include <error.h>
 #include <stdio.h>
 #include "hidrd/strm.h"
-#include "hidrd/strm/mem.h"
+#include "hidrd/strm/natv.h"
 
 typedef struct item_desc {
     uint8_t     buf[HIDRD_ITEM_MAX_SIZE];
@@ -227,11 +227,11 @@ main(int argc, char **argv)
         memcpy(p, orig_item->buf, orig_item->len);
 
     /*
-     * Write report descriptor to a memory stream
+     * Write report descriptor to a native stream
      */
-    strm = hidrd_strm_open(&hidrd_strm_mem, &test_rd_buf, &test_rd_len);
+    strm = hidrd_strm_open(&hidrd_strm_natv, &test_rd_buf, &test_rd_len);
     if (strm == NULL)
-        error(1, errno, "Failed to create memory stream");
+        error(1, errno, "Failed to create native stream");
 
     for (orig_item = item_list; orig_item->len != 0; orig_item++)
         if (!hidrd_strm_write(strm, orig_item->buf))
@@ -273,7 +273,7 @@ main(int argc, char **argv)
     /*
      * Read test descriptor stream and compare it to the items.
      */
-    strm = hidrd_strm_open(&hidrd_strm_mem, &test_rd_buf, &test_rd_len);
+    strm = hidrd_strm_open(&hidrd_strm_natv, &test_rd_buf, &test_rd_len);
     for (orig_item = item_list; orig_item->len != 0; orig_item++)
     {
         if ((test_item = hidrd_strm_read(strm)) == NULL)

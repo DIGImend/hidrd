@@ -20,16 +20,16 @@ lib_LTLIBRARIES = libhidrd_strm.la
 
 libhidrd_strm_la_SOURCES = \
     inst.c                  \
-    mem.c                   \
+    natv.c                  \
     type.c
 
 libhidrd_strm_la_LIBADD = ../item/libhidrd_item.la
 
-check_PROGRAMS = mem_test
-TESTS = mem_test
+check_PROGRAMS = natv_test
+TESTS = natv_test
 
-mem_test_SOURCES = mem_test.c
-mem_test_LDADD = $(lib_LTLIBRARIES)
+natv_test_SOURCES = natv_test.c
+natv_test_LDADD = $(lib_LTLIBRARIES)
 
 if WITH_LIBXML2
 libhidrd_strm_la_SOURCES += xml.c xml_read.c xml_write.c
