@@ -24,10 +24,8 @@
  * @(#) $Id$
  */
 
-
 #include <string.h>
 #include "hidrd/item/local.h"
-
 
 #ifdef HIDRD_WITH_TOKENS
 char *
