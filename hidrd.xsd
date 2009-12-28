@@ -5,6 +5,15 @@
             elementFormDefault="qualified">
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
+        COMMON DEFINITIONS
+    - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <xsd:complexType name="empty">
+        <xsd:complexContent>
+            <xsd:restriction base="xsd:anyType" />
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
         BASIC ITEM
     - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <xsd:simpleType name="basic_size">
@@ -139,6 +148,8 @@
             <xsd:element ref="output" />
             <xsd:element ref="feature" />
             <xsd:element ref="collection" />
+            <xsd:element ref="end_collection" />
+            <xsd:element ref="collection_group" />
         </xsd:choice>
     </xsd:group>
 
@@ -296,7 +307,7 @@
     <xsd:element name="feature" type="output_or_feature" />
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
-        MAIN ITEM: COLLECTION (AND END COLLECTION)
+        MAIN ITEM: COLLECTION AND END_COLLECTION
     - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <xsd:simpleType name="collection_type">
         <xsd:union memberTypes="xsd:unsignedByte">
@@ -315,6 +326,18 @@
     </xsd:simpleType>
 
     <xsd:element name="collection">
+        <xsd:complexType>
+            <xsd:attribute name="type" type="collection_type"
+                           use="required" />
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="end_collection" type="empty" />
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
+        META ITEM: COLLECTION_GROUP
+    - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <xsd:element name="collection_group">
         <xsd:complexType>
             <xsd:complexContent>
                 <xsd:extension base="basic_sequence">
@@ -376,6 +399,7 @@
             <xsd:element ref="report_count" />
             <xsd:element ref="push" />
             <xsd:element ref="pop" />
+            <xsd:element ref="push_group" />
         </xsd:choice>
     </xsd:group>
 
@@ -546,22 +570,16 @@
     </xsd:element>
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
-        GLOBAL ITEM: PUSH AND POP
+        GLOBAL ITEM: PUSH AND POP (AND PUSH GROUP - PUSH/POP)
     - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-    <xsd:element name="push">
-        <xsd:complexType>
-            <xsd:complexContent>
-                <xsd:restriction base="xsd:anyType" />
-            </xsd:complexContent>
-        </xsd:complexType>
-    </xsd:element>
-    <xsd:element name="pop">
-        <xsd:complexType>
-            <xsd:complexContent>
-                <xsd:restriction base="xsd:anyType" />
-            </xsd:complexContent>
-        </xsd:complexType>
-    </xsd:element>
+    <xsd:element name="push" type="empty" />
+    <xsd:element name="pop" type="empty" />
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
+        META ITEM: PUSH_GROUP (PUSH/POP PAIR)
+    - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <xsd:element name="push_group" type="basic_sequence" />
+
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
         LOCAL ITEM
     - - - - - - - - - - - - - - - - - - - - - - - - - - -->
@@ -606,7 +624,8 @@
             <xsd:element ref="string_index" />
             <xsd:element ref="string_minimum" />
             <xsd:element ref="string_maximum" />
-            <xsd:element ref="set" />
+            <xsd:element ref="delimiter" />
+            <xsd:element ref="set_group" />
         </xsd:choice>
     </xsd:group>
 
@@ -632,9 +651,14 @@
     <xsd:element name="string_maximum" type="xsd:unsignedInt" />
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
-        LOCAL ITEM: SET
+        LOCAL ITEM: DELIMITER (AND SET - DELIMITER PAIR)
     - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-    <xsd:element name="set">
+    <xsd:element name="delimiter" type="empty" />
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
+        META ITEM: SET_GROUP (DELIMITER PAIR)
+    - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <xsd:element name="set_group">
         <xsd:complexType>
             <xsd:sequence>
                 <xsd:element ref="usage" maxOccurs="unbounded" />
