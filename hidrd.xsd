@@ -390,9 +390,7 @@
             <xsd:element ref="logical_maximum" />
             <xsd:element ref="physical_minimum" />
             <xsd:element ref="physical_maximum" />
-            <!--
             <xsd:element ref="unit_exponent" />
-            -->
             <xsd:element ref="unit" />
             <xsd:element ref="report_size" />
             <xsd:element ref="report_id" />
@@ -640,6 +638,7 @@
                     STRING MINIMUM
                     STRING MAXIMUM
     - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <!-- FIXME provide symbolic usage reference -->
     <xsd:element name="usage" type="xsd:unsignedInt" />
     <xsd:element name="usage_minimum" type="xsd:unsignedInt" />
     <xsd:element name="usage_maximum" type="xsd:unsignedInt" />
