@@ -67,6 +67,19 @@ hidrd_item_collection_type_valid(hidrd_item_collection_type type)
 }
 
 
+#ifdef HIDRD_WITH_TOKENS
+/**
+ * Convert a collection type to a string token.
+ *
+ * @param type  Collection type.
+ *
+ * @return Dynamically allocated collection type string token.
+ */
+extern char *hidrd_item_collection_type_to_token(
+                                        hidrd_item_collection_type type);
+#endif /* HIDRD_WITH_TOKENS */
+
+
 static inline bool
 hidrd_item_collection_type_known(hidrd_item_collection_type type)
 {
@@ -134,6 +147,17 @@ hidrd_item_collection_get_type(const hidrd_item *item)
     assert(hidrd_item_collection_valid(item));
     return hidrd_item_short_get_unsigned(item);
 }
+
+
+#ifdef HIDRD_WITH_TOKENS
+static inline char *
+hidrd_item_collection_get_type_token(const hidrd_item *item)
+{
+    assert(hidrd_item_collection_valid(item));
+    return hidrd_item_collection_type_to_token(
+            hidrd_item_collection_get_type(item));
+}
+#endif /* HIDRD_WITH_TOKENS */
 
 
 static inline hidrd_item *
