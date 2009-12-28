@@ -79,6 +79,7 @@ failure:
 /** String formatting type */
 typedef enum str_fmt {
     STR_FMT_NULL,   /**< NULL string */
+    STR_FMT_INT,    /**< Signed integer */
     STR_FMT_UINT,   /**< Unsigned integer */
     STR_FMT_STRDUP, /**< String duplication */
     STR_FMT_STROWN, /**< String ownership taking */
@@ -140,6 +141,10 @@ fmt_strpv(char     **pstr,
     {
         case STR_FMT_NULL:
             str = NULL;
+            break;
+        case STR_FMT_INT:
+            if (asprintf(&str, "%d", va_arg(*pap, int)) < 0)
+                return false;
             break;
         case STR_FMT_UINT:
             if (asprintf(&str, "%u", va_arg(*pap, unsigned int)) < 0)
@@ -367,9 +372,160 @@ element_seal(hidrd_strm_xml_inst   *strm_xml)
 #define CONTAINER_END \
     element_seal(strm_xml)
 
+#define SIMPLE_INT(_TYPE, _NAME, _name) \
+    case HIDRD_ITEM_##_TYPE##_TAG_##_NAME:                          \
+        return SIMPLE(                                              \
+                _name,                                              \
+                CONTENT(INT,                                        \
+                        (int)hidrd_item_##_name##_get_value(item)))
+
+#define SIMPLE_UINT(_TYPE, _NAME, _name) \
+    case HIDRD_ITEM_##_TYPE##_TAG_##_NAME:                          \
+        return SIMPLE(                                              \
+                _name,                                              \
+                CONTENT(INT,                                        \
+                        (unsigned int)                              \
+                            hidrd_item_##_name##_get_value(item)))
+
+
 static bool
-write_element(hidrd_strm_xml_inst   *strm_xml,
-              const hidrd_item      *item)
+write_main_element(hidrd_strm_xml_inst   *strm_xml,
+                   const hidrd_item      *item)
+{
+    assert(hidrd_item_main_valid(item));
+
+    switch (hidrd_item_main_get_tag(item))
+    {
+        case HIDRD_ITEM_MAIN_TAG_COLLECTION:
+            return SIMPLE(
+                    collection,
+                    ATTR(type, STROWN,
+                         hidrd_item_collection_get_type_token(item)));
+        case HIDRD_ITEM_MAIN_TAG_END_COLLECTION:
+            return SIMPLE(end_collection);
+        default:
+            return SIMPLE(
+                    main,
+                    ATTR(tag, STROWN,
+                         hidrd_item_main_get_tag_token(item)),
+                    CONTENT(
+                        HEX,
+                        /* We promise we won't change it */
+                        hidrd_item_short_get_data((hidrd_item *)item)),
+                        hidrd_item_short_get_data_size_bytes(item));
+    }
+}
+
+
+static bool
+write_global_element(hidrd_strm_xml_inst   *strm_xml,
+                   const hidrd_item      *item)
+{
+    assert(hidrd_item_global_valid(item));
+
+    switch (hidrd_item_global_get_tag(item))
+    {
+        /* FIXME use tokens */
+        SIMPLE_UINT(GLOBAL, USAGE_PAGE, usage_page);
+
+        SIMPLE_INT(GLOBAL, LOGICAL_MINIMUM, logical_minimum);
+        SIMPLE_INT(GLOBAL, LOGICAL_MAXIMUM, logical_maximum);
+        SIMPLE_INT(GLOBAL, PHYSICAL_MINIMUM, physical_minimum);
+        SIMPLE_INT(GLOBAL, PHYSICAL_MAXIMUM, physical_maximum);
+        SIMPLE_INT(GLOBAL, UNIT_EXPONENT, unit_exponent);
+
+        /* TODO unit item */
+
+        SIMPLE_UINT(GLOBAL, REPORT_SIZE, report_size);
+        SIMPLE_UINT(GLOBAL, REPORT_ID, report_id);
+        SIMPLE_UINT(GLOBAL, REPORT_COUNT, report_count);
+
+        case HIDRD_ITEM_GLOBAL_TAG_PUSH:
+            return SIMPLE(push);
+        case HIDRD_ITEM_GLOBAL_TAG_POP:
+            return SIMPLE(pop);
+        default:
+            return SIMPLE(
+                    global,
+                    ATTR(tag, STROWN,
+                         hidrd_item_global_get_tag_token(item)),
+                    CONTENT(HEX,
+                            /* We promise we won't change it */
+                            hidrd_item_short_get_data((hidrd_item *)item)),
+                            hidrd_item_short_get_data_size_bytes(item));
+    }
+}
+
+
+static bool
+write_local_element(hidrd_strm_xml_inst   *strm_xml,
+                   const hidrd_item      *item)
+{
+    assert(hidrd_item_local_valid(item));
+
+    switch (hidrd_item_local_get_tag(item))
+    {
+        /* FIXME use tokens */
+        SIMPLE_UINT(LOCAL, USAGE, usage);
+        /* FIXME use tokens */
+        SIMPLE_UINT(LOCAL, USAGE_MINIMUM, usage_minimum);
+        /* FIXME use tokens */
+        SIMPLE_UINT(LOCAL, USAGE_MAXIMUM, usage_maximum);
+
+        SIMPLE_UINT(LOCAL, DESIGNATOR_INDEX, designator_index);
+        SIMPLE_UINT(LOCAL, DESIGNATOR_MINIMUM, designator_minimum);
+        SIMPLE_UINT(LOCAL, DESIGNATOR_MAXIMUM, designator_maximum);
+        SIMPLE_UINT(LOCAL, STRING_INDEX, string_index);
+        SIMPLE_UINT(LOCAL, STRING_MINIMUM, string_minimum);
+        SIMPLE_UINT(LOCAL, STRING_MAXIMUM, string_maximum);
+
+        case HIDRD_ITEM_LOCAL_TAG_DELIMITER:
+            return SIMPLE(delimiter);
+
+        default:
+            return SIMPLE(
+                    local,
+                    ATTR(tag, STROWN,
+                         hidrd_item_local_get_tag_token(item)),
+                    CONTENT(HEX,
+                            /* We promise we won't change it */
+                            hidrd_item_short_get_data((hidrd_item *)item)),
+                            hidrd_item_short_get_data_size_bytes(item));
+    }
+}
+
+
+static bool
+write_short_element(hidrd_strm_xml_inst   *strm_xml,
+                    const hidrd_item      *item)
+{
+    assert(hidrd_item_short_valid(item));
+
+    switch (hidrd_item_short_get_type(item))
+    {
+        case HIDRD_ITEM_SHORT_TYPE_MAIN:
+            return write_main_element(strm_xml, item);
+        case HIDRD_ITEM_SHORT_TYPE_GLOBAL:
+            return write_global_element(strm_xml, item);
+        case HIDRD_ITEM_SHORT_TYPE_LOCAL:
+            return write_local_element(strm_xml, item);
+        default:
+            return SIMPLE(short,
+                    ATTR(type, STROWN,
+                         hidrd_item_short_get_type_token(item)),
+                    ATTR(tag, STROWN,
+                         hidrd_item_short_get_tag_token(item)),
+                    CONTENT(HEX,
+                            /* We promise we won't change it */
+                            hidrd_item_short_get_data((hidrd_item *)item)),
+                            hidrd_item_short_get_data_size_bytes(item));
+    }
+}
+
+
+static bool
+write_basic_element(hidrd_strm_xml_inst   *strm_xml,
+                    const hidrd_item      *item)
 {
     switch (hidrd_item_basic_get_format(item))
     {
@@ -383,36 +539,7 @@ write_element(hidrd_strm_xml_inst   *strm_xml,
                               hidrd_item_long_get_data_size(item));
 
         case HIDRD_ITEM_BASIC_FORMAT_SHORT:
-            switch (hidrd_item_short_get_type(item))
-            {
-                case HIDRD_ITEM_SHORT_TYPE_MAIN:
-                    switch (hidrd_item_main_get_tag(item))
-                    {
-                        default:
-                            return SIMPLE(
-                                    main,
-                                    ATTR(tag, STROWN,
-                                         hidrd_item_main_get_tag_token(item)),
-                                    CONTENT(
-                                        HEX,
-                                        /* We promise we won't change it */
-                                        hidrd_item_short_get_data((hidrd_item *)item)),
-                                        hidrd_item_short_get_data_size_bytes(item));
-                    }
-                    break;
-                default:
-                    return SIMPLE(short,
-                            ATTR(type, STROWN,
-                                 hidrd_item_short_get_type_token(item)),
-                            ATTR(tag, STROWN,
-                                 hidrd_item_short_get_tag_token(item)),
-                            CONTENT(
-                                HEX,
-                                /* We promise we won't change it */
-                                hidrd_item_short_get_data((hidrd_item *)item)),
-                                hidrd_item_short_get_data_size_bytes(item));
-            }
-            break;
+            return write_short_element(strm_xml, item);
         default:
             return SIMPLE(basic,
                     ATTR(type, STROWN,
@@ -437,7 +564,7 @@ hidrd_strm_xml_write(hidrd_strm *strm, const hidrd_item *item)
 
     strm_xml->changed = true;
 
-    if (!write_element(strm_xml, item))
+    if (!write_basic_element(strm_xml, item))
         goto failure;
 
     return true;
