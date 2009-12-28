@@ -30,6 +30,52 @@
 #include "hidrd/strm/xml.h"
 #include "xml.h"
 
+
+static bool
+create_doc(hidrd_strm_xml_inst *strm_xml)
+{
+    assert(strm_xml->doc == NULL);
+    assert(strm_xml->prnt == NULL);
+    assert(strm_xml->cur == NULL);
+
+    strm_xml->doc = xmlNewDoc(BAD_CAST "1.1");
+    if (strm_xml->doc == NULL)
+        goto failure;
+
+    strm_xml->prnt = xmlNewNode(NULL, BAD_CAST "descriptor");
+    if (strm_xml->prnt == NULL)
+        goto failure;
+
+    if (xmlSetProp(strm_xml->prnt, BAD_CAST "xmlns",
+                   BAD_CAST HIDRD_STRM_XML_NS) == NULL)
+        goto failure;
+
+    if (xmlSetProp(strm_xml->prnt, BAD_CAST "xmlns:xsi",
+                   BAD_CAST HIDRD_STRM_XML_NS_XSI) == NULL)
+        goto failure;
+
+    if (xmlSetProp(strm_xml->prnt, BAD_CAST "xsi:schemaLocation",
+                   BAD_CAST HIDRD_STRM_XML_XSI_SCHEMA_LOCATION) == NULL)
+        goto failure;
+
+    xmlDocSetRootElement(strm_xml->doc, strm_xml->prnt);
+
+    return true;
+
+failure:
+
+    strm_xml->prnt = NULL;
+
+    if (strm_xml->doc != NULL)
+    {
+        xmlFreeDoc(strm_xml->doc);
+        strm_xml->doc = NULL;
+    }
+
+    return false;
+}
+
+
 /** String formatting type */
 typedef enum str_fmt {
     STR_FMT_NULL,   /**< NULL string */
@@ -322,8 +368,8 @@ element_seal(hidrd_strm_xml_inst   *strm_xml)
     element_seal(strm_xml)
 
 static bool
-hidrd_strm_xml_write_element(hidrd_strm_xml_inst   *strm_xml,
-                             const hidrd_item      *item)
+write_element(hidrd_strm_xml_inst   *strm_xml,
+              const hidrd_item      *item)
 {
     switch (hidrd_item_basic_get_format(item))
     {
@@ -386,35 +432,21 @@ hidrd_strm_xml_write(hidrd_strm *strm, const hidrd_item *item)
 
     assert(!hidrd_strm_xml_being_read(strm));
 
-    if (strm_xml->doc == NULL)
-    {
-        assert(strm_xml->prnt == NULL);
-        assert(strm_xml->cur == NULL);
-
-        strm_xml->doc = xmlNewDoc(BAD_CAST "1.1");
-        if (strm_xml->doc == NULL)
-        {
-            strm->error = true;
-            return false;
-        }
-
-        strm_xml->prnt = xmlNewNode(NULL, BAD_CAST "descriptor");
-        if (strm_xml->prnt == NULL)
-        {
-            xmlFreeDoc(strm_xml->doc);
-            strm_xml->doc = NULL;
-            strm->error = true;
-            return false;
-        }
-
-        xmlDocSetRootElement(strm_xml->doc, strm_xml->prnt);
-    }
-
-    assert(strm_xml->prnt != NULL);
+    if (strm_xml->doc == NULL  && !create_doc(strm_xml))
+        goto failure;
 
     strm_xml->changed = true;
 
-    return hidrd_strm_xml_write_element(strm_xml, item);
+    if (!write_element(strm_xml, item))
+        goto failure;
+
+    return true;
+
+failure:
+
+    strm->error = true;
+
+    return false;
 }
 
 

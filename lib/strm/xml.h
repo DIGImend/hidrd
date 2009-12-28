@@ -32,6 +32,14 @@
 extern "C" {
 #endif
 
+#define HIDRD_STRM_XML_NS \
+    "http://digimend.sourceforge.net"
+#define HIDRD_STRM_XML_NS_XSI \
+    "http://www.w3.org/2001/XMLSchema-instance"
+#define HIDRD_STRM_XML_XSI_SCHEMA_LOCATION \
+    "http://digimend.sourceforge.net hidrd.xsd"
+
+/** XML stream instance */
 typedef struct hidrd_strm_xml_inst {
     hidrd_strm      strm;   /**< Parent structure */
     void          **pbuf;
