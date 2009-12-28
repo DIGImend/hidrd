@@ -42,7 +42,8 @@ typedef enum hidrd_item_local_tag {
     HIDRD_ITEM_LOCAL_TAG_DESIGNATOR_INDEX,
     HIDRD_ITEM_LOCAL_TAG_DESIGNATOR_MINIMUM,
     HIDRD_ITEM_LOCAL_TAG_DESIGNATOR_MAXIMUM,
-    HIDRD_ITEM_LOCAL_TAG_INVALID,               /**< Specification has a hole here */
+    HIDRD_ITEM_LOCAL_TAG_INVALID,               /**< Specification has
+                                                     a hole here */
     HIDRD_ITEM_LOCAL_TAG_STRING_INDEX,
     HIDRD_ITEM_LOCAL_TAG_STRING_MINIMUM,
     HIDRD_ITEM_LOCAL_TAG_STRING_MAXIMUM,
