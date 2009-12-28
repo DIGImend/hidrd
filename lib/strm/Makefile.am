@@ -45,4 +45,4 @@ xml_test_LDADD = $(lib_LTLIBRARIES)
 endif
 
 # Uncomment to have the tests installed
-#bin_PROGRAMS = $(TESTS)
+# bin_PROGRAMS = $(TESTS)
