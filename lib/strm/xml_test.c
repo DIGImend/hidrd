@@ -171,7 +171,7 @@ main(int argc, char **argv)
      * Write report descriptor to an XML stream
      */
     strm = hidrd_strm_open(&hidrd_strm_xml,
-                           &test_xml_buf, &test_xml_len, true);
+                           (void **)&test_xml_buf, &test_xml_len, true);
     if (strm == NULL)
         error(1, errno, "Failed to create XML stream");
 

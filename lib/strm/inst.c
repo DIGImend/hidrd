@@ -24,6 +24,9 @@
  * @(#) $Id$
  */
 
+#include <ctype.h>
+#include <stdio.h>
+#include "hidrd/strm/opt_list.h"
 #include "hidrd/strm/inst.h"
 
 
@@ -79,10 +82,25 @@ hidrd_strm_alloc(const hidrd_strm_type *type)
 
 
 bool
-hidrd_strm_initv(hidrd_strm *strm, va_list ap)
+hidrd_strm_initv(hidrd_strm *strm, void **pbuf, size_t *psize, va_list ap)
 {
     assert(strm != NULL);
     assert(hidrd_strm_type_valid(strm->type));
+
+    assert(pbuf == NULL ||  /* No input nor location for output buffer,
+                               maybe location for output size */
+           (
+            pbuf != NULL && psize != NULL && /* Location for both output
+                                                buffer and size, maybe
+                                                input buffer or size */
+            (*psize == 0 || *pbuf != NULL) /* Either input size of zero or
+                                              buffer must be there */
+           )
+          );
+
+    strm->pbuf  = pbuf;
+    strm->psize = psize;
+    strm->error = false;
 
     if (strm->type->init != NULL)
         if (!(*strm->type->init)(strm, ap))
@@ -95,21 +113,102 @@ hidrd_strm_initv(hidrd_strm *strm, va_list ap)
 
 
 bool
-hidrd_strm_init(hidrd_strm *strm, ...)
+hidrd_strm_init(hidrd_strm *strm, void **pbuf, size_t *psize, ...)
 {
     bool    result;
     va_list ap;
 
-    va_start(ap, strm);
-    result = hidrd_strm_initv(strm, ap);
+    va_start(ap, psize);
+    result = hidrd_strm_initv(strm, pbuf, psize, ap);
     va_end(ap);
 
     return result;
 }
 
 
+#ifdef HIDRD_STRM_WITH_OPTS
+bool
+hidrd_strm_opts_initf(hidrd_strm *strm,
+                      void **pbuf, size_t *psize,
+                      const char *opts_fmt, ...)
+{
+    va_list         ap;
+    bool            result      = false;
+    char           *opts_buf    = NULL;
+    hidrd_strm_opt *opt_list    = NULL;
+
+    assert(strm != NULL);
+    assert(hidrd_strm_type_valid(strm->type));
+
+    assert(pbuf == NULL ||  /* No input nor location for output buffer,
+                               maybe location for output size */
+           (
+            pbuf != NULL && psize != NULL && /* Location for both output
+                                                buffer and size, maybe
+                                                input buffer or size */
+            (*psize == 0 || *pbuf != NULL) /* Either input size of zero or
+                                              buffer must be there */
+           )
+          );
+    assert(opts_fmt != NULL);
+
+    va_start(ap, opts_fmt);
+
+    strm->pbuf  = pbuf;
+    strm->psize = psize;
+    strm->error = false;
+
+    /* Format option string */
+    if (vasprintf(&opts_buf, opts_fmt, ap) < 0)
+        goto cleanup;
+
+    /* Parse option string into option list */
+    opt_list = hidrd_strm_opt_list_parse(opts_buf);
+    if (opt_list == NULL)
+        goto cleanup;
+
+    /* If there is opts_init member */
+    if (strm->type->opts_init != NULL)
+    {
+        /* Initialize with option list */
+        if (!(*strm->type->opts_init)(strm, opt_list))
+            return false;
+    }
+    else
+    {
+        /* If the option list is not empty */
+        if (!hidrd_strm_opt_list_empty(opt_list))
+            return false;
+    }
+
+    assert(hidrd_strm_valid(strm));
+
+    result = true;
+
+cleanup:
+
+    free(opt_list);
+    free(opts_buf);
+    va_end(ap);
+
+    return true;
+}
+
+
+bool
+hidrd_strm_opts_init(hidrd_strm *strm,
+                     void **pbuf, size_t *psize, const char *opts)
+{
+    return hidrd_strm_opts_initf(strm, pbuf, psize, "%s", opts);
+}
+#endif /* HIDRD_STRM_WITH_OPTS */
+
+
 hidrd_strm *
-hidrd_strm_open(const hidrd_strm_type *type, ...)
+hidrd_strm_open(const hidrd_strm_type  *type,
+                void                  **pbuf,
+                size_t                 *psize,
+                ...)
 {
     hidrd_strm *strm;
     bool        result;
@@ -121,8 +220,8 @@ hidrd_strm_open(const hidrd_strm_type *type, ...)
         return NULL;
 
     /* Initialize */
-    va_start(ap, type);
-    result = hidrd_strm_initv(strm, ap);
+    va_start(ap, psize);
+    result = hidrd_strm_initv(strm, pbuf, psize, ap);
     va_end(ap);
     if (!result)
         return NULL;

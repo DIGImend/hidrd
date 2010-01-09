@@ -42,8 +42,6 @@ extern "C" {
 /** XML stream instance */
 typedef struct hidrd_strm_xml_inst {
     hidrd_strm      strm;   /**< Parent structure */
-    void          **pbuf;
-    size_t         *psize;
     bool            format;
 
     void           *buf;

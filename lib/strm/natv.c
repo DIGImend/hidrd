@@ -26,14 +26,13 @@
 
 #include <errno.h>
 #include <string.h>
+#include "hidrd/strm/opt_list.h"
 #include "hidrd/strm/natv.h"
 #include "hidrd/strm/inst.h"
 
 /** Native stream instance */
 typedef struct hidrd_strm_natv_inst {
     hidrd_strm      strm;   /**< Parent structure */
-    void          **pbuf;   /**< Location for stream buffer pointer */
-    size_t         *psize;  /**< Location for stream size */
     void           *buf;    /**< Buffer pointer */
     size_t          size;   /**< Stream size */
     size_t          alloc;  /**< Buffer size */
@@ -42,26 +41,13 @@ typedef struct hidrd_strm_natv_inst {
 
 
 static bool
-hidrd_strm_natv_init(hidrd_strm *strm, va_list ap)
+init(hidrd_strm *strm)
 {
     hidrd_strm_natv_inst   *strm_natv   = (hidrd_strm_natv_inst *)strm;
-    void                  **pbuf        = va_arg(ap, void **);
-    size_t                 *psize       = va_arg(ap, size_t *);
-    void                   *buf;
-    size_t                  size;
 
-    buf = (pbuf != NULL) ? *pbuf : NULL;
-    size = (psize != NULL) ? *psize : 0;
+    void   *buf     = (strm->pbuf != NULL) ? *strm->pbuf : NULL;
+    size_t  size    = (strm->psize != NULL) ? *strm->psize : 0;
 
-    if (buf == NULL && size != 0)
-    {
-        buf = malloc(size);
-        if (buf == NULL)
-            return false;
-    }
-
-    strm_natv->pbuf     = pbuf;
-    strm_natv->psize    = psize;
     strm_natv->buf      = buf;
     strm_natv->size     = size;
     strm_natv->alloc    = size;
@@ -70,6 +56,23 @@ hidrd_strm_natv_init(hidrd_strm *strm, va_list ap)
     return true;
 }
 
+
+static bool
+hidrd_strm_natv_init(hidrd_strm *strm, va_list ap)
+{
+    (void)ap;
+    return init(strm);
+}
+
+
+#ifdef HIDRD_STRM_WITH_OPTS
+static bool
+hidrd_strm_natv_opts_init(hidrd_strm *strm, const hidrd_strm_opt *list)
+{
+    return hidrd_strm_opt_list_empty(list) &&
+           init(strm);
+}
+#endif
 
 static bool
 hidrd_strm_natv_valid(const hidrd_strm *strm)
@@ -134,8 +137,8 @@ hidrd_strm_natv_write(hidrd_strm *strm, const hidrd_item *item)
             return false;
         }
         strm_natv->buf = new_buf;
-        if (strm_natv->pbuf != NULL)
-            *strm_natv->pbuf = new_buf;
+        if (strm->pbuf != NULL)
+            *strm->pbuf = new_buf;
         strm_natv->alloc = new_alloc;
     }
 
@@ -164,14 +167,14 @@ hidrd_strm_natv_flush(hidrd_strm *strm)
             return false;
         }
         strm_natv->buf = new_buf;
-        if (strm_natv->pbuf != NULL)
-            *strm_natv->pbuf = new_buf;
+        if (strm->pbuf != NULL)
+            *strm->pbuf = new_buf;
         strm_natv->alloc = strm_natv->size;
     }
 
     /* Output size */
-    if (strm_natv->psize != NULL)
-        *strm_natv->psize = strm_natv->size;
+    if (strm->psize != NULL)
+        *strm->psize = strm_natv->size;
 
     /* NOTE: pbuf is always in sync, see hidrd_strm_natv_write */
 
@@ -185,7 +188,7 @@ hidrd_strm_natv_clnp(hidrd_strm *strm)
     hidrd_strm_natv_inst   *strm_natv   = (hidrd_strm_natv_inst *)strm;
 
     /* If somebody else owns the buffer */
-    if (strm_natv->pbuf != NULL)
+    if (strm->pbuf != NULL)
         return;
 
     free(strm_natv->buf);
@@ -197,13 +200,17 @@ hidrd_strm_natv_clnp(hidrd_strm *strm)
 
 
 const hidrd_strm_type hidrd_strm_natv = {
-    .size   = sizeof(hidrd_strm_natv_inst),
-    .init   = hidrd_strm_natv_init,
-    .valid  = hidrd_strm_natv_valid,
-    .read   = hidrd_strm_natv_read,
-    .write  = hidrd_strm_natv_write,
-    .flush  = hidrd_strm_natv_flush,
-    .clnp   = hidrd_strm_natv_clnp,
+    .name       = "native",
+    .size       = sizeof(hidrd_strm_natv_inst),
+    .init       = hidrd_strm_natv_init,
+#ifdef HIDRD_STRM_WITH_OPTS
+    .opts_init  = hidrd_strm_natv_opts_init,
+#endif
+    .valid      = hidrd_strm_natv_valid,
+    .read       = hidrd_strm_natv_read,
+    .write      = hidrd_strm_natv_write,
+    .flush      = hidrd_strm_natv_flush,
+    .clnp       = hidrd_strm_natv_clnp,
 };
 
 

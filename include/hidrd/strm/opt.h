@@ -1,7 +1,7 @@
 /** @file
- * @brief HID report descriptor - stream type
+ * @brief HID report descriptor - stream initialization option
  *
- * Copyright (C) 2009 Nikolai Kondrashov
+ * Copyright (C) 2010 Nikolai Kondrashov
  *
  * This file is part of hidrd.
  *
@@ -24,20 +24,35 @@
  * @(#) $Id$
  */
 
-#include "hidrd/strm/type.h"
-#include "hidrd/strm/inst.h"
+#ifndef __HIDRD_STRM_OPT_H__
+#define __HIDRD_STRM_OPT_H__
 
-bool
-hidrd_strm_type_valid(const hidrd_strm_type *type)
-{
-    return type != NULL &&
-           type->name != NULL && *type->name != '\0' &&
-           type->size >= sizeof(hidrd_strm) &&
-#ifdef HIDRD_STRM_WITH_OPTS
-           ((type->init == NULL && type->opts_init == NULL) ||
-            (type->init != NULL && type->opts_init != NULL)) &&
+#include <stdbool.h>
+#include "hidrd/strm/opt.h"
+
+#ifdef __cplusplus
+extern "C" {
 #endif
-           (type->read != NULL || type->write != NULL);
-}
 
+/** Stream initialization option */
+typedef struct hidrd_strm_opt {
+    const char *name;
+    const char *value;
+} hidrd_strm_opt;
+
+/**
+ * Get a boolean value.
+ *
+ * @param opt   Option pointer.
+ * @param dflt  Default value.
+ *
+ * @return Option value, or @e dflt, if there is no value.
+ */
+extern bool hidrd_strm_opt_get_bool(const hidrd_strm_opt *opt, bool dflt);
+
+#ifdef __cplusplus
+} /* extern "C" */
+#endif
+
+#endif /* __HIDRD_STRM_OPT_H__ */
 

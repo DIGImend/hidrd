@@ -26,6 +26,7 @@
 
 #include <string.h>
 #include <libxml/parser.h>
+#include "hidrd/strm/opt_list.h"
 #include "hidrd/strm/xml.h"
 #include "xml.h"
 
@@ -44,30 +45,13 @@ hidrd_strm_xml_clnp_parser(void)
 
 
 static bool
-hidrd_strm_xml_init(hidrd_strm *strm, va_list ap)
+init(hidrd_strm *strm, bool format)
 {
     hidrd_strm_xml_inst    *strm_xml    = (hidrd_strm_xml_inst *)strm;
-    void                  **pbuf        = va_arg(ap, void **);
-    size_t                 *psize       = va_arg(ap, size_t *);
-    bool                    format      = (va_arg(ap, int) != 0);
 
-    assert(pbuf == NULL ||  /* No input nor location for output buffer,
-                               maybe location for output size */
-           (
-            pbuf != NULL && psize != NULL && /* Location for both output
-                                                buffer and size, maybe
-                                                input buffer or size */
-            (*psize == 0 || *pbuf != NULL) /* Either input size of zero or
-                                              buffer must be there */
-           )
-          );
-
-    strm_xml->pbuf      = pbuf;
-    strm_xml->psize     = psize;
     strm_xml->format    = format;
-
-    strm_xml->buf       = (pbuf != NULL) ? *pbuf : NULL;
-    strm_xml->size      = (psize != NULL) ? *psize : 0;
+    strm_xml->buf       = (strm->pbuf != NULL) ? *strm->pbuf : NULL;
+    strm_xml->size      = (strm->psize != NULL) ? *strm->psize : 0;
     strm_xml->doc       = NULL;
     strm_xml->prnt      = NULL;
     strm_xml->cur       = NULL;
@@ -75,6 +59,24 @@ hidrd_strm_xml_init(hidrd_strm *strm, va_list ap)
 
     return true;
 }
+
+
+static bool
+hidrd_strm_xml_init(hidrd_strm *strm, va_list ap)
+{
+    bool    format  = (va_arg(ap, int) != 0);
+
+    return init(strm, format);
+}
+
+
+#ifdef HIDRD_STRM_WITH_OPTS
+static bool
+hidrd_strm_xml_opts_init(hidrd_strm *strm, const hidrd_strm_opt *list)
+{
+    return init(strm, hidrd_strm_opt_list_get_bool(list, "format", true));
+}
+#endif
 
 
 bool
@@ -149,8 +151,8 @@ hidrd_strm_xml_flush_doc(hidrd_strm *strm)
     memcpy(new_buf, xmlBufferContent(xml_buf), new_size);
 
     strm_xml->buf = new_buf;
-    if (strm_xml->pbuf != NULL)
-        *strm_xml->pbuf = new_buf;
+    if (strm->pbuf != NULL)
+        *strm->pbuf = new_buf;
     strm_xml->size = new_size;
 
     new_buf = NULL;
@@ -190,8 +192,8 @@ hidrd_strm_xml_flush(hidrd_strm *strm)
         return false;
 
     /* Output size */
-    if (strm_xml->psize != NULL)
-        *strm_xml->psize = strm_xml->size;
+    if (strm->psize != NULL)
+        *strm->psize = strm_xml->size;
 
     return true;
 }
@@ -211,13 +213,17 @@ hidrd_strm_xml_clnp(hidrd_strm *strm)
 
 
 const hidrd_strm_type hidrd_strm_xml = {
-    .size   = sizeof(hidrd_strm_xml_inst),
-    .init   = hidrd_strm_xml_init,
-    .valid  = hidrd_strm_xml_valid,
-    .read   = hidrd_strm_xml_read,
-    .write  = hidrd_strm_xml_write,
-    .flush  = hidrd_strm_xml_flush,
-    .clnp   = hidrd_strm_xml_clnp,
+    .name       = "XML",
+    .size       = sizeof(hidrd_strm_xml_inst),
+    .init       = hidrd_strm_xml_init,
+#ifdef HIDRD_STRM_WITH_OPTS
+    .opts_init  = hidrd_strm_xml_opts_init,
+#endif
+    .valid      = hidrd_strm_xml_valid,
+    .read       = hidrd_strm_xml_read,
+    .write      = hidrd_strm_xml_write,
+    .flush      = hidrd_strm_xml_flush,
+    .clnp       = hidrd_strm_xml_clnp,
 };
 
 

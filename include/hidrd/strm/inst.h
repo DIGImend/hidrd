@@ -35,8 +35,10 @@ extern "C" {
 
 /** Stream instance */
 struct hidrd_strm {
-    const hidrd_strm_type  *type;   /**< Type description */
-    bool                    error;  /**< Error indicator */
+    const hidrd_strm_type  *type;  /**< Type description */
+    void                  **pbuf;  /**< Location of stream buffer pointer */
+    size_t                 *psize; /**< Location of stream size */
+    bool                    error; /**< Error indicator */
 };
 
 /**
@@ -90,33 +92,79 @@ extern hidrd_strm *hidrd_strm_alloc(const hidrd_strm_type *type);
  * Initialize stream instance.
  *
  * @param strm  Stream instance to initialize.
+ * @param pbuf  Location of stream buffer pointer.
+ * @param psize Location of stream size.
  * @param ...   Stream type-specific arguments.
  *
  * @return True if initialization succeeded, false otherwise.
  */
-extern bool hidrd_strm_init(hidrd_strm *strm, ...);
+extern bool hidrd_strm_init(hidrd_strm *strm,
+                            void **pbuf, size_t *psize, ...);
 
 /**
  * Initialize stream instance (va_list version).
  *
  * @param strm  Stream instance to initialize.
+ * @param pbuf  Location of stream buffer pointer.
+ * @param psize Location of stream size.
  * @param ap    Stream type-specific arguments.
  *
  * @return True if initialization succeeded, false otherwise.
  */
-extern bool hidrd_strm_initv(hidrd_strm *strm, va_list ap);
+extern bool hidrd_strm_initv(hidrd_strm *strm,
+                             void **pbuf, size_t *psize, va_list ap);
+
+#ifdef HIDD_STRM_WITH_OPTS
+/**
+ * Initialize stream instance with an option string.
+ *
+ * @param strm  Stream instance to initialize.
+ * @param pbuf  Location of stream buffer pointer.
+ * @param psize Location of stream size.
+ * @param opts  Option string: each option is a name/value pair separated by
+ *              equals sign, with surrounding space removed; options are
+ *              separated by comma.
+ *
+ * @return True if initialization succeeded, false otherwise.
+ */
+extern bool hidrd_strm_opts_init(hidrd_strm *strm,
+                                 void **pbuf, size_t *psize,
+                                 const char *opts);
+
+/**
+ * Initialize stream instance with an option string, formatted using
+ * sprintf.
+ *
+ * @param strm      Stream instance to initialize.
+ * @param pbuf      Location of stream buffer pointer.
+ * @param psize     Location of stream size.
+ * @param opts_fmt  Option format string: each option is a name/value pair
+ *                  separated by equals sign, with surrounding space
+ *                  removed; options are separated by comma.
+ * @param ...       Option format arguments.
+ *
+ * @return True if initialization succeeded, false otherwise.
+ */
+extern bool hidrd_strm_opts_initf(hidrd_strm *strm,
+                                  void **pbuf, size_t *psize,
+                                  const char *opts_fmt, ...)
+                                 __attribute__((format(printf, 4, 5)));
+#endif /* HIDRD_STRM_WITH_OPTS */
 
 /**
  * Open (allocate and initialize) an instance of specified stream type with
  * specified arguments.
  *
  * @param type  Stream type to open instance of.
+ * @param pbuf  Location of stream buffer pointer.
+ * @param psize Location of stream size.
  * @param ...   Stream type-specific initialization arguments.
  *
  * @return Opened (allocated and initialized) instance of specified stream
  *         type, or NULL, if failed to allocate or initialize.
  */
-extern hidrd_strm *hidrd_strm_open(const hidrd_strm_type *type, ...);
+extern hidrd_strm *hidrd_strm_open(const hidrd_strm_type *type,
+                                   void **pbuf, size_t *psize, ...);
 
 /**
  * Flush any cached data to stream storage.

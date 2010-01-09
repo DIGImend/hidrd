@@ -21,6 +21,8 @@ lib_LTLIBRARIES = libhidrd_strm.la
 libhidrd_strm_la_SOURCES = \
     inst.c                  \
     natv.c                  \
+    opt.c                   \
+    opt_list.c              \
     type.c
 
 libhidrd_strm_la_LIBADD = ../item/libhidrd_item.la

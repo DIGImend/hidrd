@@ -1,7 +1,7 @@
 /** @file
  * @brief HID report descriptor - stream type
  *
- * Copyright (C) 2009 Nikolai Kondrashov
+ * Copyright (C) 2009-2010 Nikolai Kondrashov
  *
  * This file is part of hidrd.
  *
@@ -31,6 +31,10 @@
 #include <stdarg.h>
 #include "hidrd/item.h"
 
+#ifdef HIDRD_STRM_WITH_OPTS
+#include "hidrd/strm/opt.h"
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -48,6 +52,21 @@ typedef struct hidrd_strm hidrd_strm;
  */
 typedef bool hidrd_strm_type_init_fn(hidrd_strm    *strm,
                                      va_list        ap);
+
+#ifdef HIDRD_STRM_WITH_OPTS
+/**
+ * Prototype for a stream initialization function, which uses options.
+ *
+ * @param strm      Stream instance to initialize.
+ * @param opt_list  Pointer to an option array, terminated with an option
+ *                  having name set to NULL.
+ *
+ * @return  True if initialized successfully, false otherwise.
+ */
+
+typedef bool hidrd_strm_type_opts_init_fn(hidrd_strm           *strm,
+                                          const hidrd_strm_opt *opt_list);
+#endif /* HIDRD_STRM_WITH_OPTS */
 
 /**
  * Prototype for a stream instance validation function.
@@ -94,16 +113,29 @@ typedef bool hidrd_strm_type_flush_fn(hidrd_strm   *strm);
  */
 typedef void hidrd_strm_type_clnp_fn(hidrd_strm    *strm);
 
+/** Stream type */
 typedef struct hidrd_strm_type {
-    size_t                      size;
-    hidrd_strm_type_init_fn    *init;
-    hidrd_strm_type_valid_fn   *valid;
-    hidrd_strm_type_read_fn    *read;
-    hidrd_strm_type_write_fn   *write;
-    hidrd_strm_type_flush_fn   *flush;
-    hidrd_strm_type_clnp_fn    *clnp;
+    const char                     *name;       /**< Type name */
+    size_t                          size;       /**< Instance size */
+    hidrd_strm_type_init_fn        *init;
+#ifdef HIDRD_STRM_WITH_OPTS
+    hidrd_strm_type_opts_init_fn   *opts_init;
+    const char                     *opts_help;
+#endif
+    hidrd_strm_type_valid_fn       *valid;
+    hidrd_strm_type_read_fn        *read;
+    hidrd_strm_type_write_fn       *write;
+    hidrd_strm_type_flush_fn       *flush;
+    hidrd_strm_type_clnp_fn        *clnp;
 } hidrd_strm_type;
 
+/**
+ * Check if a stream type is valid.
+ *
+ * @param type  Stream type to check.
+ *
+ * @return True if the type is valid, false otherwise.
+ */
 extern bool hidrd_strm_type_valid(const hidrd_strm_type *type);
 
 #ifdef __cplusplus

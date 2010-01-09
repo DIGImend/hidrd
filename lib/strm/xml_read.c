@@ -43,7 +43,7 @@ hidrd_strm_xml_read_buf(hidrd_strm *strm)
     if (strm_xml->size == 0)
         return false;
 
-    strm_xml->doc = xmlParseMemory(*strm_xml->pbuf, *strm_xml->psize);
+    strm_xml->doc = xmlParseMemory(strm_xml->buf, strm_xml->size);
     if (strm_xml->doc == NULL)
     {
         strm->error = true;
