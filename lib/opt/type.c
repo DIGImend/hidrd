@@ -27,6 +27,7 @@
 #include <stddef.h>
 #include <assert.h>
 #include <ctype.h>
+#include <string.h>
 #include <strings.h>
 #include "hidrd/opt/type.h"
 
@@ -105,6 +106,47 @@ hidrd_opt_type_parse_value(hidrd_opt_type   type,
         default:
             assert(!"Unknown type");
             return false;
+    }
+}
+
+
+char *
+format_string(const char *val)
+{
+    assert(val != NULL);
+
+    return strdup(val);
+}
+
+
+char *
+format_boolean(bool val)
+{
+    return val ? strdup("yes") : strdup("no");
+}
+
+
+char *
+hidrd_opt_type_format_value(hidrd_opt_type          type,
+                            const hidrd_opt_value  *pval)
+{
+    assert(hidrd_opt_type_valid(type));
+    assert(pval != NULL);
+
+    switch (type)
+    {
+#define MAP(_T, _t) \
+    case HIDRD_OPT_TYPE_##_T:       \
+        return format_##_t(pval->_t)
+
+        MAP(STRING, string);
+        MAP(BOOLEAN, boolean);
+
+#undef MAP
+
+        default:
+            assert(!"Unknown type");
+            return NULL;
     }
 }
 

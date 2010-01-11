@@ -82,6 +82,16 @@ extern hidrd_opt_spec *hidrd_opt_spec_list_parse_opt_list(
 extern hidrd_opt_spec *hidrd_opt_spec_list_parse(char *buf);
 
 /**
+ * Format a string representation of an option specification list.
+ *
+ * @param spec_list Option specification list to format.
+ *
+ * @return Dynamically allocated string representation of the list, or NULL,
+ *         if failed to allocate memory.
+ */
+extern char *hidrd_opt_spec_list_format(const hidrd_opt_spec *spec_list);
+
+/**
  * Apply option specification list to a string option list, converting
  * options to specific types.
  *

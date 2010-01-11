@@ -26,6 +26,8 @@
 
 #include <assert.h>
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include "hidrd/opt/spec.h"
 
 bool
@@ -45,8 +47,8 @@ typedef enum parse_state {
 
 
 bool
-hidrd_opt_spec_parse_opt(hidrd_opt_spec  *spec,
-                              const hidrd_opt *opt)
+hidrd_opt_spec_parse_opt(hidrd_opt_spec    *spec,
+                         const hidrd_opt   *opt)
 {
     char                   *buf;
     hidrd_opt_type     type;
@@ -114,6 +116,52 @@ hidrd_opt_spec_parse_opt(hidrd_opt_spec  *spec,
     assert(hidrd_opt_spec_valid(spec));
 
     return true;
+}
+
+
+char *
+hidrd_opt_spec_format(const hidrd_opt_spec *spec)
+{
+    char   *result  = NULL;
+    char   *str     = NULL;
+    char   *new_str = NULL;
+    char   *dflt    = NULL;
+
+    if (asprintf(&str, "%c", spec->type) < 0)
+        goto cleanup;
+
+#define APPENDF(_fmt, _args...) \
+    do {                                                        \
+        if (asprintf(&new_str, "%s" _fmt, str, ##_args) < 0)    \
+            goto cleanup;                                       \
+        free(str);                                              \
+        str = new_str;                                          \
+        new_str = NULL;                                         \
+    } while (0)
+
+    if (!spec->req)
+    {
+        dflt = hidrd_opt_type_format_value(spec->type, &spec->dflt);
+        if (dflt == NULL)
+            goto cleanup;
+        APPENDF("?%s", dflt);
+    }
+
+    if (*spec->desc != '\0')
+        APPENDF("'%s", spec->desc);
+
+#undef APPENDF
+
+    result = str;
+    str = NULL;
+
+cleanup:
+
+    free(dflt);
+    free(new_str);
+    free(str);
+
+    return result;
 }
 
 

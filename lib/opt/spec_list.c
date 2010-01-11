@@ -26,7 +26,9 @@
 
 #include <assert.h>
 #include <stdlib.h>
+#include <string.h>
 #include <strings.h>
+#include <stdio.h>
 #include "hidrd/opt/list.h"
 #include "hidrd/opt/spec_list.h"
 
@@ -114,6 +116,50 @@ hidrd_opt_spec_list_parse(char *buf)
     free(opt_list);
 
     return spec_list;
+}
+
+
+char *
+hidrd_opt_spec_list_format(const hidrd_opt_spec *spec_list)
+{
+    char                   *result      = NULL;
+    char                   *str         = NULL;
+    char                   *new_str     = NULL;
+    const hidrd_opt_spec   *spec;
+    char                   *spec_str    = NULL;
+
+    assert(hidrd_opt_spec_list_valid(spec_list));
+
+    str = strdup("");
+    if (str == NULL)
+        goto cleanup;
+
+    for (spec = spec_list; spec->name != NULL; spec++)
+    {
+        spec_str = hidrd_opt_spec_format(spec);
+        if (spec_str == NULL)
+            goto cleanup;
+        if (asprintf(&new_str,
+                     ((spec[1].name == NULL) ? "%s%s" : "%s%s,"),
+                     str, spec_str) < 0)
+            goto cleanup;
+        free(spec_str);
+        spec_str = NULL;
+        free(str);
+        str = new_str;
+        new_str = NULL;
+    }
+
+    result = str;
+    str = NULL;
+
+cleanup:
+
+    free(spec_str);
+    free(new_str);
+    free(str);
+
+    return result;
 }
 
 

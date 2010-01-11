@@ -70,6 +70,16 @@ extern bool hidrd_opt_spec_valid(const hidrd_opt_spec *spec);
 extern bool hidrd_opt_spec_parse_opt(hidrd_opt_spec    *spec,
                                      const hidrd_opt   *opt);
 
+/**
+ * Format a string representation of an option specification.
+ *
+ * @param spec  Option specification to format.
+ *
+ * @return Dynamically allocated string representation of the option
+ *         specification, or NULL, if failed to allocate memory.
+ */
+extern char *hidrd_opt_spec_format(const hidrd_opt_spec *spec);
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif

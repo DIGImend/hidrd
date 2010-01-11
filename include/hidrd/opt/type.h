@@ -74,6 +74,18 @@ hidrd_opt_type_parse_value(hidrd_opt_type   type,
                            hidrd_opt_value *pval,
                            const char      *str);
 
+/**
+ * Format a string representation of a value of specified type.
+ *
+ * @param type  Value type to format accordingly.
+ * @param pval  Pointer to a value to format.
+ *
+ * @return Dynamically allocated string representation of the value, or
+ *         NULL, if failed to allocate.
+ */
+extern char *hidrd_opt_type_format_value(hidrd_opt_type         type,
+                                         const hidrd_opt_value *pval);
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
