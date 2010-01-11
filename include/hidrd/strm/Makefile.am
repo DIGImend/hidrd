@@ -23,5 +23,9 @@ hidrd_strm_HEADERS = \
     natv.h              \
     opt.h               \
     opt_list.h          \
+    opt_spec.h          \
+    opt_spec_list.h     \
+    opt_type.h          \
+    opt_value.h         \
     type.h              \
     xml.h

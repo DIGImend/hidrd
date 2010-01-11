@@ -1,5 +1,5 @@
 /** @file
- * @brief HID report descriptor - stream initialization option
+ * @brief HID report descriptor - option
  *
  * Copyright (C) 2010 Nikolai Kondrashov
  *
@@ -24,41 +24,53 @@
  * @(#) $Id$
  */
 
-#include <stddef.h>
 #include <assert.h>
-#include <ctype.h>
-#include <strings.h>
+#include <stdlib.h>
 #include "hidrd/strm/opt.h"
 
+
 bool
-hidrd_strm_opt_get_bool(const hidrd_strm_opt *opt, bool dflt)
+hidrd_strm_opt_valid(const hidrd_strm_opt *opt)
 {
-    const char *v;
-    const char *p;
-    bool        got_nonzero;
-
-    assert(opt != NULL);
-
-    v = opt->value;
-
-    if (v == NULL || *v == '\0')
-        return dflt;
-
-#define MATCH(_token) (strcasecmp(v, #_token) == 0)
-    if (MATCH(yes) || MATCH(true))
-        return true;
-
-    if (MATCH(no) || MATCH(false))
+    if (opt == NULL)
         return false;
-#undef MATCH
 
-    for (p = v, got_nonzero = false; *p != '\0'; p++)
+    /* Check name */
+    if (opt->name == NULL || *opt->name == '\0')
+        return false;
+
+    /* Check type */
+    if (!hidrd_strm_opt_type_valid(opt->type))
+        return false;
+
+    /* Check value */
+    switch (opt->type)
     {
-        if (!isdigit(*p))
-            return false;
-        if (*p != '0')
-            got_nonzero = true;
+        case HIDRD_STRM_OPT_TYPE_STRING:
+            return opt->value.string != NULL;
+        default:
+            return true;
     }
-
-    return got_nonzero;
 }
+
+
+const char *
+hidrd_strm_opt_get_string(const hidrd_strm_opt *opt)
+{
+    assert(hidrd_strm_opt_valid(opt));
+    assert(opt->type == HIDRD_STRM_OPT_TYPE_STRING);
+
+    return opt->value.string;
+}
+
+
+bool
+hidrd_strm_opt_get_boolean(const hidrd_strm_opt *opt)
+{
+    assert(hidrd_strm_opt_valid(opt));
+    assert(opt->type == HIDRD_STRM_OPT_TYPE_BOOLEAN);
+
+    return opt->value.boolean;
+}
+
+

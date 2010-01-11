@@ -65,15 +65,6 @@ hidrd_strm_natv_init(hidrd_strm *strm, va_list ap)
 }
 
 
-#ifdef HIDRD_STRM_WITH_OPTS
-static bool
-hidrd_strm_natv_opts_init(hidrd_strm *strm, const hidrd_strm_opt *list)
-{
-    return hidrd_strm_opt_list_empty(list) &&
-           init(strm);
-}
-#endif
-
 static bool
 hidrd_strm_natv_valid(const hidrd_strm *strm)
 {
@@ -200,17 +191,14 @@ hidrd_strm_natv_clnp(hidrd_strm *strm)
 
 
 const hidrd_strm_type hidrd_strm_natv = {
-    .name       = "native",
-    .size       = sizeof(hidrd_strm_natv_inst),
-    .init       = hidrd_strm_natv_init,
-#ifdef HIDRD_STRM_WITH_OPTS
-    .opts_init  = hidrd_strm_natv_opts_init,
-#endif
-    .valid      = hidrd_strm_natv_valid,
-    .read       = hidrd_strm_natv_read,
-    .write      = hidrd_strm_natv_write,
-    .flush      = hidrd_strm_natv_flush,
-    .clnp       = hidrd_strm_natv_clnp,
+    .name   = "native",
+    .size   = sizeof(hidrd_strm_natv_inst),
+    .init   = hidrd_strm_natv_init,
+    .valid  = hidrd_strm_natv_valid,
+    .read   = hidrd_strm_natv_read,
+    .write  = hidrd_strm_natv_write,
+    .flush  = hidrd_strm_natv_flush,
+    .clnp   = hidrd_strm_natv_clnp,
 };
 
 

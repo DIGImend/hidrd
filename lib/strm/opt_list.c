@@ -1,5 +1,5 @@
 /** @file
- * @brief HID report descriptor - stream initialization option list
+ * @brief HID report descriptor - option list
  *
  * Copyright (C) 2010 Nikolai Kondrashov
  *
@@ -32,6 +32,94 @@
 
 
 bool
+hidrd_strm_opt_list_valid(const hidrd_strm_opt *list)
+{
+    if (list == NULL)
+        return false;
+
+    for (; list->name != NULL; list++)
+        if (!hidrd_strm_opt_valid(list))
+            return false;
+
+    return true;
+}
+
+
+bool
+hidrd_strm_opt_list_empty(const hidrd_strm_opt *list)
+{
+    assert(hidrd_strm_opt_list_valid(list));
+
+    return list->name == NULL;
+}
+
+
+size_t
+hidrd_strm_opt_list_len(const hidrd_strm_opt *list)
+{
+    const hidrd_strm_opt   *opt;
+
+    assert(hidrd_strm_opt_list_valid(list));
+
+    for (opt = list; opt->name != NULL; opt++);
+
+    return opt - list;
+}
+
+
+bool
+hidrd_strm_opt_list_uniform(const hidrd_strm_opt   *list,
+                            hidrd_strm_opt_type     type)
+{
+    assert(hidrd_strm_opt_list_valid(list));
+    assert(hidrd_strm_opt_type_valid(type));
+
+    for (; list->name != NULL; list++)
+        if (list->type != type)
+            return false;
+
+    return true;
+}
+
+
+const hidrd_strm_opt *
+hidrd_strm_opt_list_lkp(const hidrd_strm_opt *list, const char *name)
+{
+    assert(hidrd_strm_opt_list_valid(list));
+
+    for (; list->name != NULL; list++)
+        if (strcasecmp(list->name, name) == 0)
+            return list;
+
+    return NULL;
+}
+
+
+bool
+hidrd_strm_opt_list_get_boolean(const hidrd_strm_opt   *list,
+                                const char             *name)
+{
+    assert(hidrd_strm_opt_list_valid(list));
+    assert(name != NULL);
+    assert(*name != '\0');
+
+    return hidrd_strm_opt_get_boolean(hidrd_strm_opt_list_lkp(list, name));
+}
+
+
+const char *
+hidrd_strm_opt_list_get_string(const hidrd_strm_opt    *list,
+                               const char              *name)
+{
+    assert(hidrd_strm_opt_list_valid(list));
+    assert(name != NULL);
+    assert(*name != '\0');
+
+    return hidrd_strm_opt_get_string(hidrd_strm_opt_list_lkp(list, name));
+}
+
+
+bool
 hidrd_strm_opt_list_grow(hidrd_strm_opt   **plist,
                          size_t            *palloc,
                          size_t             index)
@@ -58,16 +146,16 @@ hidrd_strm_opt_list_grow(hidrd_strm_opt   **plist,
 
 
 /** Option list parse state */
-typedef enum parse_state {
-    PARSE_STATE_NONE,   /**< Nothing found of this option */
-    PARSE_STATE_TOKEN,  /**< Processing token (name or value) */
-    PARSE_STATE_EQUALS  /**< Got equals */
-} parse_state;
+typedef enum tknz_state {
+    TKNZ_STATE_NONE,    /**< Nothing found of this option */
+    TKNZ_STATE_TOKEN,   /**< Processing token (name or value) */
+    TKNZ_STATE_EQUALS   /**< Got equals */
+} tknz_state;
 
 
-/** Parse option list string buffer */
+/** Tokenize option list string buffer */
 hidrd_strm_opt *
-hidrd_strm_opt_list_parse(char *buf)
+hidrd_strm_opt_list_tknz(char *buf)
 {
     char           *p;
     char            c;
@@ -75,9 +163,9 @@ hidrd_strm_opt_list_parse(char *buf)
     hidrd_strm_opt *list;
     size_t          alloc   = 0;
     size_t          index   = 0;
-    parse_state     state   = PARSE_STATE_NONE;
+    tknz_state      state   = TKNZ_STATE_NONE;
     const char     *name    = NULL;
-    const char     *value   = NULL;
+    const char     *value   = "";
     char           *space   = NULL;
 
     for (p = buf; ; p++)
@@ -86,20 +174,20 @@ hidrd_strm_opt_list_parse(char *buf)
 
         switch (state)
         {
-            case PARSE_STATE_NONE:
-            case PARSE_STATE_EQUALS:
+            case TKNZ_STATE_NONE:
+            case TKNZ_STATE_EQUALS:
                 /* Skip space, stop on '\0' */
                 if (isspace(c) || c == '\0')
                     break;
 
-                if (state == PARSE_STATE_NONE)
+                if (state == TKNZ_STATE_NONE)
                     name = p;
                 else
                     value = p;
-                state = PARSE_STATE_TOKEN;
+                state = TKNZ_STATE_TOKEN;
                 break;
 
-            case PARSE_STATE_TOKEN:
+            case TKNZ_STATE_TOKEN:
                 /* Skip space, but remember the start */
                 if (isspace(c))
                 {
@@ -130,17 +218,18 @@ hidrd_strm_opt_list_parse(char *buf)
                     if (!hidrd_strm_opt_list_grow(&list, &alloc, index))
                         goto cleanup;
                     list[index].name = name;
-                    list[index].value = value;
+                    list[index].type = HIDRD_STRM_OPT_TYPE_STRING;
+                    list[index].value.string = value;
                     index++;
 
                     name = NULL;
-                    value = NULL;
+                    value = "";
                 }
 
                 /* Proceed */
                 state = (c == '=')
-                            ? PARSE_STATE_EQUALS
-                            : PARSE_STATE_NONE;
+                            ? TKNZ_STATE_EQUALS
+                            : TKNZ_STATE_NONE;
                 break;
         }
 
@@ -162,39 +251,6 @@ cleanup:
     free(list);
 
     return result;
-}
-
-
-bool
-hidrd_strm_opt_list_empty(const hidrd_strm_opt *list)
-{
-    assert(list != NULL);
-
-    return list->name == NULL;
-}
-
-
-const hidrd_strm_opt *
-hidrd_strm_opt_list_lkp(const hidrd_strm_opt *list, const char *name)
-{
-    assert(list != NULL);
-
-    for (; list->name != NULL; list++)
-        if (strcasecmp(list->name, name) == 0)
-            return list;
-
-    return NULL;
-}
-
-
-bool
-hidrd_strm_opt_list_get_bool(const hidrd_strm_opt  *list,
-                             const char            *name,
-                             bool                   dflt)
-{
-    list = hidrd_strm_opt_list_lkp(list, name);
-
-    return (list == NULL) ? dflt : hidrd_strm_opt_get_bool(list, true);
 }
 
 

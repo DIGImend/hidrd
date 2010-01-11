@@ -32,7 +32,7 @@
 #include "hidrd/item.h"
 
 #ifdef HIDRD_STRM_WITH_OPTS
-#include "hidrd/strm/opt.h"
+#include "hidrd/strm/opt_spec.h"
 #endif
 
 #ifdef __cplusplus
@@ -120,7 +120,7 @@ typedef struct hidrd_strm_type {
     hidrd_strm_type_init_fn        *init;
 #ifdef HIDRD_STRM_WITH_OPTS
     hidrd_strm_type_opts_init_fn   *opts_init;
-    const char                     *opts_help;
+    const hidrd_strm_opt_spec      *opts_spec;
 #endif
     hidrd_strm_type_valid_fn       *valid;
     hidrd_strm_type_read_fn        *read;

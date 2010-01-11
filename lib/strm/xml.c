@@ -74,7 +74,7 @@ hidrd_strm_xml_init(hidrd_strm *strm, va_list ap)
 static bool
 hidrd_strm_xml_opts_init(hidrd_strm *strm, const hidrd_strm_opt *list)
 {
-    return init(strm, hidrd_strm_opt_list_get_bool(list, "format", true));
+    return init(strm, hidrd_strm_opt_list_get_boolean(list, "format"));
 }
 #endif
 
@@ -212,12 +212,26 @@ hidrd_strm_xml_clnp(hidrd_strm *strm)
 }
 
 
+#ifdef HIDRD_STRM_WITH_OPTS
+const hidrd_strm_opt_spec hidrd_strm_xml_opts_spec[] = {
+    {.name  = "format",
+     .type  = HIDRD_STRM_OPT_TYPE_BOOLEAN,
+     .req   = false,
+     .dflt  = {
+         .boolean = true
+     },
+     .desc  = "Indent XML output"},
+    {.name  = NULL}
+};
+#endif /* HIDRD_STRM_WITH_OPTS */
+
 const hidrd_strm_type hidrd_strm_xml = {
     .name       = "XML",
     .size       = sizeof(hidrd_strm_xml_inst),
     .init       = hidrd_strm_xml_init,
 #ifdef HIDRD_STRM_WITH_OPTS
     .opts_init  = hidrd_strm_xml_opts_init,
+    .opts_spec  = hidrd_strm_xml_opts_spec,
 #endif
     .valid      = hidrd_strm_xml_valid,
     .read       = hidrd_strm_xml_read,

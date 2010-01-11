@@ -1,7 +1,7 @@
 /** @file
  * @brief HID report descriptor - stream type
  *
- * Copyright (C) 2009 Nikolai Kondrashov
+ * Copyright (C) 2009-2010 Nikolai Kondrashov
  *
  * This file is part of hidrd.
  *
@@ -24,6 +24,7 @@
  * @(#) $Id$
  */
 
+#include "hidrd/strm/opt_spec_list.h"
 #include "hidrd/strm/type.h"
 #include "hidrd/strm/inst.h"
 
@@ -34,8 +35,9 @@ hidrd_strm_type_valid(const hidrd_strm_type *type)
            type->name != NULL && *type->name != '\0' &&
            type->size >= sizeof(hidrd_strm) &&
 #ifdef HIDRD_STRM_WITH_OPTS
-           ((type->init == NULL && type->opts_init == NULL) ||
-            (type->init != NULL && type->opts_init != NULL)) &&
+           (type->init != NULL || type->opts_init == NULL) &&
+           (type->opts_init == NULL ||
+            hidrd_strm_opt_spec_list_valid(type->opts_spec)) &&
 #endif
            (type->read != NULL || type->write != NULL);
 }

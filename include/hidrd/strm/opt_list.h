@@ -1,5 +1,5 @@
 /** @file
- * @brief HID report descriptor - stream initialization option list
+ * @brief HID report descriptor - option list
  *
  * Copyright (C) 2010 Nikolai Kondrashov
  *
@@ -35,17 +35,13 @@ extern "C" {
 #endif
 
 /**
- * Grow an option list to make specified index valid.
+ * Check if an option list is valid.
  *
- * @param plist     Location of the option array pointer.
- * @param palloc    Location of the option array allocated size, in options.
- * @param index     Option index to be made valid.
+ * @param list  Option list array pointer.
  *
- * @return True if grown successfully, false otherwise.
+ * @return True if the option list is valid.
  */
-extern bool hidrd_strm_opt_list_grow(hidrd_strm_opt   **plist,
-                                     size_t            *palloc,
-                                     size_t             index);
+extern bool hidrd_strm_opt_list_valid(const hidrd_strm_opt *list);
 
 /**
  * Check if an option list is empty.
@@ -57,18 +53,25 @@ extern bool hidrd_strm_opt_list_grow(hidrd_strm_opt   **plist,
 extern bool hidrd_strm_opt_list_empty(const hidrd_strm_opt *list);
 
 /**
- * Parse an option list string, modifying it and referencing in the
- * resulting list.
+ * Get an option list length.
  *
- * @param buf   Option list string buffer; will be modified and referenced
- *              in the resulting option list.
+ * @param list  Option list to get length of.
  *
- * @return Dynamically allocated option list array, with names and values
- *         referenced from the string, or NULL, if failed to allocate
- *         memory.
+ * @return List length, in options.
  */
-extern hidrd_strm_opt *hidrd_strm_opt_list_parse(char *buf);
+extern size_t hidrd_strm_opt_list_len(const hidrd_strm_opt *list);
 
+/**
+ * Check if the whole option list contains only options of specific type.
+ *
+ * @param list  Option list array pointer.
+ * @param type  Option value type.
+ *
+ * @return True if the list contains only options of specified type @e type,
+ *         false otherwise.
+ */
+extern bool hidrd_strm_opt_list_uniform(const hidrd_strm_opt   *opt,
+                                        hidrd_strm_opt_type     type);
 
 /**
  * Lookup an option in an option list.
@@ -89,11 +92,49 @@ extern const hidrd_strm_opt *hidrd_strm_opt_list_lkp(
  * @param name  Option name to get value from.
  * @param dflt  Default value.
  *
- * @return Option value, or @e dflt, if not found.
+ * @return Option value.
  */
-extern bool hidrd_strm_opt_list_get_bool(const hidrd_strm_opt  *list,
-                                         const char            *name,
-                                         bool                   dflt);
+extern bool hidrd_strm_opt_list_get_boolean(const hidrd_strm_opt   *list,
+                                            const char             *name);
+
+/**
+ * Get a string option value.
+ *
+ * @param list  Option list array pointer.
+ * @param name  Option name to get value from.
+ * @param dflt  Default value.
+ *
+ * @return Option value.
+ */
+extern const char *hidrd_strm_opt_list_get_string(
+                                            const hidrd_strm_opt   *list,
+                                            const char             *name);
+
+/**
+ * Grow an option list to make specified index valid.
+ *
+ * @param plist     Location of the option array pointer.
+ * @param palloc    Location of the option array allocated size, in options.
+ * @param index     Option index to be made valid.
+ *
+ * @return True if grown successfully, false otherwise.
+ */
+extern bool hidrd_strm_opt_list_grow(hidrd_strm_opt   **plist,
+                                     size_t            *palloc,
+                                     size_t             index);
+
+/**
+ * Tokenize an option list string (represent as a list of string options),
+ * modifying it and referencing in the resulting list.
+ *
+ * @param buf   Option list string buffer; will be modified and referenced
+ *              in the resulting option list.
+ *
+ * @return Dynamically allocated option list array, with names and values
+ *         referenced from the string, or NULL, if failed to allocate
+ *         memory.
+ */
+extern hidrd_strm_opt *hidrd_strm_opt_list_tknz(char *buf);
 
 #ifdef __cplusplus
 } /* extern "C" */

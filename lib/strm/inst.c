@@ -27,6 +27,7 @@
 #include <ctype.h>
 #include <stdio.h>
 #include "hidrd/strm/opt_list.h"
+#include "hidrd/strm/opt_spec_list.h"
 #include "hidrd/strm/inst.h"
 
 
@@ -139,7 +140,6 @@ hidrd_strm_opts_initf(hidrd_strm *strm,
 
     assert(strm != NULL);
     assert(hidrd_strm_type_valid(strm->type));
-
     assert(pbuf == NULL ||  /* No input nor location for output buffer,
                                maybe location for output size */
            (
@@ -154,31 +154,37 @@ hidrd_strm_opts_initf(hidrd_strm *strm,
 
     va_start(ap, opts_fmt);
 
-    strm->pbuf  = pbuf;
-    strm->psize = psize;
-    strm->error = false;
-
     /* Format option string */
     if (vasprintf(&opts_buf, opts_fmt, ap) < 0)
         goto cleanup;
 
-    /* Parse option string into option list */
-    opt_list = hidrd_strm_opt_list_parse(opts_buf);
-    if (opt_list == NULL)
-        goto cleanup;
+    /* Tokenize option list */
+    opt_list = hidrd_strm_opt_list_tknz(opts_buf);
 
     /* If there is opts_init member */
     if (strm->type->opts_init != NULL)
     {
+        /* Apply option specification */
+        if (!hidrd_strm_opt_spec_list_apply(strm->type->opts_spec,
+                                            opt_list))
+            goto cleanup;
+
         /* Initialize with option list */
+        strm->pbuf  = pbuf;
+        strm->psize = psize;
+        strm->error = false;
+
         if (!(*strm->type->opts_init)(strm, opt_list))
-            return false;
+            goto cleanup;
     }
     else
     {
         /* If the option list is not empty */
         if (!hidrd_strm_opt_list_empty(opt_list))
-            return false;
+            goto cleanup;
+        /* Do the regular initialization */
+        if (!hidrd_strm_init(strm, pbuf, psize))
+            goto cleanup;
     }
 
     assert(hidrd_strm_valid(strm));
