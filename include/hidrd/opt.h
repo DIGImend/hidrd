@@ -1,5 +1,5 @@
 /** @file
- * @brief HID report descriptor - option value
+ * @brief HID report descriptor - option instance shortcut
  *
  * Copyright (C) 2010 Nikolai Kondrashov
  *
@@ -24,24 +24,10 @@
  * @(#) $Id$
  */
 
-#ifndef __HIDRD_STRM_OPT_VALUE_H__
-#define __HIDRD_STRM_OPT_VALUE_H__
+#ifndef __HIDRD_OPT_H__
+#define __HIDRD_OPT_H__
 
-#include <stdbool.h>
+#include "hidrd/opt/inst.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-typedef union hidrd_strm_opt_value {
-    const char *string;     /**< String */
-    bool        boolean;    /**< Boolean */
-} hidrd_strm_opt_value;
-
-#ifdef __cplusplus
-} /* extern "C" */
-#endif
-
-#endif /* __HIDRD_STRM_OPT_VALUE_H__ */
-
+#endif /* __HIDRD_OPT_H__ */
 

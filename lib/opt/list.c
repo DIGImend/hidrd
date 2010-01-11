@@ -28,17 +28,17 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <strings.h>
-#include "hidrd/strm/opt_list.h"
+#include "hidrd/opt/list.h"
 
 
 bool
-hidrd_strm_opt_list_valid(const hidrd_strm_opt *list)
+hidrd_opt_list_valid(const hidrd_opt *list)
 {
     if (list == NULL)
         return false;
 
     for (; list->name != NULL; list++)
-        if (!hidrd_strm_opt_valid(list))
+        if (!hidrd_opt_valid(list))
             return false;
 
     return true;
@@ -46,20 +46,20 @@ hidrd_strm_opt_list_valid(const hidrd_strm_opt *list)
 
 
 bool
-hidrd_strm_opt_list_empty(const hidrd_strm_opt *list)
+hidrd_opt_list_empty(const hidrd_opt *list)
 {
-    assert(hidrd_strm_opt_list_valid(list));
+    assert(hidrd_opt_list_valid(list));
 
     return list->name == NULL;
 }
 
 
 size_t
-hidrd_strm_opt_list_len(const hidrd_strm_opt *list)
+hidrd_opt_list_len(const hidrd_opt *list)
 {
-    const hidrd_strm_opt   *opt;
+    const hidrd_opt   *opt;
 
-    assert(hidrd_strm_opt_list_valid(list));
+    assert(hidrd_opt_list_valid(list));
 
     for (opt = list; opt->name != NULL; opt++);
 
@@ -68,11 +68,11 @@ hidrd_strm_opt_list_len(const hidrd_strm_opt *list)
 
 
 bool
-hidrd_strm_opt_list_uniform(const hidrd_strm_opt   *list,
-                            hidrd_strm_opt_type     type)
+hidrd_opt_list_uniform(const hidrd_opt *list,
+                       hidrd_opt_type   type)
 {
-    assert(hidrd_strm_opt_list_valid(list));
-    assert(hidrd_strm_opt_type_valid(type));
+    assert(hidrd_opt_list_valid(list));
+    assert(hidrd_opt_type_valid(type));
 
     for (; list->name != NULL; list++)
         if (list->type != type)
@@ -82,10 +82,10 @@ hidrd_strm_opt_list_uniform(const hidrd_strm_opt   *list,
 }
 
 
-const hidrd_strm_opt *
-hidrd_strm_opt_list_lkp(const hidrd_strm_opt *list, const char *name)
+const hidrd_opt *
+hidrd_opt_list_lkp(const hidrd_opt *list, const char *name)
 {
-    assert(hidrd_strm_opt_list_valid(list));
+    assert(hidrd_opt_list_valid(list));
 
     for (; list->name != NULL; list++)
         if (strcasecmp(list->name, name) == 0)
@@ -96,35 +96,35 @@ hidrd_strm_opt_list_lkp(const hidrd_strm_opt *list, const char *name)
 
 
 bool
-hidrd_strm_opt_list_get_boolean(const hidrd_strm_opt   *list,
-                                const char             *name)
+hidrd_opt_list_get_boolean(const hidrd_opt *list,
+                           const char      *name)
 {
-    assert(hidrd_strm_opt_list_valid(list));
+    assert(hidrd_opt_list_valid(list));
     assert(name != NULL);
     assert(*name != '\0');
 
-    return hidrd_strm_opt_get_boolean(hidrd_strm_opt_list_lkp(list, name));
+    return hidrd_opt_get_boolean(hidrd_opt_list_lkp(list, name));
 }
 
 
 const char *
-hidrd_strm_opt_list_get_string(const hidrd_strm_opt    *list,
-                               const char              *name)
+hidrd_opt_list_get_string(const hidrd_opt  *list,
+                          const char       *name)
 {
-    assert(hidrd_strm_opt_list_valid(list));
+    assert(hidrd_opt_list_valid(list));
     assert(name != NULL);
     assert(*name != '\0');
 
-    return hidrd_strm_opt_get_string(hidrd_strm_opt_list_lkp(list, name));
+    return hidrd_opt_get_string(hidrd_opt_list_lkp(list, name));
 }
 
 
 bool
-hidrd_strm_opt_list_grow(hidrd_strm_opt   **plist,
-                         size_t            *palloc,
-                         size_t             index)
+hidrd_opt_list_grow(hidrd_opt **plist,
+                    size_t     *palloc,
+                    size_t      index)
 {
-    hidrd_strm_opt *new_list;
+    hidrd_opt *new_list;
     size_t          new_alloc;
 
     assert(plist != NULL);
@@ -145,7 +145,7 @@ hidrd_strm_opt_list_grow(hidrd_strm_opt   **plist,
 }
 
 
-/** Option list parse state */
+/** Option list tokenizing state */
 typedef enum tknz_state {
     TKNZ_STATE_NONE,    /**< Nothing found of this option */
     TKNZ_STATE_TOKEN,   /**< Processing token (name or value) */
@@ -153,14 +153,13 @@ typedef enum tknz_state {
 } tknz_state;
 
 
-/** Tokenize option list string buffer */
-hidrd_strm_opt *
-hidrd_strm_opt_list_tknz(char *buf)
+hidrd_opt *
+hidrd_opt_list_tknz(char *buf)
 {
     char           *p;
     char            c;
-    hidrd_strm_opt *result  = NULL;
-    hidrd_strm_opt *list;
+    hidrd_opt *result  = NULL;
+    hidrd_opt *list;
     size_t          alloc   = 0;
     size_t          index   = 0;
     tknz_state      state   = TKNZ_STATE_NONE;
@@ -215,10 +214,10 @@ hidrd_strm_opt_list_tknz(char *buf)
                 /* Commit name/value pair (if any) */
                 if (name != NULL)
                 {
-                    if (!hidrd_strm_opt_list_grow(&list, &alloc, index))
+                    if (!hidrd_opt_list_grow(&list, &alloc, index))
                         goto cleanup;
                     list[index].name = name;
-                    list[index].type = HIDRD_STRM_OPT_TYPE_STRING;
+                    list[index].type = HIDRD_OPT_TYPE_STRING;
                     list[index].value.string = value;
                     index++;
 
@@ -238,7 +237,7 @@ hidrd_strm_opt_list_tknz(char *buf)
     }
 
     /* Terminate the list */
-    if (!hidrd_strm_opt_list_grow(&list, &alloc, index))
+    if (!hidrd_opt_list_grow(&list, &alloc, index))
         goto cleanup;
     list[index].name    = NULL;
 

@@ -21,14 +21,9 @@ lib_LTLIBRARIES = libhidrd_strm.la
 libhidrd_strm_la_SOURCES = \
     inst.c                  \
     natv.c                  \
-    opt.c                   \
-    opt_list.c              \
-    opt_spec.c              \
-    opt_spec_list.c         \
-    opt_type.c              \
     type.c
 
-libhidrd_strm_la_LIBADD = ../item/libhidrd_item.la
+libhidrd_strm_la_LIBADD = ../item/libhidrd_item.la ../opt/libhidrd_opt.la
 
 check_PROGRAMS = natv_test
 TESTS = natv_test

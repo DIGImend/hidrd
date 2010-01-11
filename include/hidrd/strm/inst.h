@@ -149,7 +149,7 @@ extern bool hidrd_strm_opts_initf(hidrd_strm *strm,
                                   void **pbuf, size_t *psize,
                                   const char *opts_fmt, ...)
                                  __attribute__((format(printf, 4, 5)));
-#endif /* HIDRD_STRM_WITH_OPTS */
+#endif /* HIDRD_WITH_OPT */
 
 /**
  * Open (allocate and initialize) an instance of specified stream type with

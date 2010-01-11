@@ -31,8 +31,8 @@
 #include <stdarg.h>
 #include "hidrd/item.h"
 
-#ifdef HIDRD_STRM_WITH_OPTS
-#include "hidrd/strm/opt_spec.h"
+#ifdef HIDRD_WITH_OPT
+#include "hidrd/opt/spec.h"
 #endif
 
 #ifdef __cplusplus
@@ -53,7 +53,7 @@ typedef struct hidrd_strm hidrd_strm;
 typedef bool hidrd_strm_type_init_fn(hidrd_strm    *strm,
                                      va_list        ap);
 
-#ifdef HIDRD_STRM_WITH_OPTS
+#ifdef HIDRD_WITH_OPT
 /**
  * Prototype for a stream initialization function, which uses options.
  *
@@ -64,9 +64,9 @@ typedef bool hidrd_strm_type_init_fn(hidrd_strm    *strm,
  * @return  True if initialized successfully, false otherwise.
  */
 
-typedef bool hidrd_strm_type_opts_init_fn(hidrd_strm           *strm,
-                                          const hidrd_strm_opt *opt_list);
-#endif /* HIDRD_STRM_WITH_OPTS */
+typedef bool hidrd_strm_type_opts_init_fn(hidrd_strm       *strm,
+                                          const hidrd_opt  *opt_list);
+#endif /* HIDRD_WITH_OPT */
 
 /**
  * Prototype for a stream instance validation function.
@@ -118,9 +118,9 @@ typedef struct hidrd_strm_type {
     const char                     *name;       /**< Type name */
     size_t                          size;       /**< Instance size */
     hidrd_strm_type_init_fn        *init;
-#ifdef HIDRD_STRM_WITH_OPTS
+#ifdef HIDRD_WITH_OPT
     hidrd_strm_type_opts_init_fn   *opts_init;
-    const hidrd_strm_opt_spec      *opts_spec;
+    const hidrd_opt_spec           *opts_spec;
 #endif
     hidrd_strm_type_valid_fn       *valid;
     hidrd_strm_type_read_fn        *read;

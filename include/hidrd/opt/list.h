@@ -24,11 +24,11 @@
  * @(#) $Id$
  */
 
-#ifndef __HIDRD_STRM_OPT_LIST_H__
-#define __HIDRD_STRM_OPT_LIST_H__
+#ifndef __HIDRD_OPT_LIST_H__
+#define __HIDRD_OPT_LIST_H__
 
 #include <stddef.h>
-#include "hidrd/strm/opt.h"
+#include "hidrd/opt/inst.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -41,7 +41,7 @@ extern "C" {
  *
  * @return True if the option list is valid.
  */
-extern bool hidrd_strm_opt_list_valid(const hidrd_strm_opt *list);
+extern bool hidrd_opt_list_valid(const hidrd_opt *list);
 
 /**
  * Check if an option list is empty.
@@ -50,7 +50,7 @@ extern bool hidrd_strm_opt_list_valid(const hidrd_strm_opt *list);
  *
  * @return True if the option list is empty, false otherwise.
  */
-extern bool hidrd_strm_opt_list_empty(const hidrd_strm_opt *list);
+extern bool hidrd_opt_list_empty(const hidrd_opt *list);
 
 /**
  * Get an option list length.
@@ -59,7 +59,7 @@ extern bool hidrd_strm_opt_list_empty(const hidrd_strm_opt *list);
  *
  * @return List length, in options.
  */
-extern size_t hidrd_strm_opt_list_len(const hidrd_strm_opt *list);
+extern size_t hidrd_opt_list_len(const hidrd_opt *list);
 
 /**
  * Check if the whole option list contains only options of specific type.
@@ -70,8 +70,8 @@ extern size_t hidrd_strm_opt_list_len(const hidrd_strm_opt *list);
  * @return True if the list contains only options of specified type @e type,
  *         false otherwise.
  */
-extern bool hidrd_strm_opt_list_uniform(const hidrd_strm_opt   *opt,
-                                        hidrd_strm_opt_type     type);
+extern bool hidrd_opt_list_uniform(const hidrd_opt *opt,
+                                   hidrd_opt_type   type);
 
 /**
  * Lookup an option in an option list.
@@ -81,9 +81,8 @@ extern bool hidrd_strm_opt_list_uniform(const hidrd_strm_opt   *opt,
  *
  * @return Option pointer, if found; NULL otherwise.
  */
-extern const hidrd_strm_opt *hidrd_strm_opt_list_lkp(
-                                            const hidrd_strm_opt   *list,
-                                            const char             *name);
+extern const hidrd_opt *hidrd_opt_list_lkp(const hidrd_opt *list,
+                                           const char      *name);
 
 /**
  * Get a boolean option value.
@@ -94,8 +93,8 @@ extern const hidrd_strm_opt *hidrd_strm_opt_list_lkp(
  *
  * @return Option value.
  */
-extern bool hidrd_strm_opt_list_get_boolean(const hidrd_strm_opt   *list,
-                                            const char             *name);
+extern bool hidrd_opt_list_get_boolean(const hidrd_opt *list,
+                                       const char      *name);
 
 /**
  * Get a string option value.
@@ -106,9 +105,8 @@ extern bool hidrd_strm_opt_list_get_boolean(const hidrd_strm_opt   *list,
  *
  * @return Option value.
  */
-extern const char *hidrd_strm_opt_list_get_string(
-                                            const hidrd_strm_opt   *list,
-                                            const char             *name);
+extern const char *hidrd_opt_list_get_string(const hidrd_opt   *list,
+                                             const char        *name);
 
 /**
  * Grow an option list to make specified index valid.
@@ -119,9 +117,9 @@ extern const char *hidrd_strm_opt_list_get_string(
  *
  * @return True if grown successfully, false otherwise.
  */
-extern bool hidrd_strm_opt_list_grow(hidrd_strm_opt   **plist,
-                                     size_t            *palloc,
-                                     size_t             index);
+extern bool hidrd_opt_list_grow(hidrd_opt **plist,
+                                size_t     *palloc,
+                                size_t      index);
 
 /**
  * Tokenize an option list string (represent as a list of string options),
@@ -134,12 +132,10 @@ extern bool hidrd_strm_opt_list_grow(hidrd_strm_opt   **plist,
  *         referenced from the string, or NULL, if failed to allocate
  *         memory.
  */
-extern hidrd_strm_opt *hidrd_strm_opt_list_tknz(char *buf);
+extern hidrd_opt *hidrd_opt_list_tknz(char *buf);
 
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
 
-#endif /* __HIDRD_STRM_OPT_LIST_H__ */
-
-
+#endif /* __HIDRD_OPT_LIST_H__ */

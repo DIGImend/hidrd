@@ -26,11 +26,11 @@
 
 #include <assert.h>
 #include <stdlib.h>
-#include "hidrd/strm/opt.h"
+#include "hidrd/opt/inst.h"
 
 
 bool
-hidrd_strm_opt_valid(const hidrd_strm_opt *opt)
+hidrd_opt_valid(const hidrd_opt *opt)
 {
     if (opt == NULL)
         return false;
@@ -40,13 +40,13 @@ hidrd_strm_opt_valid(const hidrd_strm_opt *opt)
         return false;
 
     /* Check type */
-    if (!hidrd_strm_opt_type_valid(opt->type))
+    if (!hidrd_opt_type_valid(opt->type))
         return false;
 
     /* Check value */
     switch (opt->type)
     {
-        case HIDRD_STRM_OPT_TYPE_STRING:
+        case HIDRD_OPT_TYPE_STRING:
             return opt->value.string != NULL;
         default:
             return true;
@@ -55,20 +55,20 @@ hidrd_strm_opt_valid(const hidrd_strm_opt *opt)
 
 
 const char *
-hidrd_strm_opt_get_string(const hidrd_strm_opt *opt)
+hidrd_opt_get_string(const hidrd_opt *opt)
 {
-    assert(hidrd_strm_opt_valid(opt));
-    assert(opt->type == HIDRD_STRM_OPT_TYPE_STRING);
+    assert(hidrd_opt_valid(opt));
+    assert(opt->type == HIDRD_OPT_TYPE_STRING);
 
     return opt->value.string;
 }
 
 
 bool
-hidrd_strm_opt_get_boolean(const hidrd_strm_opt *opt)
+hidrd_opt_get_boolean(const hidrd_opt *opt)
 {
-    assert(hidrd_strm_opt_valid(opt));
-    assert(opt->type == HIDRD_STRM_OPT_TYPE_BOOLEAN);
+    assert(hidrd_opt_valid(opt));
+    assert(opt->type == HIDRD_OPT_TYPE_BOOLEAN);
 
     return opt->value.boolean;
 }

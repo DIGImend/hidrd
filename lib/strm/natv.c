@@ -26,7 +26,6 @@
 
 #include <errno.h>
 #include <string.h>
-#include "hidrd/strm/opt_list.h"
 #include "hidrd/strm/natv.h"
 #include "hidrd/strm/inst.h"
 

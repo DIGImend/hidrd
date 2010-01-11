@@ -26,8 +26,10 @@
 
 #include <ctype.h>
 #include <stdio.h>
-#include "hidrd/strm/opt_list.h"
-#include "hidrd/strm/opt_spec_list.h"
+#ifdef HIDRD_WITH_OPT
+#include "hidrd/opt/list.h"
+#include "hidrd/opt/spec_list.h"
+#endif
 #include "hidrd/strm/inst.h"
 
 
@@ -127,16 +129,16 @@ hidrd_strm_init(hidrd_strm *strm, void **pbuf, size_t *psize, ...)
 }
 
 
-#ifdef HIDRD_STRM_WITH_OPTS
+#ifdef HIDRD_WITH_OPT
 bool
-hidrd_strm_opts_initf(hidrd_strm *strm,
+hidrd_opts_initf(hidrd_strm *strm,
                       void **pbuf, size_t *psize,
                       const char *opts_fmt, ...)
 {
     va_list         ap;
     bool            result      = false;
     char           *opts_buf    = NULL;
-    hidrd_strm_opt *opt_list    = NULL;
+    hidrd_opt *opt_list    = NULL;
 
     assert(strm != NULL);
     assert(hidrd_strm_type_valid(strm->type));
@@ -159,13 +161,13 @@ hidrd_strm_opts_initf(hidrd_strm *strm,
         goto cleanup;
 
     /* Tokenize option list */
-    opt_list = hidrd_strm_opt_list_tknz(opts_buf);
+    opt_list = hidrd_opt_list_tknz(opts_buf);
 
     /* If there is opts_init member */
     if (strm->type->opts_init != NULL)
     {
         /* Apply option specification */
-        if (!hidrd_strm_opt_spec_list_apply(strm->type->opts_spec,
+        if (!hidrd_opt_spec_list_apply(strm->type->opts_spec,
                                             opt_list))
             goto cleanup;
 
@@ -180,7 +182,7 @@ hidrd_strm_opts_initf(hidrd_strm *strm,
     else
     {
         /* If the option list is not empty */
-        if (!hidrd_strm_opt_list_empty(opt_list))
+        if (!hidrd_opt_list_empty(opt_list))
             goto cleanup;
         /* Do the regular initialization */
         if (!hidrd_strm_init(strm, pbuf, psize))
@@ -202,12 +204,12 @@ cleanup:
 
 
 bool
-hidrd_strm_opts_init(hidrd_strm *strm,
+hidrd_opts_init(hidrd_strm *strm,
                      void **pbuf, size_t *psize, const char *opts)
 {
-    return hidrd_strm_opts_initf(strm, pbuf, psize, "%s", opts);
+    return hidrd_opts_initf(strm, pbuf, psize, "%s", opts);
 }
-#endif /* HIDRD_STRM_WITH_OPTS */
+#endif /* HIDRD_WITH_OPT */
 
 
 hidrd_strm *

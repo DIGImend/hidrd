@@ -26,7 +26,9 @@
 
 #include <string.h>
 #include <libxml/parser.h>
-#include "hidrd/strm/opt_list.h"
+#ifdef HIDRD_WITH_OPT
+#include "hidrd/opt/list.h"
+#endif
 #include "hidrd/strm/xml.h"
 #include "xml.h"
 
@@ -70,11 +72,11 @@ hidrd_strm_xml_init(hidrd_strm *strm, va_list ap)
 }
 
 
-#ifdef HIDRD_STRM_WITH_OPTS
+#ifdef HIDRD_WITH_OPT
 static bool
-hidrd_strm_xml_opts_init(hidrd_strm *strm, const hidrd_strm_opt *list)
+hidrd_strm_xml_opts_init(hidrd_strm *strm, const hidrd_opt *list)
 {
-    return init(strm, hidrd_strm_opt_list_get_boolean(list, "format"));
+    return init(strm, hidrd_opt_list_get_boolean(list, "format"));
 }
 #endif
 
@@ -212,10 +214,10 @@ hidrd_strm_xml_clnp(hidrd_strm *strm)
 }
 
 
-#ifdef HIDRD_STRM_WITH_OPTS
-const hidrd_strm_opt_spec hidrd_strm_xml_opts_spec[] = {
+#ifdef HIDRD_WITH_OPT
+const hidrd_opt_spec hidrd_strm_xml_opts_spec[] = {
     {.name  = "format",
-     .type  = HIDRD_STRM_OPT_TYPE_BOOLEAN,
+     .type  = HIDRD_OPT_TYPE_BOOLEAN,
      .req   = false,
      .dflt  = {
          .boolean = true
@@ -223,13 +225,13 @@ const hidrd_strm_opt_spec hidrd_strm_xml_opts_spec[] = {
      .desc  = "Indent XML output"},
     {.name  = NULL}
 };
-#endif /* HIDRD_STRM_WITH_OPTS */
+#endif /* HIDRD_WITH_OPT */
 
 const hidrd_strm_type hidrd_strm_xml = {
     .name       = "XML",
     .size       = sizeof(hidrd_strm_xml_inst),
     .init       = hidrd_strm_xml_init,
-#ifdef HIDRD_STRM_WITH_OPTS
+#ifdef HIDRD_WITH_OPT
     .opts_init  = hidrd_strm_xml_opts_init,
     .opts_spec  = hidrd_strm_xml_opts_spec,
 #endif

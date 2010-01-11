@@ -16,10 +16,11 @@
 # along with hidrd; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-hidrd_strmdir = $(includedir)/hidrd/strm
+lib_LTLIBRARIES = libhidrd_opt.la
 
-hidrd_strm_HEADERS = \
-    inst.h              \
-    natv.h              \
-    type.h              \
-    xml.h
+libhidrd_opt_la_SOURCES = \
+    inst.c                  \
+    list.c                  \
+    spec.c                  \
+    spec_list.c             \
+    type.c

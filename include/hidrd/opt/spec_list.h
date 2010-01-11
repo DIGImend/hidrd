@@ -24,10 +24,10 @@
  * @(#) $Id$
  */
 
-#ifndef __HIDRD_STRM_OPT_SPEC_LIST_H__
-#define __HIDRD_STRM_OPT_SPEC_LIST_H__
+#ifndef __HIDRD_OPT_SPEC_LIST_H__
+#define __HIDRD_OPT_SPEC_LIST_H__
 
-#include "hidrd/strm/opt_spec.h"
+#include "hidrd/opt/spec.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -40,7 +40,7 @@ extern "C" {
  *
  * @return True if the list is valid, false otherwise.
  */
-extern bool hidrd_strm_opt_spec_list_valid(const hidrd_strm_opt_spec *list);
+extern bool hidrd_opt_spec_list_valid(const hidrd_opt_spec *list);
 
 /**
  * Lookup an option specification in an option specification list.
@@ -50,9 +50,9 @@ extern bool hidrd_strm_opt_spec_list_valid(const hidrd_strm_opt_spec *list);
  *
  * @return Option specification, or NULL if not found.
  */
-extern const hidrd_strm_opt_spec *hidrd_strm_opt_spec_list_lkp(
-                                        const hidrd_strm_opt_spec  *list,
-                                        const char                 *name);
+extern const hidrd_opt_spec *hidrd_opt_spec_list_lkp(
+                                            const hidrd_opt_spec   *list,
+                                            const char             *name);
 
 /**
  * Parse a string option list as an option specification list, modifying
@@ -64,10 +64,10 @@ extern const hidrd_strm_opt_spec *hidrd_strm_opt_spec_list_lkp(
  *         names and modified values of the option list, or NULL, if failed
  *         to parse or allocate memory.
  *
- * @sa hidrd_strm_opt_spec_parse_opt
+ * @sa hidrd_opt_spec_parse_opt
  */
-extern hidrd_strm_opt_spec *hidrd_strm_opt_spec_list_parse_opt_list(
-                                                hidrd_strm_opt *opt_list);
+extern hidrd_opt_spec *hidrd_opt_spec_list_parse_opt_list(
+                                                hidrd_opt  *opt_list);
 
 /**
  * Parse string as an option specification list, modifying it and
@@ -79,7 +79,7 @@ extern hidrd_strm_opt_spec *hidrd_strm_opt_spec_list_parse_opt_list(
  * @return Resulting option specification list, referencing modified
  *         original string, or NULL, if failed to parse or allocate memory.
  */
-extern hidrd_strm_opt_spec *hidrd_strm_opt_spec_list_parse(char *buf);
+extern hidrd_opt_spec *hidrd_opt_spec_list_parse(char *buf);
 
 /**
  * Apply option specification list to a string option list, converting
@@ -94,12 +94,11 @@ extern hidrd_strm_opt_spec *hidrd_strm_opt_spec_list_parse(char *buf);
  * @return True if the option list was successfully converted to specific
  *         list and all the mandatory options were present.
  */
-extern bool hidrd_strm_opt_spec_list_apply(
-                                    const hidrd_strm_opt_spec  *spec_list,
-                                    hidrd_strm_opt             *opt_list);
+extern bool hidrd_opt_spec_list_apply(const hidrd_opt_spec *spec_list,
+                                      hidrd_opt            *opt_list);
 
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
 
-#endif /* __HIDRD_STRM_OPT_SPEC_LIST_H__ */
+#endif /* __HIDRD_OPT_SPEC_LIST_H__ */

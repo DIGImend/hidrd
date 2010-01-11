@@ -29,7 +29,7 @@ AC_CONFIG_MACRO_DIR([m4])
 CFLAGS=$CFLAGS
 CFLAGS="-Wall -Wextra -Werror $CFLAGS"
 ABS_SRCDIR=`cd ${srcdir} ; pwd`
-CPPFLAGS="-DHIDRD_STRM_WITH_OPTS -DHIDRD_WITH_NAMES -DHIDRD_WITH_TOKENS -D_GNU_SOURCE -DNDEBUG -I${ABS_SRCDIR}/include $CPPFLAGS"
+CPPFLAGS="-DHIDRD_WITH_OPT -DHIDRD_WITH_NAMES -DHIDRD_WITH_TOKENS -D_GNU_SOURCE -DNDEBUG -I${ABS_SRCDIR}/include $CPPFLAGS"
 
 # Checks for programs.
 AC_PROG_CC
@@ -73,11 +73,13 @@ AC_CONFIG_FILES([Makefile
                  include/hidrd/Makefile
                  include/hidrd/item/Makefile
                  include/hidrd/item/pfx/Makefile
+                 include/hidrd/opt/Makefile
                  include/hidrd/strm/Makefile
                  include/hidrd/usage/Makefile
                  
                  lib/Makefile
                  lib/item/Makefile
+                 lib/opt/Makefile
                  lib/strm/Makefile
                  lib/usage/Makefile])
 AC_OUTPUT

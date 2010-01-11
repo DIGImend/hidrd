@@ -1,7 +1,7 @@
 /** @file
- * @brief HID report descriptor - stream type
+ * @brief HID report descriptor - option value
  *
- * Copyright (C) 2009-2010 Nikolai Kondrashov
+ * Copyright (C) 2010 Nikolai Kondrashov
  *
  * This file is part of hidrd.
  *
@@ -24,24 +24,22 @@
  * @(#) $Id$
  */
 
-#ifdef HIDRD_WITH_OPT
-#include "hidrd/opt/spec_list.h"
+#ifndef __HIDRD_OPT_VALUE_H__
+#define __HIDRD_OPT_VALUE_H__
+
+#include <stdbool.h>
+
+#ifdef __cplusplus
+extern "C" {
 #endif
-#include "hidrd/strm/type.h"
-#include "hidrd/strm/inst.h"
 
-bool
-hidrd_strm_type_valid(const hidrd_strm_type *type)
-{
-    return type != NULL &&
-           type->name != NULL && *type->name != '\0' &&
-           type->size >= sizeof(hidrd_strm) &&
-#ifdef HIDRD_WITH_OPT
-           (type->init != NULL || type->opts_init == NULL) &&
-           (type->opts_init == NULL ||
-            hidrd_opt_spec_list_valid(type->opts_spec)) &&
+typedef union hidrd_opt_value {
+    const char *string;     /**< String */
+    bool        boolean;    /**< Boolean */
+} hidrd_opt_value;
+
+#ifdef __cplusplus
+} /* extern "C" */
 #endif
-           (type->read != NULL || type->write != NULL);
-}
 
-
+#endif /* __HIDRD_OPT_VALUE_H__ */

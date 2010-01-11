@@ -28,7 +28,7 @@
 #include <assert.h>
 #include <ctype.h>
 #include <strings.h>
-#include "hidrd/strm/opt_type.h"
+#include "hidrd/opt/type.h"
 
 
 static bool
@@ -83,18 +83,18 @@ parse_boolean(bool *pval, const char *str)
 
 
 bool
-hidrd_strm_opt_type_parse_value(hidrd_strm_opt_type     type,
-                                hidrd_strm_opt_value   *pval,
-                                const char             *str)
+hidrd_opt_type_parse_value(hidrd_opt_type   type,
+                           hidrd_opt_value *pval,
+                           const char      *str)
 {
-    assert(hidrd_strm_opt_type_valid(type));
+    assert(hidrd_opt_type_valid(type));
     assert(pval != NULL);
     assert(str != NULL);
 
     switch (type)
     {
 #define MAP(_T, _t) \
-    case HIDRD_STRM_OPT_TYPE_##_T:          \
+    case HIDRD_OPT_TYPE_##_T:               \
         return parse_##_t(&pval->_t, str)
 
         MAP(STRING, string);

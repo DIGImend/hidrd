@@ -26,14 +26,14 @@
 
 #include <assert.h>
 #include <string.h>
-#include "hidrd/strm/opt_spec.h"
+#include "hidrd/opt/spec.h"
 
 bool
-hidrd_strm_opt_spec_valid(const hidrd_strm_opt_spec *spec)
+hidrd_opt_spec_valid(const hidrd_opt_spec *spec)
 {
     return spec != NULL &&
            spec->name != NULL && *spec->name != '\0' &&
-           hidrd_strm_opt_type_valid(spec->type);
+           hidrd_opt_type_valid(spec->type);
 }
 
 
@@ -45,28 +45,28 @@ typedef enum parse_state {
 
 
 bool
-hidrd_strm_opt_spec_parse_opt(hidrd_strm_opt_spec  *spec,
-                              const hidrd_strm_opt *opt)
+hidrd_opt_spec_parse_opt(hidrd_opt_spec  *spec,
+                              const hidrd_opt *opt)
 {
     char                   *buf;
-    hidrd_strm_opt_type     type;
+    hidrd_opt_type     type;
     parse_state             state;
     char                   *p;
     char                    c;
     const char             *str;
     const char             *dflt_str    = NULL;
     const char             *desc        = NULL;
-    hidrd_strm_opt_value    dflt;
+    hidrd_opt_value    dflt;
 
     assert(spec != NULL);
-    assert(hidrd_strm_opt_valid(opt));
-    assert(opt->type == HIDRD_STRM_OPT_TYPE_STRING);
+    assert(hidrd_opt_valid(opt));
+    assert(opt->type == HIDRD_OPT_TYPE_STRING);
 
     /* Let's hope the caller knows what we're doing here */
     buf = (char *)opt->value.string;
 
-    type = (hidrd_strm_opt_type)*buf;
-    if (!hidrd_strm_opt_type_valid(type))
+    type = (hidrd_opt_type)*buf;
+    if (!hidrd_opt_type_valid(type))
         return false;
 
     /*
@@ -99,7 +99,7 @@ hidrd_strm_opt_spec_parse_opt(hidrd_strm_opt_spec  *spec,
     /* Parse default value, if any */
     if (dflt_str == NULL)
         memset(&dflt, 0, sizeof(dflt));
-    else if (!hidrd_strm_opt_type_parse_value(type, &dflt, dflt_str))
+    else if (!hidrd_opt_type_parse_value(type, &dflt, dflt_str))
         return false;
 
     /*
@@ -111,7 +111,7 @@ hidrd_strm_opt_spec_parse_opt(hidrd_strm_opt_spec  *spec,
     spec->dflt = dflt;
     spec->desc = desc;
 
-    assert(hidrd_strm_opt_spec_valid(spec));
+    assert(hidrd_opt_spec_valid(spec));
 
     return true;
 }

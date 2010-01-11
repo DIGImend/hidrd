@@ -1,5 +1,5 @@
 /** @file
- * @brief HID report descriptor - option
+ * @brief HID report descriptor - option instance
  *
  * Copyright (C) 2010 Nikolai Kondrashov
  *
@@ -24,22 +24,22 @@
  * @(#) $Id$
  */
 
-#ifndef __HIDRD_STRM_OPT_H__
-#define __HIDRD_STRM_OPT_H__
+#ifndef __HIDRD_OPT_INST_H__
+#define __HIDRD_OPT_INST_H__
 
 #include <stdbool.h>
-#include "hidrd/strm/opt_type.h"
+#include "hidrd/opt/type.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /** Option */
-typedef struct hidrd_strm_opt {
-    const char             *name;
-    hidrd_strm_opt_type     type;
-    hidrd_strm_opt_value    value;
-} hidrd_strm_opt;
+typedef struct hidrd_opt {
+    const char         *name;
+    hidrd_opt_type      type;
+    hidrd_opt_value     value;
+} hidrd_opt;
 
 
 /**
@@ -49,7 +49,7 @@ typedef struct hidrd_strm_opt {
  *
  * @return True if the option is valid, false otherwise.
  */
-extern bool hidrd_strm_opt_valid(const hidrd_strm_opt *opt);
+extern bool hidrd_opt_valid(const hidrd_opt *opt);
 
 /**
  * Get a string value.
@@ -58,7 +58,7 @@ extern bool hidrd_strm_opt_valid(const hidrd_strm_opt *opt);
  *
  * @return Option value.
  */
-extern const char *hidrd_strm_opt_get_string(const hidrd_strm_opt *opt);
+extern const char *hidrd_opt_get_string(const hidrd_opt *opt);
 
 /**
  * Get a boolean value.
@@ -67,10 +67,10 @@ extern const char *hidrd_strm_opt_get_string(const hidrd_strm_opt *opt);
  *
  * @return Option value.
  */
-extern bool hidrd_strm_opt_get_boolean(const hidrd_strm_opt *opt);
+extern bool hidrd_opt_get_boolean(const hidrd_opt *opt);
 
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
 
-#endif /* __HIDRD_STRM_OPT_H__ */
+#endif /* __HIDRD_OPT_INST_H__ */

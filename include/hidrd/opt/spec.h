@@ -24,23 +24,23 @@
  * @(#) $Id$
  */
 
-#ifndef __HIDRD_STRM_OPT_SPEC_H__
-#define __HIDRD_STRM_OPT_SPEC_H__
+#ifndef __HIDRD_OPT_SPEC_H__
+#define __HIDRD_OPT_SPEC_H__
 
-#include "hidrd/strm/opt.h"
+#include "hidrd/opt/inst.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /** Option specification */
-typedef struct hidrd_strm_opt_spec {
-    const char             *name;   /**< Name */
-    hidrd_strm_opt_type     type;   /**< Value type */
-    bool                    req;    /**< "Required" flag */
-    hidrd_strm_opt_value    dflt;   /**< Default value */
-    const char             *desc;   /**< Human-readable description */
-} hidrd_strm_opt_spec;
+typedef struct hidrd_opt_spec {
+    const char         *name;   /**< Name */
+    hidrd_opt_type      type;   /**< Value type */
+    bool                req;    /**< "Required" flag */
+    hidrd_opt_value     dflt;   /**< Default value */
+    const char         *desc;   /**< Human-readable description */
+} hidrd_opt_spec;
 
 /**
  * Check if an option specification is valid.
@@ -49,7 +49,7 @@ typedef struct hidrd_strm_opt_spec {
  *
  * @return True if the option specification is valid, false otherwise.
  */
-extern bool hidrd_strm_opt_spec_valid(const hidrd_strm_opt_spec *spec);
+extern bool hidrd_opt_spec_valid(const hidrd_opt_spec *spec);
 
 /**
  * Parse a string option as an option specification, modifying the option
@@ -63,17 +63,15 @@ extern bool hidrd_strm_opt_spec_valid(const hidrd_strm_opt_spec *spec);
  *
  * @note Option value format is the following:
  *       TYPE ['?' DEFAULT_VALUE] ['\'' DESCRIPTION]
- *       TYPE is a hidrd_strm_opt_type value. DEFAULT_VALUE is a string
+ *       TYPE is a hidrd_opt_type value. DEFAULT_VALUE is a string
  *       representation of the value. If there is no DEFAULT_VALUE part, the
  *       option is considered mandatory.
  */
-extern bool hidrd_strm_opt_spec_parse_opt(hidrd_strm_opt_spec  *spec,
-                                          const hidrd_strm_opt *opt);
+extern bool hidrd_opt_spec_parse_opt(hidrd_opt_spec    *spec,
+                                     const hidrd_opt   *opt);
 
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
 
-#endif /* __HIDRD_STRM_OPT_SPEC_H__ */
-
-
+#endif /* __HIDRD_OPT_SPEC_H__ */
