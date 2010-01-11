@@ -25,11 +25,11 @@ libhidrd_strm_la_SOURCES = \
 
 libhidrd_strm_la_LIBADD = ../item/libhidrd_item.la ../opt/libhidrd_opt.la
 
-check_PROGRAMS = natv_test
-TESTS = natv_test
+check_PROGRAMS = hidrd_strm_natv_test
+TESTS = hidrd_strm_natv_test
 
-natv_test_SOURCES = natv_test.c
-natv_test_LDADD = $(lib_LTLIBRARIES)
+hidrd_strm_natv_test_SOURCES = natv_test.c
+hidrd_strm_natv_test_LDADD = $(lib_LTLIBRARIES)
 
 if WITH_LIBXML2
 libhidrd_strm_la_SOURCES += xml.c xml_read.c xml_write.c
@@ -37,11 +37,11 @@ libhidrd_strm_la_CFLAGS = @LIBXML2_CFLAGS@
 libhidrd_strm_la_LDFLAGS = @LIBXML2_LIBS@
 noinst_HEADERS = xml.h
 
-check_PROGRAMS += xml_test
-TESTS += xml_test
+check_PROGRAMS += hidrd_strm_xml_test
+TESTS += hidrd_strm_xml_test
 
-xml_test_SOURCES = xml_test.c
-xml_test_LDADD = $(lib_LTLIBRARIES)
+hidrd_strm_xml_test_SOURCES = xml_test.c
+hidrd_strm_xml_test_LDADD = $(lib_LTLIBRARIES)
 endif
 
 # Uncomment to have the tests installed

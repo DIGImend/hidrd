@@ -28,11 +28,11 @@ libhidrd_item_la_SOURCES = \
     pfx.c                   \
     short.c
 
-check_PROGRAMS = any_test
-TESTS = any_test
+check_PROGRAMS = hidrd_item_any_test
+TESTS = hidrd_item_any_test
 
-any_test_SOURCES = any_test.c
-any_test_LDADD = $(lib_LTLIBRARIES)
+hidrd_item_any_test_SOURCES = any_test.c
+hidrd_item_any_test_LDADD = $(lib_LTLIBRARIES)
 
 # Uncomment to have the tests installed
 # bin_PROGRAMS = $(TESTS)
