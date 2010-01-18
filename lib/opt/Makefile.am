@@ -33,4 +33,4 @@ hidrd_opt_test_SOURCES = test.c
 hidrd_opt_test_LDADD = $(lib_LTLIBRARIES)
 
 # Uncomment to have the tests installed
-bin_PROGRAMS = $(TESTS)
+# bin_PROGRAMS = $(TESTS)
