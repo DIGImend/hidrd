@@ -24,3 +24,13 @@ libhidrd_opt_la_SOURCES = \
     spec.c                  \
     spec_list.c             \
     type.c
+
+
+check_PROGRAMS = hidrd_opt_test
+TESTS = hidrd_opt_test
+
+hidrd_opt_test_SOURCES = test.c
+hidrd_opt_test_LDADD = $(lib_LTLIBRARIES)
+
+# Uncomment to have the tests installed
+bin_PROGRAMS = $(TESTS)

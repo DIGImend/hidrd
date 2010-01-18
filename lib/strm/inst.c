@@ -135,10 +135,13 @@ hidrd_opts_initf(hidrd_strm *strm,
                       void **pbuf, size_t *psize,
                       const char *opts_fmt, ...)
 {
-    va_list         ap;
-    bool            result      = false;
-    char           *opts_buf    = NULL;
-    hidrd_opt *opt_list    = NULL;
+    static const hidrd_opt_spec empty_spec_list[] = {{.name = NULL}};
+
+    va_list                 ap;
+    bool                    result      = false;
+    char                   *opts_buf    = NULL;
+    const hidrd_opt_spec   *spec_list;
+    hidrd_opt              *opt_list    = NULL;
 
     assert(strm != NULL);
     assert(hidrd_strm_type_valid(strm->type));
@@ -156,21 +159,23 @@ hidrd_opts_initf(hidrd_strm *strm,
 
     va_start(ap, opts_fmt);
 
+    /* Retrieve option specification list */
+    spec_list = strm->type->opts_spec;
+    if (spec_list == NULL)
+        spec_list = empty_spec_list;
+
     /* Format option string */
     if (vasprintf(&opts_buf, opts_fmt, ap) < 0)
         goto cleanup;
 
-    /* Tokenize option list */
-    opt_list = hidrd_opt_list_tknz(opts_buf);
+    /* Parse option list */
+    opt_list = hidrd_opt_spec_list_apply_parse(spec_list, opts_buf);
+    if (opt_list == NULL)
+        goto cleanup;
 
     /* If there is opts_init member */
     if (strm->type->opts_init != NULL)
     {
-        /* Apply option specification */
-        if (!hidrd_opt_spec_list_apply(strm->type->opts_spec,
-                                            opt_list))
-            goto cleanup;
-
         /* Initialize with option list */
         strm->pbuf  = pbuf;
         strm->psize = psize;
@@ -181,9 +186,6 @@ hidrd_opts_initf(hidrd_strm *strm,
     }
     else
     {
-        /* If the option list is not empty */
-        if (!hidrd_opt_list_empty(opt_list))
-            goto cleanup;
         /* Do the regular initialization */
         if (!hidrd_strm_init(strm, pbuf, psize))
             goto cleanup;

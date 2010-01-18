@@ -32,8 +32,8 @@
 #include "hidrd/opt/type.h"
 
 
-static bool
-parse_string(const char **pval, const char *str)
+bool
+hidrd_opt_type_parse_string(const char **pval, const char *str)
 {
     assert(pval != NULL);
     assert(str != NULL);
@@ -44,8 +44,8 @@ parse_string(const char **pval, const char *str)
 }
 
 
-static bool
-parse_boolean(bool *pval, const char *str)
+bool
+hidrd_opt_type_parse_boolean(bool *pval, const char *str)
 {
     const char *p;
     bool        got_nonzero;
@@ -95,8 +95,8 @@ hidrd_opt_type_parse_value(hidrd_opt_type   type,
     switch (type)
     {
 #define MAP(_T, _t) \
-    case HIDRD_OPT_TYPE_##_T:               \
-        return parse_##_t(&pval->_t, str)
+    case HIDRD_OPT_TYPE_##_T:                               \
+        return hidrd_opt_type_parse_##_t(&pval->_t, str)
 
         MAP(STRING, string);
         MAP(BOOLEAN, boolean);
@@ -111,7 +111,7 @@ hidrd_opt_type_parse_value(hidrd_opt_type   type,
 
 
 char *
-format_string(const char *val)
+hidrd_opt_type_format_string(const char *val)
 {
     assert(val != NULL);
 
@@ -120,7 +120,7 @@ format_string(const char *val)
 
 
 char *
-format_boolean(bool val)
+hidrd_opt_type_format_boolean(bool val)
 {
     return val ? strdup("yes") : strdup("no");
 }
@@ -136,8 +136,8 @@ hidrd_opt_type_format_value(hidrd_opt_type          type,
     switch (type)
     {
 #define MAP(_T, _t) \
-    case HIDRD_OPT_TYPE_##_T:       \
-        return format_##_t(pval->_t)
+    case HIDRD_OPT_TYPE_##_T:                       \
+        return hidrd_opt_type_format_##_t(pval->_t)
 
         MAP(STRING, string);
         MAP(BOOLEAN, boolean);
@@ -151,3 +151,45 @@ hidrd_opt_type_format_value(hidrd_opt_type          type,
 }
 
 
+int
+hidrd_opt_type_cmp_boolean(bool a, bool b)
+{
+    return ((a == false) == (b == false)) ? 0 : ((a == false) ? -1 : 1);
+}
+
+
+int
+hidrd_opt_type_cmp_string(const char *a, const char *b)
+{
+    assert(a != NULL);
+    assert(b != NULL);
+
+    return strcmp(a, b);
+}
+
+
+int
+hidrd_opt_type_cmp_value(hidrd_opt_type         type,
+                         const hidrd_opt_value *a,
+                         const hidrd_opt_value *b)
+{
+    assert(hidrd_opt_type_valid(type));
+    assert(a != NULL);
+    assert(b != NULL);
+
+    switch (type)
+    {
+#define MAP(_T, _t) \
+    case HIDRD_OPT_TYPE_##_T:                           \
+        return hidrd_opt_type_cmp_##_t(a->_t, b->_t)
+
+        MAP(BOOLEAN, boolean);
+        MAP(STRING, string);
+
+#undef MAP
+
+        default:
+            assert(!"Unknown type");
+            return 0;
+    }
+}

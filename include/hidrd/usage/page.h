@@ -50,7 +50,7 @@ typedef enum hidrd_usage_page {
     HIDRD_USAGE_PAGE_DEVICE                 = 0x0006,
     /** Keyboard/keypad */
     HIDRD_USAGE_PAGE_KEYBOARD               = 0x0007,
-    /** LED */
+    /** LEDs */
     HIDRD_USAGE_PAGE_LED                    = 0x0008,
     /** Button */
     HIDRD_USAGE_PAGE_BUTTON                 = 0x0009,

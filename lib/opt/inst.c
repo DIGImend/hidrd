@@ -26,6 +26,7 @@
 
 #include <assert.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "hidrd/opt/inst.h"
 
 
@@ -71,6 +72,34 @@ hidrd_opt_get_boolean(const hidrd_opt *opt)
     assert(opt->type == HIDRD_OPT_TYPE_BOOLEAN);
 
     return opt->value.boolean;
+}
+
+
+char *
+hidrd_opt_format(const hidrd_opt *opt)
+{
+    char   *result      = NULL;
+    char   *value_str   = NULL;
+    char   *str         = NULL;
+
+    assert(hidrd_opt_valid(opt));
+
+    value_str = hidrd_opt_type_format_value(opt->type, &opt->value);
+    if (value_str == NULL)
+        goto cleanup;
+
+    if (asprintf(&str, "%s=%s", opt->name, value_str) < 0)
+        goto cleanup;
+
+    result = str;
+    str = NULL;
+
+cleanup:
+
+    free(str);
+    free(value_str);
+
+    return result;
 }
 
 

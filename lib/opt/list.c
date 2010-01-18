@@ -27,7 +27,9 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <string.h>
 #include <strings.h>
+#include <stdio.h>
 #include "hidrd/opt/list.h"
 
 
@@ -119,27 +121,38 @@ hidrd_opt_list_get_string(const hidrd_opt  *list,
 }
 
 
-bool
-hidrd_opt_list_grow(hidrd_opt **plist,
-                    size_t     *palloc,
-                    size_t      index)
+hidrd_opt *
+hidrd_opt_list_new(void)
 {
-    hidrd_opt *new_list;
-    size_t          new_alloc;
+    hidrd_opt  *list;
+
+    list = malloc(sizeof(*list));
+    list->name = NULL;
+
+    return list;
+}
+
+
+bool
+hidrd_opt_list_add(hidrd_opt **plist, const hidrd_opt *opt)
+{
+    size_t      len;
+    hidrd_opt  *new_list;
 
     assert(plist != NULL);
-    assert(palloc != NULL);
+    assert(hidrd_opt_list_valid(*plist));
+    assert(hidrd_opt_valid(opt));
 
-    if (index < *palloc)
-        return true;
-
-    new_alloc = (*palloc == 0) ? 4 : (*palloc * 2);
-    new_list = realloc(*plist, sizeof(*new_list) * new_alloc);
+    len = hidrd_opt_list_len(*plist);
+    new_list = realloc(*plist, sizeof(*new_list) * (len + 2));
     if (new_list == NULL)
         return false;
 
     *plist = new_list;
-    *palloc = new_alloc;
+
+    memcpy(&new_list[len], opt, sizeof(*opt));
+
+    new_list[len + 1].name = NULL;
 
     return true;
 }
@@ -154,18 +167,21 @@ typedef enum tknz_state {
 
 
 hidrd_opt *
-hidrd_opt_list_tknz(char *buf)
+hidrd_opt_list_parse(char *buf)
 {
     char           *p;
     char            c;
-    hidrd_opt *result  = NULL;
-    hidrd_opt *list;
-    size_t          alloc   = 0;
-    size_t          index   = 0;
-    tknz_state      state   = TKNZ_STATE_NONE;
-    const char     *name    = NULL;
-    const char     *value   = "";
-    char           *space   = NULL;
+    hidrd_opt      *result      = NULL;
+    hidrd_opt      *list        = NULL;
+    hidrd_opt       new_opt     = {.type = HIDRD_OPT_TYPE_STRING};
+    tknz_state      state       = TKNZ_STATE_NONE;
+    const char     *name        = NULL;
+    const char     *value       = "";
+    char           *space       = NULL;
+
+    list = hidrd_opt_list_new();
+    if (list == NULL)
+        goto cleanup;
 
     for (p = buf; ; p++)
     {
@@ -211,15 +227,17 @@ hidrd_opt_list_tknz(char *buf)
                     space = NULL;
                 }
 
-                /* Commit name/value pair (if any) */
-                if (name != NULL)
+                /*
+                 * If it is not a name/value separator
+                 * (i.e. a pair terminator) and there is name
+                 */
+                if (c != '=' && name != NULL)
                 {
-                    if (!hidrd_opt_list_grow(&list, &alloc, index))
+                    /* Commit name/value pair */
+                    new_opt.name = name;
+                    new_opt.value.string = value;
+                    if (!hidrd_opt_list_add(&list, &new_opt))
                         goto cleanup;
-                    list[index].name = name;
-                    list[index].type = HIDRD_OPT_TYPE_STRING;
-                    list[index].value.string = value;
-                    index++;
 
                     name = NULL;
                     value = "";
@@ -236,11 +254,6 @@ hidrd_opt_list_tknz(char *buf)
             break;
     }
 
-    /* Terminate the list */
-    if (!hidrd_opt_list_grow(&list, &alloc, index))
-        goto cleanup;
-    list[index].name    = NULL;
-
     /* Output */
     result = list;
     list = NULL;
@@ -248,6 +261,50 @@ hidrd_opt_list_tknz(char *buf)
 cleanup:
 
     free(list);
+
+    return result;
+}
+
+
+char *
+hidrd_opt_list_format(const hidrd_opt *opt_list)
+{
+    char            *result     = NULL;
+    char            *str        = NULL;
+    char            *new_str    = NULL;
+    const hidrd_opt *opt;
+    char            *opt_str    = NULL;
+
+    assert(hidrd_opt_list_valid(opt_list));
+
+    str = strdup("");
+    if (str == NULL)
+        goto cleanup;
+
+    for (opt = opt_list; opt->name != NULL; opt++)
+    {
+        opt_str = hidrd_opt_format(opt);
+        if (opt_str == NULL)
+            goto cleanup;
+        if (asprintf(&new_str,
+                     ((opt[1].name == NULL) ? "%s%s" : "%s%s,"),
+                     str, opt_str) < 0)
+            goto cleanup;
+        free(opt_str);
+        opt_str = NULL;
+        free(str);
+        str = new_str;
+        new_str = NULL;
+    }
+
+    result = str;
+    str = NULL;
+
+cleanup:
+
+    free(opt_str);
+    free(new_str);
+    free(str);
 
     return result;
 }

@@ -71,6 +71,19 @@ extern bool hidrd_opt_spec_parse_opt(hidrd_opt_spec    *spec,
                                      const hidrd_opt   *opt);
 
 /**
+ * Format an option representation of an option specification.
+ *
+ * @param opt   Output option; will contain dynamically allocated string
+ *              value (which will need to be freed) and name referenced from
+ *              the specification.
+ * @param spec  Option specification to format.
+ *
+ * @return True, if formatted successfully, false if failed to allocate
+ *         memory.
+ */
+extern bool hidrd_opt_spec_format_opt(hidrd_opt *opt, const hidrd_opt_spec *spec);
+
+/**
  * Format a string representation of an option specification.
  *
  * @param spec  Option specification to format.

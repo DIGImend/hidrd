@@ -69,6 +69,16 @@ extern const char *hidrd_opt_get_string(const hidrd_opt *opt);
  */
 extern bool hidrd_opt_get_boolean(const hidrd_opt *opt);
 
+/**
+ * Format a string representation of an option.
+ *
+ * @param spec  Option to format.
+ *
+ * @return Dynamically allocated string representation of the option, or
+ *         NULL, if failed to allocate memory.
+ */
+extern char *hidrd_opt_format(const hidrd_opt *opt);
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif

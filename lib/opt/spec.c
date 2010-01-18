@@ -57,7 +57,7 @@ hidrd_opt_spec_parse_opt(hidrd_opt_spec    *spec,
     char                    c;
     const char             *str;
     const char             *dflt_str    = NULL;
-    const char             *desc        = NULL;
+    const char             *desc        = "";
     hidrd_opt_value    dflt;
 
     assert(spec != NULL);
@@ -119,13 +119,16 @@ hidrd_opt_spec_parse_opt(hidrd_opt_spec    *spec,
 }
 
 
-char *
-hidrd_opt_spec_format(const hidrd_opt_spec *spec)
+bool
+hidrd_opt_spec_format_opt(hidrd_opt *opt, const hidrd_opt_spec *spec)
 {
-    char   *result  = NULL;
+    bool    result  = false;
     char   *str     = NULL;
     char   *new_str = NULL;
     char   *dflt    = NULL;
+
+    assert(opt != NULL);
+    assert(hidrd_opt_spec_valid(spec));
 
     if (asprintf(&str, "%c", spec->type) < 0)
         goto cleanup;
@@ -145,6 +148,8 @@ hidrd_opt_spec_format(const hidrd_opt_spec *spec)
         if (dflt == NULL)
             goto cleanup;
         APPENDF("?%s", dflt);
+        free(dflt);
+        dflt = NULL;
     }
 
     if (*spec->desc != '\0')
@@ -152,14 +157,40 @@ hidrd_opt_spec_format(const hidrd_opt_spec *spec)
 
 #undef APPENDF
 
-    result = str;
+    opt->name           = spec->name;
+    opt->type           = HIDRD_OPT_TYPE_STRING;
+    opt->value.string   = str;
     str = NULL;
+
+    result = true;
 
 cleanup:
 
     free(dflt);
     free(new_str);
     free(str);
+
+    return result;
+}
+
+
+char *
+hidrd_opt_spec_format(const hidrd_opt_spec *spec)
+{
+    char       *result  = NULL;
+    hidrd_opt   opt     = {.value.string = NULL};
+
+    assert(hidrd_opt_spec_valid(spec));
+
+    if (!hidrd_opt_spec_format_opt(&opt, spec))
+        goto cleanup;
+
+    result = hidrd_opt_format(&opt);
+
+cleanup:
+
+    /* We made it so we free it - we know what we do */
+    free((char *)opt.value.string);
 
     return result;
 }

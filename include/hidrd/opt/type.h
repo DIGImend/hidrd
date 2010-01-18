@@ -61,6 +61,26 @@ hidrd_opt_type_valid(hidrd_opt_type type)
 }
 
 /**
+ * Parse a string as a string value (simply reference it).
+ *
+ * @param pval  Location for resulting string pointer.
+ * @param str   String to parse as a string value.
+ *
+ * @return True if parsed successfully, false otherwise.
+ */
+extern bool hidrd_opt_type_parse_string(const char **pval, const char *str);
+
+/**
+ * Parse a string as a boolean value.
+ *
+ * @param pval  Location for resulting value.
+ * @param str   String to parse as a boolean value.
+ *
+ * @return True if parsed successfully, false otherwise.
+ */
+extern bool hidrd_opt_type_parse_boolean(bool *pval, const char *str);
+
+/**
  * Parse a string as a value of specified type.
  *
  * @param type  Value type to parse accordingly.
@@ -75,6 +95,26 @@ hidrd_opt_type_parse_value(hidrd_opt_type   type,
                            const char      *str);
 
 /**
+ * Format a string representation of a string value (simply duplicate it).
+ *
+ * @param val  String value to format.
+ *
+ * @return Dynamically allocated string representation of the value, or
+ *         NULL, if failed to allocate.
+ */
+extern char *hidrd_opt_type_format_string(const char *val);
+
+/**
+ * Format a string representation of a boolean value ("yes" or "no").
+ *
+ * @param val  Boolean value to format.
+ *
+ * @return Dynamically allocated string representation of the value, or
+ *         NULL, if failed to allocate.
+ */
+extern char *hidrd_opt_type_format_boolean(bool val);
+
+/**
  * Format a string representation of a value of specified type.
  *
  * @param type  Value type to format accordingly.
@@ -85,6 +125,38 @@ hidrd_opt_type_parse_value(hidrd_opt_type   type,
  */
 extern char *hidrd_opt_type_format_value(hidrd_opt_type         type,
                                          const hidrd_opt_value *pval);
+
+/**
+ * Compare two boolean values.
+ *
+ * @param a Left-hand operand.
+ * @param b Right-hand operand.
+ *
+ * @return 0 if values are equal, -1 if @e a less than @e b, 1 otherwise.
+ */
+extern int hidrd_opt_type_cmp_boolean(bool a, bool b);
+
+/**
+ * Compare two string values.
+ *
+ * @param a Left-hand operand.
+ * @param b Right-hand operand.
+ *
+ * @return 0 if values are equal, -1 if @e a less than @e b, 1 otherwise.
+ */
+extern int hidrd_opt_type_cmp_string(const char *a, const char *b);
+
+/**
+ * Compare two values of specified type.
+ *
+ * @param a Left-hand operand.
+ * @param b Right-hand operand.
+ *
+ * @return 0 if values are equal, -1 if @e a less than @e b, 1 otherwise.
+ */
+extern int hidrd_opt_type_cmp_value(hidrd_opt_type          type,
+                                    const hidrd_opt_value  *a,
+                                    const hidrd_opt_value  *b);
 
 #ifdef __cplusplus
 } /* extern "C" */

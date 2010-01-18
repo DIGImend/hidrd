@@ -46,6 +46,19 @@ hidrd_opt_spec_list_valid(const hidrd_opt_spec *list)
 }
 
 
+size_t
+hidrd_opt_spec_list_len(const hidrd_opt_spec *list)
+{
+    const hidrd_opt_spec   *spec;
+
+    assert(hidrd_opt_spec_list_valid(list));
+
+    for (spec = list; spec->name != NULL; spec++);
+
+    return spec - list;
+}
+
+
 const hidrd_opt_spec *
 hidrd_opt_spec_list_lkp(const hidrd_opt_spec *list,
                              const char                *name)
@@ -107,7 +120,7 @@ hidrd_opt_spec_list_parse(char *buf)
 
     assert(buf != NULL);
 
-    opt_list = hidrd_opt_list_tknz(buf);
+    opt_list = hidrd_opt_list_parse(buf);
     if (opt_list == NULL)
         return NULL;
 
@@ -119,64 +132,92 @@ hidrd_opt_spec_list_parse(char *buf)
 }
 
 
-char *
-hidrd_opt_spec_list_format(const hidrd_opt_spec *spec_list)
+hidrd_opt *
+hidrd_opt_spec_list_format_opt_list(const hidrd_opt_spec *spec_list)
 {
-    char                   *result      = NULL;
-    char                   *str         = NULL;
-    char                   *new_str     = NULL;
-    const hidrd_opt_spec   *spec;
-    char                   *spec_str    = NULL;
+    hidrd_opt              *result      = NULL;
+    size_t                  len;
+    hidrd_opt              *opt_list    = NULL;
+    size_t                  i           = 0;
 
     assert(hidrd_opt_spec_list_valid(spec_list));
 
-    str = strdup("");
-    if (str == NULL)
-        goto cleanup;
+    len = hidrd_opt_spec_list_len(spec_list);
+    opt_list = malloc(sizeof(*opt_list) * (len + 1));
 
-    for (spec = spec_list; spec->name != NULL; spec++)
-    {
-        spec_str = hidrd_opt_spec_format(spec);
-        if (spec_str == NULL)
+    for (; i < len; i++)
+        if (!hidrd_opt_spec_format_opt(&opt_list[i], &spec_list[i]))
             goto cleanup;
-        if (asprintf(&new_str,
-                     ((spec[1].name == NULL) ? "%s%s" : "%s%s,"),
-                     str, spec_str) < 0)
-            goto cleanup;
-        free(spec_str);
-        spec_str = NULL;
-        free(str);
-        str = new_str;
-        new_str = NULL;
-    }
 
-    result = str;
-    str = NULL;
+    /* Terminate */
+    opt_list[i].name = NULL;
+
+    /* Output */
+    result = opt_list;
+    i = 0;
+    opt_list = NULL;
 
 cleanup:
 
-    free(spec_str);
-    free(new_str);
-    free(str);
+    while (i > 0)
+        /* We made it so we free it - we know what we do */
+        free((char *)opt_list[--i].value.string);
+
+    free(opt_list);
+
+    return result;
+}
+
+
+char *
+hidrd_opt_spec_list_format(const hidrd_opt_spec *spec_list)
+{
+    char       *result      = NULL;
+    hidrd_opt  *opt_list    = NULL;
+
+    assert(hidrd_opt_spec_list_valid(spec_list));
+
+    /* Format the specification list as an option list */
+    opt_list = hidrd_opt_spec_list_format_opt_list(spec_list);
+    if (opt_list == NULL)
+        goto cleanup;
+
+    /* Format option list as a string */
+    result = hidrd_opt_list_format(opt_list);
+
+cleanup:
+
+    if (opt_list != NULL)
+    {
+        hidrd_opt  *opt;
+
+        for (opt = opt_list; opt->name != NULL; opt++)
+            /* We made it so we free it - we know what we do */
+            free((char *)opt->value.string);
+
+        free(opt_list);
+    }
 
     return result;
 }
 
 
 bool
-hidrd_opt_spec_list_apply(const hidrd_opt_spec   *spec_list,
-                               hidrd_opt              *opt_list)
+hidrd_opt_spec_list_apply(const hidrd_opt_spec     *spec_list,
+                          hidrd_opt               **popt_list)
 {
-    hidrd_opt             *opt;
-    const hidrd_opt_spec  *spec;
+    hidrd_opt              *opt;
+    const hidrd_opt_spec   *spec;
+    hidrd_opt               new_opt;
 
-    assert(hidrd_opt_list_valid(opt_list));
-    assert(hidrd_opt_list_uniform(opt_list,
+    assert(popt_list != NULL);
+    assert(hidrd_opt_list_valid(*popt_list));
+    assert(hidrd_opt_list_uniform(*popt_list,
                                        HIDRD_OPT_TYPE_STRING));
     assert(hidrd_opt_spec_list_valid(spec_list));
 
     /* Convert each option */
-    for (opt = opt_list; opt->name != NULL; opt++)
+    for (opt = *popt_list; opt->name != NULL; opt++)
     {
         /* Lookup specification */
         spec = hidrd_opt_spec_list_lkp(spec_list, opt->name);
@@ -204,13 +245,51 @@ hidrd_opt_spec_list_apply(const hidrd_opt_spec   *spec_list,
         }
     }
 
-    /* Check mandatory option presence */
+    /*
+     * Check option presence, add missing
+     */
     for (spec = spec_list; spec->name != NULL; spec++)
-        if (spec->req &&
-            hidrd_opt_list_lkp(opt_list, spec->name) == NULL)
+    {
+        /* If the option is there */
+        if (hidrd_opt_list_lkp(*popt_list, spec->name) != NULL)
+            continue;
+
+        /* If option is required */
+        if (spec->req)
             return false;
 
+        /* Add the option with default value */
+        new_opt.name    = spec->name;
+        new_opt.type    = spec->type;
+        new_opt.value   = spec->dflt;
+        if (!hidrd_opt_list_add(popt_list, &new_opt))
+            return false;
+    }
+
     return true;
+}
+
+
+hidrd_opt *
+hidrd_opt_spec_list_apply_parse(const hidrd_opt_spec   *spec_list,
+                                char                   *buf)
+{
+    hidrd_opt  *opt_list;
+
+    assert(hidrd_opt_spec_list_valid(spec_list));
+    assert(buf != NULL);
+
+    opt_list = hidrd_opt_list_parse(buf);
+    if (opt_list == NULL)
+        return NULL;
+
+    if (!hidrd_opt_spec_list_apply(spec_list, &opt_list))
+    {
+        free(opt_list);
+        return NULL;
+    }
+
+    return opt_list;
 }
 
 

@@ -122,7 +122,17 @@ extern bool hidrd_opt_list_grow(hidrd_opt **plist,
                                 size_t      index);
 
 /**
- * Tokenize an option list string (represent as a list of string options),
+ * Add an option to the end of an option list.
+ *
+ * @param plist Location of the list pointer.
+ * @param opt   Option to add.
+ *
+ * @return True if added successfully, false, if memory allocation failed.
+ */
+extern bool hidrd_opt_list_add(hidrd_opt **plist, const hidrd_opt *opt);
+
+/**
+ * Parse an option list string (represent as a list of string options),
  * modifying it and referencing in the resulting list.
  *
  * @param buf   Option list string buffer; will be modified and referenced
@@ -132,7 +142,17 @@ extern bool hidrd_opt_list_grow(hidrd_opt **plist,
  *         referenced from the string, or NULL, if failed to allocate
  *         memory.
  */
-extern hidrd_opt *hidrd_opt_list_tknz(char *buf);
+extern hidrd_opt *hidrd_opt_list_parse(char *buf);
+
+/**
+ * Format a string representation of an option list.
+ *
+ * @param spec_list Option list to format.
+ *
+ * @return Dynamically allocated string representation of the list, or NULL,
+ *         if failed to allocate memory.
+ */
+extern char *hidrd_opt_list_format(const hidrd_opt *opt_list);
 
 #ifdef __cplusplus
 } /* extern "C" */
