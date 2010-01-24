@@ -1,5 +1,5 @@
 /** @file
- * @brief HID report descriptor - stream instance shortcut
+ * @brief HID report descriptor - streams
  *
  * Copyright (C) 2009 Nikolai Kondrashov
  *
@@ -27,6 +27,7 @@
 #ifndef __HIDRD_STRM_H__
 #define __HIDRD_STRM_H__
 
-#include "hidrd/strm/inst.h"
+#include "hidrd/strm/natv.h"
+#include "hidrd/strm/xml.h"
 
 #endif /* __HIDRD_STRM_H__ */

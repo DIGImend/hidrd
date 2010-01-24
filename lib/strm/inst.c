@@ -26,11 +26,8 @@
 
 #include <ctype.h>
 #include <stdio.h>
-#ifdef HIDRD_WITH_OPT
-#include "hidrd/opt/list.h"
+#include "hidrd/strm.h"
 #include "hidrd/opt/spec_list.h"
-#endif
-#include "hidrd/strm/inst.h"
 
 
 bool
@@ -206,10 +203,34 @@ cleanup:
 
 
 bool
-hidrd_opts_init(hidrd_strm *strm,
+hidrd_strm_opts_init(hidrd_strm *strm,
                      void **pbuf, size_t *psize, const char *opts)
 {
     return hidrd_opts_initf(strm, pbuf, psize, "%s", opts);
+}
+
+
+hidrd_strm *
+hidrd_strm_opts_open(const hidrd_strm_type *type,
+                     void **pbuf, size_t *psize,
+                     const char *opts)
+{
+    hidrd_strm *strm;
+    bool        result;
+
+    assert(opts != NULL);
+
+    /* Allocate */
+    strm = hidrd_strm_alloc(type);
+    if (strm == NULL)
+        return NULL;
+
+    /* Initialize */
+    result = hidrd_strm_opts_init(strm, pbuf, psize, opts);
+    if (!result)
+        return NULL;
+
+    return strm;
 }
 #endif /* HIDRD_WITH_OPT */
 
