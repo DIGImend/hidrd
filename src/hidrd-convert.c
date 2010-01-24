@@ -113,7 +113,7 @@ read_whole(int fd, void **pbuf, size_t *psize)
         goto cleanup;
 
     new_buf = realloc(buf, size);
-    if (new_buf == NULL)
+    if (size > 0 && new_buf == NULL)
         goto cleanup;
     buf = new_buf;
     alloc = size;
