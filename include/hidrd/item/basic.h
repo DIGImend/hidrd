@@ -162,6 +162,7 @@ static inline bool
 hidrd_item_basic_valid_inst(const hidrd_item *item)
 {
     assert(hidrd_item_basic_valid_class(item));
+    (void)item;
     return true;
 }
 
