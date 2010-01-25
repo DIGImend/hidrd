@@ -21,7 +21,7 @@
 AC_PREREQ(2.61)
 AC_INIT([hidrd], [0.1])
 AC_CONFIG_AUX_DIR([auxdir])
-AM_INIT_AUTOMAKE([1.10.1 -Wall foreign])
+AM_INIT_AUTOMAKE([1.9 -Wall foreign])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
