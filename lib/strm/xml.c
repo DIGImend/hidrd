@@ -132,6 +132,9 @@ hidrd_strm_xml_flush_doc(hidrd_strm *strm)
         goto finish;
     }
 
+    if (!hidrd_strm_xml_write_break(strm))
+        goto finish;
+
     xml_buf = xmlBufferCreate();
     if (xml_buf == NULL)
         goto finish;

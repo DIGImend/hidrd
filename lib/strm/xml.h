@@ -63,6 +63,8 @@ extern const hidrd_item *hidrd_strm_xml_read(hidrd_strm *strm);
 extern bool hidrd_strm_xml_write(hidrd_strm        *strm,
                                  const hidrd_item  *item);
 
+extern bool hidrd_strm_xml_write_break(hidrd_strm *strm);
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif

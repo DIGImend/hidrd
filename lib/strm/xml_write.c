@@ -31,6 +31,145 @@
 #include "xml.h"
 
 
+/**
+ * Break open an element.
+ *
+ * @alg Add a starting element next to the original element, with
+ *      specified name, and the original element's properties. Move the
+ *      contents of the original element right after the new element. Add an
+ *      ending element with specified name next to the moved original
+ *      contents. Remove the original element.
+ *
+ * @param element       The element to break.
+ * @param start_name    Starting element name, could be NULL or an empty
+ *                      string if starting element is not needed.
+ * @param end_name      Ending element name, could be NULL or an empty
+ *                      string if ending element is not needed.
+ *
+ * @return True if broken successfully, false otherwise.
+ */
+static bool
+break_element(xmlNodePtr element,
+              const char *start_name, const char *end_name)
+{
+    xmlNodePtr  sibling;
+    xmlNodePtr  child;
+    xmlNodePtr  next_child;
+
+    assert(element != NULL);
+    assert(element->parent != NULL);
+
+    /* If starting element is NOT requested */
+    if (start_name == NULL || *start_name == '\0')
+        sibling = element;
+    else
+    {
+        /* Create starting element */
+        sibling = xmlNewDocNode(element->doc, element->ns,
+                                BAD_CAST start_name, NULL);
+        if (sibling == NULL)
+            return false;
+
+        /* Add it right after the original one */
+        sibling = xmlAddNextSibling(element, sibling);
+        if (sibling == NULL)
+            return false;
+
+        /* Copy original element's properties */
+        xmlCopyPropList(sibling, element->properties);
+    }
+
+    /* For each child of the original element */
+    for (child = element->children;
+         child != NULL; child = next_child)
+    {
+        /* Remember next child before this one is unlinked */
+        next_child = child->next;
+        /* Move the child after the new element */
+        sibling = xmlAddNextSibling(sibling, child);
+        if (sibling == NULL)
+            return false;
+    }
+
+    /* If ending element is requested */
+    if (end_name != NULL && *end_name != '\0')
+    {
+        /* Create ending element */
+        sibling = xmlNewDocNode(element->doc, element->ns,
+                                BAD_CAST end_name, NULL);
+        if (sibling == NULL)
+            return false;
+
+        /* Add it right after the contents */
+        sibling = xmlAddNextSibling(element, sibling);
+        if (sibling == NULL)
+            return false;
+    }
+
+    /* Unlink original element */
+    xmlUnlinkNode(element);
+
+    /* Free original element */
+    xmlFreeNode(element);
+
+    return true;
+}
+
+
+/**
+ * Prototype for a function used to retrieve names of the starting and
+ * ending elements when breaking.
+ *
+ * @param name          Element name to break.
+ * @param pstart_name   Location for a pointer to a constant start element
+ *                      name.
+ * @param pend_name     Location for a pointer to a constant end element
+ *                      name.
+ *
+ * @return True if element is known, false otherwise.
+ */
+typedef bool break_fn(const char *name,
+                      const char **pstart_name,
+                      const char **pend_name);
+
+/**
+ * Break open an element branch up to specified parent.
+ *
+ * @alg Break open the specified element and all its parent elements up to
+ *      but not including the specified parent element.
+ *
+ * @param parent    Parent element to stop at.
+ * @param element   Element to start breaking from.
+ * @param cb        Break function - used to retrieve starting and ending
+ *                  element names when breaking.
+ *
+ * @return True if broken successfuly, false otherwise.
+ */
+static bool
+break_branch(xmlNodePtr parent, xmlNodePtr element, break_fn *cb)
+{
+    const char     *start_name;
+    const char     *end_name;
+    xmlNodePtr      element_parent;
+
+    /* For each element in the stack until the target one */
+    for (; element != parent; element = element_parent)
+    {
+        if (!(*cb)((const char *)element->name, &start_name, &end_name))
+            return false;
+
+        /* Remember parent element before this one is unlinked and freed */
+        element_parent = element->parent;
+
+        /* Break open the element - it is not finished */
+        if (!break_element(element, start_name, end_name))
+            return false;
+    }
+
+    return true;
+}
+
+
 static bool
 create_doc(hidrd_strm_xml_inst *strm_xml)
 {
@@ -341,20 +480,144 @@ element_add(hidrd_strm_xml_inst    *strm_xml,
 }
 
 
-#if 0
-static void
-element_seal(hidrd_strm_xml_inst   *strm_xml)
+typedef struct group {
+    const char *name;
+    const char *start_name;
+    const char *end_name;
+} group;
+
+static const group group_list[] = {
+    {.name          = "collection_group",
+     .start_name    = "collection",
+     .end_name      = "end_collection"},
+    {.name          = "push_group",
+     .start_name    = "push",
+     .end_name      = "pop"},
+    {.name          = "set_group",
+     .start_name    = "delimiter",
+     .end_name      = "delimiter"},
+    {.name = NULL}
+};
+
+static const group *
+lookup_group(const char *name)
 {
-    assert(strm_xml->cur == NULL);
+    const group    *e;
+    for (e = group_list; e->name != NULL; e++)
+        if (strcmp(e->name, name) == 0)
+            return e;
 
-    /*
-     * TODO think about handling invalid nesting
-     */
-
-    if (strm_xml->prnt->parent != NULL)
-        strm_xml->prnt = strm_xml->prnt->parent;
+    return NULL;
 }
-#endif
+
+
+static break_fn group_break_cb;
+static bool
+group_break_cb(const char  *name,
+               const char **pstart_name,
+               const char **pend_name)
+{
+    const group    *g;
+
+    assert(name != NULL);
+
+    g = lookup_group(name);
+    assert(g != NULL);
+
+    if (g == NULL)
+        return false;
+
+    if (pstart_name != NULL)
+        *pstart_name = g->start_name;
+
+    if (pend_name != NULL)
+        *pend_name = NULL;
+
+    return true;
+}
+
+
+static bool
+group_end(hidrd_strm_xml_inst  *strm_xml,
+          const char           *name)
+{
+    const group    *target_group;
+    xmlNodePtr      target_element;
+
+    assert(strm_xml->cur == NULL);
+    assert(name != NULL);
+
+    target_group = lookup_group(name);
+    /* There must be such group */
+    assert(target_group != NULL);
+    /* Start and end tags must differ */
+    assert(strcmp(target_group->start_name, target_group->end_name) != 0);
+
+    /* Look up an element with the same name up the parent stack */
+    for (target_element = strm_xml->prnt;
+         target_element != NULL;
+         target_element = target_element->parent)
+        if (strcmp((const char *)target_element->name, name) == 0)
+            break;
+
+    /* If not found */
+    if (target_element == NULL)
+        /* Insert closing element */
+        return element_add(strm_xml, false,
+                           target_group->end_name, NT_NONE);
+    else
+    {
+        /* Break open the branch up to the target element */
+        if (!break_branch(target_element, strm_xml->prnt, group_break_cb))
+            return false;
+
+        /* Element done */
+        strm_xml->prnt = target_element->parent;
+    }
+
+    return true;
+}
+
+
+static bool
+group_delimiter(hidrd_strm_xml_inst    *strm_xml,
+                const char             *name)
+{
+    const group    *target_group;
+    xmlNodePtr      target_element;
+
+    assert(strm_xml->cur == NULL);
+    assert(name != NULL);
+
+    target_group = lookup_group(name);
+    /* There must be such group */
+    assert(target_group != NULL);
+    /* Start and end tags must be the same */
+    assert(strcmp(target_group->start_name, target_group->end_name) == 0);
+
+    /* Look up an element with the same name up the parent stack */
+    for (target_element = strm_xml->prnt;
+         target_element != NULL;
+         target_element = target_element->parent)
+        if (strcmp((const char *)target_element->name, name) == 0)
+            break;
+
+    /* If not found */
+    if (target_element == NULL)
+        /* Start the group */
+        return element_add(strm_xml, true, name);
+    else
+    {
+        /* Break open the branch up to the target element */
+        if (!break_branch(target_element, strm_xml->prnt, group_break_cb))
+            return false;
+
+        /* Element done */
+        strm_xml->prnt = target_element->parent;
+    }
+
+    return true;
+}
 
 
 #define ATTR(_name, _fmt, _args...) \
@@ -366,11 +629,14 @@ element_seal(hidrd_strm_xml_inst   *strm_xml)
 #define SIMPLE(_name, _args...) \
     element_add(strm_xml, false, #_name, ##_args, NT_NONE)
 
-#define CONTAINER_START(_name, _args...) \
+#define GROUP_DELIMITER(_name) \
+    group_delimiter(strm_xml, #_name)
+
+#define GROUP_START(_name, _args...) \
     element_add(strm_xml, true, #_name, ##_args, NT_NONE)
 
-#define CONTAINER_END \
-    element_seal(strm_xml)
+#define GROUP_END(_name) \
+    group_end(strm_xml, #_name)
 
 #define SIMPLE_INT(_TYPE, _NAME, _name) \
     case HIDRD_ITEM_##_TYPE##_TAG_##_NAME:                          \
@@ -397,12 +663,12 @@ write_main_element(hidrd_strm_xml_inst   *strm_xml,
     switch (hidrd_item_main_get_tag(item))
     {
         case HIDRD_ITEM_MAIN_TAG_COLLECTION:
-            return SIMPLE(
-                    collection,
+            return GROUP_START(
+                    collection_group,
                     ATTR(type, STROWN,
                          hidrd_item_collection_get_type_token(item)));
         case HIDRD_ITEM_MAIN_TAG_END_COLLECTION:
-            return SIMPLE(end_collection);
+            return GROUP_END(collection_group);
         default:
             return SIMPLE(
                     main,
@@ -441,9 +707,9 @@ write_global_element(hidrd_strm_xml_inst   *strm_xml,
         SIMPLE_UINT(GLOBAL, REPORT_COUNT, report_count);
 
         case HIDRD_ITEM_GLOBAL_TAG_PUSH:
-            return SIMPLE(push);
+            return GROUP_START(push_group);
         case HIDRD_ITEM_GLOBAL_TAG_POP:
-            return SIMPLE(pop);
+            return GROUP_END(push_group);
         default:
             return SIMPLE(
                     global,
@@ -480,7 +746,7 @@ write_local_element(hidrd_strm_xml_inst   *strm_xml,
         SIMPLE_UINT(LOCAL, STRING_MAXIMUM, string_maximum);
 
         case HIDRD_ITEM_LOCAL_TAG_DELIMITER:
-            return SIMPLE(delimiter);
+            return GROUP_DELIMITER(set_group);
 
         default:
             return SIMPLE(
@@ -549,6 +815,26 @@ write_basic_element(hidrd_strm_xml_inst   *strm_xml,
                     ATTR(tag, UINT,
                          hidrd_item_basic_get_data_size_bytes(item)));
     }
+}
+
+
+bool
+hidrd_strm_xml_write_break(hidrd_strm *strm)
+{
+    hidrd_strm_xml_inst    *strm_xml    = (hidrd_strm_xml_inst *)strm;
+    xmlNodePtr              root;
+
+    assert(!hidrd_strm_xml_being_read(strm));
+    assert(strm_xml->doc != NULL);
+    assert(strm_xml->prnt != NULL);
+
+    root = xmlDocGetRootElement(strm_xml->doc);
+    if (!break_branch(root, strm_xml->prnt, group_break_cb))
+        return false;
+
+    strm_xml->prnt = root;
+
+    return true;
 }
 
 
