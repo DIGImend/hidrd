@@ -650,7 +650,7 @@
     <xsd:element name="string_maximum" type="xsd:unsignedInt" />
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
-        LOCAL ITEM: DELIMITER (AND SET - DELIMITER PAIR)
+        LOCAL ITEM: DELIMITER
     - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <xsd:element name="delimiter" type="empty" />
 
