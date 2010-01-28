@@ -605,7 +605,7 @@ group_delimiter(hidrd_strm_xml_inst    *strm_xml,
     /* If not found */
     if (target_element == NULL)
         /* Start the group */
-        return element_add(strm_xml, true, name);
+        return element_add(strm_xml, true, name, NT_NONE);
     else
     {
         /* Break open the branch up to the target element */
@@ -655,12 +655,62 @@ group_delimiter(hidrd_strm_xml_inst    *strm_xml,
 
 
 static bool
+write_main_bit_elements(hidrd_strm_xml_inst   *strm_xml,
+                        const hidrd_item      *item)
+{
+    uint8_t bit;
+    char    name[6];
+
+    assert(strm_xml->cur == NULL);
+    assert(hidrd_item_main_valid(item));
+    assert(hidrd_item_input_valid(item) ||
+           hidrd_item_output_valid(item) ||
+           hidrd_item_feature_valid(item));
+
+#define BIT(_idx, _on_name) \
+    do {                                                                \
+        if (hidrd_item_main_get_bit(item, _idx) && !SIMPLE(_on_name))   \
+            return false;                                               \
+    } while (0)
+
+    BIT(0, constant);
+    BIT(1, variable);
+    BIT(2, relative);
+    BIT(3, wrap);
+    BIT(4, non_linear);
+    BIT(5, no_preferred);
+    BIT(6, null_state);
+    if (hidrd_item_main_get_tag(item) == HIDRD_ITEM_MAIN_TAG_INPUT)
+        BIT(7, bit7);
+    else
+        BIT(7, volatile);
+    BIT(8, buffered_bytes);
+
+#undef BIT
+
+    for (bit = 9; bit < 32; bit++)
+        if (hidrd_item_main_get_bit(item, bit))
+        {
+            if (snprintf(name, sizeof(name), "bit%hhu", bit) >=
+                (int)sizeof(name))
+                return false;
+
+            if (!element_add(strm_xml, false, name, NT_NONE))
+                return false;
+        }
+
+    return true;
+}
+
+static bool
 write_main_element(hidrd_strm_xml_inst   *strm_xml,
                    const hidrd_item      *item)
 {
+    hidrd_item_main_tag tag;
+
     assert(hidrd_item_main_valid(item));
 
-    switch (hidrd_item_main_get_tag(item))
+    switch (tag = hidrd_item_main_get_tag(item))
     {
         case HIDRD_ITEM_MAIN_TAG_COLLECTION:
             return GROUP_START(
@@ -669,11 +719,33 @@ write_main_element(hidrd_strm_xml_inst   *strm_xml,
                          hidrd_item_collection_get_type_token(item)));
         case HIDRD_ITEM_MAIN_TAG_END_COLLECTION:
             return GROUP_END(collection_group);
+
+        case HIDRD_ITEM_MAIN_TAG_INPUT:
+        case HIDRD_ITEM_MAIN_TAG_OUTPUT:
+        case HIDRD_ITEM_MAIN_TAG_FEATURE:
+            {
+                char   *token;
+                bool    result;
+
+                token   = hidrd_item_main_tag_to_token(tag);
+                result = element_add(strm_xml, true, token, NT_NONE);
+                free(token);
+                if (!result)
+                    return false;
+
+                if (!write_main_bit_elements(strm_xml, item))
+                    return false;
+
+                strm_xml->cur = strm_xml->prnt;
+                strm_xml->prnt = strm_xml->cur->parent;
+
+                return true;
+            }
         default:
             return SIMPLE(
                     main,
                     ATTR(tag, STROWN,
-                         hidrd_item_main_get_tag_token(item)),
+                         hidrd_item_main_tag_to_token(tag)),
                     CONTENT(
                         HEX,
                         /* We promise we won't change it */
