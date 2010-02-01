@@ -18,5 +18,7 @@
 
 hidrd_usagedir = $(includedir)/hidrd/usage
 
-hidrd_usage_HEADERS = \
-    page.h
+%.h: %.h.m4
+	@m4 -I ../../../db $< > $@
+
+hidrd_usage_HEADERS = 
