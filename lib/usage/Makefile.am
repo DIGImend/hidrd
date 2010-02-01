@@ -18,6 +18,4 @@
 
 lib_LTLIBRARIES = libhidrd_usage.la
 
-libhidrd_usage_la_SOURCES = \
-    page.c
-
+libhidrd_usage_la_SOURCES =
