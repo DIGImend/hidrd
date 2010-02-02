@@ -23,7 +23,7 @@ AC_INIT([hidrd], [0.1])
 AC_CONFIG_AUX_DIR([auxdir])
 AM_INIT_AUTOMAKE([1.9 -Wall foreign])
 AC_CONFIG_HEADER([config.h])
-AC_CONFIG_MACRO_DIR([m4])
+AC_CONFIG_MACRO_DIR([m4/autoconf])
 
 # To have empty CFLAGS instead of undefined and '-g -O2' by default
 CFLAGS=$CFLAGS
@@ -69,6 +69,13 @@ AC_SUBST(LIBXML2_CFLAGS)
 
 # Checks for library functions.
 AC_CONFIG_FILES([Makefile
+
+                 m4/Makefile
+                 m4/hidrd/Makefile
+
+                 db/Makefile
+                 db/usage/Makefile
+
                  include/Makefile
                  include/hidrd/Makefile
                  include/hidrd/item/Makefile

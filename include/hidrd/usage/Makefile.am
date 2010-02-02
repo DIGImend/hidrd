@@ -1,3 +1,4 @@
+#
 # Copyright (C) 2009 Nikolai Kondrashov
 #
 # This file is part of hidrd.
@@ -18,7 +19,17 @@
 
 hidrd_usagedir = $(includedir)/hidrd/usage
 
-%.h: %.h.m4
-	@m4 -I ../../../db $< > $@
+%.h: %.h.m4 @top_srcdir@/m4/hidrd/*.m4 @top_srcdir@/db/usage/*.m4
+	@m4 -I "@top_srcdir@" $< > $@
 
-hidrd_usage_HEADERS = 
+dist_noinst_DATA = \
+    page.h.m4
+
+BUILT_SOURCES = \
+	page.h
+
+CLEANFILES = $(BUILT_SOURCES)
+
+nodist_hidrd_usage_HEADERS = \
+    $(BUILT_SOURCES)
+

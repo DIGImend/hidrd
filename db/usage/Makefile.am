@@ -1,5 +1,4 @@
-#
-# Copyright (C) 2009-2010 Nikolai Kondrashov
+# Copyright (C) 2010 Nikolai Kondrashov
 #
 # This file is part of hidrd.
 #
@@ -17,18 +16,9 @@
 # along with hidrd; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-lib_LTLIBRARIES = libhidrd_usage.la
+db_usagedir = $(pkgdatadir)/db/usage
 
-libhidrd_usage_la_SOURCES = \
-    type.c
-
-%.c: %.c.m4 @top_srcdir@/m4/hidrd/*.m4 @top_srcdir@/db/usage/*.m4
-	@m4 -I "@top_srcdir@" $< > $@
-
-BUILT_SOURCES = \
-    page.c
-
-CLEANFILES = $(BUILT_SOURCES)
-
-nodist_libhidrd_usage_la_SOURCES = \
-	$(BUILT_SOURCES)
+dist_noinst_DATA = \
+    page_set.m4             \
+    page_set_range.m4       \
+    page.m4

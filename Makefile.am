@@ -1,4 +1,4 @@
-# Copyright (C) 2009 Nikolai Kondrashov
+# Copyright (C) 2009-2010 Nikolai Kondrashov
 #
 # This file is part of hidrd.
 #
@@ -16,6 +16,6 @@
 # along with hidrd; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-SUBDIRS = include lib src
+SUBDIRS = m4 db include lib src
 
-ACLOCAL_AMFLAGS = -I m4
+ACLOCAL_AMFLAGS = -I m4/autoconf
