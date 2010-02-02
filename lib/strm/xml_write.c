@@ -1,7 +1,7 @@
 /** @file
  * @brief HID report descriptor - XML stream type - writing
  *
- * Copyright (C) 2009 Nikolai Kondrashov
+ * Copyright (C) 2009-2010 Nikolai Kondrashov
  *
  * This file is part of hidrd.
  *
