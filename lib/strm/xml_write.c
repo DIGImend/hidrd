@@ -736,8 +736,7 @@ write_main_element(hidrd_strm_xml_inst   *strm_xml,
                 if (!write_main_bit_elements(strm_xml, item))
                     return false;
 
-                strm_xml->cur = strm_xml->prnt;
-                strm_xml->prnt = strm_xml->cur->parent;
+                strm_xml->prnt = strm_xml->prnt->parent;
 
                 return true;
             }
