@@ -61,11 +61,11 @@ typedef enum hidrd_usage_page {
     /** Undefined */
     HIDRD_USAGE_PAGE_UNDEFINED = 0x0000,
 'dnl Delegated pages
-define(PAGE,dnl
+pushdef(PAGE,dnl
     `/** capitalize_first(`$3') */'
     `HIDRD_USAGE_PAGE_`'translit($2, a-z, A-Z) = 0x$1,')dnl
 include(`db/usage/page.m4')dnl
-undefine(`PAGE')dnl
+popdef(`PAGE')dnl
 `} hidrd_usage_page;
 
 #define HIDRD_USAGE_PAGE_MIN    0x0000

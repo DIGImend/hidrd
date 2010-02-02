@@ -77,8 +77,6 @@ typedef struct page_desc {
 #endif
 } page_desc;
 
-static const page_desc desc_list[] = {
-
 #ifdef HIDRD_WITH_TOKENS
 #define PAGE_TOKEN(_token)  .token = _token,
 #else
@@ -91,15 +89,24 @@ static const page_desc desc_list[] = {
 #define PAGE_NAME(_name)
 #endif
 
+static const page_desc desc_list[] = {
+
 #define PAGE(_TOKEN, _name) \
     {.page = HIDRD_USAGE_PAGE_##_TOKEN,     \
      PAGE_TOKEN(#_TOKEN) PAGE_NAME(#_name)}
 
+'dnl
+define(`PAGE', `    `PAGE'(translit($2, a-z, A-Z), "$3"),')dnl
+include(`db/usage/page.m4')dnl
+`
 #undef PAGE
 
     {.page  = HIDRD_USAGE_PAGE_UNDEFINED,
      PAGE_TOKEN(NULL) PAGE_NAME(NULL)}
 };
+
+#undef PAGE_NAME
+#undef PAGE_TOKEN
 
 #ifdef HIDRD_WITH_TOKENS
 
