@@ -53,28 +53,17 @@ dnl
 #include <stdio.h>
 #include "hidrd/usage/page.h"
 
-'define(`PAGE_SET',
-`
-define(`PAGE_SET_RANGE',
-`ifelse('`$'`1, `$1',
-        ifelse(eval(0x'`$'`2), eval(0x'`$'`3),dnl
-    if (page == 0x'`$'`2)
-        return true;
-,dnl
-    if (page >= 0x'`$'`2 && page <= 0x'`$'`3)
-        return true;
-))')dnl
+'pushdef(`PAGE_SET',
+`ifelse(eval(PAGE_SET_RANGE_NUM($1) > 1), 1,
 bool
 hidrd_usage_page_$1(hidrd_usage_page page)
 {
-include(`db/usage/page_set_range.m4')dnl
-    return false;
+PAGE_SET_RANGE_CHECK($1)
 }
 
-undefine(`PAGE_SET_RANGE')dnl
-')dnl
+)')dnl
 include(`db/usage/page_set.m4')dnl
-undefine(`PAGE_SET')dnl
+popdef(`PAGE_SET')dnl
 `
 #if defined(HIDRD_WITH_TOKENS) || defined(HIDRD_WITH_NAMES)
 

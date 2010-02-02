@@ -20,19 +20,6 @@ dnl along with hidrd; if not, write to the Free Software
 dnl Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 dnl
 dnl
-dnl PAGE_SET - describe a page set.
-dnl Arguments:
-dnl     * Set token (lowercase, underscores as spaces)
-dnl     * Set description (non-capitalized)
-dnl
-PAGE_SET(`top_level', `top-level')dnl
-PAGE_SET(`reserved',  `reserved')dnl
-PAGE_SET(`monitor',   `monitor page')dnl
-PAGE_SET(`power',     `power page')dnl
-PAGE_SET(`pos',       `POS page')dnl
-PAGE_SET(`vendor',    `vendor-defined')dnl
-dnl
-dnl
 dnl PAGE_SET_RANGE_NUM - calculate number of set ranges
 dnl Arguments
 dnl     * Set token (lowercase, underscores as spaces)
@@ -46,3 +33,35 @@ popdef(`PAGE_SET_RANGE')dnl
 $1_range_num`'dnl
 popdef(`$1_range_num')')dnl
 dnl
+dnl
+dnl PAGE_SET_RANGE_CHECK - generate a set range check code.
+dnl Arguments:
+dnl     * Set token (lowercase, underscores as spaces)
+dnl
+define(`PAGE_SET_RANGE_CHECK',
+`pushdef(`PAGE_SET_RANGE',
+`ifelse('`$'`1, `$1',
+        ifelse(eval(0x'`$'`2), eval(0x'`$'`3),dnl
+    if (page == 0x'`$'`2)
+        return true;
+,dnl
+    if (page >= 0x'`$'`2 && page <= 0x'`$'`3)
+        return true;
+))')dnl
+include(`db/usage/page_set_range.m4')dnl
+    return false;dnl
+popdef(`PAGE_SET_RANGE')dnl
+')dnl
+dnl
+dnl
+dnl PAGE_SET - describe a page set.
+dnl Arguments:
+dnl     * Set token (lowercase, underscores as spaces)
+dnl     * Set description (non-capitalized)
+dnl
+PAGE_SET(`top_level', `top-level')dnl
+PAGE_SET(`reserved',  `reserved')dnl
+PAGE_SET(`monitor',   `monitor page')dnl
+PAGE_SET(`power',     `power page')dnl
+PAGE_SET(`pos',       `POS page')dnl
+PAGE_SET(`vendor',    `vendor-defined')dnl
