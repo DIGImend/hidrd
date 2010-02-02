@@ -23,7 +23,7 @@ dnl
 dnl PAGE_SET - describe a page set.
 dnl Arguments:
 dnl     * Set token (lowercase, underscores as spaces)
-dnl     * Set description (non-decapitalized)
+dnl     * Set description (non-capitalized)
 dnl
 PAGE_SET(`top_level', `top-level')dnl
 PAGE_SET(`reserved',  `reserved')dnl
@@ -31,3 +31,18 @@ PAGE_SET(`monitor',   `monitor page')dnl
 PAGE_SET(`power',     `power page')dnl
 PAGE_SET(`pos',       `POS page')dnl
 PAGE_SET(`vendor',    `vendor-defined')dnl
+dnl
+dnl
+dnl PAGE_SET_RANGE_NUM - calculate number of set ranges
+dnl Arguments
+dnl     * Set token (lowercase, underscores as spaces)
+dnl
+define(`PAGE_SET_RANGE_NUM',
+`pushdef(`$1_range_num', 0)dnl
+pushdef(`PAGE_SET_RANGE',
+        `ifelse($'`1, $1, `define(`$1_range_num', incr($1_range_num))')')dnl
+include(`db/usage/page_set_range.m4')dnl
+popdef(`PAGE_SET_RANGE')dnl
+$1_range_num`'dnl
+popdef(`$1_range_num')')dnl
+dnl
