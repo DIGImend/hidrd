@@ -187,7 +187,7 @@ create_doc(hidrd_strm_xml_inst *strm_xml)
     assert(strm_xml->prnt == NULL);
     assert(strm_xml->cur == NULL);
 
-    strm_xml->doc = xmlNewDoc(BAD_CAST "1.1");
+    strm_xml->doc = xmlNewDoc(BAD_CAST "1.0");
     if (strm_xml->doc == NULL)
         goto failure;
 
