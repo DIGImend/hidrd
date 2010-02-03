@@ -28,6 +28,8 @@ libhidrd_item_la_SOURCES = \
     pfx.c                   \
     short.c
 
+libhidrd_item_la_LIBADD = ../usage/libhidrd_usage.la
+
 check_PROGRAMS = hidrd_item_any_test
 TESTS = hidrd_item_any_test
 
