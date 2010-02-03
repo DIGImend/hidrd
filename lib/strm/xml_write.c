@@ -32,6 +32,17 @@
 
 
 /**
+ * Prototype for a function used to create and setup an element.
+ *
+ * @param doc       Document.
+ * @param ns        Namespace.
+ *
+ * @return Created element, or NULL if failed.
+ */
+typedef xmlNodePtr create_element_fn(xmlDocPtr doc, xmlNsPtr ns);
+
+
+/**
  * Break open an element.
  *
  * @alg Add a starting element next to the original element, with
@@ -41,16 +52,17 @@
  *      contents. Remove the original element.
  *
  * @param element       The element to break.
- * @param start_name    Starting element name, could be NULL or an empty
- *                      string if starting element is not needed.
- * @param end_name      Ending element name, could be NULL or an empty
- *                      string if ending element is not needed.
+ * @param create_start  Starting element creation function, could be NULL,
+ *                      if starting element is not needed.
+ * @param create_end    Ending element creation function, could be NULL,
+ *                      if ending element is not needed.
  *
  * @return True if broken successfully, false otherwise.
  */
 static bool
-break_element(xmlNodePtr element,
-              const char *start_name, const char *end_name)
+break_element(xmlNodePtr            element,
+              create_element_fn    *create_start,
+              create_element_fn    *create_end)
 {
     xmlNodePtr  sibling;
     xmlNodePtr  child;
@@ -60,13 +72,12 @@ break_element(xmlNodePtr element,
     assert(element->parent != NULL);
 
     /* If starting element is NOT requested */
-    if (start_name == NULL || *start_name == '\0')
+    if (create_start == NULL)
         sibling = element;
     else
     {
         /* Create starting element */
-        sibling = xmlNewDocNode(element->doc, element->ns,
-                                BAD_CAST start_name, NULL);
+        sibling = create_start(element->doc, element->ns);
         if (sibling == NULL)
             return false;
 
@@ -92,11 +103,10 @@ break_element(xmlNodePtr element,
     }
 
     /* If ending element is requested */
-    if (end_name != NULL && *end_name != '\0')
+    if (create_end != NULL)
     {
         /* Create ending element */
-        sibling = xmlNewDocNode(element->doc, element->ns,
-                                BAD_CAST end_name, NULL);
+        sibling = create_end(element->doc, element->ns);
         if (sibling == NULL)
             return false;
 
@@ -121,19 +131,19 @@ break_element(xmlNodePtr element,
  * ending elements when breaking.
  *
  * @param name          Element name to break.
- * @param pstart_name   Location for a pointer to a constant start element
- *                      name.
- * @param pend_name     Location for a pointer to a constant end element
- *                      name.
+ * @param pcreate_start Location for a pointer to the start element creation
+ *                      function.
+ * @param pcreate_end   Location for a pointer to the end element creation
+ *                      function.
  *
  * @return True if element is known, false otherwise.
  */
 typedef bool break_fn(const char *name,
-                      const char **pstart_name,
-                      const char **pend_name);
+                      create_element_fn **pcreate_start,
+                      create_element_fn **pcreate_end);
 
 /**
- * Break open an element branch up to specified parent.
+ * Break open an element branch up to the specified parent.
  *
  * @alg Break open the specified element and all its parent elements up to
  *      but not including the specified parent element.
@@ -141,28 +151,28 @@ typedef bool break_fn(const char *name,
  * @param parent    Parent element to stop at.
  * @param element   Element to start breaking from.
  * @param cb        Break function - used to retrieve starting and ending
- *                  element names when breaking.
+ *                  element creation functions when breaking.
  *
  * @return True if broken successfuly, false otherwise.
  */
 static bool
 break_branch(xmlNodePtr parent, xmlNodePtr element, break_fn *cb)
 {
-    const char     *start_name;
-    const char     *end_name;
-    xmlNodePtr      element_parent;
+    create_element_fn  *create_start;
+    create_element_fn  *create_end;
+    xmlNodePtr          element_parent;
 
     /* For each element in the stack until the target one */
     for (; element != parent; element = element_parent)
     {
-        if (!(*cb)((const char *)element->name, &start_name, &end_name))
+        if (!(*cb)((const char *)element->name, &create_start, &create_end))
             return false;
 
         /* Remember parent element before this one is unlinked and freed */
         element_parent = element->parent;
 
         /* Break open the element - it is not finished */
-        if (!break_element(element, start_name, end_name))
+        if (!break_element(element, create_start, create_end))
             return false;
     }
 
@@ -482,40 +492,107 @@ element_add(hidrd_strm_xml_inst    *strm_xml,
 
 typedef struct group {
     const char *name;
-    const char *start_name;
-    const char *end_name;
+    create_element_fn  *create_start;
+    create_element_fn  *create_end;
 } group;
+
+static bool
+group_valid(const group *g)
+{
+    return g != NULL &&
+           g->name != NULL &&
+           *g->name != '\0' &&
+           g->create_start != NULL &&
+           g->create_end != NULL;
+}
+
+static xmlNodePtr
+create_element_collection(xmlDocPtr doc, xmlNsPtr ns)
+{
+    return xmlNewDocNode(doc, ns, BAD_CAST "collection", NULL);
+}
+
+static xmlNodePtr
+create_element_end_collection(xmlDocPtr doc, xmlNsPtr ns)
+{
+    return xmlNewDocNode(doc, ns, BAD_CAST "end_collection", NULL);
+}
+
+static xmlNodePtr
+create_element_push(xmlDocPtr doc, xmlNsPtr ns)
+{
+    return xmlNewDocNode(doc, ns, BAD_CAST "push", NULL);
+}
+
+static xmlNodePtr
+create_element_pop(xmlDocPtr doc, xmlNsPtr ns)
+{
+    return xmlNewDocNode(doc, ns, BAD_CAST "pop", NULL);
+}
+
+static xmlNodePtr
+create_element_delimiter_open(xmlDocPtr doc, xmlNsPtr ns)
+{
+    xmlNodePtr  e;
+
+    e = xmlNewDocNode(doc, ns, BAD_CAST "delimiter", NULL);
+    if (e == NULL)
+        return NULL;
+
+    if (xmlSetProp(e, BAD_CAST "open", BAD_CAST "true") == NULL)
+        return NULL;
+
+    return e;
+}
+
+static xmlNodePtr
+create_element_delimiter_close(xmlDocPtr doc, xmlNsPtr ns)
+{
+    xmlNodePtr  e;
+
+    e = xmlNewDocNode(doc, ns, BAD_CAST "delimiter", NULL);
+    if (e == NULL)
+        return NULL;
+
+    if (xmlSetProp(e, BAD_CAST "open", BAD_CAST "false") == NULL)
+        return NULL;
+
+    return e;
+}
+
 
 static const group group_list[] = {
     {.name          = "collection_group",
-     .start_name    = "collection",
-     .end_name      = "end_collection"},
+     .create_start  = create_element_collection,
+     .create_end    = create_element_end_collection},
     {.name          = "push_group",
-     .start_name    = "push",
-     .end_name      = "pop"},
+     .create_start  = create_element_push,
+     .create_end    = create_element_pop},
     {.name          = "set_group",
-     .start_name    = "delimiter",
-     .end_name      = "delimiter"},
+     .create_start  = create_element_delimiter_open,
+     .create_end    = create_element_delimiter_close},
     {.name = NULL}
 };
 
 static const group *
 lookup_group(const char *name)
 {
-    const group    *e;
-    for (e = group_list; e->name != NULL; e++)
-        if (strcmp(e->name, name) == 0)
-            return e;
+    const group    *g;
+    for (g = group_list; g->name != NULL; g++)
+        if (strcmp(g->name, name) == 0)
+        {
+            assert(group_valid(g));
+            return g;
+        }
 
     return NULL;
 }
 
-
 static break_fn group_break_cb;
 static bool
-group_break_cb(const char  *name,
-               const char **pstart_name,
-               const char **pend_name)
+group_break_cb(const char          *name,
+               create_element_fn  **pcreate_start,
+               create_element_fn  **pcreate_end)
 {
     const group    *g;
 
@@ -527,11 +604,11 @@ group_break_cb(const char  *name,
     if (g == NULL)
         return false;
 
-    if (pstart_name != NULL)
-        *pstart_name = g->start_name;
+    if (pcreate_start != NULL)
+        *pcreate_start = g->create_start;
 
-    if (pend_name != NULL)
-        *pend_name = NULL;
+    if (pcreate_end != NULL)
+        *pcreate_end = NULL;
 
     return true;
 }
@@ -550,62 +627,23 @@ group_end(hidrd_strm_xml_inst  *strm_xml,
     target_group = lookup_group(name);
     /* There must be such group */
     assert(target_group != NULL);
-    /* Start and end tags must differ */
-    assert(strcmp(target_group->start_name, target_group->end_name) != 0);
 
     /* Look up an element with the same name up the parent stack */
     for (target_element = strm_xml->prnt;
-         target_element != NULL;
+         target_element != NULL && target_element->type == XML_ELEMENT_NODE;
          target_element = target_element->parent)
         if (strcmp((const char *)target_element->name, name) == 0)
             break;
 
     /* If not found */
-    if (target_element == NULL)
-        /* Insert closing element */
-        return element_add(strm_xml, false,
-                           target_group->end_name, NT_NONE);
-    else
+    if (target_element == NULL || target_element->type != XML_ELEMENT_NODE)
     {
-        /* Break open the branch up to the target element */
-        if (!break_branch(target_element, strm_xml->prnt, group_break_cb))
-            return false;
+        xmlNodePtr  end_element;
 
-        /* Element done */
-        strm_xml->prnt = target_element->parent;
+        /* Insert closing element */
+        end_element = target_group->create_end(strm_xml->doc, NULL);
+        return xmlAddChild(strm_xml->prnt, end_element) != NULL;
     }
-
-    return true;
-}
-
-
-static bool
-group_delimiter(hidrd_strm_xml_inst    *strm_xml,
-                const char             *name)
-{
-    const group    *target_group;
-    xmlNodePtr      target_element;
-
-    assert(strm_xml->cur == NULL);
-    assert(name != NULL);
-
-    target_group = lookup_group(name);
-    /* There must be such group */
-    assert(target_group != NULL);
-    /* Start and end tags must be the same */
-    assert(strcmp(target_group->start_name, target_group->end_name) == 0);
-
-    /* Look up an element with the same name up the parent stack */
-    for (target_element = strm_xml->prnt;
-         target_element != NULL;
-         target_element = target_element->parent)
-        if (strcmp((const char *)target_element->name, name) == 0)
-            break;
-
-    /* If not found */
-    if (target_element == NULL)
-        /* Start the group */
-        return element_add(strm_xml, true, name, NT_NONE);
     else
     {
         /* Break open the branch up to the target element */
@@ -628,9 +666,6 @@ group_delimiter(hidrd_strm_xml_inst    *strm_xml,
 
 #define SIMPLE(_name, _args...) \
     element_add(strm_xml, false, #_name, ##_args, NT_NONE)
-
-#define GROUP_DELIMITER(_name) \
-    group_delimiter(strm_xml, #_name)
 
 #define GROUP_START(_name, _args...) \
     element_add(strm_xml, true, #_name, ##_args, NT_NONE)
@@ -817,7 +852,10 @@ write_local_element(hidrd_strm_xml_inst   *strm_xml,
         SIMPLE_UINT(LOCAL, STRING_MAXIMUM, string_maximum);
 
         case HIDRD_ITEM_LOCAL_TAG_DELIMITER:
-            return GROUP_DELIMITER(set_group);
+            return (hidrd_item_delimiter_get_value(item) ==
+                    HIDRD_ITEM_DELIMITER_SET_OPEN)
+                        ? GROUP_START(set_group)
+                        : GROUP_END(set_group);
 
         default:
             return SIMPLE(
