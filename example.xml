@@ -15,7 +15,7 @@
             <usage>22</usage>
         </set_group>
         <push />
-        <delimiter />
+        <delimiter open="true"/>
         <unit>
             <si_linear>
                 <centimeter>2</centimeter>
@@ -30,7 +30,7 @@
                 <ampere>-1</ampere>
             </si_linear>
         </unit>
-        <delimiter />
+        <delimiter open="false"/>
         <unit>
             <si_linear>
                 <centimeter/>

@@ -652,10 +652,14 @@
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
         LOCAL ITEM: DELIMITER
     - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-    <xsd:element name="delimiter" type="empty" />
+    <xsd:element name="delimiter">
+        <xsd:complexType>
+            <xsd:attribute name="open" type="xsd:boolean" use="required" />
+        </xsd:complexType>
+    </xsd:element>
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
-        META ITEM: SET_GROUP (DELIMITER PAIR)
+        META ITEM: SET_GROUP (OPEN/CLOSE DELIMITER PAIR)
     - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <xsd:element name="set_group">
         <xsd:complexType>
