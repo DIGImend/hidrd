@@ -23,13 +23,16 @@ libhidrd_strm_la_SOURCES = \
     natv.c                  \
     type.c
 
-libhidrd_strm_la_LIBADD = ../item/libhidrd_item.la ../opt/libhidrd_opt.la
+libhidrd_strm_la_LIBADD = \
+    ../usage/libhidrd_usage.la  \
+    ../item/libhidrd_item.la    \
+    ../opt/libhidrd_opt.la
 
 check_PROGRAMS = hidrd_strm_natv_test
 TESTS = hidrd_strm_natv_test
 
 hidrd_strm_natv_test_SOURCES = natv_test.c
-hidrd_strm_natv_test_LDADD = $(lib_LTLIBRARIES)
+hidrd_strm_natv_test_LDADD = ../usage/libhidrd_usage.la $(lib_LTLIBRARIES)
 
 if WITH_LIBXML2
 libhidrd_strm_la_SOURCES += xml.c xml_read.c xml_write.c
@@ -41,7 +44,7 @@ check_PROGRAMS += hidrd_strm_xml_test
 TESTS += hidrd_strm_xml_test
 
 hidrd_strm_xml_test_SOURCES = xml_test.c
-hidrd_strm_xml_test_LDADD = $(lib_LTLIBRARIES)
+hidrd_strm_xml_test_LDADD = ../usage/libhidrd_usage.la $(lib_LTLIBRARIES)
 endif
 
 # Uncomment to have the tests installed

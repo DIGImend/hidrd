@@ -32,6 +32,29 @@
 
 
 /**
+ * Pad a dynamically allocated string with spaces on both sides.
+ *
+ * @param str   A dynamically allocated string to pad; will be freed, even
+ *              in case of failure.
+ *
+ * @return Dynamically allocated padded string, or NULL, if failed to
+ *         allocate memory.
+ */
+static char *
+strpada(char *str)
+{
+    char   *padded;
+    int     rc;
+
+    rc = asprintf(&padded, " %s ", str);
+
+    free(str);
+
+    return (rc >= 0) ? padded : NULL;
+}
+
+
+/**
  * Prototype for a function used to create and setup an element.
  *
  * @param doc       Document.
@@ -378,7 +401,7 @@ element_set_attrpv(hidrd_strm_xml_inst  *strm_xml,
 
 
 static bool
-element_set_contentpv(hidrd_strm_xml_inst   *strm_xml,
+element_add_contentpv(hidrd_strm_xml_inst   *strm_xml,
                       str_fmt                fmt,
                       va_list               *pap)
 {
@@ -389,11 +412,33 @@ element_set_contentpv(hidrd_strm_xml_inst   *strm_xml,
     if (!fmt_strpv(&content, fmt, pap))
         return false;
 
-    xmlNodeSetContent(strm_xml->cur, BAD_CAST content);
+    xmlNodeAddContent(strm_xml->cur, BAD_CAST content);
 
     free(content);
 
     return true;
+}
+
+
+static bool
+element_add_commentpv(hidrd_strm_xml_inst   *strm_xml,
+                      str_fmt                fmt,
+                      va_list               *pap)
+{
+    char       *content;
+    xmlNodePtr  comment;
+
+    assert(strm_xml->cur != NULL);
+
+    if (!fmt_strpv(&content, fmt, pap))
+        return false;
+
+    comment = xmlNewDocComment(strm_xml->doc, BAD_CAST content);
+    free(content);
+    if (comment == NULL)
+        return false;
+
+    return (xmlAddChild(strm_xml->cur, comment) != NULL);
 }
 
 
@@ -414,6 +459,7 @@ element_commit(hidrd_strm_xml_inst *strm_xml,
 typedef enum nt {
     NT_NONE,
     NT_CONTENT,
+    NT_COMMENT,
     NT_ATTR
 } nt;
 
@@ -447,11 +493,20 @@ element_addv(hidrd_strm_xml_inst   *strm_xml,
                 }
                 break;
 
+            case NT_COMMENT:
+                {
+                    str_fmt comment_fmt  = va_arg(ap, str_fmt);
+
+                    success = element_add_commentpv(strm_xml,
+                                                    comment_fmt, &ap);
+                }
+                break;
+
             case NT_CONTENT:
                 {
                     str_fmt content_fmt  = va_arg(ap, str_fmt);
 
-                    success = element_set_contentpv(strm_xml,
+                    success = element_add_contentpv(strm_xml,
                                                     content_fmt, &ap);
                 }
                 break;
@@ -664,6 +719,9 @@ group_end(hidrd_strm_xml_inst  *strm_xml,
 #define CONTENT(_fmt, _args...) \
     NT_CONTENT, STR_FMT_##_fmt, ##_args
 
+#define COMMENT(_fmt, _args...) \
+    NT_COMMENT, STR_FMT_##_fmt, ##_args
+
 #define SIMPLE(_name, _args...) \
     element_add(strm_xml, false, #_name, ##_args, NT_NONE)
 
@@ -797,20 +855,28 @@ write_global_element(hidrd_strm_xml_inst   *strm_xml,
 
     switch (hidrd_item_global_get_tag(item))
     {
-        /* FIXME use tokens */
-        SIMPLE_UINT(GLOBAL, USAGE_PAGE, usage_page);
-
         SIMPLE_INT(GLOBAL, LOGICAL_MINIMUM, logical_minimum);
         SIMPLE_INT(GLOBAL, LOGICAL_MAXIMUM, logical_maximum);
         SIMPLE_INT(GLOBAL, PHYSICAL_MINIMUM, physical_minimum);
         SIMPLE_INT(GLOBAL, PHYSICAL_MAXIMUM, physical_maximum);
         SIMPLE_INT(GLOBAL, UNIT_EXPONENT, unit_exponent);
-
-        /* TODO unit item */
-
         SIMPLE_UINT(GLOBAL, REPORT_SIZE, report_size);
         SIMPLE_UINT(GLOBAL, REPORT_ID, report_id);
         SIMPLE_UINT(GLOBAL, REPORT_COUNT, report_count);
+
+        /* TODO unit item */
+
+        case HIDRD_ITEM_GLOBAL_TAG_USAGE_PAGE:
+            return SIMPLE(
+                    usage_page,
+                    CONTENT(STROWN,
+                            hidrd_usage_page_to_token(
+                                hidrd_item_usage_page_get_value(item))),
+                    COMMENT(STROWN,
+                            strpada(
+                                hidrd_usage_page_desc(
+                                    hidrd_item_usage_page_get_value(
+                                        item)))));
 
         case HIDRD_ITEM_GLOBAL_TAG_PUSH:
             return GROUP_START(push_group);
