@@ -20,7 +20,7 @@
 hidrd_usagedir = $(includedir)/hidrd/usage
 
 %.h: %.h.m4 @top_srcdir@/m4/hidrd/*.m4 @top_srcdir@/db/usage/*.m4
-	@m4 -I "@top_srcdir@" $< > $@
+	m4 -I "@top_srcdir@" $< > $@
 
 dist_noinst_DATA = \
     page.h.m4
