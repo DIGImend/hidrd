@@ -19,4 +19,4 @@
 
 bin_PROGRAMS = hidrd-convert
 hidrd_convert_SOURCES = hidrd-convert.c
-hidrd_convert_LDADD = ../lib/usage/libhidrd_usage.la ../lib/strm/libhidrd_strm.la
+hidrd_convert_LDADD = ../lib/strm/libhidrd_strm.la
