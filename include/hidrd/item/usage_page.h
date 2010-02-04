@@ -35,13 +35,13 @@ extern "C" {
 #endif
 
 static inline bool
-hidrd_item_usage_page_value_valid(hidrd_usage_page value)
+hidrd_item_usage_page_value_valid(uint32_t value)
 {
     return hidrd_usage_page_valid(value);
 }
 
 HIDRD_ITEM_GLOBAL_FUNCS(usage_page, USAGE_PAGE,
-                        unsigned, hidrd_usage_page, uint16_t)
+                        unsigned, uint32_t, hidrd_usage_page)
 
 #ifdef __cplusplus
 } /* extern "C" */
