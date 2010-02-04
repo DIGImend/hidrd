@@ -133,7 +133,8 @@ hidrd_usage_page_defined(hidrd_usage_page page)
  */
 ifelse(eval(PAGE_SET_RANGE_NUM($1) > 1), 1,
 extern bool hidrd_usage_page_$1(hidrd_usage_page page);,
-static inline bool hidrd_usage_page_$1(hidrd_usage_page page)
+static inline bool
+hidrd_usage_page_$1(hidrd_usage_page page)
 {
 PAGE_SET_RANGE_CHECK($1)
 }
