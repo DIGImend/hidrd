@@ -105,7 +105,8 @@ static const page_desc desc_list[] = {
     PAGE(UNDEFINED, undefined, "undefined"),
 
 'dnl
-define(`PAGE', `    `PAGE'(translit($2, a-z, A-Z), $2, "$3"),')dnl
+define(`PAGE', `    `PAGE'(uppercase($2), $2, "$3"),
+')dnl
 include(`db/usage/page.m4')dnl
 `
 #undef PAGE

@@ -26,6 +26,7 @@ dist_noinst_DATA = \
     page.h.m4
 
 BUILT_SOURCES = \
+	all.h          \
 	page.h
 
 CLEANFILES = $(BUILT_SOURCES)

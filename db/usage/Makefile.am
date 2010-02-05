@@ -19,6 +19,9 @@
 db_usagedir = $(pkgdatadir)/db/usage
 
 dist_noinst_DATA = \
+    id_desktop.m4           \
+    id_set_desktop.m4       \
+    id_set_range_desktop.m4 \
+    page.m4                 \
     page_set.m4             \
-    page_set_range.m4       \
-    page.m4
+    page_set_range.m4

@@ -20,6 +20,13 @@ dnl along with hidrd; if not, write to the Free Software
 dnl Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 dnl
 dnl
+dnl PAGE_SET_POINT - describe a page set item.
+dnl Arguments:
+dnl     * Set token (lowercase, underscores as spaces)
+dnl     * Hexadecimal page ID (four digits, uppercase)
+dnl
+define(`PAGE_SET_POINT', `PAGE_SET_RANGE(`$1', `$2', `$2')')dnl
+dnl
 dnl PAGE_SET_RANGE - describe a page set range.
 dnl Arguments:
 dnl     * Set token (lowercase, underscores as spaces)
@@ -27,13 +34,13 @@ dnl     * Minimum hexadecimal page ID (four digits, uppercase)
 dnl     * Maximum hexadecimal page ID (four digits, uppercase)
 dnl
 PAGE_SET_RANGE(`top_level',   `0001',   `001F')dnl
-PAGE_SET_RANGE(`reserved',    `000E',   `000E')dnl
+PAGE_SET_POINT(`reserved',    `000E')dnl
 PAGE_SET_RANGE(`reserved',    `0011',   `0013')dnl
 PAGE_SET_RANGE(`reserved',    `0015',   `003F')dnl
 PAGE_SET_RANGE(`reserved',    `0041',   `007F')dnl
-PAGE_SET_RANGE(`reserved',    `0083',   `0083')dnl
+PAGE_SET_POINT(`reserved',    `0083')dnl
 PAGE_SET_RANGE(`reserved',    `0086',   `008B')dnl
-PAGE_SET_RANGE(`reserved',    `008F',   `008F')dnl
+PAGE_SET_POINT(`reserved',    `008F')dnl
 PAGE_SET_RANGE(`reserved',    `0092',   `FEFF')dnl
 PAGE_SET_RANGE(`monitor',     `0080',   `0083')dnl
 PAGE_SET_RANGE(`power',       `0084',   `0087')dnl

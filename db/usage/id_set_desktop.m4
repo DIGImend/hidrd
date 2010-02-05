@@ -1,5 +1,5 @@
 dnl
-dnl Utility macros.
+dnl Generic desktop controls usage page ID sets.
 dnl
 dnl Copyright (C) 2010 Nikolai Kondrashov
 dnl
@@ -19,9 +19,9 @@ dnl You should have received a copy of the GNU General Public License
 dnl along with hidrd; if not, write to the Free Software
 dnl Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 dnl
+dnl ID_SET - describe a usage ID set.
+dnl Arguments:
+dnl     * Set token (lowercase, underscores as spaces)
+dnl     * Set description (non-capitalized)
 dnl
-define(`capitalize_first',
-       `translit(substr(`$1', 0, 1), `a-z', `A-Z')`'substr(`$1', 1)')dnl
-dnl
-define(`uppercase', `translit(`$1', `a-z', `A-Z')')dnl
-dnl
+ID_SET(`reserved', `reserved')dnl

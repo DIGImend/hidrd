@@ -20,8 +20,8 @@ dnl along with hidrd; if not, write to the Free Software
 dnl Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 dnl
 dnl
-dnl PAGE_SET_RANGE_NUM - calculate number of set ranges
-dnl Arguments
+dnl PAGE_SET_RANGE_NUM - calculate number of set ranges.
+dnl Arguments:
 dnl     * Set token (lowercase, underscores as spaces)
 dnl
 define(`PAGE_SET_RANGE_NUM',
