@@ -617,13 +617,13 @@ create_element_delimiter_close(xmlDocPtr doc, xmlNsPtr ns)
 
 
 static const group group_list[] = {
-    {.name          = "collection_group",
+    {.name          = "COLLECTION",
      .create_start  = create_element_collection,
      .create_end    = create_element_end_collection},
-    {.name          = "push_group",
+    {.name          = "PUSH",
      .create_start  = create_element_push,
      .create_end    = create_element_pop},
-    {.name          = "set_group",
+    {.name          = "SET",
      .create_start  = create_element_delimiter_open,
      .create_end    = create_element_delimiter_close},
     {.name = NULL}
@@ -807,11 +807,11 @@ write_main_element(hidrd_strm_xml_inst   *strm_xml,
     {
         case HIDRD_ITEM_MAIN_TAG_COLLECTION:
             return GROUP_START(
-                    collection_group,
+                    COLLECTION,
                     ATTR(type, STROWN,
                          hidrd_item_collection_get_type_token(item)));
         case HIDRD_ITEM_MAIN_TAG_END_COLLECTION:
-            return GROUP_END(collection_group);
+            return GROUP_END(COLLECTION);
 
         case HIDRD_ITEM_MAIN_TAG_INPUT:
         case HIDRD_ITEM_MAIN_TAG_OUTPUT:
@@ -879,9 +879,9 @@ write_global_element(hidrd_strm_xml_inst   *strm_xml,
                                         item)))));
 
         case HIDRD_ITEM_GLOBAL_TAG_PUSH:
-            return GROUP_START(push_group);
+            return GROUP_START(PUSH);
         case HIDRD_ITEM_GLOBAL_TAG_POP:
-            return GROUP_END(push_group);
+            return GROUP_END(PUSH);
         default:
             return SIMPLE(
                     global,
@@ -920,8 +920,8 @@ write_local_element(hidrd_strm_xml_inst   *strm_xml,
         case HIDRD_ITEM_LOCAL_TAG_DELIMITER:
             return (hidrd_item_delimiter_get_value(item) ==
                     HIDRD_ITEM_DELIMITER_SET_OPEN)
-                        ? GROUP_START(set_group)
-                        : GROUP_END(set_group);
+                        ? GROUP_START(SET)
+                        : GROUP_END(SET);
 
         default:
             return SIMPLE(
