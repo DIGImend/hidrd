@@ -91,7 +91,10 @@ popdef(`PAGE')dnl
 static inline bool
 hidrd_usage_page_valid(hidrd_usage_page page)
 {
-    return page <= HIDRD_USAGE_PAGE_MAX;
+    hidrd_usage_page    min = HIDRD_USAGE_PAGE_MIN;
+    hidrd_usage_page    max = HIDRD_USAGE_PAGE_MAX;
+
+    return (page >= min) && (page <= max);
 }
 
 
@@ -146,17 +149,47 @@ PAGE_SET_RANGE_CHECK($1)
 ')dnl
 include(`db/usage/page_set.m4')dnl
 undefine(`PAGE_SET')dnl
-`#ifdef HIDRD_WITH_TOKENS
+`
+/**
+ * Convert a usage page hexadecimal code string to a code.
+ *
+ * @param token Usage page hexadecimal code string.
+ *
+ * @return Usage page code; will be HIDRD_USAGE_PAGE_INVALID, if the
+ *         hexadecimal code string is invalid.
+ */
+extern hidrd_usage_page hidrd_usage_page_from_hex(const char *hex);
+
+/**
+ * Convert a usage page code to a hexadecimal code string.
+ *
+ * @param page  Usage page code.
+ *
+ * @return Dynamically allocated hexadecimal page code string.
+ */
+extern char *hidrd_usage_page_to_hex(hidrd_usage_page page);
+
+#ifdef HIDRD_WITH_TOKENS
 
 /**
  * Convert a usage page code to a string token.
  *
  * @param page  Usage page code.
  *
- * @return Dynamically allocated usage page token or NULL if failed to
- *         allocate memory.
+ * @return Constant token string or NULL if the page has no token.
  */
-extern char *hidrd_usage_page_to_token(hidrd_usage_page page);
+extern const char *hidrd_usage_page_to_token(hidrd_usage_page page);
+
+/**
+ * Convert a usage page code to a string token or (if there is no token) to
+ * a hexadecimal code string.
+ *
+ * @param page  Usage page code.
+ *
+ * @return Dynamically allocated usage page token or hexadecimal code
+ *         string; NULL if failed to allocate memory.
+ */
+extern char *hidrd_usage_page_to_token_or_hex(hidrd_usage_page page);
 
 /**
  * Convert a usage page string token to a code.
@@ -167,6 +200,19 @@ extern char *hidrd_usage_page_to_token(hidrd_usage_page page);
  *         is not recognized.
  */
 extern hidrd_usage_page hidrd_usage_page_from_token(const char *token);
+
+/**
+ * Convert a usage page token or (if the token is not recognized)
+ * hexadecimal code string to a code.
+ *
+ * @param token Usage page token or hexadecimal code string.
+ *
+ * @return Usage page code; will be HIDRD_USAGE_PAGE_INVALID, if the
+ *         token is not recognized and the string is not a valid hexadecimal
+ *         code.
+ */
+extern hidrd_usage_page hidrd_usage_page_from_token_or_hex(
+                                        const char *token_or_hex);
 
 #endif /* HIDRD_WITH_TOKENS */
 

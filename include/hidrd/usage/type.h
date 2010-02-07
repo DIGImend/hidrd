@@ -36,8 +36,6 @@ extern "C" {
 
 /** Usage type bit indexes */
 typedef enum hidrd_usage_type_idx {
-    /* Other */
-    HIDRD_USAGE_TYPE_IDX_OTHER, /**< Other usage type */
     /* Controls */
     HIDRD_USAGE_TYPE_IDX_LC,    /**< Linear control */
     HIDRD_USAGE_TYPE_IDX_OOC,   /**< On/off control */
@@ -59,7 +57,7 @@ typedef enum hidrd_usage_type_idx {
     HIDRD_USAGE_TYPE_IDX_UM,    /**< Usage modifier */
 } hidrd_usage_type_idx;
 
-#define HIDRD_USAGE_TYPE_IDX_MIN    HIDRD_USAGE_TYPE_IDX_OTHER
+#define HIDRD_USAGE_TYPE_IDX_MIN    HIDRD_USAGE_TYPE_IDX_LC
 #define HIDRD_USAGE_TYPE_IDX_MAX    HIDRD_USAGE_TYPE_IDX_UM
 
 static inline bool
@@ -72,8 +70,6 @@ hidrd_usage_type_idx_valid(hidrd_usage_type_idx idx)
 typedef enum hidrd_usage_type {
 #define TYPE(_NAME) \
     HIDRD_USAGE_TYPE_##_NAME    = 1 << HIDRD_USAGE_TYPE_IDX_##_NAME
-    /* Other */
-    TYPE(OTHER),    /**< Other usage types */
     /* Controls */
     TYPE(LC),       /**< Linear control */
     TYPE(OOC),      /**< On/off control */
@@ -107,6 +103,9 @@ extern bool hidrd_usage_type_valid(hidrd_usage_type type);
 
 /** Usage type set (bitmask) */
 typedef uint32_t    hidrd_usage_type_set;
+
+/** Empty type set */
+#define HIDRD_USAGE_TYPE_SET_EMPTY  0
 
 /** Bitmask with non-valid type set bits set */
 #define HIDRD_USAGE_TYPE_SET_NOT_MASK \

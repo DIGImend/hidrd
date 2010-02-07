@@ -31,6 +31,10 @@ BUILT_SOURCES = \
 
 CLEANFILES = $(BUILT_SOURCES)
 
+hidrd_usage_HEADERS = \
+    id.h                \
+    type.h
+
 nodist_hidrd_usage_HEADERS = \
     $(BUILT_SOURCES)
 

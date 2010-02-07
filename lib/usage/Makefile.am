@@ -20,12 +20,14 @@
 lib_LTLIBRARIES = libhidrd_usage.la
 
 libhidrd_usage_la_SOURCES = \
-    type.c
+    type.c                  \
+    id.c
 
 %.c: %.c.m4 @top_srcdir@/m4/hidrd/*.m4 @top_srcdir@/db/usage/*.m4
 	m4 -I "@top_srcdir@" $< > $@
 
 BUILT_SOURCES = \
+    all.c       \
     page.c
 
 CLEANFILES = $(BUILT_SOURCES)

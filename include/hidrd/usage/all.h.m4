@@ -57,6 +57,10 @@ dnl
 #ifndef __HIDRD_USAGE_ALL_H__
 #define __HIDRD_USAGE_ALL_H__
 
+#include "hidrd/usage/page.h"
+#include "hidrd/usage/id.h"
+#include "hidrd/usage/type.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -87,6 +91,134 @@ include(`db/usage/page.m4')dnl
 popdef(`PAGE')dnl
 `#undef _U
 } hidrd_usage;
+
+#define HIDRD_USAGE_MIN 0
+#define HIDRD_USAGE_MAX UINT32_MAX
+
+/**
+ * Check if a usage is valid.
+ *
+ * @param usage Usage to check.
+ *
+ * @return True if usage is valid, false otherwise.
+ */
+static inline bool
+hidrd_usage_valid(hidrd_usage usage)
+{
+    hidrd_usage min = HIDRD_USAGE_MIN;
+    hidrd_usage max = HIDRD_USAGE_MAX;
+
+    return (usage >= min) && (usage <= max);
+}
+
+
+/**
+ * Retrieve usage page from a usage.
+ *
+ * @param usage Usage to retrieve usage page from.
+ *
+ * @return Usage page.
+ */
+static inline hidrd_usage_page
+hidrd_usage_get_page(hidrd_usage usage)
+{
+    assert(hidrd_usage_valid(usage));
+    return (usage >> 16) & UINT16_MAX;
+}
+
+
+/**
+ * Set usage page.
+ *
+ * @param usage Usage to set page to.
+ * @param page  Usage page to set.
+ *
+ * @return Usage with modified page.
+ */
+static inline hidrd_usage
+hidrd_usage_set_page(hidrd_usage usage, hidrd_usage_page page)
+{
+    assert(hidrd_usage_valid(usage));
+    assert(hidrd_usage_page_valid(page));
+    return (usage & UINT16_MAX) | (page << 16);
+}
+
+
+/**
+ * Retrieve usage ID from a usage.
+ *
+ * @param usage Usage to retrieve usage ID from.
+ *
+ * @return Usage ID.
+ */
+static inline hidrd_usage_id
+hidrd_usage_get_id(hidrd_usage usage)
+{
+    assert(hidrd_usage_valid(usage));
+    return usage & UINT16_MAX;
+}
+
+
+/**
+ * Set usage ID.
+ *
+ * @param usage Usage to set ID to.
+ * @param page  Usage ID to set.
+ *
+ * @return Usage with modified ID.
+ */
+static inline hidrd_usage
+hidrd_usage_set_id(hidrd_usage usage, hidrd_usage_id id)
+{
+    assert(hidrd_usage_valid(usage));
+    assert(hidrd_usage_id_valid(id));
+    return (usage & (UINT16_MAX << 16)) | id;
+}
+
+
+/**
+ * Compose a new usage from usage page and ID.
+ *
+ * @param page  Usage page.
+ * @param id    Usage ID.
+ *
+ * @return New usage.
+ */
+static inline hidrd_usage
+hidrd_usage_compose(hidrd_usage_page page, hidrd_usage_id id)
+{
+    assert(hidrd_usage_page_valid(page));
+    assert(hidrd_usage_id_valid(id));
+    return (page << 16) | id;
+}
+
+
+/**
+ * Convert a usage to a hexadecimal code string.
+ *
+ * @param usage Usage.
+ *
+ * @return Dynamically allocated hexadecimal code string, or NULL, if failed
+ *         to allocate memory.
+ */
+extern char *hidrd_usage_to_hex(hidrd_usage usage);
+
+
+/**
+ * Convert a hexadecimal code string to a usage.
+ *
+ * @param pusage    Location for resulting usage; will not be modified in
+ *                  case of error; could be NULL.
+ * @param hex       Hexadecimal code string.
+ *
+ * @return True if the hexadecimal code string was valid, false otherwise.
+ */
+extern bool hidrd_usage_from_hex(hidrd_usage *pusage, const char *hex);
+
+
+#ifdef HIDRD_WITH_TOKENS
+
+#endif
 
 #ifdef __cplusplus
 } /* extern "C" */

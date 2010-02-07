@@ -65,6 +65,7 @@ dnl
 bool
 hidrd_usage_page_$1(hidrd_usage_page page)
 {
+    assert(hidrd_usage_page_valid(page));
 PAGE_SET_RANGE_CHECK($1)
 }
 
@@ -120,7 +121,7 @@ include(`db/usage/page.m4')dnl
 
 
 static const page_desc *
-lookup_desc_by_id(hidrd_usage_page page)
+lookup_desc_by_num(hidrd_usage_page page)
 {
     const page_desc    *desc;
 
@@ -134,23 +135,58 @@ lookup_desc_by_id(hidrd_usage_page page)
 }
 
 
+char *
+hidrd_usage_page_to_hex(hidrd_usage_page page)
+{
+    char   *hex;
+
+    assert(hidrd_usage_page_valid(page));
+
+    if (asprintf(&hex, "%X", page) > 0)
+        return hex;
+
+    return NULL;
+}
+
+
+hidrd_usage_page
+hidrd_usage_page_from_hex(const char *hex)
+{
+    hidrd_usage_page    page;
+
+    assert(hex != NULL);
+
+    if (sscanf(hex, "%X", &page) != 1)
+        return HIDRD_USAGE_PAGE_INVALID;
+
+    return page;
+}
+
+
 #ifdef HIDRD_WITH_TOKENS
 
-char *
+const char *
 hidrd_usage_page_to_token(hidrd_usage_page page)
 {
     const page_desc    *desc;
-    char               *token;
 
     assert(hidrd_usage_page_valid(page));
-    desc = lookup_desc_by_id(page);
+    desc = lookup_desc_by_num(page);
 
-    if (desc != NULL)
-        return strdup(desc->token);
-    else if (asprintf(&token, "%X", page) > 0)
-        return token;
+    return (desc != NULL) ? desc->token : NULL;
+}
 
-    return NULL;
+
+char *
+hidrd_usage_page_to_token_or_hex(hidrd_usage_page page)
+{
+    const char         *token;
+
+    assert(hidrd_usage_page_valid(page));
+
+    token = hidrd_usage_page_to_token(page);
+
+    return (token != NULL) ? strdup(token) : hidrd_usage_page_to_hex(page);
 }
 
 
@@ -158,16 +194,29 @@ hidrd_usage_page
 hidrd_usage_page_from_token(const char *token)
 {
     const page_desc    *desc;
-    hidrd_usage_page    page;
+
+    assert(token != NULL);
 
     for (desc = desc_list; desc->page != HIDRD_USAGE_PAGE_INVALID; desc++)
         if (strcasecmp(desc->token, token) == 0)
             return hidrd_usage_page_validate(desc->page);
 
-    if (sscanf(token, "%X", &page) != 1)
-        return HIDRD_USAGE_PAGE_INVALID;
+    return HIDRD_USAGE_PAGE_INVALID;
+}
 
-    return page;
+
+hidrd_usage_page
+hidrd_usage_page_from_token_or_hex(const char *token_or_hex)
+{
+    hidrd_usage_page    page;
+
+    assert(token_or_hex != NULL);
+
+    page = hidrd_usage_page_from_token(token_or_hex);
+
+    return (page != HIDRD_USAGE_PAGE_INVALID)
+                ? page
+                : hidrd_usage_page_from_hex(token_or_hex);
 }
 
 #endif /* HIDRD_WITH_TOKENS */
@@ -181,7 +230,7 @@ hidrd_usage_page_name(hidrd_usage_page page)
 
     assert(hidrd_usage_page_valid(page));
 
-    desc = lookup_desc_by_id(page);
+    desc = lookup_desc_by_num(page);
 
     return (desc != NULL) ? desc->name : NULL;
 }

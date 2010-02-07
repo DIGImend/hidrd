@@ -870,7 +870,7 @@ write_global_element(hidrd_strm_xml_inst   *strm_xml,
             return SIMPLE(
                     usage_page,
                     CONTENT(STROWN,
-                            hidrd_usage_page_to_token(
+                            hidrd_usage_page_to_token_or_hex(
                                 hidrd_item_usage_page_get_value(item))),
                     COMMENT(STROWN,
                             strpada(
