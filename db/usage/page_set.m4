@@ -59,7 +59,6 @@ dnl Arguments:
 dnl     * Set token (lowercase, underscores as spaces)
 dnl     * Set description (non-capitalized)
 dnl
-PAGE_SET(`top_level', `top-level')dnl
 PAGE_SET(`reserved',  `reserved')dnl
 PAGE_SET(`monitor',   `monitor page')dnl
 PAGE_SET(`power',     `power page')dnl

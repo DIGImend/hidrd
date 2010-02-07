@@ -33,7 +33,6 @@ dnl     * Set token (lowercase, underscores as spaces)
 dnl     * Minimum hexadecimal page ID (four digits, uppercase)
 dnl     * Maximum hexadecimal page ID (four digits, uppercase)
 dnl
-PAGE_SET_RANGE(`top_level',   `0001',   `001F')dnl
 PAGE_SET_POINT(`reserved',    `000E')dnl
 PAGE_SET_RANGE(`reserved',    `0011',   `0013')dnl
 PAGE_SET_RANGE(`reserved',    `0015',   `003F')dnl
