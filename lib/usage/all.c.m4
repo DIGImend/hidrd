@@ -153,7 +153,7 @@ hidrd_usage_to_hex(hidrd_usage usage)
 
     assert(hidrd_usage_valid(usage));
 
-    if (asprintf(&hex, ((usage <= UINT32_MAX) ? "%.4X" : "%.8X"),
+    if (asprintf(&hex, ((usage <= UINT16_MAX) ? "%.4X" : "%.8X"),
                  (uint32_t)usage) < 0)
         return NULL;
 

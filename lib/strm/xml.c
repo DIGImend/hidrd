@@ -50,6 +50,13 @@ static bool
 init(hidrd_strm *strm, bool format)
 {
     hidrd_strm_xml_inst    *strm_xml    = (hidrd_strm_xml_inst *)strm;
+    hidrd_strm_xml_state   *state;
+
+    state = malloc(sizeof(*state));
+    if (state == NULL)
+        return false;
+    state->prev         = NULL;
+    state->usage_page   = HIDRD_USAGE_PAGE_UNDEFINED;
 
     strm_xml->format    = format;
     strm_xml->buf       = (strm->pbuf != NULL) ? *strm->pbuf : NULL;
@@ -58,6 +65,7 @@ init(hidrd_strm *strm, bool format)
     strm_xml->prnt      = NULL;
     strm_xml->cur       = NULL;
     strm_xml->changed   = false;
+    strm_xml->state     = state;
 
     return true;
 }
@@ -106,6 +114,9 @@ hidrd_strm_xml_valid(const hidrd_strm *strm)
 {
     const hidrd_strm_xml_inst  *strm_xml    =
                                     (const hidrd_strm_xml_inst *)strm;
+
+    if (strm_xml->state == NULL)
+        return false;
 
     if (strm_xml->doc == NULL)
         return strm_xml->prnt == NULL &&
@@ -208,12 +219,21 @@ static void
 hidrd_strm_xml_clnp(hidrd_strm *strm)
 {
     hidrd_strm_xml_inst    *strm_xml    = (hidrd_strm_xml_inst *)strm;
+    hidrd_strm_xml_state   *state;
+    hidrd_strm_xml_state   *prev_state;
 
     if (strm_xml->doc != NULL)
     {
         xmlFreeDoc(strm_xml->doc);
         strm_xml->doc = NULL;
     }
+
+    for (state = strm_xml->state; state != NULL; state = prev_state)
+    {
+        prev_state = state->prev;
+        free(state);
+    }
+    strm_xml->state = NULL;
 }
 
 

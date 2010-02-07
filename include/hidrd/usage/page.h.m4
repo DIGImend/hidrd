@@ -205,7 +205,7 @@ extern hidrd_usage_page hidrd_usage_page_from_token(const char *token);
  * Convert a usage page token or (if the token is not recognized)
  * hexadecimal code string to a code.
  *
- * @param token Usage page token or hexadecimal code string.
+ * @param token_or_hex  Usage page token or hexadecimal code string.
  *
  * @return Usage page code; will be HIDRD_USAGE_PAGE_INVALID, if the
  *         token is not recognized and the string is not a valid hexadecimal

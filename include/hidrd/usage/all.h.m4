@@ -218,6 +218,54 @@ extern bool hidrd_usage_from_hex(hidrd_usage *pusage, const char *hex);
 
 #ifdef HIDRD_WITH_TOKENS
 
+/**
+ * Convert a usage to a string token.
+ *
+ * @param usage Usage.
+ *
+ * @return Constant string token, or NULL, if there is no token for this
+ *         usage.
+ */
+extern const char *hidrd_usage_to_token(hidrd_usage usage);
+
+
+/**
+ * Convert a usage to a string token or hexadecimal code string.
+ *
+ * @param usage Usage.
+ *
+ * @return Dynamically allocated string token, or (if there is no token)
+ *         hexadecimal code string; NULL if failed to allocate memory.
+ */
+extern char *hidrd_usage_to_token_or_hex(hidrd_usage usage);
+
+
+/**
+ * Convert a string token to a usage.
+ *
+ * @param pusage    Location for usage; will not be modified in case of
+ *                  error; could be NULL.
+ * @param token     String token.
+ *
+ * @return True if token is found, false otherwise.
+ */
+extern bool hidrd_usage_from_token(hidrd_usage *pusage,
+                                   const char  *token);
+
+
+/**
+ * Convert a token or hexadecimal code string to a usage.
+ *
+ * @param pusage        Location for usage; will not be modified in case of
+ *                      error; could be NULL.
+ * @param token_or_hex  Token or hexadecimal code string.
+ *
+ * @return True if the token was found or hexadecimal code string was valid,
+ *         false otherwise.
+ */
+extern bool hidrd_usage_from_token_or_hex(hidrd_usage  *pusage,
+                                          const char   *token_or_hex);
+
 #endif
 
 #ifdef __cplusplus

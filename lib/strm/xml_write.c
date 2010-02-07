@@ -867,6 +867,8 @@ write_global_element(hidrd_strm_xml_inst   *strm_xml,
         /* TODO unit item */
 
         case HIDRD_ITEM_GLOBAL_TAG_USAGE_PAGE:
+            strm_xml->state->usage_page =
+                hidrd_item_usage_page_get_value(item);
             return SIMPLE(
                     usage_page,
                     CONTENT(STROWN,
@@ -879,9 +881,32 @@ write_global_element(hidrd_strm_xml_inst   *strm_xml,
                                         item)))));
 
         case HIDRD_ITEM_GLOBAL_TAG_PUSH:
-            return GROUP_START(PUSH);
+            {
+                hidrd_strm_xml_state   *new_state;
+
+                /* Push state */
+                new_state = malloc(sizeof(*new_state));
+                if (new_state == NULL)
+                    return false;
+                memcpy(new_state, strm_xml->state, sizeof(*new_state));
+                new_state->prev = strm_xml->state;
+                strm_xml->state = new_state;
+
+                return GROUP_START(PUSH);
+            }
         case HIDRD_ITEM_GLOBAL_TAG_POP:
-            return GROUP_END(PUSH);
+            {
+                hidrd_strm_xml_state   *prev_state;
+
+                /* Pop state, if possible */
+                prev_state = strm_xml->state->prev;
+                if (prev_state != NULL)
+                {
+                    free(strm_xml->state);
+                    strm_xml->state = prev_state;
+                }
+                return GROUP_END(PUSH);
+            }
         default:
             return SIMPLE(
                     global,
@@ -903,8 +928,51 @@ write_local_element(hidrd_strm_xml_inst   *strm_xml,
 
     switch (hidrd_item_local_get_tag(item))
     {
-        /* FIXME use tokens */
-        SIMPLE_UINT(LOCAL, USAGE, usage);
+        case HIDRD_ITEM_LOCAL_TAG_USAGE:
+            {
+                hidrd_usage usage = hidrd_item_usage_get_value(item);
+
+                if (!element_add(strm_xml, true, "usage", NT_NONE))
+                    return false;
+
+                /* If the original item doesn't have page specified */
+                if (hidrd_usage_get_page(usage) ==
+                    HIDRD_USAGE_PAGE_UNDEFINED)
+                {
+                    const char *token           = NULL;
+                    char       *token_or_hex;
+
+                    /*
+                     * Try to apply usage page specification and use it to
+                     * retrieve usage token.
+                     */
+                    token = hidrd_usage_to_token(
+                                hidrd_usage_set_page(
+                                    usage, strm_xml->state->usage_page));
+
+                    /* If the usage token is found */
+                    if (token != NULL)
+                        token_or_hex = strdup(token);
+                    else
+                        token_or_hex = hidrd_usage_id_to_hex(
+                                            hidrd_usage_get_id(usage));
+
+                    if (!SIMPLE(id, CONTENT(STROWN, token_or_hex)))
+                        return false;
+                }
+                else
+                {
+                    if (!SIMPLE(full,
+                                CONTENT(STROWN,
+                                        hidrd_usage_to_token_or_hex(
+                                            usage))))
+                        return false;
+                }
+
+                strm_xml->prnt = strm_xml->prnt->parent;
+                return true;
+            }
+            
         /* FIXME use tokens */
         SIMPLE_UINT(LOCAL, USAGE_MINIMUM, usage_minimum);
         /* FIXME use tokens */

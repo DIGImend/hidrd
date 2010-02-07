@@ -28,6 +28,7 @@
 #define __HIDRD_ITEM_USAGE_MAXIMUM_H__
 
 #include "hidrd/item/local.h"
+#include "hidrd/usage/all.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -40,7 +41,7 @@ hidrd_item_usage_maximum_value_valid(uint32_t value)
     return true;
 }
 
-HIDRD_ITEM_LOCAL_FUNCS(usage_maximum, USAGE_MAXIMUM, uint32_t, uint32_t)
+HIDRD_ITEM_LOCAL_FUNCS(usage_maximum, USAGE_MAXIMUM, uint32_t, hidrd_usage)
 
 #ifdef __cplusplus
 } /* extern "C" */

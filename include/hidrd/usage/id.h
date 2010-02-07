@@ -36,14 +36,37 @@ extern "C" {
 
 typedef uint16_t hidrd_usage_id;
 
+#define HIDRD_USAGE_ID_UNDEFINED    0
+
 #define HIDRD_USAGE_ID_MIN  0
 #define HIDRD_USAGE_ID_MAX  UINT16_MAX
 
+/**
+ * Check if a usage ID is valid.
+ *
+ * @param id    Usage ID to check.
+ *
+ * @return True if the usage ID is valid, false otherwise.
+ */
 static inline bool
 hidrd_usage_id_valid(hidrd_usage_id id)
 {
     (void)id;
     return true;
+}
+
+/**
+ * Check if a usage ID is valid.
+ *
+ * @param id    Usage ID to check.
+ *
+ * @return True if the usage ID is valid, false otherwise.
+ */
+static inline bool
+hidrd_usage_id_top_level(hidrd_usage_id id)
+{
+    assert(hidrd_usage_id_valid(id));
+    return (id >= 0x01) && (id <= 0x1F);
 }
 
 /**
