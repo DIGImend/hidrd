@@ -227,6 +227,8 @@ extern hidrd_usage_page hidrd_usage_page_from_token_or_hex(
  */
 extern const char *hidrd_usage_page_name(hidrd_usage_page page);
 
+#ifdef HIDRD_WITH_TOKENS
+
 /**
  * Generate page description from page name and set membership.
  *
@@ -237,6 +239,8 @@ extern const char *hidrd_usage_page_name(hidrd_usage_page page);
  *         tell about the page.
  */
 extern char *hidrd_usage_page_desc(hidrd_usage_page page);
+
+#endif /* HIDRD_WITH_TOKENS */
 
 #endif /* HIDRD_WITH_NAMES */
 

@@ -128,6 +128,21 @@ hidrd_usage_get_page(hidrd_usage usage)
 
 
 /**
+ * Check if a usage has defined page.
+ *
+ * @param usage Usage to check.
+ *
+ * @return True if the usage has defined page, false otherwise.
+ */
+static inline bool
+hidrd_usage_defined_page(hidrd_usage usage)
+{
+    assert(hidrd_usage_valid(usage));
+    return hidrd_usage_page_defined(hidrd_usage_get_page(usage));
+}
+
+
+/**
  * Set usage page.
  *
  * @param usage Usage to set page to.
@@ -190,6 +205,21 @@ hidrd_usage_compose(hidrd_usage_page page, hidrd_usage_id id)
     assert(hidrd_usage_page_valid(page));
     assert(hidrd_usage_id_valid(id));
     return (page << 16) | id;
+}
+
+
+/**
+ * Check if a usage is top-level (in effect, if its ID is top-level).
+ *
+ * @param usage Usage to check.
+ *
+ * @return True if the usage is top-level, false otherwise.
+ */
+static inline bool
+hidrd_usage_top_level(hidrd_usage usage)
+{
+    assert(hidrd_usage_valid(usage));
+    return hidrd_usage_id_top_level(hidrd_usage_get_id(usage));
 }
 
 
@@ -267,6 +297,34 @@ extern bool hidrd_usage_from_token_or_hex(hidrd_usage  *pusage,
                                           const char   *token_or_hex);
 
 #endif
+
+#ifdef HIDRD_WITH_NAMES
+
+/**
+ * Retrieve usage name string (close to specification).
+ *
+ * @param usage Usage code.
+ *
+ * @return Usage name string, or NULL if not found.
+ */
+extern const char *hidrd_usage_name(hidrd_usage usage);
+
+#ifdef HIDRD_WITH_TOKENS
+
+/**
+ * Generate usage description.
+ *
+ * @param usage Usage code to generate description for.
+ *
+ * @return Dynamically allocated usage description, or NULL if failed to
+ *         allocate memory; could be an empty string, if there is nothing to
+ *         tell about the usage.
+ */
+extern char *hidrd_usage_desc(hidrd_usage usage);
+
+#endif /* HIDRD_WITH_TOKENS */
+
+#endif /* HIDRD_WITH_NAMES */
 
 #ifdef __cplusplus
 } /* extern "C" */

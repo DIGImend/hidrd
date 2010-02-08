@@ -149,7 +149,7 @@
             <xsd:element ref="feature" />
             <xsd:element ref="collection" />
             <xsd:element ref="end_collection" />
-            <xsd:element ref="collection_group" />
+            <xsd:element ref="COLLECTION" />
         </xsd:choice>
     </xsd:group>
 
@@ -335,9 +335,9 @@
     <xsd:element name="end_collection" type="empty" />
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
-        META ITEM: COLLECTION_GROUP
+        META ITEM: COLLECTION
     - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-    <xsd:element name="collection_group">
+    <xsd:element name="COLLECTION">
         <xsd:complexType>
             <xsd:complexContent>
                 <xsd:extension base="basic_sequence">
@@ -397,7 +397,7 @@
             <xsd:element ref="report_count" />
             <xsd:element ref="push" />
             <xsd:element ref="pop" />
-            <xsd:element ref="push_group" />
+            <xsd:element ref="PUSH" />
         </xsd:choice>
     </xsd:group>
 
@@ -574,9 +574,9 @@
     <xsd:element name="pop" type="empty" />
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
-        META ITEM: PUSH_GROUP (PUSH/POP PAIR)
+        META ITEM: PUSH (PUSH/POP PAIR)
     - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-    <xsd:element name="push_group" type="basic_sequence" />
+    <xsd:element name="PUSH" type="basic_sequence" />
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
         LOCAL ITEM
@@ -623,7 +623,7 @@
             <xsd:element ref="string_minimum" />
             <xsd:element ref="string_maximum" />
             <xsd:element ref="delimiter" />
-            <xsd:element ref="set_group" />
+            <xsd:element ref="SET" />
         </xsd:choice>
     </xsd:group>
 
@@ -659,9 +659,9 @@
     </xsd:element>
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
-        META ITEM: SET_GROUP (OPEN/CLOSE DELIMITER PAIR)
+        META ITEM: SET (OPEN/CLOSE DELIMITER PAIR)
     - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-    <xsd:element name="set_group">
+    <xsd:element name="SET">
         <xsd:complexType>
             <xsd:sequence>
                 <xsd:element ref="usage" maxOccurs="unbounded" />

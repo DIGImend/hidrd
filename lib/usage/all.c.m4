@@ -153,7 +153,12 @@ hidrd_usage_to_hex(hidrd_usage usage)
 
     assert(hidrd_usage_valid(usage));
 
-    if (asprintf(&hex, ((usage <= UINT16_MAX) ? "%.4X" : "%.8X"),
+    if (asprintf(&hex,
+                 ((usage <= UINT8_MAX)
+                      ? "%.2X"
+                      : ((usage <= UINT16_MAX)
+                          ? "%.4X"
+                          : "%.8X")),
                  (uint32_t)usage) < 0)
         return NULL;
 
@@ -235,5 +240,92 @@ hidrd_usage_from_token_or_hex(hidrd_usage *pusage, const char *token_or_hex)
 
 
 #endif /* HIDRD_WITH_TOKENS */
+
+#ifdef HIDRD_WITH_NAMES
+
+const char *
+hidrd_usage_name(hidrd_usage usage)
+{
+    const usage_desc   *desc;
+
+    assert(hidrd_usage_valid(usage));
+
+    desc = lookup_desc_by_num(usage);
+
+    return (desc != NULL) ? desc->name : NULL;
+}
+
+#ifdef HIDRD_WITH_TOKENS
+
+char *
+hidrd_usage_desc(hidrd_usage usage)
+{
+    char               *result      = NULL;
+    const usage_desc   *desc;
+    const char         *token;
+    const char         *name;
+    char               *str         = NULL;
+    char               *new_str     = NULL;
+
+    assert(hidrd_usage_valid(usage));
+
+    desc = lookup_desc_by_num(usage);
+    if (desc == NULL)
+    {
+        token = NULL;
+        name = NULL;
+    }
+    else
+    {
+        token = desc->token;
+        name = desc->name;
+    }
+
+    if (token != NULL)
+        str = hidrd_usage_to_hex(usage);
+    else
+        str = strdup("");
+
+'changequote([,])[
+#define MAP(_token, _name) \
+    do {                                                    \
+        if (!hidrd_usage_##_token(usage))                   \
+            break;                                          \
+                                                            \
+        if (asprintf(&new_str,                              \
+                     ((*str == '\0') ? "%s%s" : "%s, %s"),  \
+                     str, _name) < 0)                       \
+            goto cleanup;                                   \
+                                                            \
+        free(str);                                          \
+        str = new_str;                                      \
+        new_str = NULL;                                     \
+    } while (0)
+
+    MAP(top_level, "top-level");
+
+    if (name == NULL)
+    {
+        result = str;
+        str = NULL;
+    }
+    else if (*str == '\0')
+        result = strdup(name);
+    else if (asprintf(&result, "%s (%s)", name, str) < 0)
+        goto cleanup;
+]changequote(`,')`
+
+cleanup:
+
+    free(new_str);
+    free(str);
+
+    return result;
+}
+
+#endif /* HIDRD_WITH_TOKENS */
+
+
+#endif /* HIDRD_WITH_NAMES */
 
 'dnl

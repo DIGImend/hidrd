@@ -235,6 +235,8 @@ hidrd_usage_page_name(hidrd_usage_page page)
     return (desc != NULL) ? desc->name : NULL;
 }
 
+#ifdef HIDRD_WITH_TOKENS
+
 char *
 hidrd_usage_page_desc(hidrd_usage_page page)
 {
@@ -246,11 +248,7 @@ hidrd_usage_page_desc(hidrd_usage_page page)
     assert(hidrd_usage_page_valid(page));
 
     name = hidrd_usage_page_name(page);
-
-    if (name == NULL)
-        str = strdup("");
-    else if (asprintf(&str, "%s", name) < 0)
-        goto cleanup;
+    str = (name == NULL) ? strdup("") : strdup(name);
 
 'changequote([,])[
 #define MAP(_token, _name) \
@@ -284,6 +282,8 @@ cleanup:
 
     return result;
 }
+
+#endif /* HIDRD_WITH_TOKENS */
 
 #endif /* HIDRD_WITH_NAMES */
 

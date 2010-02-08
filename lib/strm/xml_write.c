@@ -32,6 +32,25 @@
 
 
 /**
+ * Uppercase the first character of a string.
+ *
+ * @param str   String to modify.
+ *
+ * @return Modified string.
+ */
+static char *
+str_uc_first(char *str)
+{
+    assert(str != NULL);
+
+    if (*str >= 'a' && *str <= 'z')
+        *str -= ('a' - 'A');
+
+    return str;
+}
+
+
+/**
  * Pad a dynamically allocated string with spaces on both sides.
  *
  * @param str   A dynamically allocated string to pad; will be freed, even
@@ -41,7 +60,7 @@
  *         allocate memory.
  */
 static char *
-strpada(char *str)
+str_apada(char *str)
 {
     char   *padded;
     int     rc;
@@ -722,7 +741,7 @@ group_end(hidrd_strm_xml_inst  *strm_xml,
 #define COMMENT(_fmt, _args...) \
     NT_COMMENT, STR_FMT_##_fmt, ##_args
 
-#define SIMPLE(_name, _args...) \
+#define ADD_SIMPLE(_name, _args...) \
     element_add(strm_xml, false, #_name, ##_args, NT_NONE)
 
 #define GROUP_START(_name, _args...) \
@@ -731,16 +750,16 @@ group_end(hidrd_strm_xml_inst  *strm_xml,
 #define GROUP_END(_name) \
     group_end(strm_xml, #_name)
 
-#define SIMPLE_INT(_TYPE, _NAME, _name) \
+#define CASE_SIMPLE_INT(_TYPE, _NAME, _name) \
     case HIDRD_ITEM_##_TYPE##_TAG_##_NAME:                          \
-        return SIMPLE(                                              \
+        return ADD_SIMPLE(                                          \
                 _name,                                              \
                 CONTENT(INT,                                        \
                         (int)hidrd_item_##_name##_get_value(item)))
 
-#define SIMPLE_UINT(_TYPE, _NAME, _name) \
+#define CASE_SIMPLE_UINT(_TYPE, _NAME, _name) \
     case HIDRD_ITEM_##_TYPE##_TAG_##_NAME:                          \
-        return SIMPLE(                                              \
+        return ADD_SIMPLE(                                          \
                 _name,                                              \
                 CONTENT(INT,                                        \
                         (unsigned int)                              \
@@ -761,9 +780,10 @@ write_main_bit_elements(hidrd_strm_xml_inst   *strm_xml,
            hidrd_item_feature_valid(item));
 
 #define BIT(_idx, _on_name) \
-    do {                                                                \
-        if (hidrd_item_main_get_bit(item, _idx) && !SIMPLE(_on_name))   \
-            return false;                                               \
+    do {                                            \
+        if (hidrd_item_main_get_bit(item, _idx) &&  \
+            !ADD_SIMPLE(_on_name))                  \
+            return false;                           \
     } while (0)
 
     BIT(0, constant);
@@ -834,7 +854,7 @@ write_main_element(hidrd_strm_xml_inst   *strm_xml,
                 return true;
             }
         default:
-            return SIMPLE(
+            return ADD_SIMPLE(
                     main,
                     ATTR(tag, STROWN,
                          hidrd_item_main_tag_to_token(tag)),
@@ -855,30 +875,31 @@ write_global_element(hidrd_strm_xml_inst   *strm_xml,
 
     switch (hidrd_item_global_get_tag(item))
     {
-        SIMPLE_INT(GLOBAL, LOGICAL_MINIMUM, logical_minimum);
-        SIMPLE_INT(GLOBAL, LOGICAL_MAXIMUM, logical_maximum);
-        SIMPLE_INT(GLOBAL, PHYSICAL_MINIMUM, physical_minimum);
-        SIMPLE_INT(GLOBAL, PHYSICAL_MAXIMUM, physical_maximum);
-        SIMPLE_INT(GLOBAL, UNIT_EXPONENT, unit_exponent);
-        SIMPLE_UINT(GLOBAL, REPORT_SIZE, report_size);
-        SIMPLE_UINT(GLOBAL, REPORT_ID, report_id);
-        SIMPLE_UINT(GLOBAL, REPORT_COUNT, report_count);
+        CASE_SIMPLE_INT(GLOBAL, LOGICAL_MINIMUM, logical_minimum);
+        CASE_SIMPLE_INT(GLOBAL, LOGICAL_MAXIMUM, logical_maximum);
+        CASE_SIMPLE_INT(GLOBAL, PHYSICAL_MINIMUM, physical_minimum);
+        CASE_SIMPLE_INT(GLOBAL, PHYSICAL_MAXIMUM, physical_maximum);
+        CASE_SIMPLE_INT(GLOBAL, UNIT_EXPONENT, unit_exponent);
+        CASE_SIMPLE_UINT(GLOBAL, REPORT_SIZE, report_size);
+        CASE_SIMPLE_UINT(GLOBAL, REPORT_ID, report_id);
+        CASE_SIMPLE_UINT(GLOBAL, REPORT_COUNT, report_count);
 
         /* TODO unit item */
 
         case HIDRD_ITEM_GLOBAL_TAG_USAGE_PAGE:
             strm_xml->state->usage_page =
                 hidrd_item_usage_page_get_value(item);
-            return SIMPLE(
+            return ADD_SIMPLE(
                     usage_page,
                     CONTENT(STROWN,
                             hidrd_usage_page_to_token_or_hex(
                                 hidrd_item_usage_page_get_value(item))),
                     COMMENT(STROWN,
-                            strpada(
-                                hidrd_usage_page_desc(
-                                    hidrd_item_usage_page_get_value(
-                                        item)))));
+                            str_apada(
+                                str_uc_first(
+                                    hidrd_usage_page_desc(
+                                        hidrd_item_usage_page_get_value(
+                                            item))))));
 
         case HIDRD_ITEM_GLOBAL_TAG_PUSH:
             {
@@ -908,7 +929,7 @@ write_global_element(hidrd_strm_xml_inst   *strm_xml,
                 return GROUP_END(PUSH);
             }
         default:
-            return SIMPLE(
+            return ADD_SIMPLE(
                     global,
                     ATTR(tag, STROWN,
                          hidrd_item_global_get_tag_token(item)),
@@ -921,6 +942,66 @@ write_global_element(hidrd_strm_xml_inst   *strm_xml,
 
 
 static bool
+write_usage_element(hidrd_strm_xml_inst    *strm_xml,
+                    const char             *name,
+                    hidrd_usage             usage)
+{
+    hidrd_usage     spec_usage;
+    char           *token_or_hex;
+    char           *desc;
+    const char     *sub_name;
+
+    if (!element_add(strm_xml, true, name, NT_NONE))
+        return false;
+
+    if (hidrd_usage_defined_page(usage))
+    {
+        sub_name = "full";
+        spec_usage = usage;
+        token_or_hex = hidrd_usage_to_token_or_hex(usage);
+    }
+    else
+    {
+        const char *token;
+
+        sub_name = "id";
+        spec_usage = hidrd_usage_set_page(usage,
+                                          strm_xml->state->usage_page);
+        token = hidrd_usage_to_token(spec_usage);
+        token_or_hex = (token != NULL)
+                            ? strdup(token)
+                            : hidrd_usage_to_hex(usage);
+    }
+
+    if (token_or_hex == NULL)
+        return false;
+
+    desc = hidrd_usage_desc(spec_usage);
+    if (desc == NULL)
+    {
+        free(token_or_hex);
+        return false;
+    }
+
+    if (*desc == '\0')
+    {
+        free(desc);
+        if (!element_add(strm_xml, false, sub_name,
+                         CONTENT(STROWN, token_or_hex), NT_NONE))
+            return false;
+    }
+    else if (!element_add(strm_xml, false, sub_name,
+                          CONTENT(STROWN, token_or_hex),
+                          COMMENT(STROWN, str_apada(str_uc_first(desc))),
+                          NT_NONE))
+            return false;
+
+    strm_xml->prnt = strm_xml->prnt->parent;
+    return true;
+}
+
+
+static bool
 write_local_element(hidrd_strm_xml_inst   *strm_xml,
                    const hidrd_item      *item)
 {
@@ -928,62 +1009,26 @@ write_local_element(hidrd_strm_xml_inst   *strm_xml,
 
     switch (hidrd_item_local_get_tag(item))
     {
+        CASE_SIMPLE_UINT(LOCAL, DESIGNATOR_INDEX, designator_index);
+        CASE_SIMPLE_UINT(LOCAL, DESIGNATOR_MINIMUM, designator_minimum);
+        CASE_SIMPLE_UINT(LOCAL, DESIGNATOR_MAXIMUM, designator_maximum);
+        CASE_SIMPLE_UINT(LOCAL, STRING_INDEX, string_index);
+        CASE_SIMPLE_UINT(LOCAL, STRING_MINIMUM, string_minimum);
+        CASE_SIMPLE_UINT(LOCAL, STRING_MAXIMUM, string_maximum);
+
         case HIDRD_ITEM_LOCAL_TAG_USAGE:
-            {
-                hidrd_usage usage = hidrd_item_usage_get_value(item);
+            return write_usage_element(strm_xml, "usage",
+                                       hidrd_item_usage_get_value(item));
 
-                if (!element_add(strm_xml, true, "usage", NT_NONE))
-                    return false;
+        case HIDRD_ITEM_LOCAL_TAG_USAGE_MINIMUM:
+            return write_usage_element(
+                        strm_xml, "usage_minimum",
+                        hidrd_item_usage_minimum_get_value(item));
 
-                /* If the original item doesn't have page specified */
-                if (hidrd_usage_get_page(usage) ==
-                    HIDRD_USAGE_PAGE_UNDEFINED)
-                {
-                    const char *token           = NULL;
-                    char       *token_or_hex;
-
-                    /*
-                     * Try to apply usage page specification and use it to
-                     * retrieve usage token.
-                     */
-                    token = hidrd_usage_to_token(
-                                hidrd_usage_set_page(
-                                    usage, strm_xml->state->usage_page));
-
-                    /* If the usage token is found */
-                    if (token != NULL)
-                        token_or_hex = strdup(token);
-                    else
-                        token_or_hex = hidrd_usage_id_to_hex(
-                                            hidrd_usage_get_id(usage));
-
-                    if (!SIMPLE(id, CONTENT(STROWN, token_or_hex)))
-                        return false;
-                }
-                else
-                {
-                    if (!SIMPLE(full,
-                                CONTENT(STROWN,
-                                        hidrd_usage_to_token_or_hex(
-                                            usage))))
-                        return false;
-                }
-
-                strm_xml->prnt = strm_xml->prnt->parent;
-                return true;
-            }
-            
-        /* FIXME use tokens */
-        SIMPLE_UINT(LOCAL, USAGE_MINIMUM, usage_minimum);
-        /* FIXME use tokens */
-        SIMPLE_UINT(LOCAL, USAGE_MAXIMUM, usage_maximum);
-
-        SIMPLE_UINT(LOCAL, DESIGNATOR_INDEX, designator_index);
-        SIMPLE_UINT(LOCAL, DESIGNATOR_MINIMUM, designator_minimum);
-        SIMPLE_UINT(LOCAL, DESIGNATOR_MAXIMUM, designator_maximum);
-        SIMPLE_UINT(LOCAL, STRING_INDEX, string_index);
-        SIMPLE_UINT(LOCAL, STRING_MINIMUM, string_minimum);
-        SIMPLE_UINT(LOCAL, STRING_MAXIMUM, string_maximum);
+        case HIDRD_ITEM_LOCAL_TAG_USAGE_MAXIMUM:
+            return write_usage_element(
+                        strm_xml, "usage_maximum",
+                        hidrd_item_usage_maximum_get_value(item));
 
         case HIDRD_ITEM_LOCAL_TAG_DELIMITER:
             return (hidrd_item_delimiter_get_value(item) ==
@@ -992,7 +1037,7 @@ write_local_element(hidrd_strm_xml_inst   *strm_xml,
                         : GROUP_END(SET);
 
         default:
-            return SIMPLE(
+            return ADD_SIMPLE(
                     local,
                     ATTR(tag, STROWN,
                          hidrd_item_local_get_tag_token(item)),
@@ -1019,7 +1064,7 @@ write_short_element(hidrd_strm_xml_inst   *strm_xml,
         case HIDRD_ITEM_SHORT_TYPE_LOCAL:
             return write_local_element(strm_xml, item);
         default:
-            return SIMPLE(short,
+            return ADD_SIMPLE(short,
                     ATTR(type, STROWN,
                          hidrd_item_short_get_type_token(item)),
                     ATTR(tag, STROWN,
@@ -1039,18 +1084,19 @@ write_basic_element(hidrd_strm_xml_inst   *strm_xml,
     switch (hidrd_item_basic_get_format(item))
     {
         case HIDRD_ITEM_BASIC_FORMAT_LONG:
-            return SIMPLE(long,
-                          ATTR(tag, UINT, hidrd_item_long_get_tag(item)),
-                          CONTENT(
-                              HEX,
-                              /* We promise we won't change it */
-                              hidrd_item_long_get_data((hidrd_item *)item)),
-                              hidrd_item_long_get_data_size(item));
+            return ADD_SIMPLE(
+                        long,
+                        ATTR(tag, UINT, hidrd_item_long_get_tag(item)),
+                        CONTENT(
+                            HEX,
+                            /* We promise we won't change it */
+                            hidrd_item_long_get_data((hidrd_item *)item)),
+                            hidrd_item_long_get_data_size(item));
 
         case HIDRD_ITEM_BASIC_FORMAT_SHORT:
             return write_short_element(strm_xml, item);
         default:
-            return SIMPLE(basic,
+            return ADD_SIMPLE(basic,
                     ATTR(type, STROWN,
                          hidrd_item_basic_get_type_token(item)),
                     ATTR(tag, STROWN,
