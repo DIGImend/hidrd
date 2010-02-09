@@ -946,58 +946,54 @@ write_usage_element(hidrd_strm_xml_inst    *strm_xml,
                     const char             *name,
                     hidrd_usage             usage)
 {
-    hidrd_usage     spec_usage;
-    char           *token_or_hex;
-    char           *desc;
-    const char     *sub_name;
+    bool    success         = false;
+    char   *token_or_hex;
+    char   *desc;
 
-    if (!element_add(strm_xml, true, name, NT_NONE))
-        return false;
+    if (!hidrd_usage_defined_page(usage))
+        usage = hidrd_usage_set_page(usage, strm_xml->state->usage_page);
 
-    if (hidrd_usage_defined_page(usage))
+    if (hidrd_usage_get_page(usage) == strm_xml->state->usage_page)
     {
-        sub_name = "full";
-        spec_usage = usage;
-        token_or_hex = hidrd_usage_to_token_or_hex(usage);
+        token_or_hex = hidrd_usage_to_token_or_hex_id(usage);
+        if (token_or_hex == NULL)
+            goto cleanup;
+        desc = hidrd_usage_desc_id(usage);
+        if (desc == NULL)
+            goto cleanup;
     }
     else
     {
-        const char *token;
-
-        sub_name = "id";
-        spec_usage = hidrd_usage_set_page(usage,
-                                          strm_xml->state->usage_page);
-        token = hidrd_usage_to_token(spec_usage);
-        token_or_hex = (token != NULL)
-                            ? strdup(token)
-                            : hidrd_usage_to_hex(usage);
-    }
-
-    if (token_or_hex == NULL)
-        return false;
-
-    desc = hidrd_usage_desc(spec_usage);
-    if (desc == NULL)
-    {
-        free(token_or_hex);
-        return false;
+        token_or_hex = hidrd_usage_to_token_or_hex(usage);
+        if (token_or_hex == NULL)
+            goto cleanup;
+        desc = hidrd_usage_desc(usage);
+        if (desc == NULL)
+            goto cleanup;
     }
 
     if (*desc == '\0')
     {
-        free(desc);
-        if (!element_add(strm_xml, false, sub_name,
-                         CONTENT(STROWN, token_or_hex), NT_NONE))
-            return false;
+        success = element_add(strm_xml, false, name,
+                              CONTENT(STROWN, token_or_hex), NT_NONE);
+        token_or_hex = NULL;
     }
-    else if (!element_add(strm_xml, false, sub_name,
-                          CONTENT(STROWN, token_or_hex),
-                          COMMENT(STROWN, str_apada(str_uc_first(desc))),
-                          NT_NONE))
-            return false;
+    else
+    {
+        success = element_add(strm_xml, false, name,
+                              CONTENT(STROWN, token_or_hex),
+                              COMMENT(STROWN, str_apada(str_uc_first(desc))),
+                              NT_NONE);
+        token_or_hex = NULL;
+        desc = NULL;
+    }
 
-    strm_xml->prnt = strm_xml->prnt->parent;
-    return true;
+cleanup:
+
+    free(desc);
+    free(token_or_hex);
+
+    return success;
 }
 
 

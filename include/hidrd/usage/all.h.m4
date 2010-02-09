@@ -271,6 +271,18 @@ extern char *hidrd_usage_to_token_or_hex(hidrd_usage usage);
 
 
 /**
+ * Convert a usage to a string token or hexadecimal usage ID code string.
+ *
+ * @param usage Usage.
+ *
+ * @return Dynamically allocated string token, or (if there is no token)
+ *         hexadecimal usage ID code string; NULL if failed to allocate
+ *         memory.
+ */
+extern char *hidrd_usage_to_token_or_hex_id(hidrd_usage usage);
+
+
+/**
  * Convert a string token to a usage.
  *
  * @param pusage    Location for usage; will not be modified in case of
@@ -310,6 +322,17 @@ extern bool hidrd_usage_from_token_or_hex(hidrd_usage  *pusage,
 extern const char *hidrd_usage_name(hidrd_usage usage);
 
 #ifdef HIDRD_WITH_TOKENS
+
+/**
+ * Generate description of usage ID as used in particular usage.
+ *
+ * @param usage Usage code to generate ID description for.
+ *
+ * @return Dynamically allocated usage ID description, or NULL if failed to
+ *         allocate memory; could be an empty string, if there is nothing to
+ *         tell about the usage ID.
+ */
+extern char *hidrd_usage_desc_id(hidrd_usage usage);
 
 /**
  * Generate usage description.

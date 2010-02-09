@@ -210,6 +210,21 @@ hidrd_usage_to_token_or_hex(hidrd_usage usage)
 }
 
 
+char *
+hidrd_usage_to_token_or_hex_id(hidrd_usage usage)
+{
+    const char         *token;
+
+    assert(hidrd_usage_valid(usage));
+
+    token = hidrd_usage_to_token(usage);
+
+    return (token != NULL)
+                ? strdup(token)
+                : hidrd_usage_id_to_hex(hidrd_usage_get_id(usage));
+}
+
+
 bool
 hidrd_usage_from_token(hidrd_usage *pusage, const char *token)
 {
@@ -258,7 +273,7 @@ hidrd_usage_name(hidrd_usage usage)
 #ifdef HIDRD_WITH_TOKENS
 
 char *
-hidrd_usage_desc(hidrd_usage usage)
+hidrd_usage_desc_id(hidrd_usage usage)
 {
     char               *result      = NULL;
     const usage_desc   *desc;
@@ -281,12 +296,14 @@ hidrd_usage_desc(hidrd_usage usage)
         name = desc->name;
     }
 
+    /* Use ID hex if there is no token */
     if (token != NULL)
-        str = hidrd_usage_to_hex(usage);
+        str = hidrd_usage_id_to_hex(hidrd_usage_get_id(usage));
     else
         str = strdup("");
 
 'changequote([,])[
+    /* Attach classification */
 #define MAP(_token, _name) \
     do {                                                    \
         if (!hidrd_usage_##_token(usage))                   \
@@ -304,6 +321,7 @@ hidrd_usage_desc(hidrd_usage usage)
 
     MAP(top_level, "top-level");
 
+    /* Attach name */
     if (name == NULL)
     {
         result = str;
@@ -323,8 +341,50 @@ cleanup:
     return result;
 }
 
-#endif /* HIDRD_WITH_TOKENS */
+char *
+hidrd_usage_desc(hidrd_usage usage)
+{
+    char    *result      = NULL;
+    char    *usage_desc  = NULL;
+    char    *page_desc   = NULL;
 
+    assert(hidrd_usage_valid(usage));
+
+    usage_desc = hidrd_usage_desc_id(usage);
+    if (usage_desc == NULL)
+        goto cleanup;
+    page_desc = hidrd_usage_page_desc(hidrd_usage_get_page(usage));
+    if (page_desc == NULL)
+        goto cleanup;
+
+'changequote([,])[
+    if (*usage_desc == '\0')
+    {
+        result = page_desc;
+        page_desc = NULL;
+    }
+    else if (*page_desc == '\0')
+    {
+        result = usage_desc;
+        usage_desc = NULL;
+    }
+    else
+    {
+        if (asprintf(&result, "%s - %s", usage_desc, page_desc) < 0)
+            goto cleanup;
+    }
+]changequote(`,')`
+
+cleanup:
+
+    free(page_desc);
+    free(usage_desc);
+
+    return result;
+}
+
+
+#endif /* HIDRD_WITH_TOKENS */
 
 #endif /* HIDRD_WITH_NAMES */
 
