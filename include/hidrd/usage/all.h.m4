@@ -66,9 +66,9 @@ extern "C" {
 #endif
 
 typedef enum hidrd_usage {
-#define _U(_page, _id) (((_page) << 16) | (_id))
+#define _U(_page, _id) (((HIDRD_USAGE_PAGE_##_page) << 16) | (_id))
 
-    HIDRD_USAGE_UNDEFINED = _U(0x0000, 0x0000),
+    HIDRD_USAGE_UNDEFINED = _U(UNDEFINED, 0x0000),
 
 'pushdef(`PAGE',
 `ifelse(eval(PAGE_ID_NUM(`$2') > 0), 1,
@@ -79,7 +79,7 @@ typedef enum hidrd_usage {
     /*
      * capitalize_first(`$3') page
      */
-#define _PU(_id) _U(0x$1, _id)
+`#'define _PU(_id) _U(uppercase(`$2'), _id)
 
 sinclude(`db/usage/id_$2.m4')dnl
 

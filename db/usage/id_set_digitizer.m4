@@ -1,5 +1,5 @@
 dnl
-dnl Generic desktop controls usage page ID set ranges.
+dnl Digitizer usage page ID sets.
 dnl
 dnl Copyright (C) 2010 Nikolai Kondrashov
 dnl
@@ -19,20 +19,9 @@ dnl You should have received a copy of the GNU General Public License
 dnl along with hidrd; if not, write to the Free Software
 dnl Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 dnl
-dnl
-dnl ID_SET_POINT - describe a usage ID set item.
+dnl ID_SET - describe a usage ID set.
 dnl Arguments:
 dnl     * Set token (lowercase, underscores as spaces)
-dnl     * Hexadecimal usage ID (four digits, uppercase)
+dnl     * Set description (non-capitalized)
 dnl
-define(`ID_SET_POINT', `ID_SET_RANGE(`$1', `$2', `$2')')dnl
-dnl
-dnl ID_SET_RANGE - describe a usage ID set range.
-dnl Arguments:
-dnl     * Set token (lowercase, underscores as spaces)
-dnl     * Minimum hexadecimal usage ID (four digits, uppercase)
-dnl     * Maximum hexadecimal usage ID (four digits, uppercase)
-dnl
-ID_SET_RANGE(`reserved',    `000E', `001F')dnl
-ID_SET_RANGE(`reserved',    `0023', `002F')dnl
-ID_SET_RANGE(`reserved',    `0047', `FFFF')dnl
+ID_SET(`reserved', `reserved')dnl
