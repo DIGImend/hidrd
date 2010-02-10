@@ -404,8 +404,22 @@
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
         GLOBAL ITEM: USAGE PAGE
     - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <xsd:simpleType name="usage_page_hex">
+        <xsd:restriction base="xsd:hexBinary">
+            <xsd:minLength value="1" />
+            <xsd:maxLength value="4" />
+        </xsd:restriction>
+    </xsd:simpleType>
     <!-- FIXME provide symbolic usage page reference -->
-    <xsd:element name="usage_page" type="xsd:unsignedShort" />
+    <xsd:simpleType name="usage_page_token">
+        <xsd:restriction base="xsd:string">
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="usage_page_token_or_hex">
+        <xsd:union memberTypes="usage_page_hex usage_page_token" />
+    </xsd:simpleType>
+
+    <xsd:element name="usage_page" type="usage_page_token_or_hex" />
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
         GLOBAL ITEM: LOGICAL MINIMUM
@@ -631,17 +645,34 @@
         LOCAL ITEM: USAGE
                     USAGE MINIMUM
                     USAGE MAXIMUM
-                    DESIGNATOR INDEX
+    - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <xsd:simpleType name="usage_hex">
+        <xsd:restriction base="xsd:hexBinary">
+            <xsd:minLength value="1" />
+            <xsd:maxLength value="8" />
+        </xsd:restriction>
+    </xsd:simpleType>
+    <!-- FIXME provide symbolic usage reference -->
+    <xsd:simpleType name="usage_token">
+        <xsd:restriction base="xsd:string">
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="usage_token_or_hex">
+        <xsd:union memberTypes="usage_hex usage_token" />
+    </xsd:simpleType>
+
+    <xsd:element name="usage" type="usage_token_or_hex" />
+    <xsd:element name="usage_minimum" type="usage_token_or_hex" />
+    <xsd:element name="usage_maximum" type="usage_token_or_hex" />
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
+        LOCAL ITEM: DESIGNATOR INDEX
                     DESIGNATOR MINIMUM
                     DESIGNATOR MAXIMUM
                     STRING INDEX
                     STRING MINIMUM
                     STRING MAXIMUM
     - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-    <!-- FIXME provide symbolic usage reference -->
-    <xsd:element name="usage" type="xsd:unsignedInt" />
-    <xsd:element name="usage_minimum" type="xsd:unsignedInt" />
-    <xsd:element name="usage_maximum" type="xsd:unsignedInt" />
     <xsd:element name="designator_index" type="xsd:unsignedInt" />
     <xsd:element name="designator_minimum" type="xsd:unsignedInt" />
     <xsd:element name="designator_maximum" type="xsd:unsignedInt" />
