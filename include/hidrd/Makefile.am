@@ -24,4 +24,5 @@ hidrd_HEADERS = \
     bit.h       \
     item.h      \
     opt.h       \
-    strm.h
+    strm.h      \
+    unit.h

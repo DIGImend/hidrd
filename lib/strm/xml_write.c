@@ -868,6 +868,176 @@ write_main_element(hidrd_strm_xml_inst   *strm_xml,
 
 
 static bool
+write_unit_generic_element(hidrd_strm_xml_inst *strm_xml,
+                           hidrd_unit           unit)
+{
+    bool            success = false;
+    bool            inside  = false;
+    hidrd_unit_exp  exp;
+
+    if (!element_add(strm_xml, true, "generic",
+                     ATTR(system, STROWN,
+                          hidrd_unit_system_to_token_or_dec(
+                            hidrd_unit_get_system(unit))),
+                     NT_NONE))
+        goto cleanup;
+
+    inside = true;
+
+#define EXP(_name) \
+    do {                                                                \
+        exp = hidrd_unit_get_##_name(unit);                             \
+        if (exp != HIDRD_UNIT_EXP_0)                                    \
+        {                                                               \
+            if (exp == HIDRD_UNIT_EXP_1)                                \
+            {                                                           \
+                if (!ADD_SIMPLE(_name))                                 \
+                    goto cleanup;                                       \
+            }                                                           \
+            else                                                        \
+            {                                                           \
+                if (!ADD_SIMPLE(_name,                                  \
+                                CONTENT(INT,                            \
+                                        hidrd_unit_exp_to_int(exp))))   \
+                    goto cleanup;                                       \
+            }                                                           \
+        }                                                               \
+    } while (0)
+
+    EXP(length);
+    EXP(mass);
+    EXP(time);
+    EXP(temperature);
+    EXP(current);
+    EXP(luminous_intensity);
+
+#undef EXP
+
+    success = true;
+
+cleanup:
+
+    if (inside)
+        strm_xml->prnt = strm_xml->prnt->parent;
+
+    return success;
+}
+
+
+static bool
+write_unit_specific_element(hidrd_strm_xml_inst *strm_xml,
+                            hidrd_unit           unit)
+{
+    bool                success = false;
+    hidrd_unit_system   system;
+    bool                inside  = false;
+    hidrd_unit_exp      exp;
+
+    assert(hidrd_unit_valid(unit));
+    system = hidrd_unit_get_system(unit);
+    assert(hidrd_unit_system_known(system));
+
+    if (!element_add(strm_xml, true, hidrd_unit_system_to_token(system),
+                     NT_NONE))
+        goto cleanup;
+
+    inside = true;
+
+#define EXP(_gen_name, _spec_expr) \
+    do {                                                                \
+        exp = hidrd_unit_get_##_gen_name(unit);                         \
+        if (exp != HIDRD_UNIT_EXP_0)                                    \
+        {                                                               \
+            const char *_spec_name = (_spec_expr);                      \
+                                                                        \
+            if (exp == HIDRD_UNIT_EXP_1)                                \
+            {                                                           \
+                if (!element_add(strm_xml, false, _spec_name, NT_NONE)) \
+                    goto cleanup;                                       \
+            }                                                           \
+            else                                                        \
+            {                                                           \
+                if (!element_add(strm_xml, false, _spec_name,           \
+                                 CONTENT(INT,                           \
+                                         hidrd_unit_exp_to_int(exp)),   \
+                                 NT_NONE))                              \
+                    goto cleanup;                                       \
+            }                                                           \
+        }                                                               \
+    } while (0)
+
+    EXP(length,
+        (system == HIDRD_UNIT_SYSTEM_SI_LINEAR)
+            ? "centimeter"
+            : (system == HIDRD_UNIT_SYSTEM_SI_ROTATION)
+                ? "radians"
+                : (system == HIDRD_UNIT_SYSTEM_ENGLISH_LINEAR)
+                    ? "inch"
+                    : "degrees");
+    EXP(mass,
+        (system == HIDRD_UNIT_SYSTEM_SI_LINEAR ||
+         system == HIDRD_UNIT_SYSTEM_SI_ROTATION)
+            ? "gram"
+            : "slug");
+    EXP(time, "seconds");
+    EXP(temperature,
+        (system == HIDRD_UNIT_SYSTEM_SI_LINEAR ||
+         system == HIDRD_UNIT_SYSTEM_SI_ROTATION)
+            ? "kelvin"
+            : "fahrenheit");
+    EXP(current, "ampere");
+    EXP(luminous_intensity, "candela");
+
+#undef EXP
+
+    success = true;
+
+cleanup:
+
+    if (inside)
+        strm_xml->prnt = strm_xml->prnt->parent;
+
+    return success;
+}
+
+
+static bool
+write_unit_element(hidrd_strm_xml_inst *strm_xml,
+                   hidrd_unit           unit)
+{
+    bool    success     = false;
+    bool    inside      = false;
+
+    if (!element_add(strm_xml, true, "unit", NT_NONE))
+        goto cleanup;
+    inside = true;
+
+    /*
+     * If the unit value could be interpreted with our API and it does
+     * contain something meaningful.
+     */
+    /* If the unit is void - i.e. indicates no particular units */
+    if (hidrd_unit_void(unit))
+        success = ADD_SIMPLE(none);
+    /* If the unit is unknown, i.e. it cannot be interpreted by our API */
+    else if (!hidrd_unit_known(unit))
+        success = ADD_SIMPLE(value, CONTENT(HEX, &unit, sizeof(unit)));
+    else
+        /* If the unit system is known to us */
+        success = hidrd_unit_system_known(hidrd_unit_get_system(unit))
+                    ? write_unit_specific_element(strm_xml, unit)
+                    : write_unit_generic_element(strm_xml, unit);
+
+cleanup:
+
+    if (inside)
+        strm_xml->prnt = strm_xml->prnt->parent;
+
+    return success;
+}
+
+
+static bool
 write_global_element(hidrd_strm_xml_inst   *strm_xml,
                    const hidrd_item      *item)
 {
@@ -884,7 +1054,9 @@ write_global_element(hidrd_strm_xml_inst   *strm_xml,
         CASE_SIMPLE_UINT(GLOBAL, REPORT_ID, report_id);
         CASE_SIMPLE_UINT(GLOBAL, REPORT_COUNT, report_count);
 
-        /* TODO unit item */
+        case HIDRD_ITEM_GLOBAL_TAG_UNIT:
+            return write_unit_element(strm_xml,
+                                      hidrd_item_unit_get_value(item));
 
         case HIDRD_ITEM_GLOBAL_TAG_USAGE_PAGE:
             strm_xml->state->usage_page =

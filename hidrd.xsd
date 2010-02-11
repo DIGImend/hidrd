@@ -439,37 +439,26 @@
     - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <xsd:simpleType name="unit_data_exp">
         <xsd:restriction base="xsd:integer">
-            <xsd:enumeration value="-8" />
-            <xsd:enumeration value="-7" />
-            <xsd:enumeration value="-6" />
-            <xsd:enumeration value="-5" />
-            <xsd:enumeration value="-4" />
-            <xsd:enumeration value="-3" />
-            <xsd:enumeration value="-2" />
-            <xsd:enumeration value="-1" />
-            <xsd:enumeration value="1" />
-            <xsd:enumeration value="2" />
-            <xsd:enumeration value="3" />
-            <xsd:enumeration value="4" />
-            <xsd:enumeration value="5" />
-            <xsd:enumeration value="6" />
-            <xsd:enumeration value="7" />
+            <xsd:minInclusive value="-8" />
+            <xsd:maxInclusive value="7" />
         </xsd:restriction>
     </xsd:simpleType>
 
     <xsd:simpleType name="unit_data_system_code">
         <xsd:restriction base="xsd:integer">
-            <xsd:minInclusive value="1" />
+            <xsd:minInclusive value="0" />
             <xsd:maxInclusive value="15" />
         </xsd:restriction>
     </xsd:simpleType>
 
     <xsd:simpleType name="unit_data_system_name">
         <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="none" />
             <xsd:enumeration value="si_linear" />
             <xsd:enumeration value="si_rotation" />
             <xsd:enumeration value="english_linear" />
             <xsd:enumeration value="english_rotation" />
+            <xsd:enumeration value="vendor" />
         </xsd:restriction>
     </xsd:simpleType>
 
@@ -480,12 +469,34 @@
     <xsd:element name="unit">
         <xsd:complexType>
             <xsd:choice minOccurs="0">
+                <xsd:element name="none" type="empty" />
                 <xsd:element name="value">
                     <xsd:simpleType>
                         <xsd:restriction base="xsd:hexBinary">
+                            <xsd:minLength value="1" />
                             <xsd:maxLength value="8" />
                         </xsd:restriction>
                     </xsd:simpleType>
+                </xsd:element>
+                <xsd:element name="generic">
+                    <xsd:complexType>
+                        <xsd:sequence minOccurs="1">
+                            <xsd:element name="length" type="unit_data_exp"
+                                         default="1" minOccurs="0" />
+                            <xsd:element name="mass" type="unit_data_exp"
+                                         default="1" minOccurs="0" />
+                            <xsd:element name="time" type="unit_data_exp"
+                                         default="1" minOccurs="0" />
+                            <xsd:element name="temperature" type="unit_data_exp"
+                                         default="1" minOccurs="0" />
+                            <xsd:element name="current" type="unit_data_exp"
+                                         default="1" minOccurs="0" />
+                            <xsd:element name="luminous_intensity" type="unit_data_exp"
+                                         default="1" minOccurs="0" />
+                        </xsd:sequence>
+                        <xsd:attribute name="system" type="unit_data_system"
+                                       use="required" />
+                    </xsd:complexType>
                 </xsd:element>
                 <xsd:element name="si_linear">
                     <xsd:complexType>
