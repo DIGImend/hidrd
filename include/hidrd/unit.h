@@ -422,6 +422,9 @@ hidrd_unit_nibble_index_valid(hidrd_unit_nibble_index i)
 /** Unit value type */
 typedef uint32_t hidrd_unit;
 
+/** The "none" unit - indicates absence of particular units */
+#define HIDRD_UNIT_NONE 0
+
 /**
  * Check if a unit is valid (currently a stub - always true).
  *

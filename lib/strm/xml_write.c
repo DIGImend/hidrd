@@ -1016,11 +1016,14 @@ write_unit_element(hidrd_strm_xml_inst *strm_xml,
      * If the unit value could be interpreted with our API and it does
      * contain something meaningful.
      */
-    /* If the unit is void - i.e. indicates no particular units */
-    if (hidrd_unit_void(unit))
+    /* If the unit is "none" - i.e. there is no units */
+    if (unit == HIDRD_UNIT_NONE)
         success = ADD_SIMPLE(none);
-    /* If the unit is unknown, i.e. it cannot be interpreted by our API */
-    else if (!hidrd_unit_known(unit))
+    /*
+     * If the unit is void (indicates no particular units) or 
+     * unknown, (cannot be interpreted by our API)
+     */
+    else if (hidrd_unit_void(unit) || !hidrd_unit_known(unit))
         success = ADD_SIMPLE(value, CONTENT(HEX, &unit, sizeof(unit)));
     else
         /* If the unit system is known to us */
