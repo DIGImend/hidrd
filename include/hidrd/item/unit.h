@@ -34,16 +34,10 @@
 extern "C" {
 #endif
 
-/*
- * TODO Provide a way for encoding values conveniently.
- */
-
 static inline bool
 hidrd_item_unit_value_valid(uint32_t value)
 {
-    /* TODO figure out the correct values */
-    (void)value;
-    return true;
+    return hidrd_unit_valid(value);
 }
 
 HIDRD_ITEM_GLOBAL_FUNCS(unit, UNIT,

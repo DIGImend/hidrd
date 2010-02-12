@@ -33,14 +33,9 @@
 extern "C" {
 #endif
 
-/*
- * TODO Provide a way for encoding values conveniently.
- */
-
 static inline bool
 hidrd_item_unit_exponent_value_valid(int32_t value)
 {
-    /* TODO figure out the correct values */
     (void)value;
     return true;
 }

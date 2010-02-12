@@ -36,7 +36,10 @@ extern "C" {
 static inline bool
 hidrd_item_report_count_value_valid(uint32_t value)
 {
-    /* TODO figure out the correct values */
+    /*
+     * TODO figure out the correct values - they could be tied to the
+     * maximum size of the report.
+     */
     (void)value;
     return true;
 }

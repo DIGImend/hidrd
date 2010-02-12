@@ -37,8 +37,7 @@ extern "C" {
 static inline bool
 hidrd_item_usage_value_valid(uint32_t value)
 {
-    (void)value;
-    return true;
+    return hidrd_usage_valid(value);
 }
 
 HIDRD_ITEM_LOCAL_FUNCS(usage, USAGE, uint32_t, hidrd_usage)
