@@ -28,6 +28,7 @@
 #define __HIDRD_UNIT_H__
 
 #include <assert.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
 #include <strings.h>
@@ -78,20 +79,7 @@ hidrd_unit_system_valid(hidrd_unit_system system)
  * @return Dynamically allocated unit system code decimal string, or NULL if
  *         failed to allocate memory.
  */
-/* FIXME Make extern */
-static inline char *
-hidrd_unit_system_to_dec(hidrd_unit_system system)
-{
-    char   *dec;
-
-    assert(hidrd_unit_system_valid(system));
-
-    if (asprintf(&dec, "%u", system) < 0)
-        return NULL;
-
-    return dec;
-}
-
+extern char *hidrd_unit_system_to_dec(hidrd_unit_system system);
 
 /**
  * Convert a unit system decimal string to a unit system code.
@@ -130,30 +118,7 @@ hidrd_unit_system_from_dec(hidrd_unit_system *psystem, const char *dec)
  *
  * @return Constant unit system token string, or NULL if none.
  */
-/* FIXME Make extern */
-static inline const char *
-hidrd_unit_system_to_token(hidrd_unit_system system)
-{
-    assert(hidrd_unit_system_valid(system));
-
-    switch (system)
-    {
-#define MAP(_NAME, _name) \
-    case HIDRD_UNIT_SYSTEM_##_NAME: \
-        return #_name
-
-        MAP(NONE, none);
-        MAP(SI_LINEAR, si_linear);
-        MAP(SI_ROTATION, si_rotation);
-        MAP(ENGLISH_LINEAR, english_linear);
-        MAP(ENGLISH_ROTATION, english_rotation);
-        MAP(VENDOR, vendor);
-
-#undef MAP
-        default:
-            return NULL;
-    }
-}
+extern const char *hidrd_unit_system_to_token(hidrd_unit_system system);
 
 /**
  * Convert a unit system token to a code.
@@ -164,42 +129,8 @@ hidrd_unit_system_to_token(hidrd_unit_system system)
  *
  * @return True if the token was recognized, false otherwise.
  */
-/* FIXME Make extern */
-static inline bool
-hidrd_unit_system_from_token(hidrd_unit_system *psystem, const char *token)
-{
-    hidrd_unit_system   system;
-
-    assert(token != NULL);
-
-#define MAP(_NAME, _name) \
-    do {                                        \
-        if (strcasecmp(token, #_name) == 0)     \
-        {                                       \
-            system = HIDRD_UNIT_SYSTEM_##_NAME; \
-            goto found;                         \
-        }                                       \
-    } while (0)
-
-    MAP(NONE, none);
-    MAP(SI_LINEAR, si_linear);
-    MAP(SI_ROTATION, si_rotation);
-    MAP(ENGLISH_LINEAR, english_linear);
-    MAP(ENGLISH_ROTATION, english_rotation);
-    MAP(VENDOR, vendor);
-
-#undef MAP
-
-    return false;
-
-found:
-
-    if (psystem != NULL)
-        *psystem = system;
-
-    return true;
-}
-
+extern bool hidrd_unit_system_from_token(hidrd_unit_system *psystem,
+                                         const char        *token);
 
 /**
  * Convert a unit system code to a token or (if there is no token) to a
@@ -210,21 +141,7 @@ found:
  * @return Dynamically allocated unit system token or decimal string; NULL
  *         if failed to allocate memory.
  */
-/* FIXME Make extern */
-static inline char *
-hidrd_unit_system_to_token_or_dec(hidrd_unit_system system)
-{
-    const char *token;
-
-    assert(hidrd_unit_system_valid(system));
-
-    token = hidrd_unit_system_to_token(system);
-
-    return (token != NULL)
-            ? strdup(token)
-            : hidrd_unit_system_to_dec(system);
-}
-
+extern char *hidrd_unit_system_to_token_or_dec(hidrd_unit_system system);
 
 /**
  * Convert a unit system token or decimal string to a unit system code.
@@ -236,16 +153,9 @@ hidrd_unit_system_to_token_or_dec(hidrd_unit_system system)
  * @return True if either unit system token was recognized or decimal string
  *         was valid, false otherwise.
  */
-/* FIXME Make extern */
-static inline bool
-hidrd_unit_system_from_token_or_dec(hidrd_unit_system  *psystem,
-                                    const char         *token_or_dec)
-{
-    assert(token_or_dec != NULL);
-
-    return hidrd_unit_system_from_token(psystem, token_or_dec) ||
-           hidrd_unit_system_from_dec(psystem, token_or_dec);
-}
+extern bool hidrd_unit_system_from_token_or_dec(
+                                        hidrd_unit_system  *psystem,
+                                        const char         *token_or_dec);
 
 #endif /* HIDRD_WITH_TOKENS */
 

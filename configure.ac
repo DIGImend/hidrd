@@ -89,6 +89,7 @@ AC_CONFIG_FILES([Makefile
                  lib/opt/Makefile
                  lib/strm/Makefile
                  lib/usage/Makefile
+                 lib/unit/Makefile
                  
                  src/Makefile])
 AC_OUTPUT

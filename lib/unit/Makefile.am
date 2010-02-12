@@ -1,4 +1,4 @@
-# Copyright (C) 2009 Nikolai Kondrashov
+# Copyright (C) 2010 Nikolai Kondrashov
 #
 # This file is part of hidrd.
 #
@@ -16,26 +16,7 @@
 # along with hidrd; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-lib_LTLIBRARIES = libhidrd_item.la
+lib_LTLIBRARIES = libhidrd_unit.la
 
-libhidrd_item_la_SOURCES = \
-    any.c                   \
-    basic.c                 \
-    collection.c            \
-    global.c                \
-    local.c                 \
-    main.c                  \
-    pfx.c                   \
-    short.c
-
-libhidrd_item_la_LIBADD = ../usage/libhidrd_usage.la ../unit/libhidrd_unit.la
-
-check_PROGRAMS = hidrd_item_any_test
-TESTS = hidrd_item_any_test
-
-hidrd_item_any_test_SOURCES = any_test.c
-hidrd_item_any_test_LDADD = $(lib_LTLIBRARIES)
-
-# Uncomment to have the tests installed
-# bin_PROGRAMS = $(TESTS)
-
+libhidrd_unit_la_SOURCES = \
+    unit.c
