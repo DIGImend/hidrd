@@ -19,12 +19,15 @@
 db_usagedir = $(pkgdatadir)/db/usage
 
 dist_noinst_DATA = \
+    id_consumer.m4              \
     id_desktop.m4               \
     id_digitizer.m4             \
     id_keyboard.m4              \
+    id_set_consumer.m4          \
     id_set_desktop.m4           \
     id_set_digitizer.m4         \
     id_set_keyboard.m4          \
+    id_set_range_consumer.m4    \
     id_set_range_desktop.m4     \
     id_set_range_digitizer.m4   \
     id_set_range_keyboard.m4    \
