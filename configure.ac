@@ -1,4 +1,5 @@
-# Copyright (C) 2009 Nikolai Kondrashov
+#
+# Copyright (C) 2009-2010 Nikolai Kondrashov
 #
 # This file is part of hidrd.
 #
@@ -27,16 +28,20 @@ AC_CONFIG_MACRO_DIR([m4/autoconf])
 
 # To have empty CFLAGS instead of undefined and '-g -O2' by default
 CFLAGS=$CFLAGS
-CFLAGS="-Wall -Wextra -Werror $CFLAGS"
+CFLAGS="-Os -Wall -Wextra -Werror $CFLAGS"
 ABS_SRCDIR=`cd ${srcdir} ; pwd`
-CPPFLAGS="-DHIDRD_WITH_OPT -DHIDRD_WITH_NAMES -DHIDRD_WITH_TOKENS -D_GNU_SOURCE -DNDEBUG -I${ABS_SRCDIR}/include $CPPFLAGS"
+CPPFLAGS="-D_GNU_SOURCE -DNDEBUG -I${ABS_SRCDIR}/include $CPPFLAGS"
 
+#
 # Checks for programs.
+#
 AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_LIBTOOL
 
+#
 # Checks for libraries.
+#
 AC_ARG_WITH(xml2-config,
             AC_HELP_STRING([--with-xml2-config=PATH],
                            [Specify xml2-config location @<:@default=$PATH@:>@]),
@@ -63,11 +68,133 @@ fi
 AC_SUBST(LIBXML2_LIBS)
 AC_SUBST(LIBXML2_CFLAGS)
 
+#
+# Checks for features
+#
+AC_ARG_ENABLE(
+    debug,
+    AS_HELP_STRING([--enable-debug], [enable debugging features]),
+    [], [enable_debug="no"])
+
+AC_ARG_ENABLE(
+    tests-install,
+    AS_HELP_STRING([--enable-tests-install], [enable installation of tests]),
+    [], [enable_tests_install="no"])
+
+AC_ARG_ENABLE(
+    opt,
+    AS_HELP_STRING([--disable-opt],
+                   [disable building options library (it is needed for streams)]),
+    [], [enable_opt="yes"])
+
+AC_ARG_ENABLE(
+    streams,
+    AS_HELP_STRING([--disable-streams], [disable building stream library (required by hidrd-convert)]),
+    [], [enable_streams="yes"])
+
+AC_ARG_ENABLE(
+    hidrd-convert,
+    AS_HELP_STRING([--disable-hidrd-convert], [disable building hidrd-convert tool (requires streams)]),
+    [], [enable_hidrd_convert="yes"])
+
+AC_ARG_ENABLE(
+    tokens,
+    AS_HELP_STRING([--disable-tokens],
+                   [disable tokens (tokens are needed for XML stream)]),
+    [], [enable_tokens="yes"])
+
+AC_ARG_ENABLE(
+    names,
+    AS_HELP_STRING([--disable-names],
+                   [disable names (names are needed for XML stream)]),
+    [], [enable_names="yes"])
+
+AC_ARG_ENABLE(
+    xml-stream,
+    AS_HELP_STRING(
+        [--disable-xml-stream],
+        [disable building XML stream (requires tokens, names, options library and libxml2 to be enabled)]),
+    [], [enable_xml_stream="yes"])
+
+# Check for stream library dependencies
+if test "$enable_streams" = "yes"; then
+    if test "$enable_opt" != "yes"; then
+        AC_MSG_WARN([option library is disabled, so disabling streams])
+        enable_streams="no"
+    fi
+fi
+
+# Check hidrd-convert tool dependencies
+if test "$enable_hidrd_convert" = "yes"; then
+    if test "$enable_streams" != "yes"; then
+        AC_MSG_WARN([stream library is disabled, so disabling hidrd-convert tool])
+        enable_hidrd_convert="no"
+    fi
+fi
+
+# Check for XML stream dependencies
+if test "$enable_xml_stream" = "yes"; then
+    if test "$enable_streams" != "yes"; then
+        # Disable silently - quite obvious
+        enable_xml_stream="no"
+    elif test "$enable_tokens" != "yes"; then
+        AC_MSG_WARN([tokens are disabled, so disabling XML stream])
+        enable_xml_stream="no"
+    elif test "$enable_names" != "yes"; then
+        AC_MSG_WARN([names are disabled, so disabling XML stream])
+        enable_xml_stream="no"
+    elif test -z "$XML2_CONFIG"; then
+        AC_MSG_WARN([no xml2-config, so disabling XML stream])
+        enable_xml_stream="no"
+    fi
+fi
+
+# Output features to automake
+AM_CONDITIONAL([ENABLE_TESTS_INSTALL], [test "$enable_tests_install" = "yes"])
+AM_CONDITIONAL([ENABLE_OPT], [test "$enable_opt" = "yes"])
+AM_CONDITIONAL([ENABLE_STRM], [test "$enable_streams" = "yes"])
+AM_CONDITIONAL([ENABLE_HIDRD_CONVERT], [test "$enable_hidrd_convert" = "yes"])
+AM_CONDITIONAL([ENABLE_TOKENS], [test "$enable_tokens" = "yes"])
+AM_CONDITIONAL([ENABLE_NAMES], [test "$enable_names" = "yes"])
+AM_CONDITIONAL([ENABLE_STRM_XML], [test "$enable_xml_stream" = "yes"])
+
+# Output features to preprocessor and compiler
+if test "$enable_debug" == "yes"; then
+    CPPFLAGS="$CPPFLAGS -UNDEBUG"
+    CFLAGS="$CFLAGS -g -O0"
+fi
+
+if test "$enable_opt" == "yes"; then
+    CPPFLAGS="$CPPFLAGS -DHIDRD_WITH_OPT"
+fi
+
+if test "$enable_tokens" == "yes"; then
+    CPPFLAGS="$CPPFLAGS -DHIDRD_WITH_TOKENS"
+fi
+
+if test "$enable_names" == "yes"; then
+    CPPFLAGS="$CPPFLAGS -DHIDRD_WITH_NAMES"
+fi
+
+if test "$enable_xml_stream" == "yes"; then
+    CPPFLAGS="$CPPFLAGS -DHIDRD_STRM_WITH_XML"
+fi
+
+#
 # Checks for header files.
+#
 
+#
 # Checks for typedefs, structures, and compiler characteristics.
+#
 
+#
 # Checks for library functions.
+#
+
+#
+# Output
+#
 AC_CONFIG_FILES([Makefile
 
                  m4/Makefile

@@ -1,4 +1,5 @@
-# Copyright (C) 2009 Nikolai Kondrashov
+#
+# Copyright (C) 2009-2010 Nikolai Kondrashov
 #
 # This file is part of hidrd.
 #
@@ -16,13 +17,21 @@
 # along with hidrd; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-SUBDIRS = item strm usage opt
+SUBDIRS = usage item
 
 hidrddir = $(includedir)/hidrd
 
 hidrd_HEADERS = \
     bit.h       \
     item.h      \
-    opt.h       \
-    strm.h      \
     unit.h
+
+if ENABLE_OPT
+SUBDIRS += opt
+hidrd_HEADERS += opt.h
+endif
+
+if ENABLE_STRM
+SUBDIRS += strm
+hidrd_HEADERS += strm.h
+endif

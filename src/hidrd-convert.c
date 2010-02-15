@@ -61,7 +61,9 @@ usage(FILE *stream, const char *progname)
 
 static const hidrd_strm_type *type_list[] = {
     &hidrd_strm_natv,
+#ifdef HIDRD_STRM_WITH_XML
     &hidrd_strm_xml,
+#endif
     NULL
 };
 

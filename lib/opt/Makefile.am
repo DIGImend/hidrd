@@ -1,4 +1,5 @@
-# Copyright (C) 2009 Nikolai Kondrashov
+#
+# Copyright (C) 2009-2010 Nikolai Kondrashov
 #
 # This file is part of hidrd.
 #
@@ -25,12 +26,13 @@ libhidrd_opt_la_SOURCES = \
     spec_list.c             \
     type.c
 
-
+bin_PROGRAMS =
 check_PROGRAMS = hidrd_opt_test
 TESTS = hidrd_opt_test
 
 hidrd_opt_test_SOURCES = test.c
 hidrd_opt_test_LDADD = $(lib_LTLIBRARIES)
 
-# Uncomment to have the tests installed
-# bin_PROGRAMS = $(TESTS)
+if ENABLE_TESTS_INSTALL
+bin_PROGRAMS += $(TESTS)
+endif

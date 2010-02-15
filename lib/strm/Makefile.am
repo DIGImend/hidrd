@@ -1,3 +1,4 @@
+#
 # Copyright (C) 2010 Nikolai Kondrashov
 #
 # This file is part of hidrd.
@@ -27,13 +28,14 @@ libhidrd_strm_la_LIBADD = \
     ../item/libhidrd_item.la    \
     ../opt/libhidrd_opt.la
 
+bin_PROGRAMS =
 check_PROGRAMS = hidrd_strm_natv_test
 TESTS = hidrd_strm_natv_test
 
 hidrd_strm_natv_test_SOURCES = natv_test.c
 hidrd_strm_natv_test_LDADD = $(lib_LTLIBRARIES)
 
-if WITH_LIBXML2
+if ENABLE_STRM_XML
 libhidrd_strm_la_SOURCES += xml.c xml_read.c xml_write.c
 libhidrd_strm_la_CFLAGS = @LIBXML2_CFLAGS@
 libhidrd_strm_la_LDFLAGS = @LIBXML2_LIBS@
@@ -46,5 +48,6 @@ hidrd_strm_xml_test_SOURCES = xml_test.c
 hidrd_strm_xml_test_LDADD = $(lib_LTLIBRARIES)
 endif
 
-# Uncomment to have the tests installed
-# bin_PROGRAMS = $(TESTS)
+if ENABLE_TESTS_INSTALL
+bin_PROGRAMS += $(TESTS)
+endif
