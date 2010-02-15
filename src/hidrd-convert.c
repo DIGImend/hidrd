@@ -194,6 +194,12 @@ process(const char *input_name,
     assert(*output_format != '\0');
     assert(output_options != NULL);
 
+#ifdef HIDRD_STRM_WITH_XML
+    /* Initialize parser of the XML stream */
+    /* FIXME use global stream library initialization instead */
+    hidrd_strm_xml_init_parser();
+#endif
+
     /*
      * Lookup input and output stream types
      */
@@ -321,6 +327,12 @@ cleanup:
         close(input_fd);
     if (output_fd >= 0 && output_fd != STDOUT_FILENO)
         close(output_fd);
+
+#ifdef HIDRD_STRM_WITH_XML
+    /* Cleanup parser of the XML stream */
+    /* FIXME use global stream library cleanup instead */
+    hidrd_strm_xml_clnp_parser();
+#endif
 
     return result;
 }
