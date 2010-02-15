@@ -55,7 +55,7 @@ hidrd_opt_spec_parse_opt(hidrd_opt_spec    *spec,
     parse_state             state;
     char                   *p;
     char                    c;
-    const char             *str;
+    const char             *str         = NULL;
     const char             *dflt_str    = NULL;
     const char             *desc        = "";
     hidrd_opt_value    dflt;

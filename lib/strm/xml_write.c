@@ -570,6 +570,7 @@ typedef struct group {
     create_element_fn  *create_end;
 } group;
 
+#ifndef NDEBUG
 static bool
 group_valid(const group *g)
 {
@@ -579,6 +580,7 @@ group_valid(const group *g)
            g->create_start != NULL &&
            g->create_end != NULL;
 }
+#endif
 
 static xmlNodePtr
 create_element_collection(xmlDocPtr doc, xmlNsPtr ns)
@@ -1123,7 +1125,7 @@ write_usage_element(hidrd_strm_xml_inst    *strm_xml,
 {
     bool    success         = false;
     char   *token_or_hex;
-    char   *desc;
+    char   *desc            = NULL;
 
     if (!hidrd_usage_defined_page(usage))
         usage = hidrd_usage_set_page(usage, strm_xml->state->usage_page);
