@@ -483,10 +483,10 @@ typedef enum nt {
 } nt;
 
 static bool
-element_addv(hidrd_strm_xml_inst   *strm_xml,
-             bool                   container,
-             const char            *name,
-             va_list                ap)
+element_addpv(hidrd_strm_xml_inst   *strm_xml,
+              bool                   container,
+              const char            *name,
+              va_list               *pap)
 {
     bool    success = true;
     bool    end     = false;
@@ -498,35 +498,35 @@ element_addv(hidrd_strm_xml_inst   *strm_xml,
 
     while (success && !end)
     {
-        nt  node_type = va_arg(ap, nt);
+        nt  node_type = va_arg(*pap, nt);
 
         switch (node_type)
         {
             case NT_ATTR:
                 {
-                    const char *name        = va_arg(ap, const char *);
-                    str_fmt     value_fmt   = va_arg(ap, str_fmt);
+                    const char *name        = va_arg(*pap, const char *);
+                    str_fmt     value_fmt   = va_arg(*pap, str_fmt);
 
                     success = element_set_attrpv(strm_xml,
-                                                 name, value_fmt, &ap);
+                                                 name, value_fmt, pap);
                 }
                 break;
 
             case NT_COMMENT:
                 {
-                    str_fmt comment_fmt  = va_arg(ap, str_fmt);
+                    str_fmt comment_fmt  = va_arg(*pap, str_fmt);
 
                     success = element_add_commentpv(strm_xml,
-                                                    comment_fmt, &ap);
+                                                    comment_fmt, pap);
                 }
                 break;
 
             case NT_CONTENT:
                 {
-                    str_fmt content_fmt  = va_arg(ap, str_fmt);
+                    str_fmt content_fmt  = va_arg(*pap, str_fmt);
 
                     success = element_add_contentpv(strm_xml,
-                                                    content_fmt, &ap);
+                                                    content_fmt, pap);
                 }
                 break;
 
@@ -557,7 +557,7 @@ element_add(hidrd_strm_xml_inst    *strm_xml,
     bool    success;
 
     va_start(ap, name);
-    success = element_addv(strm_xml, container, name, ap);
+    success = element_addpv(strm_xml, container, name, &ap);
     va_end(ap);
 
     return success;

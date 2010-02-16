@@ -25,6 +25,7 @@
  */
 
 
+#include <stdarg.h>
 #include <stdint.h>
 #include <string.h>
 #include <errno.h>
@@ -45,35 +46,56 @@
 #define V_S8_TYPE   int8_t
 #define V_S8_FMT    "%hhd"
 
+static void item_error(const char *file, unsigned int line,
+                       const char *desc, const char *fmt, ...)
+                      __attribute__((format(printf, 4, 5)));
+
+static void
+item_error(const char *file, unsigned int line,
+           const char *desc, const char *fmt, ...)
+{
+    va_list ap;
+
+    fprintf(stderr, "%s:%u Item %s ", file, line, desc);
+
+    va_start(ap, fmt);
+    vfprintf(stderr, fmt, ap);
+    va_end(ap);
+
+    fprintf(stderr, ".\n");
+
+    exit(1);
+}
+
 #define ITEM_ERROR(_fmt, _args...) \
-    error_at_line(1, 0, __FILE__, __LINE__,                 \
-                  "Item %s " _fmt ".", item_desc, ##_args)
+    item_error(__FILE__, __LINE__, item_desc, _fmt, ##_args)
 
 #define BEGIN_ITEM(_name, _desc, _byte...) \
-    do {                                                                \
-        const char         *item_desc   = _desc;                        \
-        const uint8_t       orig_buf[]  = {_byte};                      \
-        const hidrd_item   *orig_item   = orig_buf;                     \
-        const size_t        orig_size   = sizeof(orig_buf);             \
-        size_t              test_size   = 0;                            \
-                                                                        \
-        hidrd_item          test_item[HIDRD_ITEM_MAX_SIZE];             \
-                                                                        \
-        if (!hidrd_item_fits(orig_item, orig_size, &test_size))         \
-            ITEM_ERROR("doesn't fit (%u != %u)", test_size, orig_size); \
-        if (test_size != orig_size)                                     \
-            ITEM_ERROR("fits, but size is invalid (%u != %u)",          \
-                       test_size, orig_size);                           \
-                                                                        \
-        test_size = hidrd_item_get_size(orig_item);                     \
-        if (test_size != orig_size)                                     \
-            ITEM_ERROR("size invalid (%u != %u)",                       \
-                       test_size, orig_size);                           \
-                                                                        \
-        if (!hidrd_item_valid(orig_item))                               \
-            ITEM_ERROR("considered invalid by the generic check");      \
-                                                                        \
-        if (!hidrd_item_##_name##_valid(orig_item))                     \
+    do {                                                            \
+        const char         *item_desc   = _desc;                    \
+        const uint8_t       orig_buf[]  = {_byte};                  \
+        const hidrd_item   *orig_item   = orig_buf;                 \
+        const size_t        orig_size   = sizeof(orig_buf);         \
+        size_t              test_size   = 0;                        \
+                                                                    \
+        hidrd_item          test_item[HIDRD_ITEM_MAX_SIZE];         \
+                                                                    \
+        if (!hidrd_item_fits(orig_item, orig_size, &test_size))     \
+            ITEM_ERROR("doesn't fit (%zu != %zu)",                  \
+                       test_size, orig_size);                       \
+        if (test_size != orig_size)                                 \
+            ITEM_ERROR("fits, but size is invalid (%zu != %zu)",    \
+                       test_size, orig_size);                       \
+                                                                    \
+        test_size = hidrd_item_get_size(orig_item);                 \
+        if (test_size != orig_size)                                 \
+            ITEM_ERROR("size invalid (%zu != %zu)",                 \
+                       test_size, orig_size);                       \
+                                                                    \
+        if (!hidrd_item_valid(orig_item))                           \
+            ITEM_ERROR("considered invalid by the generic check");  \
+                                                                    \
+        if (!hidrd_item_##_name##_valid(orig_item))                 \
             ITEM_ERROR("considered invalid by the specific check");
 
 #define END_ITEM \

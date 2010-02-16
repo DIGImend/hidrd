@@ -177,7 +177,7 @@ main(int argc, char **argv)
 
     for (orig_item = item_list; orig_item->len != 0; orig_item++)
         if (!hidrd_strm_write(strm, orig_item->buf))
-            error(1, errno, "Failed to write item #%u",
+            error(1, errno, "Failed to write item #%zu",
                   (orig_item - item_list));
 
     if (hidrd_strm_error(strm))
@@ -185,7 +185,7 @@ main(int argc, char **argv)
 
     hidrd_strm_close(strm);
 
-    fprintf(stderr, "%.*s", test_xml_len, test_xml_buf);
+    fprintf(stderr, "%.*s", (int)test_xml_len, test_xml_buf);
 
     free(test_xml_buf);
 

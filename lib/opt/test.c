@@ -65,8 +65,9 @@ main(int argc, char **argv)
         error(1, errno, "Failed to parse option specification list");
 
     if (hidrd_opt_spec_list_len(test_spec_list) != 5)
-        error(1, 0, "Option specification list length is %u, instead of %u",
-              hidrd_opt_spec_list_len(test_spec_list), 5);
+        error(1, 0,
+              "Option specification list length is %zu, instead of %zu",
+              hidrd_opt_spec_list_len(test_spec_list), (size_t)5);
 
 #define CHECK(_i, _name, _T, _t, _req, _dflt, _desc) \
     do {                                                                \
@@ -141,8 +142,8 @@ main(int argc, char **argv)
         error(1, errno, "Failed to parse option list");
 
     if (hidrd_opt_list_len(test_opt_list) != 5)
-        error(1, 0, "Unexpected option list length: %u instead of %u",
-              hidrd_opt_list_len(test_opt_list), 5);
+        error(1, 0, "Unexpected option list length: %zu instead of %zu",
+              hidrd_opt_list_len(test_opt_list), (size_t)5);
 
     test_opt_str = hidrd_opt_list_format(test_opt_list);
     if (test_opt_str == NULL)
