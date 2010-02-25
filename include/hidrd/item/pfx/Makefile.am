@@ -18,7 +18,7 @@
 
 hidrd_item_pfxdir = $(includedir)/hidrd/item/pfx
 
-hidrd_item_pfxHEADERS = \
-    size.h              \
-    tag.h               \
+hidrd_item_pfx_HEADERS = \
+    size.h                  \
+    tag.h                   \
     type.h

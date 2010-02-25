@@ -23,6 +23,7 @@ hidrd_usagedir = $(includedir)/hidrd/usage
 	m4 -I "@top_srcdir@" $< > $@
 
 dist_noinst_DATA = \
+    all.h.m4        \
     page.h.m4
 
 BUILT_SOURCES = \

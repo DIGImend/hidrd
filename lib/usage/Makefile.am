@@ -26,6 +26,10 @@ libhidrd_usage_la_SOURCES = \
 %.c: %.c.m4 @top_srcdir@/m4/hidrd/*.m4 @top_srcdir@/db/usage/*.m4
 	m4 -I "@top_srcdir@" $< > $@
 
+dist_noinst_DATA = \
+    all.c.m4        \
+    page.c.m4
+
 BUILT_SOURCES = \
     all.c       \
     page.c
