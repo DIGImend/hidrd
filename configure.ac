@@ -30,7 +30,12 @@ AC_CONFIG_MACRO_DIR([m4/autoconf])
 CFLAGS=$CFLAGS
 CFLAGS="-Os -Wall -Wextra -Werror $CFLAGS"
 ABS_SRCDIR=`cd ${srcdir} ; pwd`
-CPPFLAGS="-D_GNU_SOURCE -DNDEBUG -I${ABS_SRCDIR}/include $CPPFLAGS"
+ABS_BUILDDIR=`pwd`
+CPPFLAGS="-I${ABS_BUILDDIR}/include -D_GNU_SOURCE -DNDEBUG $CPPFLAGS"
+if test "$ABS_SRCDIR" != "$ABS_BUILDDIR"; then
+    CPPFLAGS="-I${ABS_SRCDIR}/include $CPPFLAGS"
+fi
+
 
 #
 # Checks for programs.
