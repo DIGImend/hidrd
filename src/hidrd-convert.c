@@ -39,23 +39,24 @@ static int
 usage(FILE *stream, const char *progname)
 {
     return 
-        fprintf(stream, 
-                "Usage: %s [OPTION]... [INPUT [OUTPUT]]\n"
-                "Convert a HID report descriptor.\n"
-                "With no INPUT, or when INPUT is -, read standard input.\n"
-                "With no OUTPUT, or when OUTPUT is -, write standard output.\n"
+        fprintf(
+            stream, 
+            "Usage: %s [OPTION]... [INPUT [OUTPUT]]\n"
+            "Convert a HID report descriptor.\n"
+            "With no INPUT, or when INPUT is -, read standard input.\n"
+            "With no OUTPUT, or when OUTPUT is -, write standard output.\n"
 
-                "\n"
-                "Options:\n"
-                "  -h, --help                       this help message\n"
-                "  -i, --input-format=FORMAT        use FORMAT for input\n"
-                "  --io=LIST, --input-options=LIST  use LIST input format options\n"
-                "  -o, --output-format=FORMAT       use FORMAT for output\n"
-                "  --oo=LIST, --output-options=LIST use LIST output format options\n"
-                "\n"
-                "Default options are \"-i native -o native\".\n"
-                "\n",
-                progname);
+            "\n"
+            "Options:\n"
+            "  -h, --help                       this help message\n"
+            "  -i, --input-format=FORMAT        use FORMAT for input\n"
+            "  --io=LIST, --input-options=LIST  use LIST input format options\n"
+            "  -o, --output-format=FORMAT       use FORMAT for output\n"
+            "  --oo=LIST, --output-options=LIST use LIST output format options\n"
+            "\n"
+            "Default options are \"-i native -o native\".\n"
+            "\n",
+            progname);
 }
 
 
@@ -235,7 +236,11 @@ process(const char *input_name,
         output_fd = STDOUT_FILENO;
     else
     {
-        output_fd = open(output_name, O_WRONLY | O_CREAT | O_TRUNC);
+        output_fd = open(output_name,
+                         O_WRONLY | O_CREAT | O_TRUNC,
+                         S_IRUSR | S_IWUSR |
+                         S_IRGRP | S_IWGRP |
+                         S_IROTH | S_IWOTH);
         if (output_fd < 0)
         {
             fprintf(stderr, "Failed to open output: %s\n", strerror(errno));
