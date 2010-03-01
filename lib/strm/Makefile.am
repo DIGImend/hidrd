@@ -17,6 +17,8 @@
 # along with hidrd; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+SUBDIRS = src snk
+
 lib_LTLIBRARIES = libhidrd_strm.la
 
 libhidrd_strm_la_SOURCES = \
@@ -25,6 +27,8 @@ libhidrd_strm_la_SOURCES = \
     type.c
 
 libhidrd_strm_la_LIBADD = \
+    snk/libhidrd_strm_snk.la    \
+    src/libhidrd_strm_src.la    \
     ../item/libhidrd_item.la    \
     ../opt/libhidrd_opt.la
 

@@ -108,7 +108,7 @@ extern bool hidrd_src_initv(hidrd_src *src,
  * @return True if initialization succeeded, false otherwise.
  */
 extern bool hidrd_src_opts_init(hidrd_src *src,
-                                void *buf, size_t size,
+                                const void *buf, size_t size,
                                 const char *opts);
 
 /**
@@ -126,7 +126,7 @@ extern bool hidrd_src_opts_init(hidrd_src *src,
  * @return True if initialization succeeded, false otherwise.
  */
 extern bool hidrd_src_opts_initf(hidrd_src *src,
-                                 void *buf, size_t size,
+                                 const void *buf, size_t size,
                                  const char *opts_fmt, ...)
                                 __attribute__((format(printf, 4, 5)));
 
@@ -145,7 +145,7 @@ extern bool hidrd_src_opts_initf(hidrd_src *src,
  *         type, or NULL, if failed to allocate or initialize.
  */
 extern hidrd_src *hidrd_src_opts_open(const hidrd_src_type *type,
-                                      void *buf, size_t size,
+                                      const void *buf, size_t size,
                                       const char *opts);
 #endif /* HIDRD_WITH_OPT */
 
@@ -162,7 +162,7 @@ extern hidrd_src *hidrd_src_opts_open(const hidrd_src_type *type,
  *         type, or NULL, if failed to allocate or initialize.
  */
 extern hidrd_src *hidrd_src_open(const hidrd_src_type *type,
-                                 void *buf, size_t size, ...);
+                                 const void *buf, size_t size, ...);
 
 /**
  * Free source instance (without flushing any cached data).

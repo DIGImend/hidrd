@@ -214,12 +214,16 @@ AC_CONFIG_FILES([Makefile
                  include/hidrd/item/pfx/Makefile
                  include/hidrd/opt/Makefile
                  include/hidrd/strm/Makefile
+                 include/hidrd/strm/src/Makefile
+                 include/hidrd/strm/snk/Makefile
                  include/hidrd/usage/Makefile
                  
                  lib/Makefile
                  lib/item/Makefile
                  lib/opt/Makefile
                  lib/strm/Makefile
+                 lib/strm/src/Makefile
+                 lib/strm/snk/Makefile
                  lib/usage/Makefile
                  lib/unit/Makefile
                  

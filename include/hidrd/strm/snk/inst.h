@@ -35,10 +35,10 @@ extern "C" {
 
 /** Sink instance */
 struct hidrd_snk {
-    const hidrd_snk_type   *type;  /**< Type description */
-    void                  **pbuf;  /**< Location of sink buffer pointer */
-    size_t                 *psize; /**< Location of sink buffer size */
-    bool                    error; /**< Error indicator */
+    const hidrd_snk_type   *type;   /**< Type description */
+    void                  **pbuf;   /**< Location of/for buffer pointer */
+    size_t                 *psize;  /**< Location of/for buffer size */
+    bool                    error;  /**< Error indicator */
 };
 
 /**

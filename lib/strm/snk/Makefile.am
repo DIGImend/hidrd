@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2009-2010 Nikolai Kondrashov
+# Copyright (C) 2010 Nikolai Kondrashov
 #
 # This file is part of hidrd.
 #
@@ -17,12 +17,6 @@
 # along with hidrd; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-SUBDIRS = src snk
+noinst_LTLIBRARIES = libhidrd_strm_snk.la
 
-hidrd_strmdir = $(includedir)/hidrd/strm
-
-hidrd_strm_HEADERS = \
-    inst.h              \
-    natv.h              \
-    type.h              \
-    xml.h
+libhidrd_strm_snk_la_SOURCES = type.c inst.c
