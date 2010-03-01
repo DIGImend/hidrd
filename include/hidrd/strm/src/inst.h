@@ -60,7 +60,8 @@ extern bool hidrd_src_valid(const hidrd_src *src);
 extern bool hidrd_src_error(const hidrd_src *src);
 
 /**
- * Allocate (an uninitialized) source instance of specified type.
+ * Allocate (an uninitialized, but zeroed) source instance of specified
+ * type (set the type field).
  *
  * @param type  Source type to create instance of.
  *

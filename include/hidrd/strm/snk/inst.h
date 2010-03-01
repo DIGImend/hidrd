@@ -60,7 +60,8 @@ extern bool hidrd_snk_valid(const hidrd_snk *snk);
 extern bool hidrd_snk_error(const hidrd_snk *snk);
 
 /**
- * Allocate (an uninitialized) sink instance of specified type.
+ * Allocate (an uninitialized, but zeroed) sink instance of specified type
+ * (set the type field).
  *
  * @param type  Sink type to create instance of.
  *
