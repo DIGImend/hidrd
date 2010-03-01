@@ -34,7 +34,6 @@ bool
 hidrd_src_type_valid(const hidrd_src_type *type)
 {
     return type != NULL &&
-           type->name != NULL && *type->name != '\0' &&
            type->size >= sizeof(hidrd_src) &&
 #ifdef HIDRD_WITH_OPT
            (type->init != NULL || type->opts_init == NULL) &&

@@ -105,7 +105,6 @@ typedef void hidrd_snk_type_clnp_fn(hidrd_snk  *snk);
 
 /** Sink type */
 typedef struct hidrd_snk_type {
-    const char                     *name;       /**< Type name */
     size_t                          size;       /**< Instance size */
     hidrd_snk_type_init_fn         *init;
 #ifdef HIDRD_WITH_OPT

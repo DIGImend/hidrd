@@ -95,7 +95,6 @@ typedef void hidrd_src_type_clnp_fn(hidrd_src    *src);
 
 /** Source type */
 typedef struct hidrd_src_type {
-    const char                     *name;       /**< Type name */
     size_t                          size;       /**< Instance size */
     hidrd_src_type_init_fn         *init;
 #ifdef HIDRD_WITH_OPT
