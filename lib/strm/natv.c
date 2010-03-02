@@ -190,7 +190,7 @@ hidrd_strm_natv_clnp(hidrd_strm *strm)
 
 
 const hidrd_strm_type hidrd_strm_natv = {
-    .name   = "native",
+    .name   = "natv",
     .size   = sizeof(hidrd_strm_natv_inst),
     .init   = hidrd_strm_natv_init,
     .valid  = hidrd_strm_natv_valid,

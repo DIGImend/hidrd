@@ -54,7 +54,7 @@ usage(FILE *stream, const char *progname)
             "  -o, --output-format=FORMAT       use FORMAT for output\n"
             "  --oo=LIST, --output-options=LIST use LIST output format options\n"
             "\n"
-            "Default options are \"-i native -o native\".\n"
+            "Default options are \"-i natv -o natv\".\n"
             "\n",
             progname);
 }
@@ -396,9 +396,9 @@ main(int argc, char **argv)
 
     const char *input_name      = "-";
     const char *output_name     = "-";
-    const char *input_format    = "native";
+    const char *input_format    = "natv";
     const char *input_options   = "";
-    const char *output_format   = "native";
+    const char *output_format   = "natv";
     const char *output_options  = "";
     int         c;
 
