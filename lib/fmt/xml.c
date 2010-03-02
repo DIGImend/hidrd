@@ -24,29 +24,31 @@
  * @(#) $Id$
  */
 
-#ifndef __HIDRD_FMT_XML_H__
-#define __HIDRD_FMT_XML_H__
+#include <libxml/parser.h>
+#include "hidrd/fmt/xml.h"
 
-#include "hidrd/fmt/inst.h"
-#include "hidrd/fmt/xml/src.h"
-#include "hidrd/fmt/xml/snk.h"
+static bool
+hidrd_xml_init(void)
+{
+    xmlInitParser();
+    return true;
+}
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
-#define HIDRD_XML_NS \
-    "http://digimend.sourceforge.net"
-#define HIDRD_XML_NS_XSI \
-    "http://www.w3.org/2001/XMLSchema-instance"
-#define HIDRD_XML_XSI_SCHEMA_LOCATION \
-    "http://digimend.sourceforge.net hidrd.xsd"
+static void
+hidrd_xml_clnp(void)
+{
+    xmlCleanupParser();
+}
 
-/** XML format */
-extern const hidrd_fmt  hidrd_xml;
 
-#ifdef __cplusplus
-} /* extern "C" */
-#endif
+const hidrd_fmt hidrd_xml  = {
+    .name   = "xml",
+    .desc   = "XML",
+    .init   = hidrd_xml_init,
+    .clnp   = hidrd_xml_clnp,
+    .src    = hidrd_xml_src,
+    .snk    = hidrd_xml_snk
+};
 
-#endif /* __HIDRD_FMT_XML_H__ */
+

@@ -33,6 +33,29 @@
 extern "C" {
 #endif
 
+/** XML source type */
+extern const hidrd_src_type hidrd_xml_src;
+
+/** XML source item state table */
+typedef struct hidrd_xml_src_state hidrd_xml_src_state;
+struct hidrd_xml_src_state {
+    hidrd_xml_src_state    *prev;       /**< Previous state */
+    hidrd_usage_page        usage_page; /**< Usage page in effect */
+};
+
+/** XML source instance */
+typedef struct hidrd_xml_src_inst {
+    hidrd_src               src;    /**< Parent structure */
+    xmlDocPtr               doc;    /**< Document being read */
+    xmlNodePtr              prnt;   /**< Current parent element */
+    xmlNodePtr              cur;    /**< Current element */
+    hidrd_xml_snk_state    *state;  /**< Item state table stack */
+
+    hidrd_item              item[HIDRD_ITEM_MAX_SIZE];  /**< Item
+                                                             being
+                                                             retrieved */
+} hidrd_xml_src_inst;
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif

@@ -48,11 +48,12 @@ typedef void hidrd_fmt_clnp_fn(void);
 
 /** Format */
 typedef struct hidrd_fmt {
-    const char             *name;
-    hidrd_fmt_init_fn      *init;
-    hidrd_fmt_clnp_fn      *clnp;
-    const hidrd_src_type   *src;
-    const hidrd_snk_type   *snk;
+    const char             *name;   /**< Name */
+    const char             *desc;   /**< Human-readable description */
+    hidrd_fmt_init_fn      *init;   /**< Library initialization function */
+    hidrd_fmt_clnp_fn      *clnp;   /**< Library cleanup function */
+    const hidrd_src_type   *src;    /**< Source type */
+    const hidrd_snk_type   *snk;    /**< Sink type */
 } hidrd_fmt;
 
 /**

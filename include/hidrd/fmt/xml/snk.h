@@ -33,6 +33,26 @@
 extern "C" {
 #endif
 
+/** XML sink type */
+extern const hidrd_snk_type hidrd_xml_snk;
+
+/** XML sink item state table */
+typedef struct hidrd_xml_snk_state hidrd_xml_snk_state;
+struct hidrd_xml_snk_state {
+    hidrd_xml_snk_state    *prev;       /**< Previous state */
+    hidrd_usage_page        usage_page; /**< Usage page in effect */
+};
+
+/** XML sink instance */
+typedef struct hidrd_xml_snk_inst {
+    hidrd_snk               snk;    /**< Parent structure */
+    bool                    format; /**< Format option flag */
+    xmlDocPtr               doc;    /**< Document being built */
+    xmlNodePtr              prnt;   /**< Current parent element */
+    xmlNodePtr              cur;    /**< Current element */
+    hidrd_xml_snk_state    *state;  /**< Item state table stack */
+} hidrd_xml_snk_inst;
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif

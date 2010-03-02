@@ -27,7 +27,8 @@
 #include "hidrd/fmt/natv.h"
 
 const hidrd_fmt hidrd_natv  = {
-    .name   = "native",
+    .name   = "natv",
+    .desc   = "native",
     .src    = hidrd_natv_src,
     .snk    = hidrd_natv_snk
 };

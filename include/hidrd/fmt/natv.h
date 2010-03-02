@@ -35,6 +35,7 @@
 extern "C" {
 #endif
 
+/** Native format */
 extern const hidrd_fmt  hidrd_natv;
 
 #ifdef __cplusplus
