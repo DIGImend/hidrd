@@ -18,4 +18,6 @@
 
 SUBDIRS = m4 db include lib src
 
+dist_noinst_DATA = hidrd.xsd
+
 ACLOCAL_AMFLAGS = -I m4/autoconf
