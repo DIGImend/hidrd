@@ -137,7 +137,7 @@ main(int argc, char **argv)
     orig_opt_str = "format=yes,group=no,type=test,obscure=no";
     orig_opt_buf = strdup(orig_opt_str);
 
-    test_opt_list = hidrd_opt_spec_list_apply_parse(test_spec_list, orig_opt_buf);
+    test_opt_list = hidrd_opt_list_parse(test_spec_list, orig_opt_buf);
     if (test_opt_list == NULL)
         error(1, errno, "Failed to parse option list");
 

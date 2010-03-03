@@ -1,5 +1,5 @@
 /** @file
- * @brief HID report descriptor - option list shortcut
+ * @brief HID report descriptor - option value token
  *
  * Copyright (C) 2010 Nikolai Kondrashov
  *
@@ -24,10 +24,26 @@
  * @(#) $Id$
  */
 
-#ifndef __HIDRD_OPT_H__
-#define __HIDRD_OPT_H__
+#ifndef __HIDRD_OPT_VALUE_TKN_H__
+#define __HIDRD_OPT_VALUE_TKN_H__
 
-#include "hidrd/opt/list.h"
+#include "hidrd/opt/tkn.h"
 
-#endif /* __HIDRD_OPT_H__ */
+#ifdef __cplusplus
+extern "C" {
+#endif
 
+/**
+ * Check if an option value token is valid.
+ *
+ * @param value Option value token to check.
+ *
+ * @return True if the value token is valid, false otherwise.
+ */
+extern bool hidrd_opt_value_tkn_valid(const char *value);
+
+#ifdef __cplusplus
+} /* extern "C" */
+#endif
+
+#endif /* __HIDRD_OPT_VALUE_TKN_H__ */

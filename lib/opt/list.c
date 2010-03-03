@@ -69,25 +69,11 @@ hidrd_opt_list_len(const hidrd_opt *list)
 }
 
 
-bool
-hidrd_opt_list_uniform(const hidrd_opt *list,
-                       hidrd_opt_type   type)
-{
-    assert(hidrd_opt_list_valid(list));
-    assert(hidrd_opt_type_valid(type));
-
-    for (; list->name != NULL; list++)
-        if (list->type != type)
-            return false;
-
-    return true;
-}
-
-
 const hidrd_opt *
 hidrd_opt_list_lkp(const hidrd_opt *list, const char *name)
 {
     assert(hidrd_opt_list_valid(list));
+    assert(hidrd_opt_name_tkn_valid(name));
 
     for (; list->name != NULL; list++)
         if (strcasecmp(list->name, name) == 0)
@@ -102,8 +88,7 @@ hidrd_opt_list_get_boolean(const hidrd_opt *list,
                            const char      *name)
 {
     assert(hidrd_opt_list_valid(list));
-    assert(name != NULL);
-    assert(*name != '\0');
+    assert(hidrd_opt_name_tkn_valid(name));
 
     return hidrd_opt_get_boolean(hidrd_opt_list_lkp(list, name));
 }
@@ -114,153 +99,163 @@ hidrd_opt_list_get_string(const hidrd_opt  *list,
                           const char       *name)
 {
     assert(hidrd_opt_list_valid(list));
-    assert(name != NULL);
-    assert(*name != '\0');
+    assert(hidrd_opt_name_tkn_valid(name));
 
     return hidrd_opt_get_string(hidrd_opt_list_lkp(list, name));
 }
 
 
 hidrd_opt *
-hidrd_opt_list_new(void)
+hidrd_opt_list_parse_tkns_list(const hidrd_opt_spec    *spec_list,
+                               const hidrd_opt_tkns    *tkns_list)
 {
-    hidrd_opt  *list;
+    hidrd_opt              *result      = NULL;
+    hidrd_opt              *opt_list    = NULL;
+    hidrd_opt              *opt;
+    const hidrd_opt_tkns   *tkns;
+    const hidrd_opt_spec   *spec;
 
-    list = malloc(sizeof(*list));
-    list->name = NULL;
+    assert(hidrd_opt_spec_list_valid(spec_list));
+    assert(hidrd_opt_tkns_list_valid(tkns_list));
 
-    return list;
-}
-
-
-bool
-hidrd_opt_list_add(hidrd_opt **plist, const hidrd_opt *opt)
-{
-    size_t      len;
-    hidrd_opt  *new_list;
-
-    assert(plist != NULL);
-    assert(hidrd_opt_list_valid(*plist));
-    assert(hidrd_opt_valid(opt));
-
-    len = hidrd_opt_list_len(*plist);
-    new_list = realloc(*plist, sizeof(*new_list) * (len + 2));
-    if (new_list == NULL)
-        return false;
-
-    *plist = new_list;
-
-    memcpy(&new_list[len], opt, sizeof(*opt));
-
-    new_list[len + 1].name = NULL;
-
-    return true;
-}
-
-
-/** Option list tokenizing state */
-typedef enum tknz_state {
-    TKNZ_STATE_NONE,    /**< Nothing found of this option */
-    TKNZ_STATE_TOKEN,   /**< Processing token (name or value) */
-    TKNZ_STATE_EQUALS   /**< Got equals */
-} tknz_state;
-
-
-hidrd_opt *
-hidrd_opt_list_parse(char *buf)
-{
-    char           *p;
-    char            c;
-    hidrd_opt      *result      = NULL;
-    hidrd_opt      *list        = NULL;
-    hidrd_opt       new_opt     = {.type = HIDRD_OPT_TYPE_STRING};
-    tknz_state      state       = TKNZ_STATE_NONE;
-    const char     *name        = NULL;
-    const char     *value       = "";
-    char           *space       = NULL;
-
-    list = hidrd_opt_list_new();
-    if (list == NULL)
+    /* Allocate output option list */
+    opt_list = malloc(sizeof(*opt_list) *
+                      (hidrd_opt_spec_list_len(spec_list) + 1));
+    if (opt_list == NULL)
         goto cleanup;
+    /* Begin with the first option */
+    opt = opt_list;
 
-    for (p = buf; ; p++)
+    /*
+     * Convert each token pair
+     */
+    for (tkns = tkns_list; tkns->name != NULL; tkns++)
     {
-        c = *p;
+        /* Lookup specification for this token name */
+        spec = hidrd_opt_spec_list_lkp(spec_list, tkns->name);
+        /* If there is no such specification */
+        if (spec == NULL)
+            goto cleanup;
 
-        switch (state)
+        /* If there is no value */
+        if (*tkns->value == '\0')
         {
-            case TKNZ_STATE_NONE:
-            case TKNZ_STATE_EQUALS:
-                /* Skip space, stop on '\0' */
-                if (isspace(c) || c == '\0')
-                    break;
+            /* If value is required */
+            if (spec->req)
+                goto cleanup;
 
-                if (state == TKNZ_STATE_NONE)
-                    name = p;
-                else
-                    value = p;
-                state = TKNZ_STATE_TOKEN;
-                break;
-
-            case TKNZ_STATE_TOKEN:
-                /* Skip space, but remember the start */
-                if (isspace(c))
-                {
-                    if (space == NULL)
-                        space = p;
-                    break;
-                }
-
-                /* Reset space start */
-                space = NULL;
-
-                /* If it is not a terminator */
-                if (c != '=' && c != ',' && c != '\0')
-                    break;
-
-                /* Terminate token (name or value) */
-                if (space == NULL)
-                    *p = '\0';
-                else
-                {
-                    *space = '\0';
-                    space = NULL;
-                }
-
-                /*
-                 * If it is not a name/value separator
-                 * (i.e. a pair terminator) and there is name
-                 */
-                if (c != '=' && name != NULL)
-                {
-                    /* Commit name/value pair */
-                    new_opt.name = name;
-                    new_opt.value.string = value;
-                    if (!hidrd_opt_list_add(&list, &new_opt))
-                        goto cleanup;
-
-                    name = NULL;
-                    value = "";
-                }
-
-                /* Proceed */
-                state = (c == '=')
-                            ? TKNZ_STATE_EQUALS
-                            : TKNZ_STATE_NONE;
-                break;
+            /* Use default value */
+            opt->value = spec->dflt;
+        }
+        else
+        {
+            /* Parse the value according to the specification type */
+            if (!hidrd_opt_type_parse_value(spec->type, &opt->value,
+                                            tkns->value))
+                goto cleanup;
         }
 
-        if (c == '\0')
-            break;
+        /* Fill-in remaining fields */
+        opt->name = spec->name;
+        opt->type = spec->type;
+
+        /* Proceed with the next option */
+        opt++;
+        /* Keep it terminated */
+        opt->name = NULL;
+    }
+
+    /*
+     * Check option presence, add missing
+     */
+    for (spec = spec_list; spec->name != NULL; spec++)
+    {
+        /* If the option is there */
+        if (hidrd_opt_list_lkp(opt_list, spec->name) != NULL)
+            continue;
+
+        /* If option is required */
+        if (spec->req)
+            return false;
+
+        /* Add the option with default value */
+        opt->name   = spec->name;
+        opt->type   = spec->type;
+        opt->value  = spec->dflt;
+
+        /* Proceed with the next option */
+        opt++;
+        /* Keep it terminated */
+        opt->name = NULL;
     }
 
     /* Output */
-    result = list;
-    list = NULL;
+    result = opt_list;
+    opt_list = NULL;
 
 cleanup:
 
-    free(list);
+    free(opt_list);
+
+    return result;
+}
+
+
+hidrd_opt *
+hidrd_opt_list_parse(const hidrd_opt_spec  *spec_list,
+                     char                  *buf)
+{
+    hidrd_opt_tkns    *tkns_list;
+    hidrd_opt    *opt_list;
+
+    assert(buf != NULL);
+
+    tkns_list = hidrd_opt_tkns_list_parse(buf);
+    if (tkns_list == NULL)
+        return NULL;
+
+    opt_list = hidrd_opt_list_parse_tkns_list(spec_list, tkns_list);
+
+    free(tkns_list);
+
+    return opt_list;
+}
+
+
+hidrd_opt_tkns *
+hidrd_opt_list_format_tkns_list(const hidrd_opt *opt_list)
+{
+    hidrd_opt_tkns *result      = NULL;
+    size_t          len;
+    hidrd_opt_tkns *tkns_list   = NULL;
+    size_t          i           = 0;
+
+    assert(hidrd_opt_list_valid(opt_list));
+
+    len = hidrd_opt_list_len(opt_list);
+    tkns_list = malloc(sizeof(*tkns_list) * (len + 1));
+    if (tkns_list == NULL)
+        goto cleanup;
+
+    for (; i < len; i++)
+        if (!hidrd_opt_format_tkns(&tkns_list[i], &opt_list[i]))
+            goto cleanup;
+
+    /* Terminate */
+    tkns_list[i].name = NULL;
+
+    /* Output */
+    result = tkns_list;
+    i = 0;
+    tkns_list = NULL;
+
+cleanup:
+
+    while (i > 0)
+        /* We made it so we free it - we know what we do */
+        free((char *)tkns_list[--i].value);
+
+    free(tkns_list);
 
     return result;
 }
@@ -269,42 +264,31 @@ cleanup:
 char *
 hidrd_opt_list_format(const hidrd_opt *opt_list)
 {
-    char            *result     = NULL;
-    char            *str        = NULL;
-    char            *new_str    = NULL;
-    const hidrd_opt *opt;
-    char            *opt_str    = NULL;
+    char           *result      = NULL;
+    hidrd_opt_tkns *tkns_list   = NULL;
 
     assert(hidrd_opt_list_valid(opt_list));
 
-    str = strdup("");
-    if (str == NULL)
+    /* Format the optification list as a token pair list */
+    tkns_list = hidrd_opt_list_format_tkns_list(opt_list);
+    if (tkns_list == NULL)
         goto cleanup;
 
-    for (opt = opt_list; opt->name != NULL; opt++)
-    {
-        opt_str = hidrd_opt_format(opt);
-        if (opt_str == NULL)
-            goto cleanup;
-        if (asprintf(&new_str,
-                     ((opt[1].name == NULL) ? "%s%s" : "%s%s,"),
-                     str, opt_str) < 0)
-            goto cleanup;
-        free(opt_str);
-        opt_str = NULL;
-        free(str);
-        str = new_str;
-        new_str = NULL;
-    }
-
-    result = str;
-    str = NULL;
+    /* Format token pair list as a string */
+    result = hidrd_opt_tkns_list_format(tkns_list);
 
 cleanup:
 
-    free(opt_str);
-    free(new_str);
-    free(str);
+    if (tkns_list != NULL)
+    {
+        hidrd_opt_tkns *tkns;
+
+        for (tkns = tkns_list; tkns->name != NULL; tkns++)
+            /* We made it so we free it - we know what we do */
+            free((char *)tkns->value);
+
+        free(tkns_list);
+    }
 
     return result;
 }

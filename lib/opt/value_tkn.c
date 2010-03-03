@@ -1,5 +1,5 @@
 /** @file
- * @brief HID report descriptor - option list shortcut
+ * @brief HID report descriptor - option value token
  *
  * Copyright (C) 2010 Nikolai Kondrashov
  *
@@ -24,10 +24,12 @@
  * @(#) $Id$
  */
 
-#ifndef __HIDRD_OPT_H__
-#define __HIDRD_OPT_H__
+#include <ctype.h>
+#include "hidrd/opt/value_tkn.h"
 
-#include "hidrd/opt/list.h"
-
-#endif /* __HIDRD_OPT_H__ */
+bool
+hidrd_opt_value_tkn_valid(const char *value)
+{
+    return hidrd_opt_tkn_valid(value);
+}
 

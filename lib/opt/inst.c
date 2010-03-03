@@ -27,6 +27,8 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "hidrd/opt/name_tkn.h"
+#include "hidrd/opt/value_tkn.h"
 #include "hidrd/opt/inst.h"
 
 
@@ -37,7 +39,7 @@ hidrd_opt_valid(const hidrd_opt *opt)
         return false;
 
     /* Check name */
-    if (opt->name == NULL || *opt->name == '\0')
+    if (!hidrd_opt_name_tkn_valid(opt->name))
         return false;
 
     /* Check type */
@@ -48,7 +50,7 @@ hidrd_opt_valid(const hidrd_opt *opt)
     switch (opt->type)
     {
         case HIDRD_OPT_TYPE_STRING:
-            return opt->value.string != NULL;
+            return hidrd_opt_value_tkn_valid(opt->value.string);
         default:
             return true;
     }
@@ -75,31 +77,97 @@ hidrd_opt_get_boolean(const hidrd_opt *opt)
 }
 
 
+bool
+hidrd_opt_format_tkns(hidrd_opt_tkns   *tkns,
+                      const hidrd_opt  *opt)
+{
+    const char *value;
+
+    assert(tkns != NULL);
+    assert(hidrd_opt_valid(opt));
+
+    value = hidrd_opt_type_format_value(opt->type, &opt->value);
+    if (value == NULL)
+        return false;
+
+    tkns->name = opt->name;
+    tkns->value = value;
+
+    return true;
+}
+
+
 char *
 hidrd_opt_format(const hidrd_opt *opt)
 {
-    char   *result      = NULL;
-    char   *value_str   = NULL;
-    char   *str         = NULL;
+    char           *result  = NULL;
+    hidrd_opt_tkns  tkns    = {.value = NULL};
 
     assert(hidrd_opt_valid(opt));
 
-    value_str = hidrd_opt_type_format_value(opt->type, &opt->value);
-    if (value_str == NULL)
+    if (!hidrd_opt_format_tkns(&tkns, opt))
         goto cleanup;
 
-    if (asprintf(&str, "%s=%s", opt->name, value_str) < 0)
-        goto cleanup;
-
-    result = str;
-    str = NULL;
+    result = hidrd_opt_tkns_format(&tkns);
 
 cleanup:
 
-    free(str);
-    free(value_str);
+    /* We made it so we free it - we know what we do */
+    free((char *)tkns.value);
 
     return result;
+}
+
+
+bool
+hidrd_opt_parse_tkns(hidrd_opt             *opt,
+                     const hidrd_opt_spec  *spec,
+                     const hidrd_opt_tkns  *tkns)
+{
+    assert(opt != NULL);
+    assert(hidrd_opt_spec_valid(spec));
+    assert(hidrd_opt_tkns_valid(tkns));
+
+    /* If there is no value */
+    if (*tkns->value == '\0')
+    {
+        /* If value is required */
+        if (spec->req)
+            /* Failed */
+            return false;
+        else
+            /* Use default value */
+            opt->value = spec->dflt;
+    }
+    else
+    {
+        /* Parse the value according to the specification type */
+        if (!hidrd_opt_type_parse_value(spec->type,
+                                        &opt->value,
+                                        tkns->value))
+            return false;
+    }
+
+    opt->name = tkns->name;
+    opt->type = spec->type;
+
+    return true;
+}
+
+
+bool
+hidrd_opt_parse(hidrd_opt              *opt,
+                const hidrd_opt_spec   *spec,
+                char                   *buf)
+{
+    hidrd_opt_tkns  tkns;
+
+    assert(opt != NULL);
+    assert(hidrd_opt_spec_valid(spec));
+    assert(buf != NULL);
+
+    return hidrd_opt_tkns_parse(&tkns, buf) &&
+           hidrd_opt_parse_tkns(opt, spec, &tkns);
 }
 
 

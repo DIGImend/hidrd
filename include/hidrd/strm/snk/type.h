@@ -32,7 +32,7 @@
 #include "hidrd/item.h"
 
 #ifdef HIDRD_WITH_OPT
-#include "hidrd/opt/spec.h"
+#include "hidrd/opt.h"
 #endif
 
 #ifdef __cplusplus

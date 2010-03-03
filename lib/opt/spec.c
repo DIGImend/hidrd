@@ -47,25 +47,24 @@ typedef enum parse_state {
 
 
 bool
-hidrd_opt_spec_parse_opt(hidrd_opt_spec    *spec,
-                         const hidrd_opt   *opt)
+hidrd_opt_spec_parse_tkns(hidrd_opt_spec       *spec,
+                          const hidrd_opt_tkns *tkns)
 {
-    char                   *buf;
-    hidrd_opt_type     type;
-    parse_state             state;
-    char                   *p;
-    char                    c;
-    const char             *str         = NULL;
-    const char             *dflt_str    = NULL;
-    const char             *desc        = "";
-    hidrd_opt_value    dflt;
+    char               *buf;
+    hidrd_opt_type      type;
+    parse_state         state;
+    char               *p;
+    char                c;
+    const char         *str         = NULL;
+    const char         *dflt_str    = NULL;
+    const char         *desc        = "";
+    hidrd_opt_value     dflt;
 
     assert(spec != NULL);
-    assert(hidrd_opt_valid(opt));
-    assert(opt->type == HIDRD_OPT_TYPE_STRING);
+    assert(hidrd_opt_tkns_valid(tkns));
 
     /* Let's hope the caller knows what we're doing here */
-    buf = (char *)opt->value.string;
+    buf = (char *)tkns->value;
 
     type = (hidrd_opt_type)*buf;
     if (!hidrd_opt_type_valid(type))
@@ -107,7 +106,7 @@ hidrd_opt_spec_parse_opt(hidrd_opt_spec    *spec,
     /*
      * Output specification
      */
-    spec->name = opt->name;
+    spec->name = tkns->name;
     spec->type = type;
     spec->req = (dflt_str == NULL);
     spec->dflt = dflt;
@@ -120,14 +119,28 @@ hidrd_opt_spec_parse_opt(hidrd_opt_spec    *spec,
 
 
 bool
-hidrd_opt_spec_format_opt(hidrd_opt *opt, const hidrd_opt_spec *spec)
+hidrd_opt_spec_parse(hidrd_opt_spec *spec, char *buf)
+{
+    hidrd_opt_tkns  tkns;
+
+    assert(spec != NULL);
+    assert(buf != NULL);
+
+    return hidrd_opt_tkns_parse(&tkns, buf) &&
+           hidrd_opt_spec_parse_tkns(spec, &tkns);
+}
+
+
+bool
+hidrd_opt_spec_format_tkns(hidrd_opt_tkns          *tkns,
+                           const hidrd_opt_spec    *spec)
 {
     bool    result  = false;
     char   *str     = NULL;
     char   *new_str = NULL;
     char   *dflt    = NULL;
 
-    assert(opt != NULL);
+    assert(tkns != NULL);
     assert(hidrd_opt_spec_valid(spec));
 
     if (asprintf(&str, "%c", spec->type) < 0)
@@ -157,9 +170,8 @@ hidrd_opt_spec_format_opt(hidrd_opt *opt, const hidrd_opt_spec *spec)
 
 #undef APPENDF
 
-    opt->name           = spec->name;
-    opt->type           = HIDRD_OPT_TYPE_STRING;
-    opt->value.string   = str;
+    tkns->name  = spec->name;
+    tkns->value = str;
     str = NULL;
 
     result = true;
@@ -177,20 +189,20 @@ cleanup:
 char *
 hidrd_opt_spec_format(const hidrd_opt_spec *spec)
 {
-    char       *result  = NULL;
-    hidrd_opt   opt     = {.value.string = NULL};
+    char           *result  = NULL;
+    hidrd_opt_tkns  tkns    = {.value = NULL};
 
     assert(hidrd_opt_spec_valid(spec));
 
-    if (!hidrd_opt_spec_format_opt(&opt, spec))
+    if (!hidrd_opt_spec_format_tkns(&tkns, spec))
         goto cleanup;
 
-    result = hidrd_opt_format(&opt);
+    result = hidrd_opt_tkns_format(&tkns);
 
 cleanup:
 
     /* We made it so we free it - we know what we do */
-    free((char *)opt.value.string);
+    free((char *)tkns.value);
 
     return result;
 }

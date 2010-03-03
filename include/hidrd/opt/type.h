@@ -81,11 +81,13 @@ extern bool hidrd_opt_type_parse_string(const char **pval, const char *str);
 extern bool hidrd_opt_type_parse_boolean(bool *pval, const char *str);
 
 /**
- * Parse a string as a value of specified type.
+ * Parse a string as a value of specified type, possibly referencing it in
+ * the resulting value.
  *
  * @param type  Value type to parse accordingly.
  * @param pval  Location for resulting value.
- * @param str   String to parse as a value of @e type type.
+ * @param str   String to parse as a value of @e type type; maybe referenced
+ *              in the resulting value.
  *
  * @return True if parsed successfully, false otherwise.
  */

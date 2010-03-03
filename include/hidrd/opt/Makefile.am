@@ -21,7 +21,12 @@ hidrd_optdir = $(includedir)/hidrd/opt
 hidrd_opt_HEADERS = \
     inst.h          \
     list.h          \
+    name_tkn.h      \
     spec.h          \
     spec_list.h     \
+    tkn.h           \
+    tkns.h          \
+    tkns_list.h     \
     type.h          \
-    value.h
+    value.h         \
+    value_tkn.h

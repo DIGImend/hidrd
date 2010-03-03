@@ -22,9 +22,14 @@ lib_LTLIBRARIES = libhidrd_opt.la
 libhidrd_opt_la_SOURCES = \
     inst.c                  \
     list.c                  \
+    name_tkn.c              \
     spec.c                  \
     spec_list.c             \
-    type.c
+    tkn.c                   \
+    tkns.c                  \
+    tkns_list.c             \
+    type.c                  \
+    value_tkn.c
 
 bin_PROGRAMS =
 check_PROGRAMS = hidrd_opt_test

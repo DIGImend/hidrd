@@ -29,6 +29,8 @@
 
 #include <stddef.h>
 #include "hidrd/opt/inst.h"
+#include "hidrd/opt/spec_list.h"
+#include "hidrd/opt/tkns_list.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -60,18 +62,6 @@ extern bool hidrd_opt_list_empty(const hidrd_opt *list);
  * @return List length, in options.
  */
 extern size_t hidrd_opt_list_len(const hidrd_opt *list);
-
-/**
- * Check if the whole option list contains only options of specific type.
- *
- * @param list  Option list array pointer.
- * @param type  Option value type.
- *
- * @return True if the list contains only options of specified type @e type,
- *         false otherwise.
- */
-extern bool hidrd_opt_list_uniform(const hidrd_opt *opt,
-                                   hidrd_opt_type   type);
 
 /**
  * Lookup an option in an option list.
@@ -109,45 +99,50 @@ extern const char *hidrd_opt_list_get_string(const hidrd_opt   *list,
                                              const char        *name);
 
 /**
- * Grow an option list to make specified index valid.
+ * Parse a token pair list representation of an option list.
  *
- * @param plist     Location of the option array pointer.
- * @param palloc    Location of the option array allocated size, in options.
- * @param index     Option index to be made valid.
+ * @param spec_list Option specification list to apply.
+ * @param tkns_list Option token pair list to format.
  *
- * @return True if grown successfully, false otherwise.
+ * @return Dynamically allocated option list with names and string values
+ *         referenced from the token pair list or specification list; will
+ *         return NULL if failed to parse or allocate memory.
  */
-extern bool hidrd_opt_list_grow(hidrd_opt **plist,
-                                size_t     *palloc,
-                                size_t      index);
+extern hidrd_opt *hidrd_opt_list_parse_tkns_list(
+                                    const hidrd_opt_spec   *spec_list,
+                                    const hidrd_opt_tkns   *tkns_list);
 
 /**
- * Add an option to the end of an option list.
+ * Parse a string representation of an option list.
  *
- * @param plist Location of the list pointer.
- * @param opt   Option to add.
+ * @param spec_list Option specification list to apply.
+ * @param buf       String representation of the option list; will be
+ *                  modified and possibly referenced from the resulting
+ *                  option list.
  *
- * @return True if added successfully, false, if memory allocation failed.
+ * @return Dynamically allocated option list with names and string values
+ *         referenced from the original string or specification list; will
+ *         return NULL if failed to parse or allocate memory.
  */
-extern bool hidrd_opt_list_add(hidrd_opt **plist, const hidrd_opt *opt);
+extern hidrd_opt *hidrd_opt_list_parse(const hidrd_opt_spec    *spec_list,
+                                       char                    *buf);
 
 /**
- * Parse an option list string (represent as a list of string options),
- * modifying it and referencing in the resulting list.
+ * Format a token pair list representation of an option list.
  *
- * @param buf   Option list string buffer; will be modified and referenced
- *              in the resulting option list.
+ * @param opt_list  Option list to format.
  *
- * @return Dynamically allocated option list array, with names and values
- *         referenced from the string, or NULL, if failed to allocate
- *         memory.
+ * @return Dynamically allocated token pair list with dynamically allocated
+ *         value tokens and name tokens referenced from the options; will
+ *         return NULL if failed to allocate memory.
  */
-extern hidrd_opt *hidrd_opt_list_parse(char *buf);
+extern hidrd_opt_tkns *hidrd_opt_list_format_tkns_list(
+                                            const hidrd_opt *opt_list);
 
 /**
  * Format a string representation of an option list.
  *
- * @param spec_list Option list to format.
+ * @param opt_list  Option list to format.
  *
  * @return Dynamically allocated string representation of the list, or NULL,
  *         if failed to allocate memory.

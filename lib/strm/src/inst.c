@@ -129,7 +129,7 @@ hidrd_src_opts_initf(hidrd_src *src,
         goto cleanup;
 
     /* Parse option list */
-    opt_list = hidrd_opt_spec_list_apply_parse(spec_list, opts_buf);
+    opt_list = hidrd_opt_list_parse(spec_list, opts_buf);
     if (opt_list == NULL)
         goto cleanup;
 
