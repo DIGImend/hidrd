@@ -28,19 +28,13 @@
 #define __HIDRD_FMT_XML_H__
 
 #include "hidrd/fmt/inst.h"
+#include "hidrd/fmt/xml/prop.h"
 #include "hidrd/fmt/xml/src.h"
 #include "hidrd/fmt/xml/snk.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#define HIDRD_XML_NS \
-    "http://digimend.sourceforge.net"
-#define HIDRD_XML_NS_XSI \
-    "http://www.w3.org/2001/XMLSchema-instance"
-#define HIDRD_XML_XSI_SCHEMA_LOCATION \
-    "http://digimend.sourceforge.net hidrd.xsd"
 
 /** XML format */
 extern const hidrd_fmt  hidrd_xml;

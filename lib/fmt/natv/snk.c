@@ -24,10 +24,7 @@
  * @(#) $Id$
  */
 
-#include <errno.h>
-#include <string.h>
-#include "hidrd/strm/natv.h"
-#include "hidrd/strm/inst.h"
+#include "hidrd/fmt/natv/snk.h"
 
 static bool
 init(hidrd_snk *snk)

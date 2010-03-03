@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2009-2010 Nikolai Kondrashov
+# Copyright (C) 2010 Nikolai Kondrashov
 #
 # This file is part of hidrd.
 #
@@ -17,16 +17,33 @@
 # along with hidrd; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-SUBDIRS = usage unit item
+SUBDIRS = natv
 
-if ENABLE_OPT
-SUBDIRS += opt
+lib_LTLIBRARIES = libhidrd_fmt.la
+
+libhidrd_fmt_la_SOURCES = \
+    inst.c                  \
+    list.c                  \
+    natv.c
+
+libhidrd_fmt_la_LIBADD = \
+    ../item/libhidrd_item.la    \
+    ../opt/libhidrd_opt.la      \
+    natv/libhidrd_natv.la
+
+bin_PROGRAMS =
+check_PROGRAMS = 
+TESTS = 
+
+if ENABLE_FMT_XML
+libhidrd_fmt_la_SOURCES += xml.c
+libhidrd_fmt_la_CFLAGS = @LIBXML2_CFLAGS@
+libhidrd_fmt_la_LDFLAGS = @LIBXML2_LIBS@
+
+SUBDIRS += xml
+libhidrd_fmt_la_LIBADD += xml/libhidrd_xml.la
 endif
 
-if ENABLE_STRM
-SUBDIRS += strm
-endif
-
-if ENABLE_FMT
-SUBDIRS += fmt
+if ENABLE_TESTS_INSTALL
+bin_PROGRAMS += $(TESTS)
 endif

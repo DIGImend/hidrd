@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2009-2010 Nikolai Kondrashov
+# Copyright (C) 2010 Nikolai Kondrashov
 #
 # This file is part of hidrd.
 #
@@ -17,16 +17,9 @@
 # along with hidrd; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-SUBDIRS = usage unit item
+hidrd_fmt_natvdir = $(includedir)/hidrd/fmt/natv
 
-if ENABLE_OPT
-SUBDIRS += opt
-endif
+hidrd_fmt_natv_HEADERS = \
+    snk.h                   \
+    src.h
 
-if ENABLE_STRM
-SUBDIRS += strm
-endif
-
-if ENABLE_FMT
-SUBDIRS += fmt
-endif

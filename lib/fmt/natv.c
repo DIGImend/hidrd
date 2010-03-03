@@ -29,6 +29,6 @@
 const hidrd_fmt hidrd_natv  = {
     .name   = "natv",
     .desc   = "native",
-    .src    = hidrd_natv_src,
-    .snk    = hidrd_natv_snk
+    .src    = &hidrd_natv_src,
+    .snk    = &hidrd_natv_snk
 };

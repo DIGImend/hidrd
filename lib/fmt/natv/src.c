@@ -35,7 +35,7 @@ hidrd_natv_src_valid(const hidrd_src *src)
                                         (const hidrd_natv_src_inst *)src;
 
     return (src->type->size >= sizeof(hidrd_natv_src_inst)) &&
-           (natv_src->pos <= natv_src->size);
+           (natv_src->pos <= src->size);
 }
 
 
@@ -46,10 +46,10 @@ hidrd_natv_src_get(hidrd_src *src)
     const hidrd_item       *item;
     size_t                  item_size;
 
-    item = (hidrd_item *)((uint8_t *)natv_src->buf + natv_src->pos);
+    item = (hidrd_item *)((uint8_t *)src->buf + natv_src->pos);
 
     if (!hidrd_item_fits(item,
-                         natv_src->size - natv_src->pos, &item_size))
+                         src->size - natv_src->pos, &item_size))
         return NULL;
 
     if (!hidrd_item_valid(item))

@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2009-2010 Nikolai Kondrashov
+# Copyright (C) 2010 Nikolai Kondrashov
 #
 # This file is part of hidrd.
 #
@@ -17,16 +17,10 @@
 # along with hidrd; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-SUBDIRS = usage unit item
+noinst_LTLIBRARIES = libhidrd_xml.la
 
-if ENABLE_OPT
-SUBDIRS += opt
-endif
+libhidrd_xml_la_SOURCES = src.c snk.c
+libhidrd_xml_la_CFLAGS = @LIBXML2_CFLAGS@
+libhidrd_xml_la_LDFLAGS = @LIBXML2_LIBS@
 
-if ENABLE_STRM
-SUBDIRS += strm
-endif
-
-if ENABLE_FMT
-SUBDIRS += fmt
-endif
+dist_noinst_DATA = hidrd.xsd

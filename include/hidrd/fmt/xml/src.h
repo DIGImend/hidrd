@@ -27,6 +27,7 @@
 #ifndef __HIDRD_FMT_XML_SRC_H__
 #define __HIDRD_FMT_XML_SRC_H__
 
+#include "libxml/tree.h"
 #include "hidrd/strm/src/inst.h"
 
 #ifdef __cplusplus
@@ -49,7 +50,7 @@ typedef struct hidrd_xml_src_inst {
     xmlDocPtr               doc;    /**< Document being read */
     xmlNodePtr              prnt;   /**< Current parent element */
     xmlNodePtr              cur;    /**< Current element */
-    hidrd_xml_snk_state    *state;  /**< Item state table stack */
+    hidrd_xml_src_state    *state;  /**< Item state table stack */
 
     hidrd_item              item[HIDRD_ITEM_MAX_SIZE];  /**< Item
                                                              being

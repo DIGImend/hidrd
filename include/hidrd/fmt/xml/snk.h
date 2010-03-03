@@ -27,6 +27,7 @@
 #ifndef __HIDRD_FMT_XML_SNK_H__
 #define __HIDRD_FMT_XML_SNK_H__
 
+#include "libxml/tree.h"
 #include "hidrd/strm/snk/inst.h"
 
 #ifdef __cplusplus

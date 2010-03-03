@@ -25,6 +25,10 @@
  */
 
 #include <strings.h>
+#include "hidrd/fmt/natv.h"
+#ifdef HIDRD_FMT_WITH_XML
+#include "hidrd/fmt/xml.h"
+#endif
 #include "hidrd/fmt/list.h"
 
 /** Supported format list, terminated by NULL */
@@ -34,16 +38,16 @@ static const hidrd_fmt *fmt_list[]  = {
     &hidrd_xml,
 #endif
     NULL
-}
+};
 
 
 const hidrd_fmt *
 hidrd_fmt_list_lkp(const char *name)
 {
-    hidrd_fmt **pfmt;
+    const hidrd_fmt   **pfmt;
 
     for (pfmt = fmt_list; *pfmt != NULL; pfmt++)
-        if (strcasecmp(*pfmt->name, name) == 0)
+        if (strcasecmp((*pfmt)->name, name) == 0)
             return *pfmt;
 
     return NULL;

@@ -1,5 +1,5 @@
 /** @file
- * @brief HID report descriptor - XML format
+ * @brief HID report descriptor - formats
  *
  * Copyright (C) 2010 Nikolai Kondrashov
  *
@@ -24,31 +24,11 @@
  * @(#) $Id$
  */
 
-#include <libxml/parser.h>
+#ifndef __HIDRD_FMT_H__
+#define __HIDRD_FMT_H__
+
+#include "hidrd/fmt/natv.h"
 #include "hidrd/fmt/xml.h"
+#include "hidrd/fmt/list.h"
 
-static bool
-hidrd_xml_init(void)
-{
-    xmlInitParser();
-    return true;
-}
-
-
-static void
-hidrd_xml_clnp(void)
-{
-    xmlCleanupParser();
-}
-
-
-const hidrd_fmt hidrd_xml  = {
-    .name   = "xml",
-    .desc   = "XML",
-    .init   = hidrd_xml_init,
-    .clnp   = hidrd_xml_clnp,
-    .src    = &hidrd_xml_src,
-    .snk    = &hidrd_xml_snk
-};
-
-
+#endif /* __HIDRD_FMT_H__ */

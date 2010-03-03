@@ -98,6 +98,11 @@ AC_ARG_ENABLE(
     [], [enable_streams="yes"])
 
 AC_ARG_ENABLE(
+    formats,
+    AS_HELP_STRING([--disable-formats], [disable building format library (required by hidrd-convert)]),
+    [], [enable_formats="yes"])
+
+AC_ARG_ENABLE(
     hidrd-convert,
     AS_HELP_STRING([--disable-hidrd-convert], [disable building hidrd-convert tool (requires streams)]),
     [], [enable_hidrd_convert="yes"])
@@ -121,6 +126,13 @@ AC_ARG_ENABLE(
         [disable building XML stream (requires tokens, names, options library and libxml2 to be enabled)]),
     [], [enable_xml_stream="yes"])
 
+AC_ARG_ENABLE(
+    xml-format,
+    AS_HELP_STRING(
+        [--disable-xml-format],
+        [disable building XML format support (requires tokens, names, options library and libxml2 to be enabled)]),
+    [], [enable_xml_format="yes"])
+
 # Check for stream library dependencies
 if test "$enable_streams" = "yes"; then
     if test "$enable_opt" != "yes"; then
@@ -129,10 +141,21 @@ if test "$enable_streams" = "yes"; then
     fi
 fi
 
+# Check for format library dependencies
+if test "$enable_formats" = "yes"; then
+    if test "$enable_opt" != "yes"; then
+        AC_MSG_WARN([option library is disabled, so disabling formats])
+        enable_formats="no"
+    fi
+fi
+
 # Check hidrd-convert tool dependencies
 if test "$enable_hidrd_convert" = "yes"; then
     if test "$enable_streams" != "yes"; then
         AC_MSG_WARN([stream library is disabled, so disabling hidrd-convert tool])
+        enable_hidrd_convert="no"
+    elif test "$enable_formats" != "yes"; then
+        AC_MSG_WARN([format library is disabled, so disabling hidrd-convert tool])
         enable_hidrd_convert="no"
     fi
 fi
@@ -154,14 +177,33 @@ if test "$enable_xml_stream" = "yes"; then
     fi
 fi
 
+# Check for XML format dependencies
+if test "$enable_xml_format" = "yes"; then
+    if test "$enable_formats" != "yes"; then
+        # Disable silently - quite obvious
+        enable_xml_format="no"
+    elif test "$enable_tokens" != "yes"; then
+        AC_MSG_WARN([tokens are disabled, so disabling XML format])
+        enable_xml_format="no"
+    elif test "$enable_names" != "yes"; then
+        AC_MSG_WARN([names are disabled, so disabling XML format])
+        enable_xml_format="no"
+    elif test -z "$XML2_CONFIG"; then
+        AC_MSG_WARN([no xml2-config, so disabling XML format])
+        enable_xml_format="no"
+    fi
+fi
+
 # Output features to automake
 AM_CONDITIONAL([ENABLE_TESTS_INSTALL], [test "$enable_tests_install" = "yes"])
 AM_CONDITIONAL([ENABLE_OPT], [test "$enable_opt" = "yes"])
 AM_CONDITIONAL([ENABLE_STRM], [test "$enable_streams" = "yes"])
+AM_CONDITIONAL([ENABLE_FMT], [test "$enable_formats" = "yes"])
 AM_CONDITIONAL([ENABLE_HIDRD_CONVERT], [test "$enable_hidrd_convert" = "yes"])
 AM_CONDITIONAL([ENABLE_TOKENS], [test "$enable_tokens" = "yes"])
 AM_CONDITIONAL([ENABLE_NAMES], [test "$enable_names" = "yes"])
 AM_CONDITIONAL([ENABLE_STRM_XML], [test "$enable_xml_stream" = "yes"])
+AM_CONDITIONAL([ENABLE_FMT_XML], [test "$enable_xml_format" = "yes"])
 
 # Output features to preprocessor and compiler
 if test "$enable_debug" == "yes"; then
@@ -216,6 +258,9 @@ AC_CONFIG_FILES([Makefile
                  include/hidrd/strm/Makefile
                  include/hidrd/strm/src/Makefile
                  include/hidrd/strm/snk/Makefile
+                 include/hidrd/fmt/Makefile
+                 include/hidrd/fmt/natv/Makefile
+                 include/hidrd/fmt/xml/Makefile
                  include/hidrd/usage/Makefile
                  
                  lib/Makefile
@@ -224,6 +269,9 @@ AC_CONFIG_FILES([Makefile
                  lib/strm/Makefile
                  lib/strm/src/Makefile
                  lib/strm/snk/Makefile
+                 lib/fmt/Makefile
+                 lib/fmt/natv/Makefile
+                 lib/fmt/xml/Makefile
                  lib/usage/Makefile
                  lib/unit/Makefile
                  

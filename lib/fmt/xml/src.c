@@ -29,12 +29,12 @@
 
 
 static bool
-init(hidrd_src *src, bool format)
+init(hidrd_src *src)
 {
     hidrd_xml_src_inst     *xml_src = (hidrd_xml_src_inst *)src;
     hidrd_xml_src_state    *state   = NULL;
-    xmlDocPtr              *doc     = NULL;
-    xmlNodePtr             *root;
+    xmlDocPtr               doc     = NULL;
+    xmlNodePtr              root;
 
     /* Create item state table stack */
     state = malloc(sizeof(*state));
@@ -44,7 +44,7 @@ init(hidrd_src *src, bool format)
     state->usage_page   = HIDRD_USAGE_PAGE_UNDEFINED;
 
     /* Parse the document */
-    doc = xmlParseMemory(xml_src->buf, xml_src->size);
+    doc = xmlParseMemory(src->buf, src->size);
     if (doc == NULL)
         goto failure;
 
@@ -134,24 +134,24 @@ hidrd_xml_src_get(hidrd_src *src)
 static void
 hidrd_xml_src_clnp(hidrd_src *src)
 {
-    hidrd_xml_snk_inst    *xml_snk    = (hidrd_xml_snk_inst *)snk;
-    hidrd_xml_snk_state   *state;
-    hidrd_xml_snk_state   *prev_state;
+    hidrd_xml_src_inst    *xml_src    = (hidrd_xml_src_inst *)src;
+    hidrd_xml_src_state   *state;
+    hidrd_xml_src_state   *prev_state;
 
     /* Free the document, if there is any */
-    if (xml_snk->doc != NULL)
+    if (xml_src->doc != NULL)
     {
-        xmlFreeDoc(xml_snk->doc);
-        xml_snk->doc = NULL;
+        xmlFreeDoc(xml_src->doc);
+        xml_src->doc = NULL;
     }
 
     /* Free the state stack, if there is any */
-    for (state = xml_snk->state; state != NULL; state = prev_state)
+    for (state = xml_src->state; state != NULL; state = prev_state)
     {
         prev_state = state->prev;
         free(state);
     }
-    xml_snk->state = NULL;
+    xml_src->state = NULL;
 }
 
 

@@ -27,7 +27,7 @@
 #ifndef __HIDRD_FMT_LIST_H__
 #define __HIDRD_FMT_LIST_H__
 
-#include "hidrd/strm/fmt/inst.h"
+#include "hidrd/fmt/inst.h"
 
 #ifdef __cplusplus
 extern "C" {

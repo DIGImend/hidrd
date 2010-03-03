@@ -27,10 +27,10 @@ libhidrd_strm_la_SOURCES = \
     type.c
 
 libhidrd_strm_la_LIBADD = \
-    snk/libhidrd_strm_snk.la    \
-    src/libhidrd_strm_src.la    \
     ../item/libhidrd_item.la    \
-    ../opt/libhidrd_opt.la
+    ../opt/libhidrd_opt.la      \
+    snk/libhidrd_strm_snk.la    \
+    src/libhidrd_strm_src.la
 
 bin_PROGRAMS =
 check_PROGRAMS = hidrd_strm_natv_test

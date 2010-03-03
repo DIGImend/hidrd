@@ -35,3 +35,8 @@ if ENABLE_STRM
 SUBDIRS += strm
 hidrd_HEADERS += strm.h
 endif
+
+if ENABLE_FMT
+SUBDIRS += fmt
+hidrd_HEADERS += fmt.h
+endif

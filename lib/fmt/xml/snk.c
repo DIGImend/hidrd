@@ -24,7 +24,7 @@
  * @(#) $Id$
  */
 
-
+#include "hidrd/fmt/xml/prop.h"
 #include "hidrd/fmt/xml/snk.h"
 
 
@@ -1237,12 +1237,12 @@ write_basic_element(hidrd_xml_snk_inst   *xml_snk,
  ************************************************************/
 
 static bool
-init(hidrd_strm *snk, bool format)
+init(hidrd_snk *snk, bool format)
 {
     hidrd_xml_snk_inst     *xml_snk = (hidrd_xml_snk_inst *)snk;
     hidrd_xml_snk_state    *state   = NULL;
-    xmlDocPtr              *doc     = NULL;
-    xmlNodePtr             *root    = NULL;
+    xmlDocPtr               doc     = NULL;
+    xmlNodePtr              root    = NULL;
 
     /* Create item state table stack */
     state = malloc(sizeof(*state));
@@ -1265,15 +1265,15 @@ init(hidrd_strm *snk, bool format)
      * Set root node properties
      */
     if (xmlSetProp(root, BAD_CAST "xmlns",
-                   BAD_CAST HIDRD_STRM_XML_NS) == NULL)
+                   BAD_CAST HIDRD_XML_PROP_NS) == NULL)
         goto failure;
 
     if (xmlSetProp(root, BAD_CAST "xmlns:xsi",
-                   BAD_CAST HIDRD_STRM_XML_NS_XSI) == NULL)
+                   BAD_CAST HIDRD_XML_PROP_NS_XSI) == NULL)
         goto failure;
 
     if (xmlSetProp(root, BAD_CAST "xsi:schemaLocation",
-                   BAD_CAST HIDRD_STRM_XML_XSI_SCHEMA_LOCATION) == NULL)
+                   BAD_CAST HIDRD_XML_PROP_XSI_SCHEMA_LOCATION) == NULL)
         goto failure;
 
     /* Set root element */
@@ -1302,7 +1302,7 @@ failure:
 
 
 static bool
-hidrd_xml_snk_init(hidrd_strm *snk, va_list ap)
+hidrd_xml_snk_init(hidrd_snk *snk, va_list ap)
 {
     bool    format  = (va_arg(ap, int) != 0);
 
@@ -1323,7 +1323,7 @@ const hidrd_opt_spec hidrd_xml_snk_opts_spec[] = {
 };
 
 static bool
-hidrd_xml_snk_opts_init(hidrd_strm *snk, const hidrd_opt *list)
+hidrd_xml_snk_opts_init(hidrd_snk *snk, const hidrd_opt *list)
 {
     return init(snk, hidrd_opt_list_get_boolean(list, "format"));
 }
@@ -1331,7 +1331,7 @@ hidrd_xml_snk_opts_init(hidrd_strm *snk, const hidrd_opt *list)
 
 
 static bool
-hidrd_xml_snk_valid(const hidrd_strm *snk)
+hidrd_xml_snk_valid(const hidrd_snk *snk)
 {
     const hidrd_xml_snk_inst   *xml_snk = (const hidrd_xml_snk_inst *)snk;
 
@@ -1343,9 +1343,27 @@ hidrd_xml_snk_valid(const hidrd_strm *snk)
 
 
 static bool
-hidrd_xml_snk_flush(hidrd_strm *snk)
+hidrd_xml_snk_break_groups(hidrd_snk *snk)
 {
-    hidrd_xml_snk_inst *xml_snk     = (hidrd_xml_snk_inst *)snk;
+    hidrd_xml_snk_inst *xml_snk = (hidrd_xml_snk_inst *)snk;
+    xmlNodePtr          root;
+
+    assert(xml_snk->doc != NULL);
+    assert(xml_snk->prnt != NULL);
+
+    root = xmlDocGetRootElement(xml_snk->doc);
+    if (!break_branch(root, xml_snk->prnt, group_break_cb))
+        return false;
+
+    xml_snk->prnt = root;
+
+    return true;
+}
+
+
+static bool
+hidrd_xml_snk_flush(hidrd_snk *snk)
+{
     bool                result      = false;
     hidrd_xml_snk_inst *xml_snk     = (hidrd_xml_snk_inst *)snk;
     xmlBufferPtr        xml_buf     = NULL;
@@ -1410,7 +1428,7 @@ finish:
 
 
 static void
-hidrd_xml_snk_clnp(hidrd_strm *snk)
+hidrd_xml_snk_clnp(hidrd_snk *snk)
 {
     hidrd_xml_snk_inst    *xml_snk    = (hidrd_xml_snk_inst *)snk;
     hidrd_xml_snk_state   *state;
@@ -1430,26 +1448,6 @@ hidrd_xml_snk_clnp(hidrd_strm *snk)
         free(state);
     }
     xml_snk->state = NULL;
-}
-
-
-static bool
-hidrd_xml_snk_break_groups(hidrd_snk *snk)
-{
-    hidrd_xml_snk_inst *xml_snk = (hidrd_xml_snk_inst *)snk;
-    xmlNodePtr          root;
-
-    assert(!hidrd_xml_snk_being_read(snk));
-    assert(xml_snk->doc != NULL);
-    assert(xml_snk->prnt != NULL);
-
-    root = xmlDocGetRootElement(xml_snk->doc);
-    if (!break_branch(root, xml_snk->prnt, group_break_cb))
-        return false;
-
-    xml_snk->prnt = root;
-
-    return true;
 }
 
 

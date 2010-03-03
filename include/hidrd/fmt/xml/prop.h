@@ -1,5 +1,5 @@
 /** @file
- * @brief HID report descriptor - XML format
+ * @brief HID report descriptor - XML format - root document properties
  *
  * Copyright (C) 2010 Nikolai Kondrashov
  *
@@ -24,31 +24,26 @@
  * @(#) $Id$
  */
 
-#include <libxml/parser.h>
-#include "hidrd/fmt/xml.h"
+#ifndef __HIDRD_FMT_XML_PROP_H__
+#define __HIDRD_FMT_XML_PROP_H__
 
-static bool
-hidrd_xml_init(void)
-{
-    xmlInitParser();
-    return true;
-}
+#include "hidrd/fmt/inst.h"
+#include "hidrd/fmt/xml/src.h"
+#include "hidrd/fmt/xml/snk.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-static void
-hidrd_xml_clnp(void)
-{
-    xmlCleanupParser();
-}
+#define HIDRD_XML_PROP_NS \
+    "http://digimend.sourceforge.net"
+#define HIDRD_XML_PROP_NS_XSI \
+    "http://www.w3.org/2001/XMLSchema-instance"
+#define HIDRD_XML_PROP_XSI_SCHEMA_LOCATION \
+    "http://digimend.sourceforge.net hidrd.xsd"
 
+#ifdef __cplusplus
+} /* extern "C" */
+#endif
 
-const hidrd_fmt hidrd_xml  = {
-    .name   = "xml",
-    .desc   = "XML",
-    .init   = hidrd_xml_init,
-    .clnp   = hidrd_xml_clnp,
-    .src    = &hidrd_xml_src,
-    .snk    = &hidrd_xml_snk
-};
-
-
+#endif /* __HIDRD_FMT_XML_PROP_H__ */
