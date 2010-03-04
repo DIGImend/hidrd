@@ -31,9 +31,7 @@ libhidrd_fmt_la_LIBADD = \
     ../opt/libhidrd_opt.la      \
     natv/libhidrd_natv.la
 
-bin_PROGRAMS =
 TESTS = hidrd_natv_test
-check_PROGRAMS = $(TESTS)
 
 hidrd_natv_test_SOURCES = natv_test.c
 hidrd_natv_test_LDADD = ../strm/libhidrd_strm.la $(lib_LTLIBRARIES)
@@ -45,7 +43,15 @@ libhidrd_fmt_la_LDFLAGS = @LIBXML2_LIBS@
 
 SUBDIRS += xml
 libhidrd_fmt_la_LIBADD += xml/libhidrd_xml.la
+
+TESTS += hidrd_xml_test
+hidrd_xml_test_CFLAGS = @LIBXML2_CFLAGS@
+hidrd_xml_test_SOURCES = xml_test.c
+hidrd_xml_test_LDADD = ../strm/libhidrd_strm.la $(lib_LTLIBRARIES)
 endif
+
+bin_PROGRAMS =
+check_PROGRAMS = $(TESTS)
 
 if ENABLE_TESTS_INSTALL
 bin_PROGRAMS += $(TESTS)

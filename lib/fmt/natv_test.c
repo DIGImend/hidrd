@@ -212,6 +212,9 @@ main(int argc, char **argv)
     (void)argc;
     (void)argv;
 
+    if (!hidrd_fmt_init(&hidrd_natv))
+        error(1, 0, "Failed to initialize native format support");
+
     /*
      * Generate original report descriptor
      */
@@ -229,7 +232,7 @@ main(int argc, char **argv)
     /*
      * Write report descriptor to a native sink
      */
-    snk = hidrd_snk_open(&hidrd_natv_snk, &test_rd_buf, &test_rd_len);
+    snk = hidrd_snk_open(hidrd_natv.snk, &test_rd_buf, &test_rd_len);
     if (snk == NULL)
         error(1, errno, "Failed to create native sink");
 
@@ -273,7 +276,7 @@ main(int argc, char **argv)
     /*
      * Read test descriptor source and compare it to the items.
      */
-    src = hidrd_src_open(&hidrd_natv_src, test_rd_buf, test_rd_len);
+    src = hidrd_src_open(hidrd_natv.src, test_rd_buf, test_rd_len);
     for (orig_item = item_list; orig_item->len != 0; orig_item++)
     {
         if ((test_item = hidrd_src_get(src)) == NULL)
@@ -294,6 +297,8 @@ main(int argc, char **argv)
     hidrd_src_free(src);
 
     free(test_rd_buf);
+
+    hidrd_fmt_clnp(&hidrd_natv);
 
     return 0;
 }

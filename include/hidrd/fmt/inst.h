@@ -93,6 +93,34 @@ hidrd_fmt_writable(const hidrd_fmt *fmt)
     return fmt->snk != NULL;
 }
 
+/**
+ * Initialize a format library, if needed.
+ *
+ * @param fmt   Format to initialize.
+ *
+ * @return True if initialized successfully, false otherwise.
+ */
+static inline bool
+hidrd_fmt_init(const hidrd_fmt *fmt)
+{
+    assert(hidrd_fmt_valid(fmt));
+    return (fmt->init == NULL) || (*fmt->init)();
+}
+
+/**
+ * Cleanup a format library, if needed.
+ *
+ * @param fmt   Format to cleanup.
+ */
+static inline void
+hidrd_fmt_clnp(const hidrd_fmt *fmt)
+{
+    assert(hidrd_fmt_valid(fmt));
+
+    if (fmt->clnp != NULL)
+        (*fmt->clnp)();
+}
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
