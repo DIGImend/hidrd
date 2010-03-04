@@ -31,6 +31,7 @@ hidrd_fmt_valid(const hidrd_fmt *fmt)
 {
     return fmt != NULL &&
            fmt->name != NULL && *fmt->name != '\0' &&
+           fmt->desc != NULL && *fmt->desc != '\0' &&
            ((fmt->init == NULL && fmt->clnp == NULL) ||
             (fmt->init != NULL && fmt->clnp != NULL)) &&
            (fmt->src != NULL || fmt->snk != NULL) &&
