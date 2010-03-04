@@ -27,7 +27,7 @@
 #ifndef __HIDRD_STRM_H__
 #define __HIDRD_STRM_H__
 
-#include "hidrd/strm/natv.h"
-#include "hidrd/strm/xml.h"
+#include "hidrd/strm/src/inst.h"
+#include "hidrd/strm/snk/inst.h"
 
 #endif /* __HIDRD_STRM_H__ */

@@ -18,9 +18,3 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 SUBDIRS = src snk
-
-hidrd_strmdir = $(includedir)/hidrd/strm
-
-hidrd_strm_HEADERS = \
-    inst.h              \
-    type.h
