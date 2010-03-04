@@ -1323,7 +1323,7 @@ const hidrd_opt_spec hidrd_xml_snk_opts_spec[] = {
 };
 
 static bool
-hidrd_xml_snk_opts_init(hidrd_snk *snk, const hidrd_opt *list)
+hidrd_xml_snk_init_opts(hidrd_snk *snk, const hidrd_opt *list)
 {
     return init(snk, hidrd_opt_list_get_boolean(list, "format"));
 }
@@ -1415,8 +1415,6 @@ hidrd_xml_snk_flush(hidrd_snk *snk)
 
 finish:
 
-    snk->error = (snk->error || !result);
-
     if (xml_out_buf != NULL)
         xmlOutputBufferClose(xml_out_buf);
 
@@ -1456,13 +1454,7 @@ hidrd_xml_snk_put(hidrd_snk *snk, const hidrd_item *item)
 {
     hidrd_xml_snk_inst *xml_snk = (hidrd_xml_snk_inst *)snk;
 
-    if (!write_basic_element(xml_snk, item))
-    {
-        snk->error = true;
-        return false;
-    }
-
-    return true;
+    return write_basic_element(xml_snk, item);
 }
 
 
@@ -1470,7 +1462,7 @@ const hidrd_snk_type hidrd_xml_snk = {
     .size       = sizeof(hidrd_xml_snk_inst),
     .init       = hidrd_xml_snk_init,
 #ifdef HIDRD_WITH_OPT
-    .opts_init  = hidrd_xml_snk_opts_init,
+    .init_opts  = hidrd_xml_snk_init_opts,
     .opts_spec  = hidrd_xml_snk_opts_spec,
 #endif
     .valid      = hidrd_xml_snk_valid,

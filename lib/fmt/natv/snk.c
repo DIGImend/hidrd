@@ -84,10 +84,7 @@ hidrd_natv_snk_put(hidrd_snk *snk, const hidrd_item *item)
                         : natv_snk->alloc * 2;
         new_buf = realloc(natv_snk->buf, new_alloc);
         if (new_buf == NULL)
-        {
-            snk->error = true;
             return false;
-        }
         natv_snk->buf = new_buf;
         /* Sync user's buffer pointer */
         if (snk->pbuf != NULL)
@@ -115,10 +112,7 @@ hidrd_natv_snk_flush(hidrd_snk *snk)
     {
         new_buf = realloc(natv_snk->buf, natv_snk->size);
         if (natv_snk->size != 0 && new_buf == NULL)
-        {
-            snk->error = 1;
             return false;
-        }
         natv_snk->buf = new_buf;
         /* Sync user's buffer pointer */
         if (snk->pbuf != NULL)

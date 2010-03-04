@@ -36,8 +36,8 @@ hidrd_snk_type_valid(const hidrd_snk_type *type)
     return type != NULL &&
            type->size >= sizeof(hidrd_snk) &&
 #ifdef HIDRD_WITH_OPT
-           (type->init != NULL || type->opts_init == NULL) &&
-           (type->opts_init == NULL ||
+           (type->init != NULL || type->init_opts == NULL) &&
+           (type->init_opts == NULL ||
             hidrd_opt_spec_list_valid(type->opts_spec)) &&
 #endif
            type->put != NULL;

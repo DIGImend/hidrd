@@ -48,7 +48,15 @@ hidrd_src_error(const hidrd_src *src)
 }
 
 
-hidrd_src *
+/**
+ * Allocate (an uninitialized, but zeroed) source instance of specified
+ * type and set the type field.
+ *
+ * @param type  Source type to create instance of.
+ *
+ * @return Uninitialized instance of the specified source type.
+ */
+static hidrd_src *
 hidrd_src_alloc(const hidrd_src_type *type)
 {
     hidrd_src *src;
@@ -63,7 +71,17 @@ hidrd_src_alloc(const hidrd_src_type *type)
 }
 
 
-bool
+/**
+ * Initialize source instance (va_list version).
+ *
+ * @param src   Source instance to initialize.
+ * @param buf   Source buffer pointer.
+ * @param size  Source buffer size.
+ * @param ap    Source type-specific arguments.
+ *
+ * @return True if initialization succeeded, false otherwise.
+ */
+static bool
 hidrd_src_initv(hidrd_src *src, const void *buf, size_t size, va_list ap)
 {
     assert(src != NULL);
@@ -84,7 +102,17 @@ hidrd_src_initv(hidrd_src *src, const void *buf, size_t size, va_list ap)
 }
 
 
-bool
+/**
+ * Initialize source instance.
+ *
+ * @param src   Source instance to initialize.
+ * @param buf   Source buffer pointer.
+ * @param size  Source buffer size.
+ * @param ...   Source type-specific arguments.
+ *
+ * @return True if initialization succeeded, false otherwise.
+ */
+static bool
 hidrd_src_init(hidrd_src *src, const void *buf, size_t size, ...)
 {
     bool    result;
@@ -99,8 +127,27 @@ hidrd_src_init(hidrd_src *src, const void *buf, size_t size, ...)
 
 
 #ifdef HIDRD_WITH_OPT
-bool
-hidrd_src_opts_initf(hidrd_src *src,
+/**
+ * Initialize source instance with an option string, formatted using
+ * sprintf.
+ *
+ * @param src       Source instance to initialize.
+ * @param buf       Source buffer pointer.
+ * @param size      Source buffer size.
+ * @param opts_fmt  Option format string: each option is a name/value pair
+ *                  separated by equals sign, with surrounding space
+ *                  removed; options are separated by comma.
+ * @param ...       Option format arguments.
+ *
+ * @return True if initialization succeeded, false otherwise.
+ */
+static bool
+hidrd_src_init_optsf(hidrd_src *src,
+                     const void *buf, size_t size,
+                     const char *opts_fmt, ...)
+                     __attribute__((format(printf, 4, 5)));
+static bool
+hidrd_src_init_optsf(hidrd_src *src,
                      const void *buf, size_t size,
                      const char *opts_fmt, ...)
 {
@@ -133,15 +180,15 @@ hidrd_src_opts_initf(hidrd_src *src,
     if (opt_list == NULL)
         goto cleanup;
 
-    /* If there is opts_init member */
-    if (src->type->opts_init != NULL)
+    /* If there is init_opts member */
+    if (src->type->init_opts != NULL)
     {
         /* Initialize with option list */
         src->buf    = buf;
         src->size   = size;
         src->error  = false;
 
-        if (!(*src->type->opts_init)(src, opt_list))
+        if (!(*src->type->init_opts)(src, opt_list))
             goto cleanup;
     }
     else
@@ -165,18 +212,30 @@ cleanup:
 }
 
 
-bool
-hidrd_src_opts_init(hidrd_src *src,
+/**
+ * Initialize source instance with an option string.
+ *
+ * @param src   Source instance to initialize.
+ * @param buf   Source buffer pointer.
+ * @param size  Source buffer size.
+ * @param opts  Option string: each option is a name/value pair separated by
+ *              equals sign, with surrounding space removed; options are
+ *              separated by comma.
+ *
+ * @return True if initialization succeeded, false otherwise.
+ */
+static bool
+hidrd_src_init_opts(hidrd_src *src,
                      const void *buf, size_t size, const char *opts)
 {
-    return hidrd_src_opts_initf(src, buf, size, "%s", opts);
+    return hidrd_src_init_optsf(src, buf, size, "%s", opts);
 }
 
 
 hidrd_src *
-hidrd_src_opts_open(const hidrd_src_type *type,
-                    const void *buf, size_t size,
-                    const char *opts)
+hidrd_src_new_opts(const hidrd_src_type *type,
+                   const void *buf, size_t size,
+                   const char *opts)
 {
     hidrd_src  *src;
 
@@ -188,7 +247,7 @@ hidrd_src_opts_open(const hidrd_src_type *type,
         return NULL;
 
     /* Initialize */
-    if (!hidrd_src_opts_init(src, buf, size, opts))
+    if (!hidrd_src_init_opts(src, buf, size, opts))
         return NULL;
 
     return src;
@@ -197,8 +256,8 @@ hidrd_src_opts_open(const hidrd_src_type *type,
 
 
 hidrd_src *
-hidrd_src_open(const hidrd_src_type  *type,
-               const void *buf, size_t size, ...)
+hidrd_src_new(const hidrd_src_type  *type,
+              const void *buf, size_t size, ...)
 {
     hidrd_src *src;
     bool        result;
@@ -229,21 +288,45 @@ hidrd_src_get(hidrd_src *src)
 }
 
 
-void
-hidrd_src_free(hidrd_src *src)
+/**
+ * Cleanup source instance - free any internal data, but don't free the
+ * source itself.
+ *
+ * @param src  Source instance to cleanup.
+ */
+static void
+hidrd_src_clnp(hidrd_src *src)
 {
-    assert(src == NULL || hidrd_src_valid(src));
-
-    if (src == NULL)
-        return;
+    assert(hidrd_src_valid(src));
 
     if (src->type->clnp != NULL)
         (*src->type->clnp)(src);
+}
 
-    /* Invalidate source */
-    src->type = NULL;
+
+/**
+ * Free source instance without freeing any internal data.
+ *
+ * @param src  Source instance to free.
+ */
+static void
+hidrd_src_free(hidrd_src *src)
+{
+    if (src == NULL)
+        return;
+
+    assert(hidrd_src_type_valid(src->type));
 
     free(src);
+}
+
+
+void
+hidrd_src_delete(hidrd_src *src)
+{
+    assert(hidrd_src_valid(src));
+    hidrd_src_clnp(src);
+    hidrd_src_free(src);
 }
 
 

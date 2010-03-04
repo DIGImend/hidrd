@@ -51,110 +51,10 @@ struct hidrd_src {
 extern bool hidrd_src_valid(const hidrd_src *src);
 
 /**
- * Check if a source instance has error indicator.
- *
- * @param src   Source instance to check error indicator for.
- *
- * @return True if the error indicator is present, false otherwise.
- */
-extern bool hidrd_src_error(const hidrd_src *src);
-
-/**
- * Allocate (an uninitialized, but zeroed) source instance of specified
- * type (set the type field).
+ * Create (allocate and initialize) an instance of specified source type
+ * with specified arguments.
  *
  * @param type  Source type to create instance of.
- *
- * @return Uninitialized instance of the specified source type.
- */
-extern hidrd_src *hidrd_src_alloc(const hidrd_src_type *type);
-
-/**
- * Initialize source instance.
- *
- * @param src   Source instance to initialize.
- * @param buf   Source buffer pointer.
- * @param size  Source buffer size.
- * @param ...   Source type-specific arguments.
- *
- * @return True if initialization succeeded, false otherwise.
- */
-extern bool hidrd_src_init(hidrd_src *src,
-                           const void *buf, size_t size, ...);
-
-/**
- * Initialize source instance (va_list version).
- *
- * @param src   Source instance to initialize.
- * @param buf   Source buffer pointer.
- * @param size  Source buffer size.
- * @param ap    Source type-specific arguments.
- *
- * @return True if initialization succeeded, false otherwise.
- */
-extern bool hidrd_src_initv(hidrd_src *src,
-                            const void *buf, size_t size, va_list ap);
-
-#ifdef HIDRD_WITH_OPT
-/**
- * Initialize source instance with an option string.
- *
- * @param src   Source instance to initialize.
- * @param buf   Source buffer pointer.
- * @param size  Source buffer size.
- * @param opts  Option string: each option is a name/value pair separated by
- *              equals sign, with surrounding space removed; options are
- *              separated by comma.
- *
- * @return True if initialization succeeded, false otherwise.
- */
-extern bool hidrd_src_opts_init(hidrd_src *src,
-                                const void *buf, size_t size,
-                                const char *opts);
-
-/**
- * Initialize source instance with an option string, formatted using
- * sprintf.
- *
- * @param src       Source instance to initialize.
- * @param buf       Source buffer pointer.
- * @param size      Source buffer size.
- * @param opts_fmt  Option format string: each option is a name/value pair
- *                  separated by equals sign, with surrounding space
- *                  removed; options are separated by comma.
- * @param ...       Option format arguments.
- *
- * @return True if initialization succeeded, false otherwise.
- */
-extern bool hidrd_src_opts_initf(hidrd_src *src,
-                                 const void *buf, size_t size,
-                                 const char *opts_fmt, ...)
-                                __attribute__((format(printf, 4, 5)));
-
-/**
- * Open (allocate and initialize) an instance of specified source type with
- * specified options.
- *
- * @param type  Source type to open instance of.
- * @param buf   Source buffer pointer.
- * @param size  Source buffer size.
- * @param opts  Option string: each option is a name/value pair separated by
- *              equals sign, with surrounding space removed; options are
- *              separated by comma.
- *
- * @return Opened (allocated and initialized) instance of specified source
- *         type, or NULL, if failed to allocate or initialize.
- */
-extern hidrd_src *hidrd_src_opts_open(const hidrd_src_type *type,
-                                      const void *buf, size_t size,
-                                      const char *opts);
-#endif /* HIDRD_WITH_OPT */
-
-/**
- * Open (allocate and initialize) an instance of specified source type with
- * specified arguments.
- *
- * @param type  Source type to open instance of.
  * @param buf   Source buffer pointer.
  * @param size  Source buffer size.
  * @param ...   Source type-specific initialization arguments.
@@ -162,15 +62,28 @@ extern hidrd_src *hidrd_src_opts_open(const hidrd_src_type *type,
  * @return Opened (allocated and initialized) instance of specified source
  *         type, or NULL, if failed to allocate or initialize.
  */
-extern hidrd_src *hidrd_src_open(const hidrd_src_type *type,
-                                 const void *buf, size_t size, ...);
+extern hidrd_src *hidrd_src_new(const hidrd_src_type *type,
+                                const void *buf, size_t size, ...);
 
+#ifdef HIDRD_WITH_OPT
 /**
- * Free source instance (without flushing any cached data).
+ * Create (allocate and initialize) an instance of specified source type
+ * with specified options.
  *
- * @param src  Source instance to free.
+ * @param type  Source type to create instance of.
+ * @param buf   Source buffer pointer.
+ * @param size  Source buffer size.
+ * @param opts  Option string: each option is a name/value pair separated by
+ *              equals sign, with surrounding space removed; options are
+ *              separated by comma.
+ *
+ * @return Opened (allocated and initialized) instance of specified source
+ *         type, or NULL, if failed to allocate or initialize.
  */
-extern void hidrd_src_free(hidrd_src *src);
+extern hidrd_src *hidrd_src_new_opts(const hidrd_src_type *type,
+                                     const void *buf, size_t size,
+                                     const char *opts);
+#endif /* HIDRD_WITH_OPT */
 
 /**
  * Retrieve an item from a source instance.
@@ -182,6 +95,22 @@ extern void hidrd_src_free(hidrd_src *src);
  * @see hidrd_src_error
  */
 extern const hidrd_item *hidrd_src_get(hidrd_src *src);
+
+/**
+ * Check if a source instance has error indicator.
+ *
+ * @param src   Source instance to check error indicator for.
+ *
+ * @return True if the error indicator is present, false otherwise.
+ */
+extern bool hidrd_src_error(const hidrd_src *src);
+
+/**
+ * Delete (cleanup and free) a source instance.
+ *
+ * @param src  Source instance to delete.
+ */
+extern void hidrd_src_delete(hidrd_src *src);
 
 #ifdef __cplusplus
 } /* extern "C" */

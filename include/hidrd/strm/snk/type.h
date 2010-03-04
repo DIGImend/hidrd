@@ -63,7 +63,7 @@ typedef bool hidrd_snk_type_init_fn(hidrd_snk  *snk,
  *
  * @return  True if initialized successfully, false otherwise.
  */
-typedef bool hidrd_snk_type_opts_init_fn(hidrd_snk         *snk,
+typedef bool hidrd_snk_type_init_opts_fn(hidrd_snk         *snk,
                                          const hidrd_opt   *opt_list);
 #endif /* HIDRD_WITH_OPT */
 
@@ -108,7 +108,7 @@ typedef struct hidrd_snk_type {
     size_t                          size;       /**< Instance size */
     hidrd_snk_type_init_fn         *init;
 #ifdef HIDRD_WITH_OPT
-    hidrd_snk_type_opts_init_fn    *opts_init;
+    hidrd_snk_type_init_opts_fn    *init_opts;
     const hidrd_opt_spec           *opts_spec;
 #endif
     hidrd_snk_type_valid_fn        *valid;

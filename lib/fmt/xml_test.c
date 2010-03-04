@@ -166,8 +166,8 @@ main(int argc, char **argv)
     /*
      * Write report descriptor to an XML sink
      */
-    snk = hidrd_snk_open(hidrd_xml.snk,
-                         (void **)&test_xml_buf, &test_xml_len, true);
+    snk = hidrd_snk_new(hidrd_xml.snk,
+                        (void **)&test_xml_buf, &test_xml_len, true);
     if (snk == NULL)
         error(1, errno, "Failed to create XML sink");
 
@@ -176,10 +176,8 @@ main(int argc, char **argv)
             error(1, errno, "Failed to put item #%zu",
                   (orig_item - item_list));
 
-    if (hidrd_snk_error(snk))
-        error(1, 0, "The test sink has unexpected error indicator");
-
-    hidrd_snk_close(snk);
+    if (!hidrd_snk_close(snk))
+        error(1, 0, "Failed to close the test sink");
 
     fprintf(stderr, "%.*s", (int)test_xml_len, test_xml_buf);
 

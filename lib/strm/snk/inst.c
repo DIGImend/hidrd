@@ -38,16 +38,15 @@ hidrd_snk_valid(const hidrd_snk *snk)
 }
 
 
-bool
-hidrd_snk_error(const hidrd_snk *snk)
-{
-    assert(hidrd_snk_valid(snk));
-
-    return snk->error;
-}
-
-
-hidrd_snk *
+/**
+ * Allocate (an uninitialized, but zeroed) sink instance of specified type
+ * (set the type field).
+ *
+ * @param type  Sink type to create instance of.
+ *
+ * @return Uninitialized instance of the specified sink type.
+ */
+static hidrd_snk *
 hidrd_snk_alloc(const hidrd_snk_type *type)
 {
     hidrd_snk *snk;
@@ -62,7 +61,17 @@ hidrd_snk_alloc(const hidrd_snk_type *type)
 }
 
 
-bool
+/**
+ * Initialize sink instance (va_list version).
+ *
+ * @param snk   Sink instance to initialize.
+ * @param pbuf  Location of sink buffer pointer.
+ * @param psize Location of sink buffer size.
+ * @param ap    Sink type-specific arguments.
+ *
+ * @return True if initialization succeeded, false otherwise.
+ */
+static bool
 hidrd_snk_initv(hidrd_snk *snk, void **pbuf, size_t *psize, va_list ap)
 {
     assert(snk != NULL);
@@ -80,7 +89,6 @@ hidrd_snk_initv(hidrd_snk *snk, void **pbuf, size_t *psize, va_list ap)
 
     snk->pbuf  = pbuf;
     snk->psize = psize;
-    snk->error = false;
 
     if (snk->type->init != NULL)
         if (!(*snk->type->init)(snk, ap))
@@ -92,7 +100,17 @@ hidrd_snk_initv(hidrd_snk *snk, void **pbuf, size_t *psize, va_list ap)
 }
 
 
-bool
+/**
+ * Initialize sink instance.
+ *
+ * @param snk   Sink instance to initialize.
+ * @param pbuf  Location of sink buffer pointer.
+ * @param psize Location of sink buffer size.
+ * @param ...   Sink type-specific arguments.
+ *
+ * @return True if initialization succeeded, false otherwise.
+ */
+static bool
 hidrd_snk_init(hidrd_snk *snk, void **pbuf, size_t *psize, ...)
 {
     bool    result;
@@ -107,10 +125,29 @@ hidrd_snk_init(hidrd_snk *snk, void **pbuf, size_t *psize, ...)
 
 
 #ifdef HIDRD_WITH_OPT
-bool
-hidrd_snk_opts_initf(hidrd_snk *snk,
-                      void **pbuf, size_t *psize,
-                      const char *opts_fmt, ...)
+/**
+ * Initialize sink instance with an option string, formatted using
+ * sprintf.
+ *
+ * @param snk       Sink instance to initialize.
+ * @param pbuf      Location of sink buffer pointer.
+ * @param psize     Location of sink buffer size.
+ * @param opts_fmt  Option format string: each option is a name/value pair
+ *                  separated by equals sign, with surrounding space
+ *                  removed; options are separated by comma.
+ * @param ...       Option format arguments.
+ *
+ * @return True if initialization succeeded, false otherwise.
+ */
+static bool
+hidrd_snk_init_optsf(hidrd_snk *snk,
+                     void **pbuf, size_t *psize,
+                     const char *opts_fmt, ...)
+                     __attribute__((format(printf, 4, 5)));
+static bool
+hidrd_snk_init_optsf(hidrd_snk *snk,
+                     void **pbuf, size_t *psize,
+                     const char *opts_fmt, ...)
 {
     static const hidrd_opt_spec empty_spec_list[] = {{.name = NULL}};
 
@@ -149,15 +186,14 @@ hidrd_snk_opts_initf(hidrd_snk *snk,
     if (opt_list == NULL)
         goto cleanup;
 
-    /* If there is opts_init member */
-    if (snk->type->opts_init != NULL)
+    /* If there is init_opts member */
+    if (snk->type->init_opts != NULL)
     {
         /* Initialize with option list */
         snk->pbuf  = pbuf;
         snk->psize = psize;
-        snk->error = false;
 
-        if (!(*snk->type->opts_init)(snk, opt_list))
+        if (!(*snk->type->init_opts)(snk, opt_list))
             goto cleanup;
     }
     else
@@ -181,18 +217,30 @@ cleanup:
 }
 
 
-bool
-hidrd_snk_opts_init(hidrd_snk *snk,
+/**
+ * Initialize sink instance with an option string.
+ *
+ * @param snk   Sink instance to initialize.
+ * @param pbuf  Location of sink buffer pointer.
+ * @param psize Location of sink buffer size.
+ * @param opts  Option string: each option is a name/value pair separated by
+ *              equals sign, with surrounding space removed; options are
+ *              separated by comma.
+ *
+ * @return True if initialization succeeded, false otherwise.
+ */
+static bool
+hidrd_snk_init_opts(hidrd_snk *snk,
                     void **pbuf, size_t *psize, const char *opts)
 {
-    return hidrd_snk_opts_initf(snk, pbuf, psize, "%s", opts);
+    return hidrd_snk_init_optsf(snk, pbuf, psize, "%s", opts);
 }
 
 
 hidrd_snk *
-hidrd_snk_opts_open(const hidrd_snk_type *type,
-                     void **pbuf, size_t *psize,
-                     const char *opts)
+hidrd_snk_new_opts(const hidrd_snk_type *type,
+                   void **pbuf, size_t *psize,
+                   const char *opts)
 {
     hidrd_snk *snk;
 
@@ -204,7 +252,7 @@ hidrd_snk_opts_open(const hidrd_snk_type *type,
         return NULL;
 
     /* Initialize */
-    if (!hidrd_snk_opts_init(snk, pbuf, psize, opts))
+    if (!hidrd_snk_init_opts(snk, pbuf, psize, opts))
         return NULL;
 
     return snk;
@@ -213,10 +261,10 @@ hidrd_snk_opts_open(const hidrd_snk_type *type,
 
 
 hidrd_snk *
-hidrd_snk_open(const hidrd_snk_type  *type,
-               void                  **pbuf,
-               size_t                 *psize,
-               ...)
+hidrd_snk_new(const hidrd_snk_type  *type,
+              void                  **pbuf,
+              size_t                 *psize,
+              ...)
 {
     hidrd_snk *snk;
     bool        result;
@@ -258,21 +306,45 @@ hidrd_snk_flush(hidrd_snk *snk)
 }
 
 
-void
-hidrd_snk_free(hidrd_snk *snk)
+/**
+ * Cleanup sink instance - free any internal data, but don't free the
+ * sink itself.
+ *
+ * @param snk  Sink instance to cleanup.
+ */
+static void
+hidrd_snk_clnp(hidrd_snk *snk)
 {
-    assert(snk == NULL || hidrd_snk_valid(snk));
-
-    if (snk == NULL)
-        return;
+    assert(hidrd_snk_valid(snk));
 
     if (snk->type->clnp != NULL)
         (*snk->type->clnp)(snk);
+}
 
-    /* Invalidate sink */
-    snk->type = NULL;
+
+/**
+ * Free sink instance without freeing any internal data.
+ *
+ * @param snk  Sink instance to free.
+ */
+static void
+hidrd_snk_free(hidrd_snk *snk)
+{
+    if (snk == NULL)
+        return;
+
+    assert(hidrd_snk_type_valid(snk->type));
 
     free(snk);
+}
+
+
+void
+hidrd_snk_delete(hidrd_snk *snk)
+{
+    assert(hidrd_snk_valid(snk));
+    hidrd_snk_clnp(snk);
+    hidrd_snk_free(snk);
 }
 
 
@@ -284,7 +356,7 @@ hidrd_snk_close(hidrd_snk *snk)
     if (!hidrd_snk_flush(snk))
         return false;
 
-    hidrd_snk_free(snk);
+    hidrd_snk_delete(snk);
 
     return true;
 }

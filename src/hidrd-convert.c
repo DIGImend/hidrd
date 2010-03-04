@@ -259,15 +259,15 @@ process(const char *input_name,
     /*
      * Open input and output streams
      */
-    input = hidrd_src_opts_open(input_fmt->src,
-                                input_buf, input_size, input_options);
+    input = hidrd_src_new_opts(input_fmt->src,
+                               input_buf, input_size, input_options);
     if (input == NULL)
     {
         fprintf(stderr, "Failed to open input stream\n");
         goto cleanup;
     }
-    output = hidrd_snk_opts_open(output_fmt->snk,
-                                 &output_buf, &output_size, output_options);
+    output = hidrd_snk_new_opts(output_fmt->snk,
+                                &output_buf, &output_size, output_options);
     if (output == NULL)
     {
         fprintf(stderr, "Failed to open output stream\n");
@@ -292,7 +292,7 @@ process(const char *input_name,
     /*
      * Close input and output streams
      */
-    hidrd_src_free(input);
+    hidrd_src_delete(input);
     input = NULL;
     if (!hidrd_snk_close(output))
     {
@@ -316,8 +316,8 @@ process(const char *input_name,
 
 cleanup:
 
-    hidrd_src_free(input);
-    hidrd_snk_free(output);
+    hidrd_src_delete(input);
+    hidrd_snk_delete(output);
 
     free(output_buf);
     free(input_buf);
