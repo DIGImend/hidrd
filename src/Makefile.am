@@ -22,5 +22,8 @@ bin_PROGRAMS =
 if ENABLE_HIDRD_CONVERT
 bin_PROGRAMS += hidrd-convert
 hidrd_convert_SOURCES = hidrd-convert.c
-hidrd_convert_LDADD = ../lib/strm/libhidrd_strm.la
+hidrd_convert_LDADD = ../lib/strm/libhidrd_strm.la ../lib/fmt/libhidrd_fmt.la
+if ENABLE_FMT_XML
+hidrd_convert_CFLAGS = @LIBXML2_CFLAGS@
+endif
 endif

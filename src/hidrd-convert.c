@@ -33,7 +33,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <getopt.h>
-#include "hidrd/strm.h"
+#include "hidrd/fmt.h"
 
 static int
 usage(FILE *stream, const char *progname)
@@ -57,26 +57,6 @@ usage(FILE *stream, const char *progname)
             "Default options are \"-i natv -o natv\".\n"
             "\n",
             progname);
-}
-
-
-static const hidrd_strm_type *type_list[] = {
-    &hidrd_strm_natv,
-#ifdef HIDRD_STRM_WITH_XML
-    &hidrd_strm_xml,
-#endif
-    NULL
-};
-
-static const hidrd_strm_type *
-lookup_type(const char *name)
-{
-    const hidrd_strm_type  **ptype;
-    for (ptype = type_list; *ptype != NULL; ptype++)
-        if (strcasecmp((*ptype)->name, name) == 0)
-            break;
-
-    return *ptype;
 }
 
 
@@ -160,61 +140,80 @@ write_whole(int fd, void *buf, size_t size)
 
 static int
 process(const char *input_name,
-        const char *input_format,
+        const char *input_fmt_name,
         const char *input_options,
 
         const char *output_name,
-        const char *output_format,
+        const char *output_fmt_name,
         const char *output_options)
 {
-    int                     result          = 1;
+    int                 result          = 1;
 
-    int                     input_fd        = -1;
-    void                   *input_buf       = NULL;
-    size_t                  input_size      = 0;
-    const hidrd_strm_type  *input_type;
-    hidrd_strm             *input           = NULL;
+    int                 input_fd        = -1;
+    void               *input_buf       = NULL;
+    size_t              input_size      = 0;
+    const hidrd_fmt    *input_fmt       = NULL;
+    hidrd_src          *input           = NULL;
 
-    int                     output_fd       = -1;
-    void                   *output_buf      = NULL;
-    size_t                  output_size     = 0;
-    const hidrd_strm_type  *output_type;
-    hidrd_strm             *output          = NULL;
+    int                 output_fd       = -1;
+    void               *output_buf      = NULL;
+    size_t              output_size     = 0;
+    const hidrd_fmt    *output_fmt      = NULL;
+    hidrd_snk          *output          = NULL;
 
-    const hidrd_item       *item;
+    const hidrd_item   *item;
 
     assert(input_name != NULL);
     assert(*input_name != '\0');
-    assert(input_format != NULL);
-    assert(*input_format != '\0');
+    assert(input_fmt_name != NULL);
+    assert(*input_fmt_name != '\0');
     assert(input_options != NULL);
 
     assert(output_name != NULL);
     assert(*output_name != '\0');
-    assert(output_format != NULL);
-    assert(*output_format != '\0');
+    assert(output_fmt_name != NULL);
+    assert(*output_fmt_name != '\0');
     assert(output_options != NULL);
 
-#ifdef HIDRD_STRM_WITH_XML
-    /* Initialize parser of the XML stream */
-    /* FIXME use global stream library initialization instead */
-    hidrd_strm_xml_init_parser();
-#endif
-
     /*
-     * Lookup input and output stream types
+     * Lookup and initialize input and output formats
      */
-    input_type = lookup_type(input_format);
-    if (input_type == NULL)
+    input_fmt = hidrd_fmt_list_lkp(input_fmt_name);
+    if (input_fmt == NULL)
     {
-        fprintf(stderr, "Unknown input format \"%s\"\n", input_format);
+        fprintf(stderr, "Unknown input format \"%s\"\n", input_fmt_name);
+        goto cleanup;
+    }
+    if (!hidrd_fmt_readable(input_fmt))
+    {
+        fprintf(stderr, "Reading of %s format is not supported",
+                input_fmt->desc);
+        goto cleanup;
+    }
+    if (!hidrd_fmt_init(input_fmt))
+    {
+        fprintf(stderr, "Failed to initialize %s format library",
+                input_fmt->desc);
         goto cleanup;
     }
 
-    output_type = lookup_type(output_format);
-    if (output_type == NULL)
+
+    output_fmt = hidrd_fmt_list_lkp(output_fmt_name);
+    if (output_fmt == NULL)
     {
-        fprintf(stderr, "Unknown output format \"%s\"\n", output_format);
+        fprintf(stderr, "Unknown output format \"%s\"\n", output_fmt_name);
+        goto cleanup;
+    }
+    if (!hidrd_fmt_writable(output_fmt))
+    {
+        fprintf(stderr, "Writing to %s format is not supported",
+                output_fmt->desc);
+        goto cleanup;
+    }
+    if (!hidrd_fmt_init(output_fmt))
+    {
+        fprintf(stderr, "Failed to initialize %s format library",
+                output_fmt->desc);
         goto cleanup;
     }
 
@@ -260,15 +259,15 @@ process(const char *input_name,
     /*
      * Open input and output streams
      */
-    input = hidrd_strm_opts_open(input_type, &input_buf, &input_size,
-                                 input_options);
+    input = hidrd_src_opts_open(input_fmt->src,
+                                input_buf, input_size, input_options);
     if (input == NULL)
     {
         fprintf(stderr, "Failed to open input stream\n");
         goto cleanup;
     }
-    output = hidrd_strm_opts_open(output_type, &output_buf, &output_size,
-                                  output_options);
+    output = hidrd_snk_opts_open(output_fmt->snk,
+                                 &output_buf, &output_size, output_options);
     if (output == NULL)
     {
         fprintf(stderr, "Failed to open output stream\n");
@@ -278,13 +277,13 @@ process(const char *input_name,
     /*
      * Transfer the stream
      */
-    while ((item = hidrd_strm_read(input)) != NULL)
-        if (!hidrd_strm_write(output, item))
+    while ((item = hidrd_src_get(input)) != NULL)
+        if (!hidrd_snk_put(output, item))
         {
             fprintf(stderr, "Failed to write output stream\n");
             goto cleanup;
         }
-    if (hidrd_strm_error(input))
+    if (hidrd_src_error(input))
     {
         fprintf(stderr, "Failed to read input stream\n");
         goto cleanup;
@@ -293,14 +292,9 @@ process(const char *input_name,
     /*
      * Close input and output streams
      */
-    if (!hidrd_strm_close(input))
-    {
-        /* An unlikely event, but still */
-        fprintf(stderr, "Failed to close input stream\n");
-        goto cleanup;
-    }
+    hidrd_src_free(input);
     input = NULL;
-    if (!hidrd_strm_close(output))
+    if (!hidrd_snk_close(output))
     {
         fprintf(stderr, "Failed to close output stream\n");
         goto cleanup;
@@ -322,8 +316,8 @@ process(const char *input_name,
 
 cleanup:
 
-    hidrd_strm_free(input);
-    hidrd_strm_free(output);
+    hidrd_src_free(input);
+    hidrd_snk_free(output);
 
     free(output_buf);
     free(input_buf);
@@ -333,11 +327,10 @@ cleanup:
     if (output_fd >= 0 && output_fd != STDOUT_FILENO)
         close(output_fd);
 
-#ifdef HIDRD_STRM_WITH_XML
-    /* Cleanup parser of the XML stream */
-    /* FIXME use global stream library cleanup instead */
-    hidrd_strm_xml_clnp_parser();
-#endif
+    if (output_fmt != NULL)
+        hidrd_fmt_clnp(output_fmt);
+    if (input_fmt != NULL)
+        hidrd_fmt_clnp(input_fmt);
 
     return result;
 }

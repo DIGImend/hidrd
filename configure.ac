@@ -227,6 +227,10 @@ if test "$enable_xml_stream" == "yes"; then
     CPPFLAGS="$CPPFLAGS -DHIDRD_STRM_WITH_XML"
 fi
 
+if test "$enable_xml_format" == "yes"; then
+    CPPFLAGS="$CPPFLAGS -DHIDRD_FMT_WITH_XML"
+fi
+
 #
 # Checks for header files.
 #
