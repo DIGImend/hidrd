@@ -31,12 +31,13 @@ libhidrd_opt_la_SOURCES = \
     type.c                  \
     value_tkn.c
 
-bin_PROGRAMS =
-check_PROGRAMS = hidrd_opt_test
 TESTS = hidrd_opt_test
 
 hidrd_opt_test_SOURCES = test.c
 hidrd_opt_test_LDADD = $(lib_LTLIBRARIES)
+
+bin_PROGRAMS =
+check_PROGRAMS = $(TESTS)
 
 if ENABLE_TESTS_INSTALL
 bin_PROGRAMS += $(TESTS)

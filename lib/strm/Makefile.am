@@ -21,10 +21,7 @@ SUBDIRS = src snk
 
 lib_LTLIBRARIES = libhidrd_strm.la
 
-libhidrd_strm_la_SOURCES = \
-    inst.c                  \
-    natv.c                  \
-    type.c
+libhidrd_strm_la_SOURCES = 
 
 libhidrd_strm_la_LIBADD = \
     ../item/libhidrd_item.la    \
@@ -32,25 +29,10 @@ libhidrd_strm_la_LIBADD = \
     snk/libhidrd_strm_snk.la    \
     src/libhidrd_strm_src.la
 
+TESTS = 
+
 bin_PROGRAMS =
-check_PROGRAMS = hidrd_strm_natv_test
-TESTS = hidrd_strm_natv_test
-
-hidrd_strm_natv_test_SOURCES = natv_test.c
-hidrd_strm_natv_test_LDADD = $(lib_LTLIBRARIES)
-
-if ENABLE_STRM_XML
-libhidrd_strm_la_SOURCES += xml.c xml_read.c xml_write.c
-libhidrd_strm_la_CFLAGS = @LIBXML2_CFLAGS@
-libhidrd_strm_la_LDFLAGS = @LIBXML2_LIBS@
-noinst_HEADERS = xml.h
-
-check_PROGRAMS += hidrd_strm_xml_test
-TESTS += hidrd_strm_xml_test
-
-hidrd_strm_xml_test_SOURCES = xml_test.c
-hidrd_strm_xml_test_LDADD = $(lib_LTLIBRARIES)
-endif
+check_PROGRAMS = $(TESTS)
 
 if ENABLE_TESTS_INSTALL
 bin_PROGRAMS += $(TESTS)

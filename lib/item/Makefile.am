@@ -31,12 +31,13 @@ libhidrd_item_la_SOURCES = \
 
 libhidrd_item_la_LIBADD = ../usage/libhidrd_usage.la ../unit/libhidrd_unit.la
 
-bin_PROGRAMS =
-check_PROGRAMS = hidrd_item_any_test
 TESTS = hidrd_item_any_test
 
 hidrd_item_any_test_SOURCES = any_test.c
 hidrd_item_any_test_LDADD = $(lib_LTLIBRARIES)
+
+bin_PROGRAMS =
+check_PROGRAMS = $(TESTS)
 
 if ENABLE_TESTS_INSTALL
 bin_PROGRAMS += $(TESTS)

@@ -23,6 +23,4 @@ hidrd_strmdir = $(includedir)/hidrd/strm
 
 hidrd_strm_HEADERS = \
     inst.h              \
-    natv.h              \
-    type.h              \
-    xml.h
+    type.h

@@ -89,7 +89,7 @@ AC_ARG_ENABLE(
 AC_ARG_ENABLE(
     opt,
     AS_HELP_STRING([--disable-opt],
-                   [disable building options library (it is needed for streams)]),
+                   [disable building options library (it is needed for streams and formats)]),
     [], [enable_opt="yes"])
 
 AC_ARG_ENABLE(
@@ -104,27 +104,20 @@ AC_ARG_ENABLE(
 
 AC_ARG_ENABLE(
     hidrd-convert,
-    AS_HELP_STRING([--disable-hidrd-convert], [disable building hidrd-convert tool (requires streams)]),
+    AS_HELP_STRING([--disable-hidrd-convert], [disable building hidrd-convert tool (requires streams and formats)]),
     [], [enable_hidrd_convert="yes"])
 
 AC_ARG_ENABLE(
     tokens,
     AS_HELP_STRING([--disable-tokens],
-                   [disable tokens (tokens are needed for XML stream)]),
+                   [disable tokens (tokens are needed for XML format)]),
     [], [enable_tokens="yes"])
 
 AC_ARG_ENABLE(
     names,
     AS_HELP_STRING([--disable-names],
-                   [disable names (names are needed for XML stream)]),
+                   [disable names (names are needed for XML format)]),
     [], [enable_names="yes"])
-
-AC_ARG_ENABLE(
-    xml-stream,
-    AS_HELP_STRING(
-        [--disable-xml-stream],
-        [disable building XML stream (requires tokens, names, options library and libxml2 to be enabled)]),
-    [], [enable_xml_stream="yes"])
 
 AC_ARG_ENABLE(
     xml-format,
@@ -160,23 +153,6 @@ if test "$enable_hidrd_convert" = "yes"; then
     fi
 fi
 
-# Check for XML stream dependencies
-if test "$enable_xml_stream" = "yes"; then
-    if test "$enable_streams" != "yes"; then
-        # Disable silently - quite obvious
-        enable_xml_stream="no"
-    elif test "$enable_tokens" != "yes"; then
-        AC_MSG_WARN([tokens are disabled, so disabling XML stream])
-        enable_xml_stream="no"
-    elif test "$enable_names" != "yes"; then
-        AC_MSG_WARN([names are disabled, so disabling XML stream])
-        enable_xml_stream="no"
-    elif test -z "$XML2_CONFIG"; then
-        AC_MSG_WARN([no xml2-config, so disabling XML stream])
-        enable_xml_stream="no"
-    fi
-fi
-
 # Check for XML format dependencies
 if test "$enable_xml_format" = "yes"; then
     if test "$enable_formats" != "yes"; then
@@ -202,7 +178,6 @@ AM_CONDITIONAL([ENABLE_FMT], [test "$enable_formats" = "yes"])
 AM_CONDITIONAL([ENABLE_HIDRD_CONVERT], [test "$enable_hidrd_convert" = "yes"])
 AM_CONDITIONAL([ENABLE_TOKENS], [test "$enable_tokens" = "yes"])
 AM_CONDITIONAL([ENABLE_NAMES], [test "$enable_names" = "yes"])
-AM_CONDITIONAL([ENABLE_STRM_XML], [test "$enable_xml_stream" = "yes"])
 AM_CONDITIONAL([ENABLE_FMT_XML], [test "$enable_xml_format" = "yes"])
 
 # Output features to preprocessor and compiler
@@ -221,10 +196,6 @@ fi
 
 if test "$enable_names" == "yes"; then
     CPPFLAGS="$CPPFLAGS -DHIDRD_WITH_NAMES"
-fi
-
-if test "$enable_xml_stream" == "yes"; then
-    CPPFLAGS="$CPPFLAGS -DHIDRD_STRM_WITH_XML"
 fi
 
 if test "$enable_xml_format" == "yes"; then
