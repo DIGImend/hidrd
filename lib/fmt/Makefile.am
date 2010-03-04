@@ -32,8 +32,11 @@ libhidrd_fmt_la_LIBADD = \
     natv/libhidrd_natv.la
 
 bin_PROGRAMS =
-check_PROGRAMS = 
-TESTS = 
+TESTS = hidrd_natv_test
+check_PROGRAMS = $(TESTS)
+
+hidrd_natv_test_SOURCES = natv_test.c
+hidrd_natv_test_LDADD = ../strm/libhidrd_strm.la $(lib_LTLIBRARIES)
 
 if ENABLE_FMT_XML
 libhidrd_fmt_la_SOURCES += xml.c
