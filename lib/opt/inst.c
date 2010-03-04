@@ -151,6 +151,8 @@ hidrd_opt_parse_tkns(hidrd_opt             *opt,
     opt->name = tkns->name;
     opt->type = spec->type;
 
+    assert(hidrd_opt_valid(opt));
+
     return true;
 }
 

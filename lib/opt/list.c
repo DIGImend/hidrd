@@ -125,6 +125,8 @@ hidrd_opt_list_parse_tkns_list(const hidrd_opt_spec    *spec_list,
         goto cleanup;
     /* Begin with the first option */
     opt = opt_list;
+    /* Keep it terminated */
+    opt->name = NULL;
 
     /*
      * Convert each token pair
@@ -176,7 +178,7 @@ hidrd_opt_list_parse_tkns_list(const hidrd_opt_spec    *spec_list,
 
         /* If option is required */
         if (spec->req)
-            return false;
+            goto cleanup;
 
         /* Add the option with default value */
         opt->name   = spec->name;
@@ -192,6 +194,7 @@ hidrd_opt_list_parse_tkns_list(const hidrd_opt_spec    *spec_list,
     /* Output */
     result = opt_list;
     opt_list = NULL;
+    assert(hidrd_opt_list_valid(result));
 
 cleanup:
 

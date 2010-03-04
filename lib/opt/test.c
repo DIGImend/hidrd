@@ -96,7 +96,7 @@ main(int argc, char **argv)
     if (test_empt_opt_list == NULL)
         error(1, errno, "Failed to parse empty option list");
 
-    if (hidrd_opt_list_len(test_empt_opt_list) != 5)
+    if (hidrd_opt_list_len(test_empt_opt_list) != 0)
         error(1, 0,
               "Unexpected empty option list length: %zu instead of %zu",
               hidrd_opt_list_len(test_empt_opt_list), (size_t)0);

@@ -26,6 +26,7 @@
 
 #include <assert.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include <string.h>
 #include <strings.h>
 #include <stdio.h>
@@ -103,6 +104,7 @@ hidrd_opt_tkns_list_parse(char *buf)
     char           *next_tkns_buf;
     char           *tkns_buf;
     char           *p;
+    bool            got_nonspc;
     hidrd_opt_tkns  tkns;
 
     list = hidrd_opt_tkns_list_new();
@@ -113,11 +115,16 @@ hidrd_opt_tkns_list_parse(char *buf)
     do {
         tkns_buf = next_tkns_buf;
 
-        /* Find next option terminator */
-        p = index(tkns_buf, ',');
+        /*
+         * Find next option terminator and check if there is anything except
+         * whitespace before it
+         */
+        for (p = tkns_buf, got_nonspc = false; *p != ',' && *p != '\0'; p++)
+            if (!isspace(*p))
+                got_nonspc = true;
 
         /* If it is the end of the string */
-        if (p == NULL)
+        if (*p == '\0')
             next_tkns_buf = NULL;
         else
         {
@@ -125,14 +132,16 @@ hidrd_opt_tkns_list_parse(char *buf)
             next_tkns_buf = p + 1;
         }
 
-        /* Parse and add the tokens */
-        if (!hidrd_opt_tkns_parse(&tkns, tkns_buf) ||
-            !hidrd_opt_tkns_list_add(&list, &tkns))
+        /* Parse and add the tokens, if any */
+        if (got_nonspc &&
+            (!hidrd_opt_tkns_parse(&tkns, tkns_buf) ||
+             !hidrd_opt_tkns_list_add(&list, &tkns)))
             goto cleanup;
     } while (next_tkns_buf != NULL);
 
     result = list;
     list = NULL;
+    assert(hidrd_opt_tkns_list_valid(result));
 
 cleanup:
 
