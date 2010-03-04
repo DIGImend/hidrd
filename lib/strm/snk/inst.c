@@ -177,7 +177,7 @@ cleanup:
     free(opts_buf);
     va_end(ap);
 
-    return true;
+    return result;
 }
 
 
