@@ -36,42 +36,109 @@
 int
 main(int argc, char **argv)
 {
-    const char             *orig_spec_str;
-    char                   *orig_spec_buf   = NULL;
-    hidrd_opt_spec         *test_spec_list  = NULL;
-    char                   *test_spec_str   = NULL;
-    const char             *orig_opt_str;
-    char                   *orig_opt_buf    = NULL;
-    hidrd_opt              *test_opt_list   = NULL;
-    char                   *test_opt_str    = NULL;
+    const char             *orig_empt_spec_str;
+    char                   *orig_empt_spec_buf  = NULL;
+    hidrd_opt_spec         *test_empt_spec_list = NULL;
+    char                   *test_empt_spec_str  = NULL;
+    const char             *orig_empt_opt_str;
+    char                   *orig_empt_opt_buf   = NULL;
+    hidrd_opt              *test_empt_opt_list  = NULL;
+    char                   *test_empt_opt_str   = NULL;
+
+    const char             *orig_norm_spec_str;
+    char                   *orig_norm_spec_buf  = NULL;
+    hidrd_opt_spec         *test_norm_spec_list = NULL;
+    char                   *test_norm_spec_str  = NULL;
+    const char             *orig_norm_opt_str;
+    char                   *orig_norm_opt_buf   = NULL;
+    hidrd_opt              *test_norm_opt_list  = NULL;
+    char                   *test_norm_opt_str   = NULL;
 
     (void)argc;
     (void)argv;
 
     /*******************************************
-     * Test option specification list parsing
+     * Test empty option specification list processing
      *******************************************/
-    orig_spec_str = "format=b?yes'Format XML output,"
+    orig_empt_spec_str = "";
+    orig_empt_spec_buf = strdup(orig_empt_spec_str);
+
+    test_empt_spec_list = hidrd_opt_spec_list_parse(orig_empt_spec_buf);
+    if (test_empt_spec_list == NULL)
+        error(1, errno, "Failed to parse empty option specification list");
+
+    if (hidrd_opt_spec_list_len(test_empt_spec_list) != 0)
+        error(1, 0,
+              "Empty option specification list length is %zu "
+              "instead of %zu",
+              hidrd_opt_spec_list_len(test_empt_spec_list), (size_t)0);
+
+    test_empt_spec_str = hidrd_opt_spec_list_format(test_empt_spec_list);
+    if (test_empt_spec_str == NULL)
+        error(1, errno, "Failed to format empty option specification list");
+
+    if (strcmp(test_empt_spec_str, orig_empt_spec_str) != 0)
+        error(1, 0,
+              "Test specification list string:\n%s\n"
+              "mismatches the original:\n%s\n",
+              test_empt_spec_str, orig_empt_spec_str);
+
+    free(test_empt_spec_str);
+
+    /*******************************************
+     * Test empty option list processing
+     *******************************************/
+    orig_empt_opt_str = "";
+    orig_empt_opt_buf = strdup(orig_empt_opt_str);
+
+    test_empt_opt_list = hidrd_opt_list_parse(test_empt_spec_list,
+                                              orig_empt_opt_buf);
+    if (test_empt_opt_list == NULL)
+        error(1, errno, "Failed to parse empty option list");
+
+    if (hidrd_opt_list_len(test_empt_opt_list) != 5)
+        error(1, 0,
+              "Unexpected empty option list length: %zu instead of %zu",
+              hidrd_opt_list_len(test_empt_opt_list), (size_t)0);
+
+    test_empt_opt_str = hidrd_opt_list_format(test_empt_opt_list);
+    if (test_empt_opt_str == NULL)
+        error(1, errno, "Failed to format empty option list");
+
+    fprintf(stderr, "test_empt_opt_str: \"%s\"\n", test_empt_opt_str);
+
+    free(test_empt_opt_str);
+
+    free(test_empt_opt_list);
+    free(orig_empt_opt_buf);
+
+    free(test_empt_spec_list);
+    free(orig_empt_spec_buf);
+
+    /*******************************************
+     * Test normal option specification list processing
+     *******************************************/
+    orig_norm_spec_str = "format=b?yes'Format XML output,"
                     "author=s?Nikolai Kondrashov'Descriptor author,"
                     "group=b?yes'Group paired items into single elements,"
                     "type=s'Type,"
                     "obscure=b";
 
     /* Parse specification list */
-    orig_spec_buf = strdup(orig_spec_str);
+    orig_norm_spec_buf = strdup(orig_norm_spec_str);
 
-    test_spec_list = hidrd_opt_spec_list_parse(orig_spec_buf);
-    if (test_spec_list == NULL)
+    test_norm_spec_list = hidrd_opt_spec_list_parse(orig_norm_spec_buf);
+    if (test_norm_spec_list == NULL)
         error(1, errno, "Failed to parse option specification list");
 
-    if (hidrd_opt_spec_list_len(test_spec_list) != 5)
+    if (hidrd_opt_spec_list_len(test_norm_spec_list) != 5)
         error(1, 0,
               "Option specification list length is %zu, instead of %zu",
-              hidrd_opt_spec_list_len(test_spec_list), (size_t)5);
+              hidrd_opt_spec_list_len(test_norm_spec_list), (size_t)5);
 
 #define CHECK(_i, _name, _T, _t, _req, _dflt, _desc) \
     do {                                                                \
-        const hidrd_opt_spec   *_s = &test_spec_list[_i];               \
+        const hidrd_opt_spec   *_s = &test_norm_spec_list[_i];          \
                                                                         \
         if (strcmp(_s->name, _name) != 0)                               \
             error(1, 0,                                                 \
@@ -119,45 +186,46 @@ main(int argc, char **argv)
 #undef CHECK
 
     /* Format specification list */
-    test_spec_str = hidrd_opt_spec_list_format(test_spec_list);
-    if (test_spec_str == NULL)
+    test_norm_spec_str = hidrd_opt_spec_list_format(test_norm_spec_list);
+    if (test_norm_spec_str == NULL)
         error(1, errno, "Failed to format option specification list");
 
-    if (strcmp(test_spec_str, orig_spec_str) != 0)
+    if (strcmp(test_norm_spec_str, orig_norm_spec_str) != 0)
         error(1, 0,
               "Test specification list string:\n%s\n"
               "mismatches the original:\n%s\n",
-              test_spec_str, orig_spec_str);
+              test_norm_spec_str, orig_norm_spec_str);
 
-    free(test_spec_str);
+    free(test_norm_spec_str);
 
     /*******************************************
-     * Test option list parsing
+     * Test normal option list processing
      *******************************************/
-    orig_opt_str = "format=yes,group=no,type=test,obscure=no";
-    orig_opt_buf = strdup(orig_opt_str);
+    orig_norm_opt_str = "format=yes,group=no,type=test,obscure=no";
+    orig_norm_opt_buf = strdup(orig_norm_opt_str);
 
-    test_opt_list = hidrd_opt_list_parse(test_spec_list, orig_opt_buf);
-    if (test_opt_list == NULL)
+    test_norm_opt_list = hidrd_opt_list_parse(test_norm_spec_list,
+                                              orig_norm_opt_buf);
+    if (test_norm_opt_list == NULL)
         error(1, errno, "Failed to parse option list");
 
-    if (hidrd_opt_list_len(test_opt_list) != 5)
+    if (hidrd_opt_list_len(test_norm_opt_list) != 5)
         error(1, 0, "Unexpected option list length: %zu instead of %zu",
-              hidrd_opt_list_len(test_opt_list), (size_t)5);
+              hidrd_opt_list_len(test_norm_opt_list), (size_t)5);
 
-    test_opt_str = hidrd_opt_list_format(test_opt_list);
-    if (test_opt_str == NULL)
+    test_norm_opt_str = hidrd_opt_list_format(test_norm_opt_list);
+    if (test_norm_opt_str == NULL)
         error(1, errno, "Failed to format option list");
 
-    fprintf(stderr, "test_opt_str: \"%s\"\n", test_opt_str);
+    fprintf(stderr, "test_norm_opt_str: \"%s\"\n", test_norm_opt_str);
 
-    free(test_opt_str);
+    free(test_norm_opt_str);
 
-    free(test_opt_list);
-    free(orig_opt_buf);
+    free(test_norm_opt_list);
+    free(orig_norm_opt_buf);
 
-    free(test_spec_list);
-    free(orig_spec_buf);
+    free(test_norm_spec_list);
+    free(orig_norm_spec_buf);
 
     return 0;
 }
