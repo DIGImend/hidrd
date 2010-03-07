@@ -28,40 +28,25 @@
 #include <stdio.h>
 #include "hidrd/item/collection.h"
 
+/* Define type decimal string conversion functions */
+HIDRD_DEC_CONV_DEFS(item_collection_type, type, uint32_t, u32);
+
 #ifdef HIDRD_WITH_TOKENS
-char *
-hidrd_item_collection_type_to_token(hidrd_item_collection_type type)
-{
-    assert(hidrd_item_collection_type_valid(type));
-
-    switch (type)
-    {
-#define MAP(_NAME, _name) \
-    case HIDRD_ITEM_COLLECTION_TYPE_##_NAME:   \
-        return strdup(#_name)
-
-        MAP(PHYSICAL, physical);
-        MAP(APPLICATION, application);
-        MAP(LOGICAL, logical);
-        MAP(REPORT, report);
-        MAP(NAMED_ARRAY, named_array);
-        MAP(USAGE_SWITCH, usage_switch);
-        MAP(USAGE_MODIFIER, usage_modifier);
-
+static const hidrd_tkn_link type_map[] = {
+#define MAP(_NAME, _name)   \
+    {.str= #_name, .num = HIDRD_ITEM_COLLECTION_TYPE_##_NAME}
+    MAP(PHYSICAL, physical),
+    MAP(APPLICATION, application),
+    MAP(LOGICAL, logical),
+    MAP(REPORT, report),
+    MAP(NAMED_ARRAY, named_array),
+    MAP(USAGE_SWITCH, usage_switch),
+    MAP(USAGE_MODIFIER, usage_modifier),
 #undef MAP
+    {.str = NULL}
+};
 
-    default:
-        {
-            char   *token;
+/* Define type token conversion functions */
+HIDRD_TKN_CONV_DEFS(item_collection_type, type, dec)
 
-            if (!hidrd_item_collection_type_valid(type))
-                return NULL;
-
-            if (asprintf(&token, "%u", type) < 0)
-                return NULL;
-
-            return token;
-        }
-    }
-}
 #endif /* HIDRD_WITH_TOKENS */

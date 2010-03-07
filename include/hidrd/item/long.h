@@ -73,6 +73,13 @@ hidrd_item_long_validate(hidrd_item *item)
 
 typedef uint8_t hidrd_item_long_tag;
 
+static inline bool
+hidrd_item_long_tag_valid(hidrd_item_long_tag tag)
+{
+    (void)tag;
+    return true;
+}
+
 static inline uint8_t
 hidrd_item_long_get_data_size(const hidrd_item *item)
 {
@@ -104,6 +111,9 @@ hidrd_item_long_set_tag(hidrd_item *item, hidrd_item_long_tag tag)
     ((uint8_t *)hidrd_item_basic_get_data(item))[1] = tag;
     return item;
 }
+
+/* Declare tag decimal string conversion functions */
+HIDRD_DEC_CONV_DECLS(item_long_tag, tag);
 
 static inline void *
 hidrd_item_long_get_data(hidrd_item *item)

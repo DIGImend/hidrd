@@ -1,7 +1,7 @@
 /** @file
  * @brief HID report descriptor - global item
  *
- * Copyright (C) 2009 Nikolai Kondrashov
+ * Copyright (C) 2009-2010 Nikolai Kondrashov
  *
  * This file is part of hidrd.
  *
@@ -27,37 +27,30 @@
 #include <string.h>
 #include "hidrd/item/global.h"
 
+/* Define tag decimal string conversion functions */
+HIDRD_DEC_CONV_DEFS(item_global_tag, tag, uint32_t, u32);
+
 #ifdef HIDRD_WITH_TOKENS
-char *
-hidrd_item_global_tag_to_token(hidrd_item_global_tag tag)
-{
-    assert(hidrd_item_global_tag_valid(tag));
-
-    switch (tag)
-    {
-#define MAP(_NAME, _name) \
-    case HIDRD_ITEM_GLOBAL_TAG_##_NAME:   \
-        return strdup(#_name)
-
-        MAP(USAGE_PAGE, usage_page);
-        MAP(LOGICAL_MINIMUM, logical_minimum);
-        MAP(LOGICAL_MAXIMUM, logical_maximum);
-        MAP(PHYSICAL_MINIMUM, physical_minimum);
-        MAP(PHYSICAL_MAXIMUM, physical_maximum);
-        MAP(UNIT_EXPONENT, unit_exponent);
-        MAP(UNIT, unit);
-        MAP(REPORT_SIZE, report_size);
-        MAP(REPORT_ID, report_id);
-        MAP(REPORT_COUNT, report_count);
-        MAP(PUSH, push);
-        MAP(POP, pop);
-
+static const hidrd_tkn_link tag_map[] = {
+#define MAP(_NAME, _name)   \
+    {.str= #_name, .num = HIDRD_ITEM_GLOBAL_TAG_##_NAME}
+    MAP(USAGE_PAGE, usage_page),
+    MAP(LOGICAL_MINIMUM, logical_minimum),
+    MAP(LOGICAL_MAXIMUM, logical_maximum),
+    MAP(PHYSICAL_MINIMUM, physical_minimum),
+    MAP(PHYSICAL_MAXIMUM, physical_maximum),
+    MAP(UNIT_EXPONENT, unit_exponent),
+    MAP(UNIT, unit),
+    MAP(REPORT_SIZE, report_size),
+    MAP(REPORT_ID, report_id),
+    MAP(REPORT_COUNT, report_count),
+    MAP(PUSH, push),
+    MAP(POP, pop),
 #undef MAP
+    {.str = NULL}
+};
 
-    default:
-        return hidrd_item_global_tag_valid(tag)
-                ? hidrd_item_basic_tag_to_token(tag)
-                : NULL;
-    }
-}
+/* Define tag token conversion functions */
+HIDRD_TKN_CONV_DEFS(item_global_tag, tag, dec)
+
 #endif /* HIDRD_WITH_TOKENS */

@@ -24,7 +24,10 @@
  * @(#) $Id$
  */
 
+#include <string.h>
+#ifdef HIDRD_WITH_TOKENS
 #include "hidrd/item/short.h"
+#endif
 
 
 static uint32_t
@@ -183,5 +186,28 @@ hidrd_item_short_set_signed(hidrd_item *item, int32_t data)
                     item, HIDRD_ITEM_SHORT_DATA_SIZE_4B);
     }
 }
+
+
+/* Define type decimal string conversion functions */
+HIDRD_DEC_CONV_DEFS(item_short_type, type, uint32_t, u32);
+
+/* Define tag decimal string conversion functions */
+HIDRD_DEC_CONV_DEFS(item_short_tag, tag, uint32_t, u32);
+
+#ifdef HIDRD_WITH_TOKENS
+static const hidrd_tkn_link type_map[] = {
+#define MAP(_NAME, _name)   \
+    {.str= #_name, .num = HIDRD_ITEM_SHORT_TYPE_##_NAME}
+    MAP(MAIN,       main),
+    MAP(GLOBAL,     global),
+    MAP(LOCAL,      local),
+#undef MAP
+    {.str = NULL}
+};
+
+/* Define type token conversion functions */
+HIDRD_TKN_CONV_DEFS(item_short_type, type, dec)
+
+#endif /* HIDRD_WITH_TOKENS */
 
 

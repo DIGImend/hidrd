@@ -1,7 +1,7 @@
 /** @file
  * @brief HID report descriptor - main item
  *
- * Copyright (C) 2009 Nikolai Kondrashov
+ * Copyright (C) 2009-2010 Nikolai Kondrashov
  *
  * This file is part of hidrd.
  *
@@ -27,30 +27,23 @@
 #include <string.h>
 #include "hidrd/item/main.h"
 
+/* Define tag decimal string conversion functions */
+HIDRD_DEC_CONV_DEFS(item_main_tag, tag, uint32_t, u32);
+
 #ifdef HIDRD_WITH_TOKENS
-char *
-hidrd_item_main_tag_to_token(hidrd_item_main_tag tag)
-{
-    assert(hidrd_item_main_tag_valid(tag));
-
-    switch (tag)
-    {
-#define MAP(_NAME, _name) \
-    case HIDRD_ITEM_MAIN_TAG_##_NAME:   \
-        return strdup(#_name)
-
-        MAP(INPUT,          input);
-        MAP(OUTPUT,         output);
-        MAP(COLLECTION,     collection);
-        MAP(FEATURE,        feature);
-        MAP(END_COLLECTION, end_collection);
-
+static const hidrd_tkn_link tag_map[] = {
+#define MAP(_NAME, _name)   \
+    {.str= #_name, .num = HIDRD_ITEM_MAIN_TAG_##_NAME}
+    MAP(INPUT,          input),
+    MAP(OUTPUT,         output),
+    MAP(COLLECTION,     collection),
+    MAP(FEATURE,        feature),
+    MAP(END_COLLECTION, end_collection),
 #undef MAP
+    {.str = NULL}
+};
 
-    default:
-        return hidrd_item_main_tag_valid(tag)
-                ? hidrd_item_basic_tag_to_token(tag)
-                : NULL;
-    }
-}
+/* Define tag token conversion functions */
+HIDRD_TKN_CONV_DEFS(item_main_tag, tag, dec)
+
 #endif /* HIDRD_WITH_TOKENS */

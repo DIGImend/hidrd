@@ -24,6 +24,7 @@
  * @(#) $Id$
  */
 
+#include "hidrd/util/hex.h"
 #include "hidrd/fmt/xml/prop.h"
 #include "hidrd/fmt/xml/snk.h"
 
@@ -231,39 +232,6 @@ typedef enum str_fmt {
 
 
 /**
- * Format hex string.
- *
- * @param buf   Data buffer to format.
- * @param size  Data size.
- *
- * @return Dynamically allocated hex string.
- */
-static char *
-fmt_str_hex(uint8_t *buf, size_t size)
-{
-    static const char   map[16] = "0123456789ABCDEF";
-    char               *str;
-    char               *p;
-    uint8_t             b;
-
-    str = malloc((size * 2) + 1);
-    if (str == NULL)
-        return NULL;
-
-    for (p = str; size > 0; size--, buf++)
-    {
-        b = *buf;
-        *p++ = map[b >> 4];
-        *p++ = map[b & 0xF];
-    }
-
-    *p = '\0';
-
-    return str;
-}
-
-
-/**
  * Format a string according to format type.
  *
  * @param pstr  Location for a (dynamically allocated) resulting string
@@ -318,7 +286,7 @@ fmt_strpv(char     **pstr,
                 void   *buf     = va_arg(*pap, void *);
                 size_t  size    = va_arg(*pap, size_t);
 
-                str = fmt_str_hex(buf, size);
+                str = hidrd_hex_buf_to_str(buf, size);
                 if (str == NULL)
                     return false;
             }
@@ -783,7 +751,8 @@ write_main_element(hidrd_xml_snk_inst   *xml_snk,
             return GROUP_START(
                     COLLECTION,
                     ATTR(type, STROWN,
-                         hidrd_item_collection_get_type_token(item)));
+                         hidrd_item_collection_type_to_token_or_dec(
+                             hidrd_item_collection_get_type(item))));
         case HIDRD_ITEM_MAIN_TAG_END_COLLECTION:
             return GROUP_END(COLLECTION);
 
@@ -791,12 +760,14 @@ write_main_element(hidrd_xml_snk_inst   *xml_snk,
         case HIDRD_ITEM_MAIN_TAG_OUTPUT:
         case HIDRD_ITEM_MAIN_TAG_FEATURE:
             {
-                char   *token;
-                bool    result;
+                const char *token;
+                bool        result;
 
-                token   = hidrd_item_main_tag_to_token(tag);
+                assert(hidrd_item_main_tag_known(tag));
+
+                token = hidrd_item_main_tag_to_token(tag);
+                assert(token != NULL);
                 result = element_add(xml_snk, true, token, NT_NONE);
-                free(token);
                 if (!result)
                     return false;
 
@@ -811,7 +782,7 @@ write_main_element(hidrd_xml_snk_inst   *xml_snk,
             return ADD_SIMPLE(
                     main,
                     ATTR(tag, STROWN,
-                         hidrd_item_main_tag_to_token(tag)),
+                         hidrd_item_main_tag_to_token_or_dec(tag)),
                     CONTENT(
                         HEX,
                         /* We promise we won't change it */
@@ -998,9 +969,11 @@ static bool
 write_global_element(hidrd_xml_snk_inst   *xml_snk,
                    const hidrd_item      *item)
 {
+    hidrd_item_global_tag   tag;
+
     assert(hidrd_item_global_valid(item));
 
-    switch (hidrd_item_global_get_tag(item))
+    switch (tag = hidrd_item_global_get_tag(item))
     {
         CASE_SIMPLE_INT(GLOBAL, LOGICAL_MINIMUM, logical_minimum);
         CASE_SIMPLE_INT(GLOBAL, LOGICAL_MAXIMUM, logical_maximum);
@@ -1061,7 +1034,7 @@ write_global_element(hidrd_xml_snk_inst   *xml_snk,
             return ADD_SIMPLE(
                     global,
                     ATTR(tag, STROWN,
-                         hidrd_item_global_get_tag_token(item)),
+                         hidrd_item_global_tag_to_token_or_dec(tag)),
                     CONTENT(HEX,
                             /* We promise we won't change it */
                             hidrd_item_short_get_data((hidrd_item *)item)),
@@ -1130,9 +1103,11 @@ static bool
 write_local_element(hidrd_xml_snk_inst   *xml_snk,
                    const hidrd_item      *item)
 {
+    hidrd_item_local_tag    tag;
+
     assert(hidrd_item_local_valid(item));
 
-    switch (hidrd_item_local_get_tag(item))
+    switch (tag = hidrd_item_local_get_tag(item))
     {
         CASE_SIMPLE_UINT(LOCAL, DESIGNATOR_INDEX, designator_index);
         CASE_SIMPLE_UINT(LOCAL, DESIGNATOR_MINIMUM, designator_minimum);
@@ -1165,7 +1140,7 @@ write_local_element(hidrd_xml_snk_inst   *xml_snk,
             return ADD_SIMPLE(
                     local,
                     ATTR(tag, STROWN,
-                         hidrd_item_local_get_tag_token(item)),
+                         hidrd_item_local_tag_to_token_or_dec(tag)),
                     CONTENT(HEX,
                             /* We promise we won't change it */
                             hidrd_item_short_get_data((hidrd_item *)item)),
@@ -1191,9 +1166,11 @@ write_short_element(hidrd_xml_snk_inst   *xml_snk,
         default:
             return ADD_SIMPLE(short,
                     ATTR(type, STROWN,
-                         hidrd_item_short_get_type_token(item)),
+                         hidrd_item_short_type_to_token_or_dec(
+                             hidrd_item_short_get_type(item))),
                     ATTR(tag, STROWN,
-                         hidrd_item_short_get_tag_token(item)),
+                         hidrd_item_short_tag_to_dec(
+                             hidrd_item_short_get_tag(item))),
                     CONTENT(HEX,
                             /* We promise we won't change it */
                             hidrd_item_short_get_data((hidrd_item *)item)),
@@ -1223,9 +1200,11 @@ write_basic_element(hidrd_xml_snk_inst   *xml_snk,
         default:
             return ADD_SIMPLE(basic,
                     ATTR(type, STROWN,
-                         hidrd_item_basic_get_type_token(item)),
+                         hidrd_item_basic_type_to_token_or_dec(
+                             hidrd_item_basic_get_type(item))),
                     ATTR(tag, STROWN,
-                         hidrd_item_basic_get_tag_token(item)),
+                         hidrd_item_basic_tag_to_dec(
+                             hidrd_item_basic_get_tag(item))),
                     ATTR(tag, UINT,
                          hidrd_item_basic_get_data_size_bytes(item)));
     }

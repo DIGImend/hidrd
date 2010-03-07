@@ -67,13 +67,12 @@ hidrd_item_short_type_valid(hidrd_item_short_type type)
     }
 }
 
+/* Declare type decimal string conversion functions */
+HIDRD_DEC_CONV_DECLS(item_short_type, type);
+
 #ifdef HIDRD_WITH_TOKENS
-static inline char *
-hidrd_item_short_type_to_token(hidrd_item_short_type type)
-{
-    assert(hidrd_item_short_type_valid(type));
-    return hidrd_item_basic_type_to_token(type);
-}
+/* Declare type token conversion functions */
+HIDRD_TKN_CONV_DECLS(item_short_type, type, dec);
 #endif /* HIDRD_WITH_TOKENS */
 
 /** Short item tag */
@@ -94,15 +93,8 @@ hidrd_item_short_tag_valid(hidrd_item_short_tag tag)
     return hidrd_item_basic_tag_valid(tag);
 }
 
-#ifdef HIDRD_WITH_TOKENS
-static inline char *
-hidrd_item_short_tag_to_token(hidrd_item_short_tag tag)
-{
-    assert(hidrd_item_short_tag_valid(tag));
-    return hidrd_item_basic_tag_to_token(tag);
-}
-#endif /* HIDRD_WITH_TOKENS */
-
+/* Declare tag decimal string conversion functions */
+HIDRD_DEC_CONV_DECLS(item_short_tag, tag);
 
 /** Short item data size code */
 typedef hidrd_item_basic_data_size hidrd_item_short_data_size;
@@ -214,17 +206,6 @@ hidrd_item_short_get_type(const hidrd_item *item)
 }
 
 
-#ifdef HIDRD_WITH_TOKENS
-static inline char *
-hidrd_item_short_get_type_token(const hidrd_item *item)
-{
-    assert(hidrd_item_short_valid(item));
-    return hidrd_item_short_type_to_token(
-            hidrd_item_short_get_type(item));
-}
-#endif
-
-
 /**
  * Set a short item type.
  *
@@ -255,17 +236,6 @@ hidrd_item_short_get_tag(const hidrd_item *item)
     assert(hidrd_item_short_valid(item));
     return hidrd_item_basic_get_tag(item);
 }
-
-
-#ifdef HIDRD_WITH_TOKENS
-static inline char *
-hidrd_item_short_get_tag_token(const hidrd_item *item)
-{
-    assert(hidrd_item_short_valid(item));
-    return hidrd_item_short_tag_to_token(
-            hidrd_item_short_get_tag(item));
-}
-#endif
 
 
 /**
@@ -552,6 +522,9 @@ hidrd_item_short_init_unsigned(hidrd_item              *item,
         return hidrd_item_short_set_tag(item, tag);                     \
     }                                                                   \
                                                                         \
+    /* Declare tag decimal string conversion functions */               \
+    HIDRD_DEC_CONV_DECLS(item_##_name##_tag, tag);                      \
+                                                                        \
     static inline hidrd_item *                                          \
     hidrd_item_##_name##_init(hidrd_item               *item,           \
                               hidrd_item_##_name##_tag  tag)            \
@@ -623,19 +596,11 @@ hidrd_item_short_init_unsigned(hidrd_item              *item,
 
 #ifdef HIDRD_WITH_TOKENS
 #define HIDRD_ITEM_SHORT_GEN_TOKEN_FUNCS(_name) \
-    extern char *hidrd_item_##_name##_tag_to_token(             \
-                                hidrd_item_##_name##_tag tag);  \
-                                                                \
-    static inline char *                                        \
-    hidrd_item_##_name##_get_tag_token(const hidrd_item *item)  \
-    {                                                           \
-        assert(hidrd_item_##_name##_valid(item));               \
-        return hidrd_item_##_name##_tag_to_token(               \
-                hidrd_item_##_name##_get_tag(item));            \
-    }
-#else /* HIDRD_WITH_TOKENS */
+    /* Declare tag token conversion functions */        \
+    HIDRD_TKN_CONV_DECLS(item_##_name##_tag, tag, dec);
+#else
 #define HIDRD_ITEM_SHORT_GEN_TOKEN_FUNCS(_name)
-#endif /* !HIDRD_WITH_TOKENS */
+#endif
 
 #define HIDRD_ITEM_SHORT_GEN_FUNCS(_name, _NAME) \
     HIDRD_ITEM_SHORT_GEN_CORE_FUNCS(_name, _NAME)   \

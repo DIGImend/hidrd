@@ -29,7 +29,10 @@ libhidrd_item_la_SOURCES = \
     pfx.c                   \
     short.c
 
-libhidrd_item_la_LIBADD = ../usage/libhidrd_usage.la ../unit/libhidrd_unit.la
+libhidrd_item_la_LIBADD = \
+    ../unit/libhidrd_unit.la    \
+    ../usage/libhidrd_usage.la  \
+    ../util/libhidrd_util.la
 
 TESTS = hidrd_item_any_test
 

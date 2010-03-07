@@ -27,36 +27,29 @@
 #include <string.h>
 #include "hidrd/item/local.h"
 
+/* Define tag decimal string conversion functions */
+HIDRD_DEC_CONV_DEFS(item_local_tag, tag, uint32_t, u32);
+
 #ifdef HIDRD_WITH_TOKENS
-char *
-hidrd_item_local_tag_to_token(hidrd_item_local_tag tag)
-{
-    assert(hidrd_item_local_tag_valid(tag));
-
-    switch (tag)
-    {
-#define MAP(_NAME, _name) \
-    case HIDRD_ITEM_LOCAL_TAG_##_NAME:   \
-        return strdup(#_name)
-
-        MAP(USAGE, usage);
-        MAP(USAGE_MINIMUM, usage_minimum);
-        MAP(USAGE_MAXIMUM, usage_maximum);
-        MAP(DESIGNATOR_INDEX, designator_index);
-        MAP(DESIGNATOR_MINIMUM, designator_minimum);
-        MAP(DESIGNATOR_MAXIMUM, designator_maximum);
-        MAP(INVALID, invalid);
-        MAP(STRING_INDEX, string_index);
-        MAP(STRING_MINIMUM, string_minimum);
-        MAP(STRING_MAXIMUM, string_maximum);
-        MAP(DELIMITER, delimiter);
-
+static const hidrd_tkn_link tag_map[] = {
+#define MAP(_NAME, _name)   \
+    {.str= #_name, .num = HIDRD_ITEM_LOCAL_TAG_##_NAME}
+    MAP(USAGE, usage),
+    MAP(USAGE_MINIMUM, usage_minimum),
+    MAP(USAGE_MAXIMUM, usage_maximum),
+    MAP(DESIGNATOR_INDEX, designator_index),
+    MAP(DESIGNATOR_MINIMUM, designator_minimum),
+    MAP(DESIGNATOR_MAXIMUM, designator_maximum),
+    MAP(INVALID, invalid),
+    MAP(STRING_INDEX, string_index),
+    MAP(STRING_MINIMUM, string_minimum),
+    MAP(STRING_MAXIMUM, string_maximum),
+    MAP(DELIMITER, delimiter),
 #undef MAP
+    {.str = NULL}
+};
 
-    default:
-        return hidrd_item_local_tag_valid(tag)
-                ? hidrd_item_basic_tag_to_token(tag)
-                : NULL;
-    }
-}
+/* Define tag token conversion functions */
+HIDRD_TKN_CONV_DEFS(item_local_tag, tag, dec)
+
 #endif /* HIDRD_WITH_TOKENS */

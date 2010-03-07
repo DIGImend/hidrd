@@ -28,6 +28,10 @@
 #define __HIDRD_ITEM_BASIC_H__
 
 #include <assert.h>
+#include "hidrd/util/dec.h"
+#ifdef HIDRD_WITH_TOKENS
+#include "hidrd/util/tkn.h"
+#endif
 #include "hidrd/item/type.h"
 #include "hidrd/item/pfx.h"
 
@@ -60,15 +64,13 @@ hidrd_item_basic_type_valid(hidrd_item_basic_type type)
     return hidrd_item_pfx_type_valid(type);
 }
 
+
+/* Declare type decimal string conversion functions */
+HIDRD_DEC_CONV_DECLS(item_basic_type, type);
+
 #ifdef HIDRD_WITH_TOKENS
-/**
- * Convert a basic item type to a string token.
- *
- * @param type  Basic item type.
- *
- * @return Dynamically allocated basic item type string token.
- */
-extern char *hidrd_item_basic_type_to_token(hidrd_item_basic_type type);
+/* Declare type token conversion functions */
+HIDRD_TKN_CONV_DECLS(item_basic_type, type, dec);
 #endif /* HIDRD_WITH_TOKENS */
 
 /** Basic item prefix' tag bitfield value */
@@ -90,16 +92,8 @@ hidrd_item_basic_tag_valid(hidrd_item_basic_tag tag)
     return hidrd_item_pfx_tag_valid(tag);
 }
 
-#ifdef HIDRD_WITH_TOKENS
-/**
- * Convert a basic item tag to a string token.
- *
- * @param tag   Basic item tag.
- *
- * @return Dynamically allocated basic item tag string token.
- */
-extern char *hidrd_item_basic_tag_to_token(hidrd_item_basic_tag tag);
-#endif /* HIDRD_WITH_TOKENS */
+/* Declare tag decimal string conversion functions */
+HIDRD_DEC_CONV_DECLS(item_basic_tag, tag);
 
 /** Basic item prefix' data size bitfield value */
 typedef hidrd_item_pfx_size hidrd_item_basic_data_size;
@@ -381,16 +375,6 @@ hidrd_item_basic_get_type(const hidrd_item *item)
     return hidrd_item_pfx_get_type(hidrd_item_basic_get_pfx(item));
 }
 
-#ifdef HIDRD_WITH_TOKENS
-static inline char *
-hidrd_item_basic_get_type_token(const hidrd_item *item)
-{
-    assert(hidrd_item_basic_valid(item));
-    return hidrd_item_basic_type_to_token(
-            hidrd_item_basic_get_type(item));
-}
-#endif /* HIDRD_WITH_TOKENS */
-
 /**
  * Set type to a basic item's prefix.
  *
@@ -425,16 +409,6 @@ hidrd_item_basic_get_tag(const hidrd_item *item)
     assert(hidrd_item_basic_valid(item));
     return hidrd_item_pfx_get_tag(hidrd_item_basic_get_pfx(item));
 }
-
-#ifdef HIDRD_WITH_TOKENS
-static inline char *
-hidrd_item_basic_get_tag_token(const hidrd_item *item)
-{
-    assert(hidrd_item_basic_valid(item));
-    return hidrd_item_basic_tag_to_token(
-            hidrd_item_basic_get_tag(item));
-}
-#endif /* HIDRD_WITH_TOKENS */
 
 /**
  * Set tag to a basic item's prefix.

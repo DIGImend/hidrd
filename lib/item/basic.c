@@ -26,47 +26,30 @@
 
 #include <string.h>
 #include <stdio.h>
+#ifdef HIDRD_WITH_TOKENS
+#include "hidrd/util/tkn.h"
+#endif
 #include "hidrd/item/basic.h"
 
+/* Define type decimal string conversion functions */
+HIDRD_DEC_CONV_DEFS(item_basic_type, type, uint32_t, u32);
+
+/* Define tag decimal string conversion functions */
+HIDRD_DEC_CONV_DEFS(item_basic_tag, tag, uint32_t, u32);
 
 #ifdef HIDRD_WITH_TOKENS
-
-char *
-hidrd_item_basic_type_to_token(hidrd_item_basic_type type)
-{
-    assert(hidrd_item_basic_type_valid(type));
-
-    switch (type)
-    {
-#define MAP(_NAME, _name) \
-    case HIDRD_ITEM_BASIC_TYPE_##_NAME: \
-        return strdup(#_name)
-
-        MAP(MAIN,       main);
-        MAP(GLOBAL,     global);
-        MAP(LOCAL,      local);
-        MAP(RESERVED,   reserved);
-
+static const hidrd_tkn_link type_map[] = {
+#define MAP(_NAME, _name)   \
+    {.str= #_name, .num = HIDRD_ITEM_BASIC_TYPE_##_NAME}
+    MAP(MAIN,       main),
+    MAP(GLOBAL,     global),
+    MAP(LOCAL,      local),
+    MAP(RESERVED,   reserved),
 #undef MAP
+    {.str = NULL}
+};
 
-        default:
-            assert(!"Unknown basic item type");
-            return NULL;
-    }
-}
-
-
-char *
-hidrd_item_basic_tag_to_token(hidrd_item_basic_tag tag)
-{
-    char   *token;
-
-    assert(hidrd_item_basic_tag_valid(tag));
-
-    if (asprintf(&token, "%u", tag) < 0)
-        return NULL;
-
-    return token;
-}
+/* Define type token conversion functions */
+HIDRD_TKN_CONV_DEFS(item_basic_type, type, dec)
 
 #endif /* HIDRD_WITH_TOKENS */
