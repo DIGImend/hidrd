@@ -127,7 +127,8 @@ break_element(xmlNodePtr            element,
             return false;
 
         /* Copy original element's properties */
-        xmlCopyPropList(sibling, element->properties);
+        if (xmlCopyPropList(sibling, element->properties) == NULL)
+            return false;
     }
 
     /* For each child of the original element */
