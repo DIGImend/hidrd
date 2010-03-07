@@ -227,6 +227,7 @@ AC_CONFIG_FILES([Makefile
 
                  include/Makefile
                  include/hidrd/Makefile
+                 include/hidrd/util/Makefile
                  include/hidrd/item/Makefile
                  include/hidrd/item/pfx/Makefile
                  include/hidrd/opt/Makefile
@@ -239,6 +240,7 @@ AC_CONFIG_FILES([Makefile
                  include/hidrd/usage/Makefile
                  
                  lib/Makefile
+                 lib/util/Makefile
                  lib/item/Makefile
                  lib/opt/Makefile
                  lib/strm/Makefile

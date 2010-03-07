@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2009-2010 Nikolai Kondrashov
+# Copyright (C) 2010 Nikolai Kondrashov
 #
 # This file is part of hidrd.
 #
@@ -17,16 +17,13 @@
 # along with hidrd; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-SUBDIRS = util usage unit item
+lib_LTLIBRARIES = libhidrd_util.la
 
-if ENABLE_OPT
-SUBDIRS += opt
-endif
+libhidrd_util_la_SOURCES = \
+    dec.c                   \
+    hex.c                   \
+    num.c
 
-if ENABLE_STRM
-SUBDIRS += strm
-endif
-
-if ENABLE_FMT
-SUBDIRS += fmt
+if ENABLE_TOKENS
+libhidrd_util_la_SOURCES += tkn.c
 endif
