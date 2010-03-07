@@ -324,7 +324,9 @@ hidrd_src_free(hidrd_src *src)
 void
 hidrd_src_delete(hidrd_src *src)
 {
-    assert(hidrd_src_valid(src));
+    assert(src == NULL || hidrd_src_valid(src));
+    if (src == NULL)
+        return;
     hidrd_src_clnp(src);
     hidrd_src_free(src);
 }

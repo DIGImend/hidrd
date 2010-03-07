@@ -342,7 +342,9 @@ hidrd_snk_free(hidrd_snk *snk)
 void
 hidrd_snk_delete(hidrd_snk *snk)
 {
-    assert(hidrd_snk_valid(snk));
+    assert(snk == NULL || hidrd_snk_valid(snk));
+    if (snk == NULL)
+        return;
     hidrd_snk_clnp(snk);
     hidrd_snk_free(snk);
 }
@@ -351,7 +353,10 @@ hidrd_snk_delete(hidrd_snk *snk)
 bool
 hidrd_snk_close(hidrd_snk *snk)
 {
-    assert(hidrd_snk_valid(snk));
+    assert(snk == NULL || hidrd_snk_valid(snk));
+
+    if (snk == NULL)
+        return true;
 
     if (!hidrd_snk_flush(snk))
         return false;
