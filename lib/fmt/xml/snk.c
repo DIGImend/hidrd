@@ -1,5 +1,5 @@
 /** @file
- * @brief HID report descriptor - XML stream type - writing
+ * @brief HID report descriptor - XML sink
  *
  * Copyright (C) 2009-2010 Nikolai Kondrashov
  *

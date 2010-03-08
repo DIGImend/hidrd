@@ -21,7 +21,8 @@ noinst_LTLIBRARIES = libhidrd_xml.la
 
 libhidrd_xml_la_SOURCES = \
     snk.c                   \
-    src.c
+    src.c                   \
+    src_element.c
 
 libhidrd_xml_la_LIBADD = \
     ../../util/libhidrd_util.la

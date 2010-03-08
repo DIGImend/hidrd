@@ -1,7 +1,7 @@
 /** @file
- * @brief HID report descriptor - XML stream type - reading
+ * @brief HID report descriptor - XML source
  *
- * Copyright (C) 2009 Nikolai Kondrashov
+ * Copyright (C) 2009-2010 Nikolai Kondrashov
  *
  * This file is part of hidrd.
  *
@@ -24,6 +24,7 @@
  * @(#) $Id$
  */
 
+#include "src_element.h"
 #include "hidrd/fmt/xml/src.h"
 
 
@@ -50,7 +51,7 @@ init(hidrd_src *src)
     /* TODO XML schema validation with xmlSchemaValidateDoc */
 
     /* Retrieve the root element */
-    root = xmlDocGetRootElement(xml_src->doc);
+    root = xmlDocGetRootElement(doc);
     if (root == NULL)
         goto failure;
 
@@ -59,6 +60,10 @@ init(hidrd_src *src)
     xml_src->prnt   = NULL;
     xml_src->cur    = root;
     xml_src->state  = state;
+
+    /* Own the resources */
+    doc = NULL;
+    state = NULL;
 
     return true;
 
@@ -92,209 +97,12 @@ hidrd_xml_src_valid(const hidrd_src *src)
            (xml_src->prnt != NULL || xml_src->cur != NULL);
 }
 
-/** Element processing result code */
-typedef enum element_rc {
-    ELEMENT_NONE,    /**< No item has been read, return */
-    ELEMENT_SKIP,    /**< No item has been read, proceed */
-    ELEMENT_ITEM,    /**< An item has been read, return */
-} element_rc;
-
-/**
- * Prototype for an element processing function.
- *
- * @param xml_src   XML source instance.
- * @param e         Element to handle (src->cur for element start, or src->prnt
- *                  for element end).
- * 
- * @return True if an item was read, false otherwise.
- */
-typedef element_rc element_fn(hidrd_xml_src_inst *xml_src, xmlNodePtr e);
-
-#define START(_name) \
-    static element_rc                                                   \
-    element_##_name##_start(hidrd_xml_src_inst *xml_src, xmlNodePtr e)
-
-#define END(_name) \
-    static element_rc                                                   \
-    element_##_name##_end(hidrd_xml_src_inst *xml_src, xmlNodePtr e)
-
-START(descriptor)
-{
-    (void)e;
-    /* Go down */
-    xml_src->prnt = xml_src->cur;
-    xml_src->cur = xml_src->prnt->children;
-    /* No item yet */
-    return ELEMENT_SKIP;
-}
-
-END(descriptor)
-{
-    (void)xml_src;
-    (void)e;
-    /* No more items */
-    return ELEMENT_NONE;
-}
-
-#undef END
-#undef START
-
-/** Element handler */
-typedef struct element_handler {
-    const char *name;   /**< Element name */
-    element_fn *start;  /**< Element start processing function */
-    element_fn *end;    /**< Element end processing function */
-} element_handler;
-
-/** Element handler list */
-static const element_handler handler_list[] = {
-#define IGNORE(_name)   {.name = #_name}
-#define START(_name)    {.name = #_name, .start = element_##_name##_start}
-#define END(_name)      {.name = #_name, .end = element_##_name##_end}
-#define BOTH(_name)     {.name  = #_name, \
-                         .start = element_##_name##_start,  \
-                         .end   = element_##_name##_end}
-    IGNORE(basic),
-    IGNORE(short),
-    IGNORE(main),
-    IGNORE(input),
-    IGNORE(output),
-    IGNORE(feature),
-    IGNORE(collection),
-    IGNORE(end_collection),
-    IGNORE(COLLECTION),
-    IGNORE(global),
-    IGNORE(usage_page),
-    IGNORE(logical_minimum),
-    IGNORE(logical_maximum),
-    IGNORE(physical_minimum),
-    IGNORE(physical_maximum),
-    IGNORE(unit_exponent),
-    IGNORE(unit),
-    IGNORE(report_size),
-    IGNORE(report_count),
-    IGNORE(report_id),
-    IGNORE(push),
-    IGNORE(pop),
-    IGNORE(PUSH),
-    IGNORE(local),
-    IGNORE(usage),
-    IGNORE(usage_minimum),
-    IGNORE(usage_maximum),
-    IGNORE(designator_index),
-    IGNORE(designator_minimum),
-    IGNORE(designator_maximum),
-    IGNORE(string_index),
-    IGNORE(string_minimum),
-    IGNORE(string_maximum),
-    IGNORE(delimiter),
-    IGNORE(SET),
-    IGNORE(long),
-    BOTH(descriptor),
-#undef BOTH
-#undef END
-#undef START
-#undef IGNORE
-};
-
-
-static element_rc
-element_start(hidrd_xml_src_inst   *xml_src)
-{
-    const char             *name;
-    size_t                  i;
-    const element_handler  *handler;
-
-    /* We have to process something */
-    assert(xml_src->cur != NULL);
-    /* We process elements only */
-    assert(xml_src->cur->type == XML_ELEMENT_NODE);
-    /* Either no parent or an element parent */
-    assert(xml_src->prnt == NULL ||
-           xml_src->prnt->type == XML_ELEMENT_NODE);
-
-    name = (const char *)xml_src->cur->name;
-
-    for (i = 0; i < sizeof(handler_list) / sizeof(*handler_list); i++)
-    {
-        handler = handler_list + i;
-
-        if (strcmp(handler->name, name) == 0)
-        {
-            if (handler->start == NULL)
-                return ELEMENT_SKIP;
-#ifdef NDEBUG
-            return (*handler->start)(xml_src, xml_src->cur);
-#else
-            xmlNodePtr  orig_prnt   = xml_src->prnt;
-            xmlNodePtr  orig_cur    = xml_src->cur;
-            element_rc  rc;
-
-            rc = (*handler->start)(xml_src, xml_src->cur);
-
-            /* We may stay or go one element deeper */
-            assert(xml_src->prnt == orig_prnt || xml_src->prnt == orig_cur);
-
-            return rc;
-#endif /* !NDEBUG */
-        }
-    }
-
-    xml_src->src.error = true;
-    return false;
-}
-
-
-static element_rc
-element_end(hidrd_xml_src_inst *xml_src)
-{
-    const char             *name;
-    size_t                  i;
-    const element_handler  *handler;
-
-    /* We have to process something */
-    assert(xml_src->prnt != NULL);
-    /* We process elements only */
-    assert(xml_src->prnt->type == XML_ELEMENT_NODE);
-    /* We should be at the end of the node list */
-    assert(xml_src->cur == NULL);
-
-    name = (const char *)xml_src->prnt->name;
-
-    for (i = 0; i < sizeof(handler_list) / sizeof(*handler_list); i++)
-    {
-        handler = handler_list + i;
-        if (strcmp(handler->name, name) == 0)
-        {
-            if (handler->end == NULL)
-                return ELEMENT_SKIP;
-#ifdef NDEBUG
-            return (*handler->end)(xml_src, xml_src->prnt);
-#else
-            xmlNodePtr  orig_prnt   = xml_src->prnt;
-            element_rc  rc;
-
-            rc = (*handler->end)(xml_src, xml_src->prnt);
-
-            /* We shouldn't change anything */
-            assert(xml_src->prnt == orig_prnt);
-            assert(xml_src->cur == NULL);
-
-            return rc;
-#endif /* !NDEBUG */
-        }
-    }
-
-    xml_src->src.error = true;
-    return false;
-}
-
-
 const hidrd_item *
 hidrd_xml_src_get(hidrd_src *src)
 {
     hidrd_xml_src_inst *xml_src     = (hidrd_xml_src_inst *)src;
     element_rc          rc;
+    bool                enter;
 
     do {
         /*
@@ -307,18 +115,24 @@ hidrd_xml_src_get(hidrd_src *src)
             {
                 /* We don't go above the root element (only start there) */
                 assert(xml_src->prnt != NULL);
-                /* We don't go down non-element nodes */
-                assert(xml_src->prnt->type == XML_ELEMENT_NODE);
 
-                /* Process element end */
-                rc = element_end(xml_src);
-                if (rc != ELEMENT_SKIP)
-                    return (rc == ELEMENT_ITEM) ? xml_src->item : NULL;
-
-                xml_src->cur = xml_src->prnt->next;
-                xml_src->prnt = xml_src->prnt->parent;
-                /* We don't go above the root element (only start there) */
-                assert(xml_src->prnt != NULL);
+                /* Handle the exit from an element */
+                rc = element_exit(xml_src);
+                /* If an error occurred */
+                if (rc == ELEMENT_RC_ERROR)
+                    xml_src->src.error = true;
+                /* If we shouldn't stop here */
+                if (rc != ELEMENT_RC_ERROR && rc != ELEMENT_RC_END)
+                {
+                    /* Go up (exit) */
+                    xml_src->cur = xml_src->prnt->next;
+                    xml_src->prnt = xml_src->prnt->parent;
+                    /* We don't go above the root element (only start there) */
+                    assert(xml_src->prnt != NULL);
+                }
+                /* If we have something to return */
+                if (rc != ELEMENT_RC_NONE)
+                    return (rc == ELEMENT_RC_ITEM) ? xml_src->item : NULL;
             }
 
             /* If this node is an element */
@@ -330,13 +144,27 @@ hidrd_xml_src_get(hidrd_src *src)
         }
 
         /*
-         * Process element start
+         * Process the element
          */
-        rc = element_start(xml_src);
+        enter = false;
+        rc = element(xml_src, &enter);
+        /* If an error occurred */
+        if (rc == ELEMENT_RC_ERROR)
+            xml_src->src.error = true;
+        /* If we shouldn't stop here */
+        if (rc != ELEMENT_RC_ERROR && rc != ELEMENT_RC_END)
+        {
+            if (enter)
+            {
+                xml_src->prnt = xml_src->cur;
+                xml_src->cur = xml_src->prnt->children;
+            }
+            else
+                xml_src->cur = xml_src->cur->next;
+        }
+    } while (rc == ELEMENT_RC_NONE); /* While we have nothing to return */
 
-    } while (rc == ELEMENT_SKIP);
-
-    return (rc == ELEMENT_ITEM) ? xml_src->item : NULL;
+    return (rc == ELEMENT_RC_ITEM) ? xml_src->item : NULL;
 }
 
 
