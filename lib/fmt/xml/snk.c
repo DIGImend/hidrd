@@ -107,6 +107,8 @@ break_element(xmlNodePtr            element,
     xmlNodePtr  sibling;
     xmlNodePtr  child;
     xmlNodePtr  next_child;
+    xmlAttrPtr  prop;
+    xmlAttrPtr  last_prop;
 
     assert(element != NULL);
     assert(element->parent != NULL);
@@ -126,9 +128,24 @@ break_element(xmlNodePtr            element,
         if (sibling == NULL)
             return false;
 
-        /* Copy original element's properties */
-        if (xmlCopyPropList(sibling, element->properties) == NULL)
+        /* Copy original element's property list */
+        prop = xmlCopyPropList(sibling, element->properties);
+        if (prop == NULL)
             return false;
+
+        /* Attach copied property list to created element property list */
+        /* XXX why the hell should I do this?! */
+        if (sibling->properties == NULL)
+            sibling->properties = prop;
+        else
+        {
+            /* Find the last property */
+            for (last_prop = sibling->properties;
+                 last_prop->next == NULL;
+                 last_prop = last_prop->next);
+            last_prop->next = prop;
+            prop->prev = last_prop;
+        }
     }
 
     /* For each child of the original element */
