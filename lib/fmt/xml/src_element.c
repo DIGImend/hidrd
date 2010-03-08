@@ -24,6 +24,7 @@
  * @(#) $Id$
  */
 
+#include "hidrd/util/hex.h"
 #include "src_element.h"
 
 
@@ -46,6 +47,68 @@ typedef element_rc element_fn(hidrd_xml_src_inst   *xml_src,
     static element_rc                                                   \
     element_##_name##_exit(hidrd_xml_src_inst *xml_src, xmlNodePtr e)
 
+ELEMENT(basic)
+{
+    element_rc                      result_rc       = ELEMENT_RC_ERROR;
+    char                           *size_str        = NULL;
+    hidrd_item_basic_data_bytes     size;
+    char                           *type_str        = NULL;
+    hidrd_item_basic_type           type;
+    char                           *tag_str         = NULL;
+    hidrd_item_basic_tag            tag;
+    char                           *data_str        = NULL;
+    size_t                          data_len;
+
+    size_str = (char *)xmlGetProp(e, BAD_CAST "size");
+    if (size_str == NULL)
+        goto cleanup;
+    if (!hidrd_item_basic_data_bytes_from_dec(&size, size_str))
+        goto cleanup;
+
+    type_str = (char *)xmlGetProp(e, BAD_CAST "type");
+    if (type_str == NULL)
+        goto cleanup;
+    if (!hidrd_item_basic_type_from_token_or_dec(&type, type_str))
+        goto cleanup;
+
+    tag_str = (char *)xmlGetProp(e, BAD_CAST "tag");
+    if (tag_str == NULL)
+        goto cleanup;
+    if (!hidrd_item_basic_tag_from_dec(&tag, tag_str))
+        goto cleanup;
+
+    hidrd_item_basic_init(xml_src->item, type, tag,
+                          hidrd_item_basic_data_size_from_bytes(size));
+
+    data_str = (char *)xmlNodeGetContent(e);
+    if (data_str == NULL)
+        goto cleanup;
+    if (!hidrd_hex_buf_from_str(xml_src->item + HIDRD_ITEM_BASIC_MIN_SIZE,
+                                (HIDRD_ITEM_BASIC_MAX_SIZE -
+                                 HIDRD_ITEM_BASIC_MIN_SIZE),
+                                &data_len, data_str))
+        goto cleanup;
+
+    if (!hidrd_item_valid(xml_src->item))
+        goto cleanup;
+
+    if (hidrd_item_get_size(xml_src->item) !=
+        (data_len + HIDRD_ITEM_BASIC_MIN_SIZE))
+        goto cleanup;
+
+    result_rc = ELEMENT_RC_ITEM;
+
+cleanup:
+
+    xmlFree(data_str);
+    xmlFree(tag_str);
+    xmlFree(type_str);
+    xmlFree(size_str);
+
+    return result_rc;
+}
+
+
 ELEMENT(descriptor)
 {
     (void)xml_src;
@@ -64,16 +127,17 @@ ELEMENT_EXIT(descriptor)
 
 ELEMENT(COLLECTION)
 {
-    xmlChar    *type_str    = xmlGetProp(e, BAD_CAST "type");
+    bool    rc;
+    char   *type_str    = (char *)xmlGetProp(e, BAD_CAST "type");
 
     hidrd_item_collection_type  type;
 
     if (type_str == NULL)
         return ELEMENT_RC_ERROR;
 
-    if (!hidrd_item_collection_type_from_token_or_dec(&type,
-                                                      (const char *)
-                                                        type_str))
+    rc = hidrd_item_collection_type_from_token_or_dec(&type, type_str);
+    xmlFree(type_str);
+    if (!rc)
         return ELEMENT_RC_ERROR;
 
     hidrd_item_collection_init(xml_src->item, type);
@@ -97,11 +161,11 @@ typedef struct element_handler {
 /** Element handler list */
 static const element_handler handler_list[] = {
 #define IGNORE(_name)       {.name = #_name}
-#define HANDLE(_name)       {.name = #_name, .func = element_##_name}
+#define HANDLE(_name)       {.name = #_name, .handle = element_##_name}
 #define ENTER(_name)        {.name = #_name, \
                              .handle = element_##_name,             \
                              .handle_exit = element_##_name##_exit}
-    IGNORE(basic),
+    HANDLE(basic),
     IGNORE(short),
     IGNORE(main),
     IGNORE(input),

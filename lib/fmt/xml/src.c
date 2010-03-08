@@ -132,7 +132,9 @@ hidrd_xml_src_get(hidrd_src *src)
                 }
                 /* If we have something to return */
                 if (rc != ELEMENT_RC_NONE)
-                    return (rc == ELEMENT_RC_ITEM) ? xml_src->item : NULL;
+                    return (rc == ELEMENT_RC_ITEM)
+                        ? hidrd_item_validate(xml_src->item)
+                        : NULL;
             }
 
             /* If this node is an element */
@@ -164,7 +166,9 @@ hidrd_xml_src_get(hidrd_src *src)
         }
     } while (rc == ELEMENT_RC_NONE); /* While we have nothing to return */
 
-    return (rc == ELEMENT_RC_ITEM) ? xml_src->item : NULL;
+    return (rc == ELEMENT_RC_ITEM)
+                ? hidrd_item_validate(xml_src->item)
+                : NULL;
 }
 
 
