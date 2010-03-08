@@ -27,10 +27,18 @@
 #include <assert.h>
 #include "hidrd/item/pfx.h"
 
-size_t
+hidrd_item_pfx_bytes
 hidrd_item_pfx_size_to_bytes(hidrd_item_pfx_size size)
 {
     assert(hidrd_item_pfx_size_valid(size));
 
     return (size == HIDRD_ITEM_PFX_SIZE_4B) ? 4 : size;
 }
+
+hidrd_item_pfx_size
+hidrd_item_pfx_size_from_bytes(hidrd_item_pfx_bytes bytes)
+{
+    assert(hidrd_item_pfx_bytes_valid(bytes));
+    return (bytes == 4) ? HIDRD_ITEM_PFX_SIZE_4B : bytes;
+}
+

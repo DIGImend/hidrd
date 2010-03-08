@@ -31,6 +31,9 @@
 #endif
 #include "hidrd/item/basic.h"
 
+/* Define decimal string conversion functions for data size in bytes */
+HIDRD_DEC_CONV_DEFS(item_basic_data_bytes, bytes, uint32_t, u32);
+
 /* Define type decimal string conversion functions */
 HIDRD_DEC_CONV_DEFS(item_basic_type, type, uint32_t, u32);
 

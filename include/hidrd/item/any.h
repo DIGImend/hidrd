@@ -60,10 +60,17 @@
 extern "C" {
 #endif
 
-#define HIDRD_ITEM_MIN_SIZE HIDRD_ITEM_SHORT_MIN_SIZE
-#define HIDRD_ITEM_MAX_SIZE HIDRD_ITEM_LONG_MAX_SIZE
+#define HIDRD_ITEM_MIN_SIZE HIDRD_ITEM_BASIC_MIN_SIZE
+#define HIDRD_ITEM_MAX_SIZE HIDRD_ITEM_BASIC_MAX_SIZE
 
 extern bool hidrd_item_valid(const hidrd_item *item);
+
+static inline const hidrd_item *
+hidrd_item_validate(const hidrd_item *item)
+{
+    assert(hidrd_item_valid(item));
+    return item;
+}
 
 extern size_t hidrd_item_get_size(const hidrd_item *item);
 

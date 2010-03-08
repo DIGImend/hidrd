@@ -51,7 +51,19 @@ hidrd_item_pfx_size_valid(hidrd_item_pfx_size size)
     return (size & ~HIDRD_ITEM_PFX_SIZE_MASK) == 0;
 }
 
-extern size_t hidrd_item_pfx_size_to_bytes(hidrd_item_pfx_size size);
+typedef size_t hidrd_item_pfx_bytes;
+
+extern hidrd_item_pfx_bytes hidrd_item_pfx_size_to_bytes(
+                                    hidrd_item_pfx_size size);
+
+static inline bool
+hidrd_item_pfx_bytes_valid(hidrd_item_pfx_size bytes)
+{
+    return (bytes <= 2) || (bytes == 4);
+}
+
+extern hidrd_item_pfx_size hidrd_item_pfx_size_from_bytes(
+                                    hidrd_item_pfx_bytes bytes);
 
 #define HIDRD_ITEM_PFX_SIZE_LONG    HIDRD_ITEM_PFX_SIZE_2B
 

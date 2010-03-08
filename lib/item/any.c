@@ -48,7 +48,8 @@ hidrd_item_valid(const hidrd_item *item)
     hidrd_item_global_tag   global_tag;
     hidrd_item_local_tag    local_tag;
 
-    assert(hidrd_item_basic_valid(item));
+    if (!hidrd_item_basic_valid(item))
+        return false;
 
     switch (hidrd_item_basic_get_format(item))
     {
@@ -123,6 +124,7 @@ hidrd_item_valid(const hidrd_item *item)
 size_t 
 hidrd_item_get_size(const hidrd_item *item)
 {
+    assert(hidrd_item_valid(item));
     return hidrd_item_basic_is_short(item)
             ? hidrd_item_short_get_size(item)
             : hidrd_item_long_get_size(item);

@@ -39,8 +39,8 @@
 extern "C" {
 #endif
 
-#define HIDRD_ITEM_BASIC_MIN_SIZE   1
-#define HIDRD_ITEM_BASIC_MAX_SIZE   SIZE_MAX
+#define HIDRD_ITEM_BASIC_MIN_SIZE   HIDRD_ITEM_SHORT_MIN_SIZE
+#define HIDRD_ITEM_BASIC_MAX_SIZE   HIDRD_ITEM_LONG_MAX_SIZE
 
 /** Basic item prefix' type bitfield value */
 typedef hidrd_item_pfx_type hidrd_item_basic_type;
@@ -95,7 +95,7 @@ hidrd_item_basic_tag_valid(hidrd_item_basic_tag tag)
 /* Declare tag decimal string conversion functions */
 HIDRD_DEC_CONV_DECLS(item_basic_tag, tag);
 
-/** Basic item prefix' data size bitfield value */
+/** Basic item data size value */
 typedef hidrd_item_pfx_size hidrd_item_basic_data_size;
 #define HIDRD_ITEM_BASIC_DATA_SIZE_0B   HIDRD_ITEM_PFX_SIZE_0B
 #define HIDRD_ITEM_BASIC_DATA_SIZE_1B   HIDRD_ITEM_PFX_SIZE_1B
@@ -116,6 +116,23 @@ hidrd_item_basic_data_size_valid(hidrd_item_basic_data_size size)
     return hidrd_item_pfx_size_valid(size);
 }
 
+/** Basic item data size in bytes */
+typedef hidrd_item_pfx_bytes    hidrd_item_basic_data_bytes;
+
+
+/**
+ * Check if a basic item prefix' data size in bytes is valid.
+ *
+ * @return Basic item data size in bytes to check.
+ *
+ * @return True if data size in bytes is valid, false otherwise.
+ */
+static inline bool
+hidrd_item_basic_data_bytes_valid(hidrd_item_basic_data_bytes bytes)
+{
+    return hidrd_item_pfx_bytes_valid(bytes);
+}
+
 /**
  * Convert basic item prefix' data size code to bytes.
  *
@@ -123,11 +140,27 @@ hidrd_item_basic_data_size_valid(hidrd_item_basic_data_size size)
  *
  * @return Basic item data size in bytes.
  */
-static inline size_t
+static inline hidrd_item_basic_data_bytes
 hidrd_item_basic_data_size_to_bytes(hidrd_item_basic_data_size size)
 {
     return hidrd_item_pfx_size_to_bytes(size);
 }
+
+/**
+ * Convert basic item prefix' data size in bytes to code.
+ *
+ * @param bytes Basic item data size in bytes.
+ *
+ * @return Basic item data size code.
+ */
+static inline hidrd_item_basic_data_size
+hidrd_item_basic_data_size_from_bytes(hidrd_item_basic_data_bytes bytes)
+{
+    return hidrd_item_pfx_size_from_bytes(bytes);
+}
+
+/* Declare decimal string conversion functions for data size in bytes */
+HIDRD_DEC_CONV_DECLS(item_basic_data_bytes, bytes);
 
 
 /**
