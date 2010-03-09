@@ -108,21 +108,53 @@ cleanup:
     return result_rc;
 }
 
-
-ELEMENT(descriptor)
+ELEMENT(short)
 {
-    (void)xml_src;
-    (void)e;
-    /* No item yet */
-    return ELEMENT_RC_NONE;
-}
+    element_rc                      result_rc       = ELEMENT_RC_ERROR;
+    char                           *type_str        = NULL;
+    hidrd_item_short_type           type;
+    char                           *tag_str         = NULL;
+    hidrd_item_short_tag            tag;
+    char                           *data_str        = NULL;
+    size_t                          data_len;
 
-ELEMENT_EXIT(descriptor)
-{
-    (void)xml_src;
-    (void)e;
-    /* No more items */
-    return ELEMENT_RC_END;
+    type_str = (char *)xmlGetProp(e, BAD_CAST "type");
+    if (type_str == NULL)
+        goto cleanup;
+    if (!hidrd_item_short_type_from_token_or_dec(&type, type_str))
+        goto cleanup;
+
+    tag_str = (char *)xmlGetProp(e, BAD_CAST "tag");
+    if (tag_str == NULL)
+        goto cleanup;
+    if (!hidrd_item_short_tag_from_dec(&tag, tag_str))
+        goto cleanup;
+
+    hidrd_item_short_init(xml_src->item, type, tag);
+
+    data_str = (char *)xmlNodeGetContent(e);
+    if (data_str == NULL)
+        goto cleanup;
+    if (!hidrd_hex_buf_from_str(hidrd_item_short_get_data(xml_src->item),
+                                HIDRD_ITEM_SHORT_DATA_BYTES_MAX,
+                                &data_len, data_str))
+        goto cleanup;
+
+    hidrd_item_short_set_data_size(
+            xml_src->item, hidrd_item_short_data_size_from_bytes(data_len));
+
+    if (!hidrd_item_valid(xml_src->item))
+        goto cleanup;
+
+    result_rc = ELEMENT_RC_ITEM;
+
+cleanup:
+
+    xmlFree(data_str);
+    xmlFree(tag_str);
+    xmlFree(type_str);
+
+    return result_rc;
 }
 
 ELEMENT(COLLECTION)
@@ -151,6 +183,61 @@ ELEMENT_EXIT(COLLECTION)
     return ELEMENT_RC_ITEM;
 }
 
+ELEMENT(long)
+{
+    element_rc                      result_rc       = ELEMENT_RC_ERROR;
+    char                           *tag_str         = NULL;
+    hidrd_item_long_tag             tag;
+    char                           *data_str        = NULL;
+    size_t                          data_len;
+
+    tag_str = (char *)xmlGetProp(e, BAD_CAST "tag");
+    if (tag_str == NULL)
+        goto cleanup;
+    if (!hidrd_item_long_tag_from_dec(&tag, tag_str))
+        goto cleanup;
+
+    hidrd_item_long_init(xml_src->item, tag);
+
+    data_str = (char *)xmlNodeGetContent(e);
+    if (data_str == NULL)
+        goto cleanup;
+    if (!hidrd_hex_buf_from_str(hidrd_item_long_get_data(xml_src->item),
+                                HIDRD_ITEM_LONG_DATA_SIZE_MAX,
+                                &data_len, data_str))
+        goto cleanup;
+
+    hidrd_item_long_set_data_size(xml_src->item, data_len);
+
+    if (!hidrd_item_valid(xml_src->item))
+        goto cleanup;
+
+    result_rc = ELEMENT_RC_ITEM;
+
+cleanup:
+
+    xmlFree(data_str);
+    xmlFree(tag_str);
+
+    return result_rc;
+}
+
+ELEMENT(descriptor)
+{
+    (void)xml_src;
+    (void)e;
+    /* No item yet */
+    return ELEMENT_RC_NONE;
+}
+
+ELEMENT_EXIT(descriptor)
+{
+    (void)xml_src;
+    (void)e;
+    /* No more items */
+    return ELEMENT_RC_END;
+}
+
 /** Element handler */
 typedef struct element_handler {
     const char *name;           /**< Element name */
@@ -166,7 +253,7 @@ static const element_handler handler_list[] = {
                              .handle = element_##_name,             \
                              .handle_exit = element_##_name##_exit}
     HANDLE(basic),
-    IGNORE(short),
+    HANDLE(short),
     IGNORE(main),
     IGNORE(input),
     IGNORE(output),
@@ -200,7 +287,7 @@ static const element_handler handler_list[] = {
     IGNORE(string_maximum),
     IGNORE(delimiter),
     IGNORE(SET),
-    IGNORE(long),
+    HANDLE(long),
     ENTER(descriptor),
 #undef IGNORE
 #undef HANDLE

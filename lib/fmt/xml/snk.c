@@ -810,7 +810,7 @@ write_main_element(hidrd_xml_snk_inst   *xml_snk,
                         HEX,
                         /* We promise we won't change it */
                         hidrd_item_short_get_data((hidrd_item *)item)),
-                        hidrd_item_short_get_data_size_bytes(item));
+                        hidrd_item_short_get_data_bytes(item));
     }
 }
 
@@ -1061,7 +1061,7 @@ write_global_element(hidrd_xml_snk_inst   *xml_snk,
                     CONTENT(HEX,
                             /* We promise we won't change it */
                             hidrd_item_short_get_data((hidrd_item *)item)),
-                            hidrd_item_short_get_data_size_bytes(item));
+                            hidrd_item_short_get_data_bytes(item));
     }
 }
 
@@ -1167,7 +1167,7 @@ write_local_element(hidrd_xml_snk_inst   *xml_snk,
                     CONTENT(HEX,
                             /* We promise we won't change it */
                             hidrd_item_short_get_data((hidrd_item *)item)),
-                            hidrd_item_short_get_data_size_bytes(item));
+                            hidrd_item_short_get_data_bytes(item));
     }
 }
 
@@ -1197,7 +1197,7 @@ write_short_element(hidrd_xml_snk_inst   *xml_snk,
                     CONTENT(HEX,
                             /* We promise we won't change it */
                             hidrd_item_short_get_data((hidrd_item *)item)),
-                            hidrd_item_short_get_data_size_bytes(item));
+                            hidrd_item_short_get_data_bytes(item));
     }
 }
 
@@ -1229,7 +1229,7 @@ write_basic_element(hidrd_xml_snk_inst   *xml_snk,
                          hidrd_item_basic_tag_to_dec(
                              hidrd_item_basic_get_tag(item))),
                     ATTR(tag, UINT,
-                         hidrd_item_basic_get_data_size_bytes(item)));
+                         hidrd_item_basic_get_data_bytes(item)));
     }
 }
 

@@ -37,8 +37,11 @@ extern "C" {
 
 /** Minimum size of a short item */
 #define HIDRD_ITEM_SHORT_MIN_SIZE   1
+/** Maximum size of a short item data, in bytes */
+#define HIDRD_ITEM_SHORT_DATA_BYTES_MAX 4
 /** Maximum size of a short item */
-#define HIDRD_ITEM_SHORT_MAX_SIZE   (1 + 4)
+#define HIDRD_ITEM_SHORT_MAX_SIZE   (HIDRD_ITEM_SHORT_MIN_SIZE + \
+                                     HIDRD_ITEM_SHORT_DATA_BYTES_MAX)
 
 /** Short item type */
 typedef hidrd_item_basic_type hidrd_item_short_type;
@@ -116,6 +119,22 @@ hidrd_item_short_data_size_valid(hidrd_item_short_data_size size)
     return hidrd_item_basic_data_size_valid(size);
 }
 
+/** Short item data size in bytes */
+typedef hidrd_item_basic_data_bytes hidrd_item_short_data_bytes;
+
+/**
+ * Check if a short item data size in bytes is valid.
+ *
+ * @return Short item data size in bytes to check.
+ *
+ * @return True if data size in bytes is valid, false otherwise.
+ */
+static inline bool
+hidrd_item_short_data_bytes_valid(hidrd_item_short_data_bytes bytes)
+{
+    return hidrd_item_basic_data_bytes_valid(bytes);
+}
+
 /**
  * Convert short item data size code to bytes.
  *
@@ -123,11 +142,29 @@ hidrd_item_short_data_size_valid(hidrd_item_short_data_size size)
  *
  * @return Short item data size to bytes.
  */
-static inline size_t
+static inline hidrd_item_short_data_bytes
 hidrd_item_short_data_size_to_bytes(hidrd_item_short_data_size size)
 {
     return hidrd_item_basic_data_size_to_bytes(size);
 }
+
+
+/**
+ * Convert short item data size from bytes to code.
+ *
+ * @param bytes Short item data size in bytes.
+ *
+ * @return Short item data size code.
+ */
+static inline hidrd_item_short_data_size
+hidrd_item_short_data_size_from_bytes(hidrd_item_short_data_bytes bytes)
+{
+    return hidrd_item_basic_data_size_from_bytes(bytes);
+}
+
+
+/* Declare decimal string conversion functions for data size in bytes */
+HIDRD_DEC_CONV_DECLS(item_short_data_bytes, bytes);
 
 
 /**
@@ -270,8 +307,15 @@ hidrd_item_short_get_data_size(const hidrd_item *item)
 }
 
 
+/**
+ * Get a short item data size in bytes.
+ *
+ * @param item  Short item to get data size from.
+ *
+ * @return Short item data size in bytes.
+ */
 static inline size_t
-hidrd_item_short_get_data_size_bytes(const hidrd_item *item)
+hidrd_item_short_get_data_bytes(const hidrd_item *item)
 {
     assert(hidrd_item_short_valid(item));
     return hidrd_item_short_data_size_to_bytes(

@@ -25,10 +25,7 @@
  */
 
 #include <string.h>
-#ifdef HIDRD_WITH_TOKENS
 #include "hidrd/item/short.h"
-#endif
-
 
 static uint32_t
 get_unsigned(hidrd_item_short_data_size size, const uint8_t *pin)
@@ -187,6 +184,9 @@ hidrd_item_short_set_signed(hidrd_item *item, int32_t data)
     }
 }
 
+
+/* Define decimal string conversion functions for data size in bytes */
+HIDRD_DEC_CONV_DEFS(item_short_data_bytes, bytes, uint32_t, u32);
 
 /* Define type decimal string conversion functions */
 HIDRD_DEC_CONV_DEFS(item_short_type, type, uint32_t, u32);

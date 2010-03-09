@@ -26,9 +26,6 @@
 
 #include <string.h>
 #include <stdio.h>
-#ifdef HIDRD_WITH_TOKENS
-#include "hidrd/util/tkn.h"
-#endif
 #include "hidrd/item/basic.h"
 
 /* Define decimal string conversion functions for data size in bytes */

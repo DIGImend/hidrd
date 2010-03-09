@@ -25,6 +25,7 @@ libhidrd_item_la_SOURCES = \
     collection.c            \
     global.c                \
     local.c                 \
+    long.c                  \
     main.c                  \
     pfx.c                   \
     short.c

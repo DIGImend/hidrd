@@ -36,7 +36,9 @@ extern "C" {
 
 
 #define HIDRD_ITEM_LONG_MIN_SIZE    3
-#define HIDRD_ITEM_LONG_MAX_SIZE    (3 + UINT8_MAX)
+#define HIDRD_ITEM_LONG_DATA_SIZE_MAX   UINT8_MAX
+#define HIDRD_ITEM_LONG_MAX_SIZE    (HIDRD_ITEM_LONG_MIN_SIZE + \
+                                     HIDRD_ITEM_LONG_DATA_SIZE_MAX)
 
 
 static inline bool
@@ -80,7 +82,17 @@ hidrd_item_long_tag_valid(hidrd_item_long_tag tag)
     return true;
 }
 
-static inline uint8_t
+/** Data size */
+typedef uint8_t hidrd_item_long_data_size;
+
+static inline bool
+hidrd_item_long_data_size_valid(hidrd_item_long_data_size size)
+{
+    (void)size;
+    return true;
+}
+
+static inline hidrd_item_long_data_size
 hidrd_item_long_get_data_size(const hidrd_item *item)
 {
     assert(hidrd_item_long_valid(item));
@@ -89,9 +101,11 @@ hidrd_item_long_get_data_size(const hidrd_item *item)
 }
 
 static inline hidrd_item *
-hidrd_item_long_set_data_size(hidrd_item *item, uint8_t size)
+hidrd_item_long_set_data_size(hidrd_item                   *item,
+                              hidrd_item_long_data_size     size)
 {
     assert(hidrd_item_long_valid(item));
+    assert(hidrd_item_long_data_size_valid(size));
     ((uint8_t *)hidrd_item_basic_get_data(item))[0] = size;
     return item;
 }
@@ -131,8 +145,7 @@ hidrd_item_long_get_size(const hidrd_item *item)
 
 static inline hidrd_item *
 hidrd_item_long_init(hidrd_item            *item,
-                     hidrd_item_long_tag    tag,
-                     uint8_t                data_size)
+                     hidrd_item_long_tag    tag)
 {
     return hidrd_item_long_validate(
             hidrd_item_long_set_tag(
@@ -141,7 +154,7 @@ hidrd_item_long_init(hidrd_item            *item,
                                           HIDRD_ITEM_BASIC_TYPE_LONG,
                                           HIDRD_ITEM_BASIC_TAG_LONG,
                                           HIDRD_ITEM_BASIC_DATA_SIZE_LONG),
-                    data_size),
+                    0),
                 tag));
 }
 

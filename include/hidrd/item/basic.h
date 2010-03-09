@@ -39,7 +39,9 @@
 extern "C" {
 #endif
 
+/** Minimum size of a basic item */
 #define HIDRD_ITEM_BASIC_MIN_SIZE   HIDRD_ITEM_SHORT_MIN_SIZE
+/** Maximum size of a basic item */
 #define HIDRD_ITEM_BASIC_MAX_SIZE   HIDRD_ITEM_LONG_MAX_SIZE
 
 /** Basic item prefix' type bitfield value */
@@ -482,8 +484,15 @@ hidrd_item_basic_get_data_size(const hidrd_item *item)
 }
 
 
+/**
+ * Get a basic item data size in bytes.
+ *
+ * @param item  Basic item to get data size from.
+ *
+ * @return Basic item data size in bytes.
+ */
 static inline size_t
-hidrd_item_basic_get_data_size_bytes(const hidrd_item *item)
+hidrd_item_basic_get_data_bytes(const hidrd_item *item)
 {
     assert(hidrd_item_basic_valid(item));
     return hidrd_item_basic_data_size_to_bytes(
