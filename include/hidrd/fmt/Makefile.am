@@ -17,13 +17,16 @@
 # along with hidrd; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-SUBDIRS = natv xml
+SUBDIRS = natv
 
 hidrd_fmtdir = $(includedir)/hidrd/fmt
 
 hidrd_fmt_HEADERS = \
-    inst.h              \
-    list.h              \
-    natv.h              \
-    xml.h
+    inst.h          \
+    list.h          \
+    natv.h
 
+if ENABLE_FMT_XML
+SUBDIRS += xml
+hidrd_fmt_HEADERS += xml.h
+endif

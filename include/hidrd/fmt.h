@@ -28,7 +28,9 @@
 #define __HIDRD_FMT_H__
 
 #include "hidrd/fmt/natv.h"
+#ifdef HIDRD_FMT_WITH_XML
 #include "hidrd/fmt/xml.h"
+#endif
 #include "hidrd/fmt/list.h"
 
 #endif /* __HIDRD_FMT_H__ */
