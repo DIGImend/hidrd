@@ -47,35 +47,35 @@ typedef element_rc element_fn(hidrd_xml_src_inst   *xml_src,
     static element_rc                                                   \
     element_##_name##_exit(hidrd_xml_src_inst *xml_src, xmlNodePtr e)
 
+#define PROP_DECL(_type, _name) \
+    char           *_name##_str = NULL; \
+    hidrd_##_type   _name
+
+#define PROP_RETR(_type, _name, _repr) \
+    do {                                                        \
+        _name##_str = (char *)xmlGetProp(e, BAD_CAST #_name);   \
+        if (_name##_str == NULL)                                \
+            goto cleanup;                                       \
+        if (!hidrd_##_type##_from_##_repr(&_name, _name##_str)) \
+            goto cleanup;                                       \
+    } while (0)
+
+#define PROP_CLNP(_name) \
+    xmlFree(_name##_str)
+
 ELEMENT(basic)
 {
-    element_rc                      result_rc       = ELEMENT_RC_ERROR;
-    char                           *size_str        = NULL;
-    hidrd_item_basic_data_bytes     size;
-    char                           *type_str        = NULL;
-    hidrd_item_basic_type           type;
-    char                           *tag_str         = NULL;
-    hidrd_item_basic_tag            tag;
-    char                           *data_str        = NULL;
-    size_t                          data_len;
+    element_rc  result_rc   = ELEMENT_RC_ERROR;
+    char       *data_str    = NULL;
+    size_t      data_len;
 
-    size_str = (char *)xmlGetProp(e, BAD_CAST "size");
-    if (size_str == NULL)
-        goto cleanup;
-    if (!hidrd_item_basic_data_bytes_from_dec(&size, size_str))
-        goto cleanup;
+    PROP_DECL(item_basic_data_bytes,    size);
+    PROP_DECL(item_basic_type,          type);
+    PROP_DECL(item_basic_tag,           tag);
 
-    type_str = (char *)xmlGetProp(e, BAD_CAST "type");
-    if (type_str == NULL)
-        goto cleanup;
-    if (!hidrd_item_basic_type_from_token_or_dec(&type, type_str))
-        goto cleanup;
-
-    tag_str = (char *)xmlGetProp(e, BAD_CAST "tag");
-    if (tag_str == NULL)
-        goto cleanup;
-    if (!hidrd_item_basic_tag_from_dec(&tag, tag_str))
-        goto cleanup;
+    PROP_RETR(item_basic_data_bytes,    size,   dec);
+    PROP_RETR(item_basic_type,          type,   token_or_dec);
+    PROP_RETR(item_basic_tag,           tag,    dec);
 
     hidrd_item_basic_init(xml_src->item, type, tag,
                           hidrd_item_basic_data_size_from_bytes(size));
@@ -101,34 +101,24 @@ ELEMENT(basic)
 cleanup:
 
     xmlFree(data_str);
-    xmlFree(tag_str);
-    xmlFree(type_str);
-    xmlFree(size_str);
+    PROP_CLNP(tag);
+    PROP_CLNP(type);
+    PROP_CLNP(size);
 
     return result_rc;
 }
 
 ELEMENT(short)
 {
-    element_rc                      result_rc       = ELEMENT_RC_ERROR;
-    char                           *type_str        = NULL;
-    hidrd_item_short_type           type;
-    char                           *tag_str         = NULL;
-    hidrd_item_short_tag            tag;
-    char                           *data_str        = NULL;
-    size_t                          data_len;
+    element_rc  result_rc   = ELEMENT_RC_ERROR;
+    char       *data_str    = NULL;
+    size_t      data_len;
 
-    type_str = (char *)xmlGetProp(e, BAD_CAST "type");
-    if (type_str == NULL)
-        goto cleanup;
-    if (!hidrd_item_short_type_from_token_or_dec(&type, type_str))
-        goto cleanup;
+    PROP_DECL(item_short_type,  type);
+    PROP_DECL(item_short_tag,   tag);
 
-    tag_str = (char *)xmlGetProp(e, BAD_CAST "tag");
-    if (tag_str == NULL)
-        goto cleanup;
-    if (!hidrd_item_short_tag_from_dec(&tag, tag_str))
-        goto cleanup;
+    PROP_RETR(item_short_type,  type,   token_or_dec);
+    PROP_RETR(item_short_tag,   tag,    dec);
 
     hidrd_item_short_init(xml_src->item, type, tag);
 
@@ -151,29 +141,136 @@ ELEMENT(short)
 cleanup:
 
     xmlFree(data_str);
-    xmlFree(tag_str);
-    xmlFree(type_str);
+    PROP_CLNP(tag);
+    PROP_CLNP(type);
+
+    return result_rc;
+}
+
+ELEMENT(main)
+{
+    element_rc  result_rc   = ELEMENT_RC_ERROR;
+    char       *data_str    = NULL;
+    size_t      data_len;
+
+    PROP_DECL(item_main_tag,    tag);
+
+    PROP_RETR(item_main_tag,    tag,    token_or_dec);
+
+    hidrd_item_main_init(xml_src->item, tag);
+
+    data_str = (char *)xmlNodeGetContent(e);
+    if (data_str == NULL)
+        goto cleanup;
+    if (!hidrd_hex_buf_from_str(hidrd_item_short_get_data(xml_src->item),
+                                HIDRD_ITEM_SHORT_DATA_BYTES_MAX,
+                                &data_len, data_str))
+        goto cleanup;
+
+    hidrd_item_short_set_data_size(
+            xml_src->item, hidrd_item_short_data_size_from_bytes(data_len));
+
+    if (!hidrd_item_valid(xml_src->item))
+        goto cleanup;
+
+    result_rc = ELEMENT_RC_ITEM;
+
+cleanup:
+
+    xmlFree(data_str);
+    PROP_CLNP(tag);
+
+    return result_rc;
+}
+
+ELEMENT(global)
+{
+    element_rc  result_rc   = ELEMENT_RC_ERROR;
+    char       *data_str    = NULL;
+    size_t      data_len;
+
+    PROP_DECL(item_global_tag,    tag);
+
+    PROP_RETR(item_global_tag,    tag,    token_or_dec);
+
+    hidrd_item_global_init(xml_src->item, tag);
+
+    data_str = (char *)xmlNodeGetContent(e);
+    if (data_str == NULL)
+        goto cleanup;
+    if (!hidrd_hex_buf_from_str(hidrd_item_short_get_data(xml_src->item),
+                                HIDRD_ITEM_SHORT_DATA_BYTES_MAX,
+                                &data_len, data_str))
+        goto cleanup;
+
+    hidrd_item_short_set_data_size(
+            xml_src->item, hidrd_item_short_data_size_from_bytes(data_len));
+
+    if (!hidrd_item_valid(xml_src->item))
+        goto cleanup;
+
+    result_rc = ELEMENT_RC_ITEM;
+
+cleanup:
+
+    xmlFree(data_str);
+    PROP_CLNP(tag);
+
+    return result_rc;
+}
+
+ELEMENT(local)
+{
+    element_rc  result_rc   = ELEMENT_RC_ERROR;
+    char       *data_str    = NULL;
+    size_t      data_len;
+
+    PROP_DECL(item_local_tag,    tag);
+
+    PROP_RETR(item_local_tag,    tag,    token_or_dec);
+
+    hidrd_item_local_init(xml_src->item, tag);
+
+    data_str = (char *)xmlNodeGetContent(e);
+    if (data_str == NULL)
+        goto cleanup;
+    if (!hidrd_hex_buf_from_str(hidrd_item_short_get_data(xml_src->item),
+                                HIDRD_ITEM_SHORT_DATA_BYTES_MAX,
+                                &data_len, data_str))
+        goto cleanup;
+
+    hidrd_item_short_set_data_size(
+            xml_src->item, hidrd_item_short_data_size_from_bytes(data_len));
+
+    if (!hidrd_item_valid(xml_src->item))
+        goto cleanup;
+
+    result_rc = ELEMENT_RC_ITEM;
+
+cleanup:
+
+    xmlFree(data_str);
+    PROP_CLNP(tag);
 
     return result_rc;
 }
 
 ELEMENT(COLLECTION)
 {
-    bool    rc;
-    char   *type_str    = (char *)xmlGetProp(e, BAD_CAST "type");
+    element_rc  result_rc   = ELEMENT_RC_ERROR;
 
-    hidrd_item_collection_type  type;
+    PROP_DECL(item_collection_type, type);
 
-    if (type_str == NULL)
-        return ELEMENT_RC_ERROR;
-
-    rc = hidrd_item_collection_type_from_token_or_dec(&type, type_str);
-    xmlFree(type_str);
-    if (!rc)
-        return ELEMENT_RC_ERROR;
+    PROP_RETR(item_collection_type, type,   token_or_dec);
 
     hidrd_item_collection_init(xml_src->item, type);
-    return ELEMENT_RC_ITEM;
+
+    result_rc = ELEMENT_RC_ITEM;
+
+cleanup:
+
+    PROP_CLNP(type);
+    return result_rc;
 }
 
 ELEMENT_EXIT(COLLECTION)
@@ -185,17 +282,13 @@ ELEMENT_EXIT(COLLECTION)
 
 ELEMENT(long)
 {
-    element_rc                      result_rc       = ELEMENT_RC_ERROR;
-    char                           *tag_str         = NULL;
-    hidrd_item_long_tag             tag;
-    char                           *data_str        = NULL;
-    size_t                          data_len;
+    element_rc  result_rc       = ELEMENT_RC_ERROR;
+    char       *data_str        = NULL;
+    size_t      data_len;
 
-    tag_str = (char *)xmlGetProp(e, BAD_CAST "tag");
-    if (tag_str == NULL)
-        goto cleanup;
-    if (!hidrd_item_long_tag_from_dec(&tag, tag_str))
-        goto cleanup;
+    PROP_DECL(item_long_tag,    tag);
+
+    PROP_RETR(item_long_tag,    tag,    dec);
 
     hidrd_item_long_init(xml_src->item, tag);
 
@@ -217,7 +310,7 @@ ELEMENT(long)
 cleanup:
 
     xmlFree(data_str);
-    xmlFree(tag_str);
+    PROP_CLNP(tag);
 
     return result_rc;
 }
@@ -254,14 +347,14 @@ static const element_handler handler_list[] = {
                              .handle_exit = element_##_name##_exit}
     HANDLE(basic),
     HANDLE(short),
-    IGNORE(main),
+    HANDLE(main),
     IGNORE(input),
     IGNORE(output),
     IGNORE(feature),
     IGNORE(collection),
     IGNORE(end_collection),
     ENTER(COLLECTION),
-    IGNORE(global),
+    HANDLE(global),
     IGNORE(usage_page),
     IGNORE(logical_minimum),
     IGNORE(logical_maximum),
@@ -275,7 +368,7 @@ static const element_handler handler_list[] = {
     IGNORE(push),
     IGNORE(pop),
     IGNORE(PUSH),
-    IGNORE(local),
+    HANDLE(local),
     IGNORE(usage),
     IGNORE(usage_minimum),
     IGNORE(usage_maximum),
