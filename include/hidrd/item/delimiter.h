@@ -27,6 +27,7 @@
 #ifndef __HIDRD_ITEM_DELIMITER_H__
 #define __HIDRD_ITEM_DELIMITER_H__
 
+#include "hidrd/util/bool.h"
 #include "hidrd/item/local.h"
 
 #ifdef __cplusplus
@@ -37,6 +38,28 @@ typedef enum hidrd_item_delimiter_set {
     HIDRD_ITEM_DELIMITER_SET_CLOSE  = 0,
     HIDRD_ITEM_DELIMITER_SET_OPEN   = 1,
 } hidrd_item_delimiter_set;
+
+static inline const char *
+hidrd_item_delimiter_set_to_bool_str(hidrd_item_delimiter_set set)
+{
+    return hidrd_bool_to_str(set != HIDRD_ITEM_DELIMITER_SET_CLOSE);
+}
+
+static inline bool
+hidrd_item_delimiter_set_from_bool_str(hidrd_item_delimiter_set    *pset,
+                                       const char                  *str)
+{
+    bool    set;
+
+    if (!hidrd_bool_from_str(&set, str))
+        return false;
+
+    if (pset != NULL)
+        *pset = set ? HIDRD_ITEM_DELIMITER_SET_OPEN
+                    : HIDRD_ITEM_DELIMITER_SET_CLOSE;
+
+    return true;
+}
 
 static inline bool
 hidrd_item_delimiter_value_valid(uint32_t value)
