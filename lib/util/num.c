@@ -214,6 +214,7 @@ hidrd_num_s32_to_str(int32_t num, hidrd_num_base base)
 
     /* Only decimal base is supported */
     assert(base == HIDRD_NUM_BASE_DEC);
+    (void)base;
 
     if (asprintf(&str, "%d", num) < 0)
         return NULL;
