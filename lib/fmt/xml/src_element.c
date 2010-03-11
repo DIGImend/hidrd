@@ -219,6 +219,34 @@ cleanup:
     return result_rc;
 }
 
+ELEMENT(push)
+{
+    (void)e;
+    hidrd_item_push_init(xml_src->item);
+    return ELEMENT_RC_ITEM;
+}
+
+ELEMENT(pop)
+{
+    (void)e;
+    hidrd_item_pop_init(xml_src->item);
+    return ELEMENT_RC_ITEM;
+}
+
+ELEMENT(PUSH)
+{
+    (void)e;
+    hidrd_item_push_init(xml_src->item);
+    return ELEMENT_RC_ITEM;
+}
+
+ELEMENT_EXIT(PUSH)
+{
+    (void)e;
+    hidrd_item_pop_init(xml_src->item);
+    return ELEMENT_RC_ITEM;
+}
+
 ELEMENT(local)
 {
     element_rc  result_rc   = ELEMENT_RC_ERROR;
@@ -253,6 +281,31 @@ cleanup:
     PROP_CLNP(tag);
 
     return result_rc;
+}
+
+ELEMENT(collection)
+{
+    element_rc  result_rc   = ELEMENT_RC_ERROR;
+
+    PROP_DECL(item_collection_type, type);
+
+    PROP_RETR(item_collection_type, type,   token_or_dec);
+
+    hidrd_item_collection_init(xml_src->item, type);
+
+    result_rc = ELEMENT_RC_ITEM;
+
+cleanup:
+
+    PROP_CLNP(type);
+    return result_rc;
+}
+
+ELEMENT(end_collection)
+{
+    (void)e;
+    hidrd_item_end_collection_init(xml_src->item);
+    return ELEMENT_RC_ITEM;
 }
 
 ELEMENT(COLLECTION)
@@ -308,6 +361,50 @@ NUM_ELEMENT(logical_minimum,    s32)
 NUM_ELEMENT(logical_maximum,    s32)
 NUM_ELEMENT(physical_minimum,   s32)
 NUM_ELEMENT(physical_maximum,   s32)
+NUM_ELEMENT(unit_exponent,      s32)
+NUM_ELEMENT(report_size,        u32)
+NUM_ELEMENT(report_count,       u32)
+NUM_ELEMENT(report_id,          u8)
+NUM_ELEMENT(designator_index,   u32)
+NUM_ELEMENT(designator_minimum, u32)
+NUM_ELEMENT(designator_maximum, u32)
+NUM_ELEMENT(string_index,       u32)
+NUM_ELEMENT(string_minimum,     u32)
+NUM_ELEMENT(string_maximum,     u32)
+
+ELEMENT(delimiter)
+{
+    element_rc  result_rc   = ELEMENT_RC_ERROR;
+
+    PROP_DECL(item_delimiter_set, open);
+
+    PROP_RETR(item_delimiter_set, open,   bool_str);
+
+    hidrd_item_delimiter_init(xml_src->item, open);
+
+    result_rc = ELEMENT_RC_ITEM;
+
+cleanup:
+
+    PROP_CLNP(open);
+    return result_rc;
+}
+
+ELEMENT(SET)
+{
+    (void)e;
+    hidrd_item_delimiter_init(xml_src->item,
+                              HIDRD_ITEM_DELIMITER_SET_OPEN);
+    return ELEMENT_RC_ITEM;
+}
+
+ELEMENT_EXIT(SET)
+{
+    (void)e;
+    hidrd_item_delimiter_init(xml_src->item,
+                              HIDRD_ITEM_DELIMITER_SET_CLOSE);
+    return ELEMENT_RC_ITEM;
+}
 
 ELEMENT(long)
 {
@@ -380,8 +477,8 @@ static const element_handler handler_list[] = {
     IGNORE(input),
     IGNORE(output),
     IGNORE(feature),
-    IGNORE(collection),
-    IGNORE(end_collection),
+    HANDLE(collection),
+    HANDLE(end_collection),
     ENTER(COLLECTION),
     HANDLE(global),
     IGNORE(usage_page),
@@ -389,30 +486,31 @@ static const element_handler handler_list[] = {
     HANDLE(logical_maximum),
     HANDLE(physical_minimum),
     HANDLE(physical_maximum),
-    IGNORE(unit_exponent),
+    HANDLE(unit_exponent),
     IGNORE(unit),
-    IGNORE(report_size),
-    IGNORE(report_count),
-    IGNORE(report_id),
-    IGNORE(push),
-    IGNORE(pop),
-    IGNORE(PUSH),
+    HANDLE(report_size),
+    HANDLE(report_count),
+    HANDLE(report_id),
+    HANDLE(push),
+    HANDLE(pop),
+    ENTER(PUSH),
     HANDLE(local),
     IGNORE(usage),
     IGNORE(usage_minimum),
     IGNORE(usage_maximum),
-    IGNORE(designator_index),
-    IGNORE(designator_minimum),
-    IGNORE(designator_maximum),
-    IGNORE(string_index),
-    IGNORE(string_minimum),
-    IGNORE(string_maximum),
-    IGNORE(delimiter),
-    IGNORE(SET),
+    HANDLE(designator_index),
+    HANDLE(designator_minimum),
+    HANDLE(designator_maximum),
+    HANDLE(string_index),
+    HANDLE(string_minimum),
+    HANDLE(string_maximum),
+    HANDLE(delimiter),
+    ENTER(SET),
     HANDLE(long),
     ENTER(descriptor),
-#undef IGNORE
+#undef ENTER
 #undef HANDLE
+#undef IGNORE
 };
 
 
