@@ -20,6 +20,7 @@
 lib_LTLIBRARIES = libhidrd_util.la
 
 libhidrd_util_la_SOURCES = \
+    bool.c                  \
     dec.c                   \
     hex.c                   \
     num.c
