@@ -19,6 +19,9 @@
 
 noinst_LTLIBRARIES = libhidrd_xml.la
 
+noinst_HEADERS = \
+    src_element.h
+
 libhidrd_xml_la_SOURCES = \
     snk.c                   \
     src.c                   \
