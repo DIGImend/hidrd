@@ -29,7 +29,6 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include "hidrd/util/num.h"
 
 #ifdef __cplusplus
 extern "C" {
