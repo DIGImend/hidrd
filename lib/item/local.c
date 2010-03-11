@@ -28,7 +28,7 @@
 #include "hidrd/item/local.h"
 
 /* Define tag decimal string conversion functions */
-HIDRD_DEC_CONV_DEFS(item_local_tag, tag, uint32_t, u32);
+HIDRD_DEC_CONV_DEFS(item_local_tag, tag, u32);
 
 #ifdef HIDRD_WITH_TOKENS
 static const hidrd_tkn_link tag_map[] = {

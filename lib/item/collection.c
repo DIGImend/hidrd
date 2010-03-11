@@ -29,7 +29,7 @@
 #include "hidrd/item/collection.h"
 
 /* Define type decimal string conversion functions */
-HIDRD_DEC_CONV_DEFS(item_collection_type, type, uint32_t, u32);
+HIDRD_DEC_CONV_DEFS(item_collection_type, type, u32);
 
 #ifdef HIDRD_WITH_TOKENS
 static const hidrd_tkn_link type_map[] = {

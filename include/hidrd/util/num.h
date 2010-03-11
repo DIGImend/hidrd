@@ -35,10 +35,29 @@
 extern "C" {
 #endif
 
+/** The type behind convenience type name "u32" (used in macros) */
+#define HIDRD_NUM_u32_TYPE  uint32_t
+/** The type behind convenience type name "s32" (used in macros) */
+#define HIDRD_NUM_s32_TYPE  int32_t
+/** The type behind convenience type name "u16" (used in macros) */
+#define HIDRD_NUM_u16_TYPE  uint16_t
+/** The type behind convenience type name "s16" (used in macros) */
+#define HIDRD_NUM_s16_TYPE  int16_t
+/** The type behind convenience type name "u8" (used in macros) */
+#define HIDRD_NUM_u8_TYPE   uint8_t
+/** The type behind convenience type name "s8" (used in macros) */
+#define HIDRD_NUM_s8_TYPE   int8_t
+
+/** Number base */
 typedef enum hidrd_num_base {
-    HIDRD_NUM_BASE_DEC  = 10,
-    HIDRD_NUM_BASE_HEX  = 16
+    HIDRD_NUM_BASE_DEC  = 10,   /**< Decimal */
+    HIDRD_NUM_BASE_HEX  = 16    /**< Hexadecimal */
 } hidrd_num_base;
+
+/** A lowercase version of HIDRD_NUM_BASE_DEC - for macro convenience */
+#define HIDRD_NUM_BASE_dec  HIDRD_NUM_BASE_DEC
+/** A lowercase version of HIDRD_NUM_BASE_HEX - for macro convenience */
+#define HIDRD_NUM_BASE_hex  HIDRD_NUM_BASE_HEX
 
 static inline bool
 hidrd_num_base_valid(hidrd_num_base base)
@@ -88,8 +107,8 @@ extern bool hidrd_num_u16_from_str(uint16_t        *pnum,
  *         otherwise.
  */
 extern bool hidrd_num_u8_from_str(uint8_t          *pnum,
-                                   const char      *str,
-                                   hidrd_num_base   base);
+                                  const char       *str,
+                                  hidrd_num_base    base);
 
 /**
  * Convert an unsigned 32-bit integer to a string.
@@ -136,6 +155,89 @@ hidrd_num_u8_to_str(uint8_t num, hidrd_num_base base)
 }
 
 /**
+ * Convert a string to a signed 32-bit integer.
+ *
+ * @param pnum  Location for the converted number; could be NULL.
+ * @param str   String to convert from.
+ * @param base  Number base to convert from; only decimal base is supported.
+ *
+ * @return True if the string was valid and converted successfully, false
+ *         otherwise.
+ */
+extern bool hidrd_num_s32_from_str(int32_t         *pnum,
+                                   const char      *str,
+                                   hidrd_num_base   base);
+
+/**
+ * Convert a string to a signed 16-bit integer.
+ *
+ * @param pnum  Location for the converted number; could be NULL.
+ * @param str   String to convert from.
+ * @param base  Number base to convert from; only decimal base is supported.
+ *
+ * @return True if the string was valid and converted successfully, false
+ *         otherwise.
+ */
+extern bool hidrd_num_s16_from_str(int16_t         *pnum,
+                                   const char      *str,
+                                   hidrd_num_base   base);
+
+/**
+ * Convert a string to a signed 8-bit integer.
+ *
+ * @param pnum  Location for the converted number; could be NULL.
+ * @param str   String to convert from.
+ * @param base  Number base to convert from; only decimal base is supported.
+ *
+ * @return True if the string was valid and converted successfully, false
+ *         otherwise.
+ */
+extern bool hidrd_num_s8_from_str(int8_t           *pnum,
+                                  const char       *str,
+                                  hidrd_num_base    base);
+
+/**
+ * Convert a signed 32-bit integer to a string.
+ *
+ * @param num   The number to convert.
+ * @param base  Number base to convert to; only decimal base is supported.
+ *
+ * @return Dynamically allocated string, or NULL if failed to allocate
+ *         memory.
+ */
+extern char *hidrd_num_s32_to_str(int32_t num, hidrd_num_base base);
+
+/**
+ * Convert a signed 16-bit integer to a string.
+ *
+ * @param num   The number to convert.
+ * @param base  Number base to convert to; only decimal base is supported.
+ *
+ * @return Dynamically allocated string, or NULL if failed to allocate
+ *         memory.
+ */
+static inline char *
+hidrd_num_s16_to_str(int16_t num, hidrd_num_base base)
+{
+    return hidrd_num_s32_to_str(num, base);
+}
+
+/**
+ * Convert a signed 8-bit integer to a string.
+ *
+ * @param num   The number to convert.
+ * @param base  Number base to convert to; only decimal base is supported.
+ *
+ * @return Dynamically allocated string, or NULL if failed to allocate
+ *         memory.
+ */
+static inline char *
+hidrd_num_s8_to_str(int8_t num, hidrd_num_base base)
+{
+    return hidrd_num_s32_to_str(num, base);
+}
+
+/**
  * Declare a function pair for converting specified number type to/from a
  * string.
  *
@@ -161,39 +263,35 @@ hidrd_num_u8_to_str(uint8_t num, hidrd_num_base base)
  *                  used in the function names.
  * @param _t        Short (local) name of the type being converted; will be
  *                  used for local variable names.
- * @param _num      Long (full) name of the number type (like uint32_t).
  * @param _n        Short (convenience) name of the number type (like s8).
  * @param _b        Base of the string representation of the number
  *                  (lowercase - dec or hex).
- * @param _B        Base of the string representation of the number
- *                  (uppercase - DEC or HEX).
  */
-#define HIDRD_NUM_CONV_DEFS(_type, _t, _num, _n, _b, _B) \
-    char *                                                          \
-    hidrd_##_type##_to_##_b(hidrd_##_type _t)                       \
-    {                                                               \
-        assert(hidrd_##_type##_valid(_t));                          \
-        return hidrd_num_##_n##_to_str(_t, HIDRD_NUM_BASE_##_B);    \
-    }                                                               \
-                                                                    \
-                                                                    \
-    bool                                                            \
-    hidrd_##_type##_from_##_b(hidrd_##_type *p##_t,                 \
-                              const char      *str)                 \
-    {                                                               \
-        _num    _t;                                                 \
-                                                                    \
-        assert(str != NULL);                                        \
-                                                                    \
-        if (!hidrd_num_##_n##_from_str(&_t, str,                    \
-                                    HIDRD_NUM_BASE_##_B) ||         \
-            !hidrd_##_type##_valid(_t))                             \
-            return false;                                           \
-                                                                    \
-        if (p##_t != NULL)                                          \
-            *p##_t = _t;                                            \
-                                                                    \
-        return true;                                                \
+#define HIDRD_NUM_CONV_DEFS(_type, _t, _n, _b) \
+    char *                                                                  \
+    hidrd_##_type##_to_##_b(hidrd_##_type _t)                               \
+    {                                                                       \
+        assert(hidrd_##_type##_valid(_t));                                  \
+        return hidrd_num_##_n##_to_str(_t, HIDRD_NUM_BASE_##_b);            \
+    }                                                                       \
+                                                                            \
+                                                                            \
+    bool                                                                    \
+    hidrd_##_type##_from_##_b(hidrd_##_type *p##_t,                         \
+                              const char      *str)                         \
+    {                                                                       \
+        HIDRD_NUM_##_n##_TYPE   _t;                                         \
+                                                                            \
+        assert(str != NULL);                                                \
+                                                                            \
+        if (!hidrd_num_##_n##_from_str(&_t, str, HIDRD_NUM_BASE_##_b) ||    \
+            !hidrd_##_type##_valid(_t))                                     \
+            return false;                                                   \
+                                                                            \
+        if (p##_t != NULL)                                                  \
+            *p##_t = _t;                                                    \
+                                                                            \
+        return true;                                                        \
     }
 
 #ifdef __cplusplus

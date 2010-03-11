@@ -172,11 +172,10 @@ extern char *hidrd_hex_buf_to_str(void *buf, size_t size);
  *                  used in the function names.
  * @param _t        Short (local) name of the type being converted; will be
  *                  used for local variable names.
- * @param _num      Long (full) name of the number type (like uint32_t).
  * @param _n        Short (convenience) name of the number type (like s8).
  */
-#define HIDRD_HEX_CONV_DEFS(_type, _t, _num, _n) \
-    HIDRD_NUM_CONV_DEFS(_type, _t, _num, _n, hex, HEX)
+#define HIDRD_HEX_CONV_DEFS(_type, _t, _n) \
+    HIDRD_NUM_CONV_DEFS(_type, _t, _n, hex)
 
 #ifdef __cplusplus
 } /* extern "C" */

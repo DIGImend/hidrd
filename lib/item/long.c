@@ -28,4 +28,4 @@
 #include "hidrd/item/long.h"
 
 /* Define tag decimal string conversion functions */
-HIDRD_DEC_CONV_DEFS(item_long_tag, tag, uint8_t, u8);
+HIDRD_DEC_CONV_DEFS(item_long_tag, tag, u8);

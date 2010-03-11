@@ -52,7 +52,7 @@ hidrd_num_u32_from_str(uint32_t *pnum, const char *str, hidrd_num_base base)
 
     /* Convert to number */
     errno = 0;
-    num = strtoull(start, (char **)&end, base);
+    num = strtoul(start, (char **)&end, base);
     /* Check for the conversion and range errors */
     if (errno != 0 || num > max)
         return false;
@@ -75,6 +75,10 @@ hidrd_num_u16_from_str(uint16_t *pnum, const char *str, hidrd_num_base base)
 {
     uint32_t    num;
 
+    assert(str != NULL);
+    /* Only decimal and hexadecimal bases are supported */
+    assert(base == HIDRD_NUM_BASE_DEC || base == HIDRD_NUM_BASE_HEX);
+
     if (!hidrd_num_u32_from_str(&num, str, base))
         return false;
 
@@ -92,6 +96,10 @@ bool
 hidrd_num_u8_from_str(uint8_t *pnum, const char *str, hidrd_num_base base)
 {
     uint32_t    num;
+
+    assert(str != NULL);
+    /* Only decimal and hexadecimal bases are supported */
+    assert(base == HIDRD_NUM_BASE_DEC || base == HIDRD_NUM_BASE_HEX);
 
     if (!hidrd_num_u32_from_str(&num, str, base))
         return false;
@@ -115,6 +123,99 @@ hidrd_num_u32_to_str(uint32_t num, hidrd_num_base base)
     assert(base == HIDRD_NUM_BASE_DEC || base == HIDRD_NUM_BASE_HEX);
 
     if (asprintf(&str, (base == HIDRD_NUM_BASE_DEC ? "%u" : "%X"), num) < 0)
+        return NULL;
+
+    return str;
+}
+
+
+bool
+hidrd_num_s32_from_str(int32_t *pnum, const char *str, hidrd_num_base base)
+{
+    /* Just to be safe on all archs */
+    const long int  min     = INT32_MIN;
+    /* Just to be safe on all archs */
+    const long int  max     = INT32_MAX;
+    long int        num;
+    const char     *end;
+
+    assert(str != NULL);
+    /* Only decimal base is supported */
+    assert(base == HIDRD_NUM_BASE_DEC);
+
+    /* Convert to number */
+    errno = 0;
+    num = strtol(str, (char **)&end, base);
+    /* Check for the conversion and range errors */
+    if (errno != 0 || (num > max) || (num < min))
+        return false;
+
+    /* Check that there is nothing left, but space */
+    for (; isspace(*end); end++);
+    if (*end != '\0')
+        return false;
+
+    /* All is OK */
+    if (pnum != NULL)
+        *pnum = (int32_t)num;
+
+    return true;
+}
+
+
+bool
+hidrd_num_s16_from_str(int16_t *pnum, const char *str, hidrd_num_base base)
+{
+    int32_t num;
+
+    assert(str != NULL);
+    /* Only decimal base is supported */
+    assert(base == HIDRD_NUM_BASE_DEC);
+
+    if (!hidrd_num_s32_from_str(&num, str, base))
+        return false;
+
+    if (num > INT16_MAX || num < INT16_MIN)
+        return false;
+
+    if (pnum != NULL)
+        *pnum = (int16_t)num;
+
+    return true;
+}
+
+
+bool
+hidrd_num_s8_from_str(int8_t *pnum, const char *str, hidrd_num_base base)
+{
+    int32_t num;
+
+    assert(str != NULL);
+    /* Only decimal base is supported */
+    assert(base == HIDRD_NUM_BASE_DEC);
+
+    if (!hidrd_num_s32_from_str(&num, str, base))
+        return false;
+
+    if (num > INT8_MAX || num < INT8_MIN)
+        return false;
+
+    if (pnum != NULL)
+        *pnum = (int8_t)num;
+
+    return true;
+}
+
+
+char *
+hidrd_num_s32_to_str(int32_t num, hidrd_num_base base)
+{
+    char   *str;
+
+    /* Only decimal base is supported */
+    assert(base == HIDRD_NUM_BASE_DEC);
+
+    if (asprintf(&str, "%d", num) < 0)
         return NULL;
 
     return str;

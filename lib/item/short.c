@@ -186,13 +186,13 @@ hidrd_item_short_set_signed(hidrd_item *item, int32_t data)
 
 
 /* Define decimal string conversion functions for data size in bytes */
-HIDRD_DEC_CONV_DEFS(item_short_data_bytes, bytes, uint32_t, u32);
+HIDRD_DEC_CONV_DEFS(item_short_data_bytes, bytes, u32);
 
 /* Define type decimal string conversion functions */
-HIDRD_DEC_CONV_DEFS(item_short_type, type, uint32_t, u32);
+HIDRD_DEC_CONV_DEFS(item_short_type, type, u32);
 
 /* Define tag decimal string conversion functions */
-HIDRD_DEC_CONV_DEFS(item_short_tag, tag, uint32_t, u32);
+HIDRD_DEC_CONV_DEFS(item_short_tag, tag, u32);
 
 #ifdef HIDRD_WITH_TOKENS
 static const hidrd_tkn_link type_map[] = {

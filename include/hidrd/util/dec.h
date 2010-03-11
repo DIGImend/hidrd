@@ -126,6 +126,96 @@ hidrd_dec_u8_to_str(uint8_t num)
 }
 
 /**
+ * Convert a decimal string to a signed 32-bit integer.
+ *
+ * @param pnum  Location for the converted number; could be NULL.
+ * @param str   Decimal string to convert from.
+ *
+ * @return True if the string was valid and converted successfully, false
+ *         otherwise.
+ */
+static inline bool
+hidrd_dec_s32_from_str(int32_t *pnum, const char *str)
+{
+    assert(str != NULL);
+    return hidrd_num_s32_from_str(pnum, str, 10);
+}
+
+/**
+ * Convert a signed 32-bit integer to a decimal string.
+ *
+ * @param num   The number to convert.
+ *
+ * @return Dynamically allocated decimal string, or NULL if failed to
+ *         allocate memory.
+ */
+static inline char *
+hidrd_dec_s32_to_str(int32_t num)
+{
+    return hidrd_num_s32_to_str(num, 10);
+}
+
+/**
+ * Convert a decimal string to a signed 16-bit integer.
+ *
+ * @param pnum  Location for the converted number; could be NULL.
+ * @param str   Decimal string to convert from.
+ *
+ * @return True if the string was valid and converted successfully, false
+ *         otherwise.
+ */
+static inline bool
+hidrd_dec_s16_from_str(int16_t *pnum, const char *str)
+{
+    assert(str != NULL);
+    return hidrd_num_s16_from_str(pnum, str, 10);
+}
+
+/**
+ * Convert a signed 16-bit integer to a decimal string.
+ *
+ * @param num   The number to convert.
+ *
+ * @return Dynamically allocated decimal string, or NULL if failed to
+ *         allocate memory.
+ */
+static inline char *
+hidrd_dec_s16_to_str(int16_t num)
+{
+    return hidrd_num_s16_to_str(num, 10);
+}
+
+/**
+ * Convert a decimal string to a signed 8-bit integer.
+ *
+ * @param pnum  Location for the converted number; could be NULL.
+ * @param str   Decimal string to convert from.
+ *
+ * @return True if the string was valid and converted successfully, false
+ *         otherwise.
+ */
+static inline bool
+hidrd_dec_s8_from_str(int8_t *pnum, const char *str)
+{
+    assert(str != NULL);
+    return hidrd_num_s8_from_str(pnum, str, 10);
+}
+
+/**
+ * Convert a signed 8-bit integer to a decimal string.
+ *
+ * @param num   The number to convert.
+ *
+ * @return Dynamically allocated decimal string, or NULL if failed to
+ *         allocate memory.
+ */
+static inline char *
+hidrd_dec_s8_to_str(int8_t num)
+{
+    return hidrd_num_s8_to_str(num, 10);
+}
+
+/**
  * Declare a function pair for converting specified number type to from a
  * decimal string.
  *
@@ -145,11 +235,10 @@ hidrd_dec_u8_to_str(uint8_t num)
  *                  used in the function names.
  * @param _t        Short (local) name of the type being converted; will be
  *                  used for local variable names.
- * @param _num      Long (full) name of the number type (like uint32_t).
  * @param _n        Short (convenience) name of the number type (like s8).
  */
-#define HIDRD_DEC_CONV_DEFS(_type, _t, _num, _n) \
-    HIDRD_NUM_CONV_DEFS(_type, _t, _num, _n, dec, DEC)
+#define HIDRD_DEC_CONV_DEFS(_type, _t, _n) \
+    HIDRD_NUM_CONV_DEFS(_type, _t, _n, dec)
 
 #ifdef __cplusplus
 } /* extern "C" */
