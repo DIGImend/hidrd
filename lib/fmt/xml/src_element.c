@@ -280,6 +280,35 @@ ELEMENT_EXIT(COLLECTION)
     return ELEMENT_RC_ITEM;
 }
 
+#define NUM_ELEMENT(_name, _t) \
+    ELEMENT(_name)                                              \
+    {                                                           \
+        element_rc              result_rc   = ELEMENT_RC_ERROR; \
+        char                   *value_str   = NULL;             \
+        HIDRD_NUM_##_t##_TYPE   value;                          \
+                                                                \
+        value_str = (char *)xmlNodeGetContent(e);               \
+        if (value_str == NULL)                                  \
+            goto cleanup;                                       \
+        if (!hidrd_dec_##_t##_from_str(&value, value_str))      \
+            goto cleanup;                                       \
+                                                                \
+        hidrd_item_##_name##_init(xml_src->item, value);        \
+                                                                \
+        result_rc = ELEMENT_RC_ITEM;                            \
+                                                                \
+    cleanup:                                                    \
+                                                                \
+        xmlFree(value_str);                                     \
+                                                                \
+        return result_rc;                                       \
+    }
+
+NUM_ELEMENT(logical_minimum,    s32)
+NUM_ELEMENT(logical_maximum,    s32)
+NUM_ELEMENT(physical_minimum,   s32)
+NUM_ELEMENT(physical_maximum,   s32)
+
 ELEMENT(long)
 {
     element_rc  result_rc       = ELEMENT_RC_ERROR;
@@ -356,10 +385,10 @@ static const element_handler handler_list[] = {
     ENTER(COLLECTION),
     HANDLE(global),
     IGNORE(usage_page),
-    IGNORE(logical_minimum),
-    IGNORE(logical_maximum),
-    IGNORE(physical_minimum),
-    IGNORE(physical_maximum),
+    HANDLE(logical_minimum),
+    HANDLE(logical_maximum),
+    HANDLE(physical_minimum),
+    HANDLE(physical_maximum),
     IGNORE(unit_exponent),
     IGNORE(unit),
     IGNORE(report_size),
