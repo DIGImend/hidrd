@@ -25,50 +25,9 @@
  */
 
 #include "hidrd/util/hex.h"
+#include "hidrd/util/str.h"
 #include "hidrd/fmt/xml/prop.h"
 #include "hidrd/fmt/xml/snk.h"
-
-
-/**
- * Uppercase the first character of a string.
- *
- * @param str   String to modify.
- *
- * @return Modified string.
- */
-static char *
-str_uc_first(char *str)
-{
-    assert(str != NULL);
-
-    if (*str >= 'a' && *str <= 'z')
-        *str -= ('a' - 'A');
-
-    return str;
-}
-
-
-/**
- * Pad a dynamically allocated string with spaces on both sides.
- *
- * @param str   A dynamically allocated string to pad; will be freed, even
- *              in case of failure.
- *
- * @return Dynamically allocated padded string, or NULL, if failed to
- *         allocate memory.
- */
-static char *
-str_apada(char *str)
-{
-    char   *padded;
-    int     rc;
-
-    rc = asprintf(&padded, " %s ", str);
-
-    free(str);
-
-    return (rc >= 0) ? padded : NULL;
-}
 
 
 /**
@@ -1020,8 +979,8 @@ write_global_element(hidrd_xml_snk_inst   *xml_snk,
                             hidrd_usage_page_to_token_or_hex(
                                 hidrd_item_usage_page_get_value(item))),
                     COMMENT(STROWN,
-                            str_apada(
-                                str_uc_first(
+                            hidrd_str_apada(
+                                hidrd_str_uc_first(
                                     hidrd_usage_page_desc(
                                         hidrd_item_usage_page_get_value(
                                             item))))));
@@ -1107,7 +1066,8 @@ write_usage_element(hidrd_xml_snk_inst    *xml_snk,
     {
         success = element_add(xml_snk, false, name,
                               CONTENT(STROWN, token_or_hex),
-                              COMMENT(STROWN, str_apada(str_uc_first(desc))),
+                              COMMENT(STROWN, hidrd_str_apada(
+                                                hidrd_str_uc_first(desc))),
                               NT_NONE);
         token_or_hex = NULL;
         desc = NULL;
