@@ -58,6 +58,9 @@ dnl
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include "hidrd/util/hex.h"
+#include "hidrd/util/str.h"
+#include "hidrd/util/tkn.h"
 #include "hidrd/usage/page.h"
 
 'pushdef(`PAGE_SET',
@@ -152,14 +155,14 @@ hidrd_usage_page_to_hex(hidrd_usage_page page)
 hidrd_usage_page
 hidrd_usage_page_from_hex(const char *hex)
 {
-    hidrd_usage_page    page;
+    uint16_t    page;
 
     assert(hex != NULL);
 
-    if (sscanf(hex, "%X", &page) != 1)
+    if (hidrd_hex_u16_from_str(&page, hex))
+        return page;
+    else
         return HIDRD_USAGE_PAGE_INVALID;
-
-    return page;
 }
 
 
@@ -193,12 +196,17 @@ hidrd_usage_page_to_token_or_hex(hidrd_usage_page page)
 hidrd_usage_page
 hidrd_usage_page_from_token(const char *token)
 {
+    const char         *tkn;
+    size_t              len;
     const page_desc    *desc;
 
     assert(token != NULL);
 
+    if (!hidrd_tkn_strip(&tkn, &len, token))
+        return HIDRD_USAGE_PAGE_INVALID;
+
     for (desc = desc_list; desc->page != HIDRD_USAGE_PAGE_INVALID; desc++)
-        if (strcasecmp(desc->token, token) == 0)
+        if (hidrd_str_ncasecmpn(desc->token, tkn, len) == 0)
             return hidrd_usage_page_validate(desc->page);
 
     return HIDRD_USAGE_PAGE_INVALID;

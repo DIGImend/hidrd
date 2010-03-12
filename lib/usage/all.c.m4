@@ -58,6 +58,9 @@ dnl
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include "hidrd/util/hex.h"
+#include "hidrd/util/str.h"
+#include "hidrd/util/tkn.h"
 #include "hidrd/usage/all.h"
 
 typedef struct usage_desc {
@@ -173,7 +176,7 @@ hidrd_usage_from_hex(hidrd_usage *pusage, const char *hex)
 
     assert(hex != NULL);
 
-    if (sscanf(hex, "%X", &usage) != 1)
+    if (!hidrd_hex_u32_from_str(&usage, hex))
         return false;
 
     if (pusage != NULL)
@@ -228,15 +231,20 @@ hidrd_usage_to_token_or_hex_id(hidrd_usage usage)
 bool
 hidrd_usage_from_token(hidrd_usage *pusage, const char *token)
 {
-    const usage_desc    *desc;
+    const char         *tkn;
+    size_t              len;
+    size_t              i;
 
     assert(token != NULL);
 
-    for (desc = desc_list; desc->usage != HIDRD_USAGE_PAGE_INVALID; desc++)
-        if (strcasecmp(desc->token, token) == 0)
+    if (!hidrd_tkn_strip(&tkn, &len, token))
+        return false;
+
+    for (i = 0; i < desc_num; i++)
+        if (hidrd_str_ncasecmpn(desc_list[i].token, tkn, len) == 0)
         {
             if (pusage != NULL)
-                *pusage = desc->usage;
+                *pusage = desc_list[i].usage;
             return true;
         }
 
