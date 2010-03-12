@@ -27,6 +27,7 @@
 #include <assert.h>
 #include <ctype.h>
 #include <string.h>
+#include "hidrd/util/str.h"
 #include "hidrd/util/tkn.h"
 
 
@@ -73,7 +74,7 @@ hidrd_tkn_to_num(uint32_t *pnum, const char *str, const hidrd_tkn_link *map)
 
     for (link = map; link->str != NULL; link++)
         if (strlen(link->str) == len &&
-            strncasecmp(link->str, tkn, len) == 0)
+            hidrd_str_ncasecmpn(link->str, tkn, len) == 0)
         {
             if (pnum != NULL)
                 *pnum = link->num;

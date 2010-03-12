@@ -27,6 +27,7 @@
 #include <assert.h>
 #include <ctype.h>
 #include <strings.h>
+#include "hidrd/util/str.h"
 #include "hidrd/util/tkn.h"
 #include "hidrd/util/bool.h"
 
@@ -42,15 +43,15 @@ hidrd_bool_from_str(bool *pvalue, const char *str)
         return false;
 
     do {
-        if (strncasecmp(tkn, "true", len) == 0 ||
-            strncasecmp(tkn, "yes", len) == 0)
+        if (hidrd_str_ncasecmpn("true", tkn, len) == 0 ||
+            hidrd_str_ncasecmpn("yes", tkn, len) == 0)
         {
             value = true;
             break;
         }
 
-        if (strncasecmp(tkn, "false", len) == 0 ||
-            strncasecmp(tkn, "no", len) == 0)
+        if (hidrd_str_ncasecmpn("false", tkn, len) == 0 ||
+            hidrd_str_ncasecmpn("no", tkn, len) == 0)
         {
             value = false;
             break;
