@@ -47,7 +47,7 @@ hidrd_num_u32_from_str(uint32_t *pnum, const char *str, hidrd_num_base base)
     /* Skip leading space ourselves */
     for (start = str; isspace(*start); start++);
     /* Defeat possible sign which strtoul interprets */
-    if (!isdigit(*start))
+    if (!((base == HIDRD_NUM_BASE_DEC) ? isdigit(*start) : isxdigit(*start)))
         return false;
 
     /* Convert to number */
