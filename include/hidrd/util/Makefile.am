@@ -23,7 +23,8 @@ hidrd_util_HEADERS = \
     bool.h              \
     dec.h               \
     hex.h               \
-    num.h
+    num.h               \
+    str.h
 
 if ENABLE_TOKENS
 hidrd_util_HEADERS += tkn.h
