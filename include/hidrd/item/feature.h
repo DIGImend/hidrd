@@ -35,16 +35,16 @@ extern "C" {
 #endif
 
 HIDRD_ITEM_MAIN_GEN_FUNCS(feature, FEATURE)
-HIDRD_ITEM_MAIN_BIT_FUNCS(feature)
-HIDRD_ITEM_MAIN_BIT_ACC(feature, 0, data, constant);
-HIDRD_ITEM_MAIN_BIT_ACC(feature, 1, array, variable);
-HIDRD_ITEM_MAIN_BIT_ACC(feature, 2, absolute, relative);
-HIDRD_ITEM_MAIN_BIT_ACC(feature, 3, no_wrap, wrap);
-HIDRD_ITEM_MAIN_BIT_ACC(feature, 4, linear, non_linear);
-HIDRD_ITEM_MAIN_BIT_ACC(feature, 5, preferred_state, no_preferred);
-HIDRD_ITEM_MAIN_BIT_ACC(feature, 6, no_null_position, null_state);
-HIDRD_ITEM_MAIN_BIT_ACC(feature, 7, non_volatile, volatile);
-HIDRD_ITEM_MAIN_BIT_ACC(feature, 8, bit_field, buffered_bytes);
+HIDRD_ITEM_MAIN_BIT_FUNCS(feature, FEATURE)
+HIDRD_ITEM_MAIN_BIT_ACC(feature, 0, data, constant)
+HIDRD_ITEM_MAIN_BIT_ACC(feature, 1, array, variable)
+HIDRD_ITEM_MAIN_BIT_ACC(feature, 2, absolute, relative)
+HIDRD_ITEM_MAIN_BIT_ACC(feature, 3, no_wrap, wrap)
+HIDRD_ITEM_MAIN_BIT_ACC(feature, 4, linear, non_linear)
+HIDRD_ITEM_MAIN_BIT_ACC(feature, 5, preferred_state, no_preferred)
+HIDRD_ITEM_MAIN_BIT_ACC(feature, 6, no_null_position, null_state)
+HIDRD_ITEM_MAIN_BIT_ACC(feature, 7, non_volatile, volatile)
+HIDRD_ITEM_MAIN_BIT_ACC(feature, 8, bit_field, buffered_bytes)
 
 #ifdef __cplusplus
 } /* extern "C" */

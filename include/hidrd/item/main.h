@@ -125,18 +125,21 @@ hidrd_item_main_get_bit(const hidrd_item *item, uint8_t idx)
     {                                                           \
         assert(hidrd_item_##_name##_valid(item));               \
         return item;                                            \
-    }                                                           \
-                                                                \
-    static inline hidrd_item *                                  \
-    hidrd_item_##_name##_init(hidrd_item *item)                 \
-    {                                                           \
-        return hidrd_item_##_name##_validate(                   \
-            hidrd_item_main_init(item,                          \
-                                 HIDRD_ITEM_MAIN_TAG_##_NAME)); \
     }
 
 
-#define HIDRD_ITEM_MAIN_BIT_FUNCS(_name) \
+#define HIDRD_ITEM_MAIN_BIT_FUNCS(_name, _NAME) \
+    static inline hidrd_item *                              \
+    hidrd_item_##_name##_init(hidrd_item *item,             \
+                              uint32_t bitmask)             \
+    {                                                       \
+        return hidrd_item_##_name##_validate(               \
+            hidrd_item_main_init_unsigned(                  \
+                            item,                           \
+                            HIDRD_ITEM_MAIN_TAG_##_NAME,    \
+                            bitmask));                      \
+    }                                                       \
+                                                            \
     static inline bool                                      \
     hidrd_item_##_name##_get_bit(const hidrd_item *item,    \
                                  uint8_t idx)               \

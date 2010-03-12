@@ -36,6 +36,13 @@ extern "C" {
 
 HIDRD_ITEM_MAIN_GEN_FUNCS(end_collection, END_COLLECTION)
 
+static inline hidrd_item *
+hidrd_item_end_collection_init(hidrd_item *item)
+{
+    return hidrd_item_end_collection_validate(
+        hidrd_item_main_init(item, HIDRD_ITEM_MAIN_TAG_END_COLLECTION));
+}
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif

@@ -147,7 +147,7 @@ item_error(const char *file, unsigned int line,
 
 #define BEGIN_ITEM_WBITS(_name, _desc, _byte...) \
     BEGIN_ITEM(_name, _desc, ##_byte)               \
-        hidrd_item_##_name##_init(test_item);
+        hidrd_item_##_name##_init(test_item, 0);
 
 #define ITEM_BIT(_name, _on_name, _off_name) \
     do {                                                                \
