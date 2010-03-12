@@ -25,6 +25,7 @@
  */
 
 #include "hidrd/util/hex.h"
+#include "hidrd/util/str.h"
 #include "src_element.h"
 
 
@@ -183,6 +184,118 @@ cleanup:
     return result_rc;
 }
 
+typedef struct main_bit_desc {
+    const char *off;
+    const char *on;
+} main_bit_desc;
+
+#define MBD(_num, _off, _on) \
+    static const main_bit_desc mbd##_num = {.off = #_off, .on = #_on}
+
+MBD(0, data, constant);
+MBD(1, array, variable);
+MBD(2, absolute, relative);
+MBD(3, no_wrap, wrap);
+MBD(4, linear, non_linear);
+MBD(5, preferred_state, no_preferred);
+MBD(6, no_null_position, null_state);
+MBD(7, non_volatile, volatile);
+MBD(8, bit_field, buffered_bytes);
+
+#undef MBD
+
+typedef const main_bit_desc    *main_bitmap_desc[32];
+
+#define MBMD(_name, _fields...) \
+    static const main_bitmap_desc   _name##_bmd = {_fields}
+
+MBMD(input,  &mbd0, &mbd1, &mbd2, &mbd3, &mbd4, &mbd5, &mbd6, NULL,  &mbd8);
+MBMD(output, &mbd0, &mbd1, &mbd2, &mbd3, &mbd4, &mbd5, &mbd6, &mbd7, &mbd8);
+#define feature_bmd output_bmd
+
+static bool parse_bitmap_element(uint32_t                  *pbitmap,
+                                 xmlNodePtr                 e,
+                                 const main_bitmap_desc     bmd)
+{
+    bool        result      = false;
+    uint32_t    bitmap      = 0;
+    char       *data_str    = NULL;
+    bool        data;
+    size_t      i;
+    char        i_name[6]   = "bit";
+
+    for (i = 0, e = e->children; e != NULL; e = e->next)
+    {
+        if (e->type != XML_ELEMENT_NODE)
+            continue;
+
+        data_str = (char *)xmlNodeGetContent(e);
+        if (data_str == NULL)
+            goto cleanup;
+        if (hidrd_str_isblank(data_str))
+            data = true;
+        else if (!hidrd_bool_from_str(&data, data_str))
+            goto cleanup;
+        xmlFree(data_str);
+        data_str = NULL;
+
+        while (true)
+        {
+            if (bmd[i] != NULL)
+            {
+                if (strcmp(bmd[i]->off, (const char *)e->name) == 0)
+                {
+                    bitmap = HIDRD_BIT_SET(bitmap, i, !data);
+                    break;
+                }
+                else if (strcmp(bmd[i]->on, (const char *)e->name) == 0)
+                {
+                    bitmap = HIDRD_BIT_SET(bitmap, i, data);
+                    break;
+                }
+            }
+            snprintf(i_name + 3, sizeof(i_name) - 3, "%u", (unsigned int)i);
+            if (strcmp(i_name, (const char *)e->name) == 0)
+            {
+                bitmap = HIDRD_BIT_SET(bitmap, i, data);
+                break;
+            }
+            i++;
+            if (i > 31)
+                /* Unkown element name */
+                goto cleanup;
+        }
+    }
+
+    if (pbitmap != NULL)
+        *pbitmap = bitmap;
+
+    result = true;
+
+cleanup:
+
+    xmlFree(data_str);
+
+    return result;
+}
+
+#define BITMAP_ELEMENT(_name) \
+    ELEMENT(_name)                                          \
+    {                                                       \
+        uint32_t    bitmap;                                 \
+                                                            \
+        if (!parse_bitmap_element(&bitmap, e, _name##_bmd)) \
+            return ELEMENT_RC_ERROR;                        \
+                                                            \
+        hidrd_item_##_name##_init(xml_src->item, bitmap);   \
+                                                            \
+        return ELEMENT_RC_ITEM;                             \
+    }
+
+BITMAP_ELEMENT(input)
+BITMAP_ELEMENT(output)
+BITMAP_ELEMENT(feature)
+
 ELEMENT(global)
 {
     element_rc  result_rc   = ELEMENT_RC_ERROR;
@@ -215,6 +328,30 @@ cleanup:
 
     xmlFree(data_str);
     PROP_CLNP(tag);
+
+    return result_rc;
+}
+
+ELEMENT(usage_page)
+{
+    element_rc      result_rc   = ELEMENT_RC_ERROR;
+    char           *value_str   = NULL;
+    hidrd_usage     value;
+
+    value_str = (char *)xmlNodeGetContent(e);
+    if (value_str == NULL)
+        goto cleanup;
+    value = hidrd_usage_page_from_token_or_hex(value_str);
+    if (!hidrd_usage_page_valid(value))
+        goto cleanup;
+
+    hidrd_item_usage_page_init(xml_src->item, value);
+
+    result_rc = ELEMENT_RC_ITEM;
+
+cleanup:
+
+    xmlFree(value_str);
 
     return result_rc;
 }
@@ -365,6 +502,35 @@ NUM_ELEMENT(unit_exponent,      s32)
 NUM_ELEMENT(report_size,        u32)
 NUM_ELEMENT(report_count,       u32)
 NUM_ELEMENT(report_id,          u8)
+
+#define USAGE_ELEMENT(_name) \
+    ELEMENT(_name)                                              \
+    {                                                           \
+        element_rc      result_rc   = ELEMENT_RC_ERROR;         \
+        char           *value_str   = NULL;                     \
+        hidrd_usage     value;                                  \
+                                                                \
+        value_str = (char *)xmlNodeGetContent(e);               \
+        if (value_str == NULL)                                  \
+            goto cleanup;                                       \
+        if (!hidrd_usage_from_token_or_hex(&value, value_str))  \
+            goto cleanup;                                       \
+                                                                \
+        hidrd_item_##_name##_init(xml_src->item, value);        \
+                                                                \
+        result_rc = ELEMENT_RC_ITEM;                            \
+                                                                \
+    cleanup:                                                    \
+                                                                \
+        xmlFree(value_str);                                     \
+                                                                \
+        return result_rc;                                       \
+    }
+
+USAGE_ELEMENT(usage);
+USAGE_ELEMENT(usage_minimum);
+USAGE_ELEMENT(usage_maximum);
+
 NUM_ELEMENT(designator_index,   u32)
 NUM_ELEMENT(designator_minimum, u32)
 NUM_ELEMENT(designator_maximum, u32)
@@ -474,14 +640,14 @@ static const element_handler handler_list[] = {
     HANDLE(basic),
     HANDLE(short),
     HANDLE(main),
-    IGNORE(input),
-    IGNORE(output),
-    IGNORE(feature),
+    HANDLE(input),
+    HANDLE(output),
+    HANDLE(feature),
     HANDLE(collection),
     HANDLE(end_collection),
     ENTER(COLLECTION),
     HANDLE(global),
-    IGNORE(usage_page),
+    HANDLE(usage_page),
     HANDLE(logical_minimum),
     HANDLE(logical_maximum),
     HANDLE(physical_minimum),
@@ -495,9 +661,9 @@ static const element_handler handler_list[] = {
     HANDLE(pop),
     ENTER(PUSH),
     HANDLE(local),
-    IGNORE(usage),
-    IGNORE(usage_minimum),
-    IGNORE(usage_maximum),
+    HANDLE(usage),
+    HANDLE(usage_minimum),
+    HANDLE(usage_maximum),
     HANDLE(designator_index),
     HANDLE(designator_minimum),
     HANDLE(designator_maximum),
