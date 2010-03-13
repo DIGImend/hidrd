@@ -27,7 +27,6 @@
 #ifndef __HIDRD_ITEM_END_COLLECTION_H__
 #define __HIDRD_ITEM_END_COLLECTION_H__
 
-#include "hidrd/bit.h"
 #include "hidrd/item/main.h"
 
 #ifdef __cplusplus

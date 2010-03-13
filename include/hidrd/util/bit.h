@@ -1,5 +1,5 @@
 /** @file
- * @brief HID report descriptor - bit operations
+ * @brief HID report descriptor - utilities - bit operations
  *
  * Copyright (C) 2009 Nikolai Kondrashov
  *
@@ -24,8 +24,8 @@
  * @(#) $Id$
  */
 
-#ifndef __HIDRD_BIT_H__
-#define __HIDRD_BIT_H__
+#ifndef __HIDRD_UTIL_BIT_H__
+#define __HIDRD_UTIL_BIT_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -41,6 +41,4 @@ extern "C" {
 } /* extern "C" */
 #endif
 
-#endif /* __HIDRD_BIT_H__ */
-
-
+#endif /* __HIDRD_UTIL_BIT_H__ */

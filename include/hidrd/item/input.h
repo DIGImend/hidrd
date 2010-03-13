@@ -27,7 +27,6 @@
 #ifndef __HIDRD_ITEM_INPUT_H__
 #define __HIDRD_ITEM_INPUT_H__
 
-#include "hidrd/bit.h"
 #include "hidrd/item/main.h"
 
 #ifdef __cplusplus

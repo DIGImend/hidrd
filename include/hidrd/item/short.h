@@ -29,7 +29,7 @@
 
 #include <assert.h>
 #include "hidrd/item/basic.h"
-#include "hidrd/bit.h"
+#include "hidrd/util/bit.h"
 
 #ifdef __cplusplus
 extern "C" {
