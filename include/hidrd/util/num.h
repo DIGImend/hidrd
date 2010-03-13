@@ -293,6 +293,23 @@ hidrd_num_s8_to_str(int8_t num, hidrd_num_base base)
         return true;                                                        \
     }
 
+/**
+ * Convert a 32-bit unsigned number to little-endian order.
+ *
+ * @param ple   Location for the output number in little-endian order.
+ * @param num   Input number in host order.
+ */
+extern void hidrd_num_u32_to_le(uint32_t *ple, uint32_t num);
+
+/**
+ * Convert a 32-bit unsigned number from little-endian order.
+ *
+ * @param ple   Location of the input number in little-endian order.
+ *
+ * @return Output number in host order.
+ */
+extern uint32_t hidrd_num_u32_from_le(const uint32_t *ple);
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif

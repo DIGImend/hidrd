@@ -223,3 +223,40 @@ hidrd_num_s32_to_str(int32_t num, hidrd_num_base base)
 }
 
 
+void
+hidrd_num_u32_to_le(uint32_t *ple, uint32_t num)
+{
+    uint8_t *p  = (uint8_t *)ple;
+
+    assert(ple != NULL);
+
+    *p = num & 0xFF;
+    p++;
+    num >>= 8;
+    *p = num & 0xFF;
+    p++;
+    num >>= 8;
+    *p = num & 0xFF;
+    p++;
+    num >>= 8;
+    *p = num & 0xFF;
+}
+
+
+uint32_t
+hidrd_num_u32_from_le(const uint32_t *ple)
+{
+    const uint8_t  *p   = (const uint8_t *)ple;
+    uint32_t        num;
+
+    assert(ple != NULL);
+
+    num = *p;
+    num |= *++p << 8;
+    num |= *++p << 16;
+    num |= *++p << 24;
+
+    return num;
+}
+
+
