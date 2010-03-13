@@ -84,6 +84,8 @@ ELEMENT(basic)
     data_str = (char *)xmlNodeGetContent(e);
     if (data_str == NULL)
         goto cleanup;
+    memset(xml_src->item + HIDRD_ITEM_BASIC_MIN_SIZE, 0,
+           (HIDRD_ITEM_BASIC_MAX_SIZE - HIDRD_ITEM_BASIC_MIN_SIZE));
     if (!hidrd_hex_buf_from_str(xml_src->item + HIDRD_ITEM_BASIC_MIN_SIZE,
                                 (HIDRD_ITEM_BASIC_MAX_SIZE -
                                  HIDRD_ITEM_BASIC_MIN_SIZE),
@@ -126,6 +128,8 @@ ELEMENT(short)
     data_str = (char *)xmlNodeGetContent(e);
     if (data_str == NULL)
         goto cleanup;
+    memset(hidrd_item_short_get_data(xml_src->item), 0,
+           HIDRD_ITEM_SHORT_DATA_BYTES_MAX);
     if (!hidrd_hex_buf_from_str(hidrd_item_short_get_data(xml_src->item),
                                 HIDRD_ITEM_SHORT_DATA_BYTES_MAX,
                                 &data_len, data_str))
@@ -163,6 +167,8 @@ ELEMENT(main)
     data_str = (char *)xmlNodeGetContent(e);
     if (data_str == NULL)
         goto cleanup;
+    memset(hidrd_item_short_get_data(xml_src->item), 0,
+           HIDRD_ITEM_SHORT_DATA_BYTES_MAX);
     if (!hidrd_hex_buf_from_str(hidrd_item_short_get_data(xml_src->item),
                                 HIDRD_ITEM_SHORT_DATA_BYTES_MAX,
                                 &data_len, data_str))
@@ -221,6 +227,7 @@ static bool parse_bitmap_element(uint32_t                  *pbitmap,
     uint32_t    bitmap      = 0;
     char       *data_str    = NULL;
     bool        data;
+    bool        matched;
     size_t      i;
     char        i_name[6]   = "bit";
 
@@ -239,31 +246,26 @@ static bool parse_bitmap_element(uint32_t                  *pbitmap,
         xmlFree(data_str);
         data_str = NULL;
 
-        while (true)
+        for (matched = false; !matched; i++)
         {
-            if (bmd[i] != NULL)
-            {
-                if (strcmp(bmd[i]->off, (const char *)e->name) == 0)
-                {
-                    bitmap = HIDRD_BIT_SET(bitmap, i, !data);
-                    break;
-                }
-                else if (strcmp(bmd[i]->on, (const char *)e->name) == 0)
-                {
-                    bitmap = HIDRD_BIT_SET(bitmap, i, data);
-                    break;
-                }
-            }
-            snprintf(i_name + 3, sizeof(i_name) - 3, "%u", (unsigned int)i);
-            if (strcmp(i_name, (const char *)e->name) == 0)
-            {
-                bitmap = HIDRD_BIT_SET(bitmap, i, data);
-                break;
-            }
-            i++;
             if (i > 31)
                 /* Unkown element name */
                 goto cleanup;
+            if (bmd[i] != NULL &&
+                strcmp(bmd[i]->off, (const char *)e->name) == 0)
+                bitmap = HIDRD_BIT_SET(bitmap, i, !data);
+            else if (bmd[i] != NULL &&
+                     strcmp(bmd[i]->on, (const char *)e->name) == 0)
+                bitmap = HIDRD_BIT_SET(bitmap, i, data);
+            else
+            {
+                snprintf(i_name + 3, sizeof(i_name) - 3, "%zu", i);
+                if (strcmp(i_name, (const char *)e->name) == 0)
+                    bitmap = HIDRD_BIT_SET(bitmap, i, data);
+                else
+                    continue;
+            }
+            matched = true;
         }
     }
 
@@ -311,6 +313,8 @@ ELEMENT(global)
     data_str = (char *)xmlNodeGetContent(e);
     if (data_str == NULL)
         goto cleanup;
+    memset(hidrd_item_short_get_data(xml_src->item), 0,
+           HIDRD_ITEM_SHORT_DATA_BYTES_MAX);
     if (!hidrd_hex_buf_from_str(hidrd_item_short_get_data(xml_src->item),
                                 HIDRD_ITEM_SHORT_DATA_BYTES_MAX,
                                 &data_len, data_str))
@@ -399,6 +403,8 @@ ELEMENT(local)
     data_str = (char *)xmlNodeGetContent(e);
     if (data_str == NULL)
         goto cleanup;
+    memset(hidrd_item_short_get_data(xml_src->item), 0,
+           HIDRD_ITEM_SHORT_DATA_BYTES_MAX);
     if (!hidrd_hex_buf_from_str(hidrd_item_short_get_data(xml_src->item),
                                 HIDRD_ITEM_SHORT_DATA_BYTES_MAX,
                                 &data_len, data_str))
@@ -499,6 +505,232 @@ NUM_ELEMENT(logical_maximum,    s32)
 NUM_ELEMENT(physical_minimum,   s32)
 NUM_ELEMENT(physical_maximum,   s32)
 NUM_ELEMENT(unit_exponent,      s32)
+
+typedef const char *unit_system_desc[HIDRD_UNIT_NIBBLE_INDEX_EXP_NUM];
+
+const unit_system_desc  generic_usd = {
+    "length", "mass", "time", "temperature", "current", "luminous_intensity"
+};
+const unit_system_desc  si_linear_usd = {
+    "centimeter", "gram", "seconds", "kelvin", "ampere", "candela"
+};
+const unit_system_desc  si_rotation_usd = {
+    "radians", "gram", "seconds", "kelvin", "ampere", "candela"
+};
+const unit_system_desc  english_linear_usd = {
+    "inch", "slug", "seconds", "fahrenheit", "ampere", "candela"
+};
+const unit_system_desc  english_rotation_usd = {
+    "degrees", "slug", "seconds", "fahrenheit", "ampere", "candela"
+};
+
+static bool
+parse_unit_system_element(hidrd_unit               *punit,
+                          const unit_system_desc    usd,
+                          xmlNodePtr                e)
+{
+    bool            result  = false;
+    hidrd_unit      unit    = HIDRD_UNIT_NONE;
+    size_t          i;
+    bool            matched;
+    char           *exp_str = NULL;
+    hidrd_unit_exp  exp;
+
+    for (i = 0, e = e->children; e != NULL; e = e->next)
+    {
+        if (e->type != XML_ELEMENT_NODE)
+            continue;
+
+        for (matched = false; !matched; i++)
+        {
+            if (i > sizeof(unit_system_desc) / sizeof(*usd))
+                /* Unknown element name */
+                goto cleanup;
+
+            if (strcmp(usd[i], (const char *)e->name) != 0)
+                continue;
+
+            exp_str = (char *)xmlNodeGetContent(e);
+            if (exp_str == NULL)
+                goto cleanup;
+            if (hidrd_str_isblank(exp_str))
+                exp = HIDRD_UNIT_EXP_1;
+            else if (!hidrd_unit_exp_from_str(&exp, exp_str))
+                goto cleanup;
+            xmlFree(exp_str);
+            exp_str = NULL;
+
+            unit = hidrd_unit_set_nibble(
+                            unit,
+                            i + HIDRD_UNIT_NIBBLE_INDEX_EXP_MIN,
+                            exp);
+            matched = true;
+        }
+    }
+
+    if (punit != NULL)
+        *punit = unit;
+
+    result = true;
+
+cleanup:
+
+    xmlFree(exp_str);
+
+    return result;
+}
+
+
+static bool
+parse_unit_system_gen_element(hidrd_unit *punit, xmlNodePtr e)
+{
+    bool        result  = false;
+    hidrd_unit  unit;
+    
+    PROP_DECL(unit_system, system);
+
+    PROP_RETR(unit_system, system, token_or_dec);
+
+    if (!parse_unit_system_element(&unit, generic_usd, e))
+        goto cleanup;
+
+    unit = hidrd_unit_set_system(unit, system);
+
+    if (punit != NULL)
+        *punit = unit;
+
+    result = true;
+
+cleanup:
+
+    PROP_CLNP(system);
+
+    return result;
+}
+
+
+const unit_system_desc *known_system_list[HIDRD_UNIT_SYSTEM_KNOWN_NUM] = {
+#define MAP(_NAME, _name) \
+    [HIDRD_UNIT_SYSTEM_##_NAME - HIDRD_UNIT_SYSTEM_KNOWN_MIN] = &_name##_usd
+    MAP(SI_LINEAR, si_linear),
+    MAP(SI_ROTATION, si_rotation),
+    MAP(ENGLISH_LINEAR, english_linear),
+    MAP(ENGLISH_ROTATION, english_rotation)
+#undef MAP
+};
+
+static bool
+parse_unit_system_spec_element(hidrd_unit          *punit,
+                               hidrd_unit_system    system,
+                               xmlNodePtr           e)
+{
+    hidrd_unit  unit;
+
+    assert(hidrd_unit_system_valid(system));
+    assert(hidrd_unit_system_known(system));
+
+    if (!parse_unit_system_element(
+                &unit,
+                *known_system_list[system - HIDRD_UNIT_SYSTEM_KNOWN_MIN],
+                e))
+        return false;
+
+    unit = hidrd_unit_set_system(unit, system);
+
+    if (punit != NULL)
+        *punit = unit;
+
+    return true;
+}
+
+
+static bool
+parse_unit_value_element(hidrd_unit *punit, xmlNodePtr e)
+{
+    bool        result      = false;
+    uint32_t    unit        = 0;
+    char       *data_str    = NULL;
+
+    data_str = (char *)xmlNodeGetContent(e);
+    if (data_str == NULL)
+        goto cleanup;
+    if (!hidrd_hex_buf_from_str(&unit, sizeof(unit),
+                                NULL, data_str))
+        goto cleanup;
+
+    if (punit != NULL)
+        *punit = hidrd_num_u32_from_le(&unit);
+
+    result = true;
+
+cleanup:
+
+    xmlFree(data_str);
+
+    return result;
+}
+
+
+ELEMENT(unit)
+{
+    hidrd_unit          unit;
+
+    /* Lookup first element */
+    for (e = e->children;
+         e != NULL && e->type != XML_ELEMENT_NODE;
+         e = e->next);
+    /* If none */
+    if (e == NULL)
+        return ELEMENT_RC_ERROR;
+
+#define MATCH(_name) (strcmp((const char *)e->name, #_name) == 0)
+    if (MATCH(none))
+    {
+        unit = HIDRD_UNIT_NONE;
+        goto finish;
+    }
+    else if (MATCH(value))
+    {
+        if (parse_unit_value_element(&unit, e))
+            goto finish;
+    }
+    else if (MATCH(generic))
+    {
+        if (parse_unit_system_gen_element(&unit, e))
+            goto finish;
+    }
+#define MAP(_NAME, _name) \
+    else if (MATCH(_name))                                              \
+    {                                                                   \
+        if (parse_unit_system_spec_element(&unit,                       \
+                                           HIDRD_UNIT_SYSTEM_##_NAME,   \
+                                           e))                          \
+            goto finish;                                                \
+    }
+    MAP(SI_LINEAR, si_linear)
+    MAP(SI_ROTATION, si_rotation)
+    MAP(ENGLISH_LINEAR, english_linear)
+    MAP(ENGLISH_ROTATION, english_rotation)
+#undef MAP
+#undef MATCH
+
+    return ELEMENT_RC_ERROR;
+
+finish:
+
+    /* Lookup extra element */
+    for (e = e->next;
+         e != NULL && e->type != XML_ELEMENT_NODE;
+         e = e->next);
+    /* If any */
+    if (e != NULL)
+        return ELEMENT_RC_ERROR;
+
+    hidrd_item_unit_init(xml_src->item, unit);
+
+    return ELEMENT_RC_ITEM;
+}
+
 NUM_ELEMENT(report_size,        u32)
 NUM_ELEMENT(report_count,       u32)
 NUM_ELEMENT(report_id,          u8)
@@ -587,6 +819,8 @@ ELEMENT(long)
     data_str = (char *)xmlNodeGetContent(e);
     if (data_str == NULL)
         goto cleanup;
+    memset(hidrd_item_long_get_data(xml_src->item), 0,
+           HIDRD_ITEM_LONG_DATA_SIZE_MAX);
     if (!hidrd_hex_buf_from_str(hidrd_item_long_get_data(xml_src->item),
                                 HIDRD_ITEM_LONG_DATA_SIZE_MAX,
                                 &data_len, data_str))
@@ -653,7 +887,7 @@ static const element_handler handler_list[] = {
     HANDLE(physical_minimum),
     HANDLE(physical_maximum),
     HANDLE(unit_exponent),
-    IGNORE(unit),
+    HANDLE(unit),
     HANDLE(report_size),
     HANDLE(report_count),
     HANDLE(report_id),
