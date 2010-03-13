@@ -65,13 +65,13 @@ hidrd_hex_buf_from_str(void        *buf,
                 return false;
             *b = nibble << 4;
             high = false;
+            len++;
         }
         else
         {
             *b |= nibble;
             high = true;
             b++;
-            len++;
         }
     }
 
