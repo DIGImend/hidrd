@@ -25,13 +25,24 @@
         </xsd:restriction>
     </xsd:simpleType>
 
-    <xsd:simpleType name="basic_type">
+    <xsd:simpleType name="basic_type_token">
         <xsd:restriction base="xsd:string">
             <xsd:enumeration value="main" />
             <xsd:enumeration value="global" />
             <xsd:enumeration value="local" />
             <xsd:enumeration value="reserved" />
         </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="basic_type_dec">
+        <xsd:restriction base="xsd:integer">
+            <xsd:minInclusive value="0" />
+            <xsd:maxInclusive value="3" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="basic_type">
+        <xsd:union memberTypes="basic_type_token basic_type_dec" />
     </xsd:simpleType>
 
     <xsd:simpleType name="basic_tag">
@@ -42,7 +53,7 @@
 
     <xsd:simpleType name="basic_data">
         <xsd:restriction base="xsd:hexBinary">
-            <xsd:maxLength value="514" />
+            <xsd:maxLength value="257" />
         </xsd:restriction>
     </xsd:simpleType>
 
@@ -72,12 +83,22 @@
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
         SHORT ITEM
     - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-    <xsd:simpleType name="short_type">
-        <xsd:restriction base="basic_type">
+    <xsd:simpleType name="short_type_dec">
+        <xsd:restriction base="basic_type_dec">
+            <xsd:maxInclusive value="2" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="short_type_token">
+        <xsd:restriction base="basic_type_token">
             <xsd:enumeration value="main" />
             <xsd:enumeration value="global" />
             <xsd:enumeration value="local" />
         </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="short_type">
+        <xsd:union memberTypes="short_type_token short_type_dec" />
     </xsd:simpleType>
 
     <xsd:simpleType name="short_tag">
@@ -86,7 +107,7 @@
 
     <xsd:simpleType name="short_data">
         <xsd:restriction base="basic_data">
-            <xsd:maxLength value="8" />
+            <xsd:maxLength value="4" />
         </xsd:restriction>
     </xsd:simpleType>
 
@@ -407,7 +428,7 @@
     <xsd:simpleType name="usage_page_hex">
         <xsd:restriction base="xsd:hexBinary">
             <xsd:minLength value="1" />
-            <xsd:maxLength value="4" />
+            <xsd:maxLength value="2" />
         </xsd:restriction>
     </xsd:simpleType>
     <!-- FIXME provide symbolic usage page reference -->
@@ -415,11 +436,11 @@
         <xsd:restriction base="xsd:string">
         </xsd:restriction>
     </xsd:simpleType>
-    <xsd:simpleType name="usage_page_token_or_hex">
+    <xsd:simpleType name="usage_page">
         <xsd:union memberTypes="usage_page_hex usage_page_token" />
     </xsd:simpleType>
 
-    <xsd:element name="usage_page" type="usage_page_token_or_hex" />
+    <xsd:element name="usage_page" type="usage_page" />
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
         GLOBAL ITEM: LOGICAL MINIMUM
@@ -473,8 +494,8 @@
                 <xsd:element name="value">
                     <xsd:simpleType>
                         <xsd:restriction base="xsd:hexBinary">
-                            <xsd:minLength value="1" />
-                            <xsd:maxLength value="8" />
+                            <xsd:minLength value="0" />
+                            <xsd:maxLength value="4" />
                         </xsd:restriction>
                     </xsd:simpleType>
                 </xsd:element>
@@ -660,7 +681,7 @@
     <xsd:simpleType name="usage_hex">
         <xsd:restriction base="xsd:hexBinary">
             <xsd:minLength value="1" />
-            <xsd:maxLength value="8" />
+            <xsd:maxLength value="4" />
         </xsd:restriction>
     </xsd:simpleType>
     <!-- FIXME provide symbolic usage reference -->
@@ -668,13 +689,13 @@
         <xsd:restriction base="xsd:string">
         </xsd:restriction>
     </xsd:simpleType>
-    <xsd:simpleType name="usage_token_or_hex">
+    <xsd:simpleType name="usage">
         <xsd:union memberTypes="usage_hex usage_token" />
     </xsd:simpleType>
 
-    <xsd:element name="usage" type="usage_token_or_hex" />
-    <xsd:element name="usage_minimum" type="usage_token_or_hex" />
-    <xsd:element name="usage_maximum" type="usage_token_or_hex" />
+    <xsd:element name="usage" type="usage" />
+    <xsd:element name="usage_minimum" type="usage" />
+    <xsd:element name="usage_maximum" type="usage" />
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - 
         LOCAL ITEM: DESIGNATOR INDEX
@@ -722,7 +743,7 @@
 
     <xsd:simpleType name="long_data">
         <xsd:restriction base="basic_data">
-            <xsd:maxLength value="510" />
+            <xsd:maxLength value="255" />
         </xsd:restriction>
     </xsd:simpleType>
 
