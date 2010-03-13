@@ -22,7 +22,6 @@ SUBDIRS = util usage item
 hidrddir = $(includedir)/hidrd
 
 hidrd_HEADERS = \
-    bit.h       \
     item.h      \
     unit.h
 
