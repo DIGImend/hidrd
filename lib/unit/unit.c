@@ -24,23 +24,66 @@
  * @(#) $Id$
  */
 
+#include "hidrd/util/dec.h"
+#include "hidrd/util/str.h"
+#include "hidrd/util/tkn.h"
 #include "hidrd/unit.h"
 
 
 char *
 hidrd_unit_system_to_dec(hidrd_unit_system system)
 {
-    char   *dec;
-
     assert(hidrd_unit_system_valid(system));
-
-    if (asprintf(&dec, "%u", system) < 0)
-        return NULL;
-
-    return dec;
+    return hidrd_dec_u32_to_str(system);
 }
 
 
+bool
+hidrd_unit_system_from_dec(hidrd_unit_system *psystem, const char *dec)
+{
+    uint32_t    system;
+
+    assert(dec != NULL);
+
+    if (!hidrd_dec_u32_from_str(&system, dec))
+        return false;
+
+    if (psystem != NULL)
+        *psystem = system;
+
+    return true;
+}
+
+
+char *
+hidrd_unit_exp_to_str(hidrd_unit_exp exp)
+{
+    assert(hidrd_unit_exp_valid(exp));
+    return hidrd_dec_s32_to_str(hidrd_unit_exp_to_int(exp));
+}
+
+
+bool
+hidrd_unit_exp_from_str(hidrd_unit_exp *pexp, const char *str)
+{
+    int32_t exp_int;
+
+    assert(str != NULL);
+
+    if (!hidrd_dec_s32_from_str(&exp_int, str))
+        return false;
+
+    if (!hidrd_unit_exp_valid_int(exp_int))
+        return false;
+
+    if (pexp != NULL)
+        *pexp = hidrd_unit_exp_from_int(exp_int);
+
+    return true;
+}
+
+
+#ifdef HIDRD_WITH_TOKENS
 const char *
 hidrd_unit_system_to_token(hidrd_unit_system system)
 {
@@ -70,16 +113,21 @@ bool
 hidrd_unit_system_from_token(hidrd_unit_system *psystem, const char *token)
 {
     hidrd_unit_system   system;
+    const char         *tkn;
+    size_t              len;
 
     assert(token != NULL);
 
+    if (!hidrd_tkn_strip(&tkn, &len, token))
+        return false;
+
 #define MAP(_NAME, _name) \
-    do {                                        \
-        if (strcasecmp(token, #_name) == 0)     \
-        {                                       \
-            system = HIDRD_UNIT_SYSTEM_##_NAME; \
-            goto found;                         \
-        }                                       \
+    do {                                                \
+        if (hidrd_str_ncasecmpn(#_name, tkn, len) == 0) \
+        {                                               \
+            system = HIDRD_UNIT_SYSTEM_##_NAME;         \
+            goto found;                                 \
+        }                                               \
     } while (0)
 
     MAP(NONE, none);
@@ -126,5 +174,6 @@ hidrd_unit_system_from_token_or_dec(hidrd_unit_system  *psystem,
     return hidrd_unit_system_from_token(psystem, token_or_dec) ||
            hidrd_unit_system_from_dec(psystem, token_or_dec);
 }
+#endif /* HIDRD_WITH_TOKENS */
 
 

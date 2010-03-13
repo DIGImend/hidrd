@@ -53,6 +53,8 @@ typedef enum hidrd_unit_system {
 
 #define HIDRD_UNIT_SYSTEM_KNOWN_MIN HIDRD_UNIT_SYSTEM_SI_LINEAR
 #define HIDRD_UNIT_SYSTEM_KNOWN_MAX HIDRD_UNIT_SYSTEM_ENGLISH_ROTATION
+#define HIDRD_UNIT_SYSTEM_KNOWN_NUM \
+            (HIDRD_UNIT_SYSTEM_KNOWN_MAX - HIDRD_UNIT_SYSTEM_KNOWN_MIN + 1)
 
 #define HIDRD_UNIT_SYSTEM_RESERVED_MIN  0x5
 #define HIDRD_UNIT_SYSTEM_RESERVED_MAX  0xE
@@ -91,22 +93,8 @@ extern char *hidrd_unit_system_to_dec(hidrd_unit_system system);
  * @return True if converted successfully (decimal string was valid), false
  *         otherwise.
  */
-static inline bool
-hidrd_unit_system_from_dec(hidrd_unit_system *psystem, const char *dec)
-{
-    hidrd_unit_system   system;
-
-    assert(dec != NULL);
-
-    if ((sscanf(dec, "%u", &system) != 1) ||
-        !hidrd_unit_system_valid(system))
-        return false;
-
-    if (psystem != NULL)
-        *psystem = system;
-
-    return true;
-}
+extern bool hidrd_unit_system_from_dec(hidrd_unit_system   *psystem,
+                                       const char          *dec);
 
 
 #ifdef HIDRD_WITH_TOKENS
@@ -239,6 +227,26 @@ hidrd_unit_exp_validate(hidrd_unit_exp exp)
 }
 
 
+/**
+ * Convert a unit exponent to (a decimal) string.
+ *
+ * @param exp   Unit exponent to convert.
+ *
+ * @return Dynamically allocated (integer) string representing unit
+ *         exponent, or NULL, if failed to allocate memory.
+ */
+extern char *hidrd_unit_exp_to_str(hidrd_unit_exp exp);
+
+/**
+ * Convert (a decimal) string to a unit exponent.
+ *
+ * @param pexp  Location for the resulting unit exponent.
+ * @param str   The string to convert.
+ *
+ * @return True if converted successfully, false otherwise.
+ */
+extern bool hidrd_unit_exp_from_str(hidrd_unit_exp *pexp, const char *str);
+
 #define HIDRD_UNIT_EXP_MIN_INT  -8
 #define HIDRD_UNIT_EXP_MAX_INT  7
 
@@ -314,6 +322,15 @@ typedef enum hidrd_unit_nibble_index {
     HIDRD_UNIT_NIBBLE_INDEX_RESERVED,
 } hidrd_unit_nibble_index;
 
+/**< Minimum index of an exponent nibble */
+#define HIDRD_UNIT_NIBBLE_INDEX_EXP_MIN \
+    HIDRD_UNIT_NIBBLE_INDEX_LENGTH
+/**< Maximum index of an exponent nibble */
+#define HIDRD_UNIT_NIBBLE_INDEX_EXP_MAX \
+    HIDRD_UNIT_NIBBLE_INDEX_LUMINOUS_INTENSITY
+/**< Number of exponent nibble indexes */
+#define HIDRD_UNIT_NIBBLE_INDEX_EXP_NUM \
+    (HIDRD_UNIT_NIBBLE_INDEX_EXP_MAX - HIDRD_UNIT_NIBBLE_INDEX_EXP_MIN + 1)
 
 /**
  * Check if a unit nibble index is valid.
