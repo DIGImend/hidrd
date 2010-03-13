@@ -68,7 +68,6 @@ ELEMENT(basic)
 {
     element_rc  result_rc   = ELEMENT_RC_ERROR;
     char       *data_str    = NULL;
-    size_t      data_len;
 
     PROP_DECL(item_basic_data_bytes,    size);
     PROP_DECL(item_basic_type,          type);
@@ -89,14 +88,10 @@ ELEMENT(basic)
     if (!hidrd_hex_buf_from_str(xml_src->item + HIDRD_ITEM_BASIC_MIN_SIZE,
                                 (HIDRD_ITEM_BASIC_MAX_SIZE -
                                  HIDRD_ITEM_BASIC_MIN_SIZE),
-                                &data_len, data_str))
+                                NULL, data_str))
         goto cleanup;
 
     if (!hidrd_item_valid(xml_src->item))
-        goto cleanup;
-
-    if (hidrd_item_get_size(xml_src->item) !=
-        (data_len + HIDRD_ITEM_BASIC_MIN_SIZE))
         goto cleanup;
 
     result_rc = ELEMENT_RC_ITEM;
