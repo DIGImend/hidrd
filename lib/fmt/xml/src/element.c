@@ -26,9 +26,9 @@
 
 #include "hidrd/util/hex.h"
 #include "hidrd/util/str.h"
-#include "src_element.h"
-#include "src_element_bitmap.h"
-#include "src_element_unit.h"
+#include "element.h"
+#include "element_bitmap.h"
+#include "element_unit.h"
 
 
 static ELEMENT(basic)

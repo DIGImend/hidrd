@@ -26,7 +26,7 @@
 
 #include "hidrd/util/hex.h"
 #include "hidrd/util/str.h"
-#include "src_element_unit.h"
+#include "element_unit.h"
 
 typedef const char *unit_system_desc[HIDRD_UNIT_NIBBLE_INDEX_EXP_NUM];
 

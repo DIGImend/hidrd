@@ -27,7 +27,7 @@
 #ifndef __SRC_ELEMENT_UNIT_H__
 #define __SRC_ELEMENT_UNIT_H__
 
-#include "src_element.h"
+#include "element.h"
 
 #ifdef __cplusplus
 extern "C" {

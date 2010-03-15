@@ -24,7 +24,7 @@
  * @(#) $Id$
  */
 
-#include "src_element.h"
+#include "src/element.h"
 #include "hidrd/fmt/xml/src.h"
 
 

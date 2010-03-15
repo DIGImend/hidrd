@@ -25,7 +25,7 @@
  */
 
 #include "hidrd/util/str.h"
-#include "src_element_bitmap.h"
+#include "element_bitmap.h"
 
 typedef struct main_bit_desc {
     const char *off;
