@@ -27,6 +27,7 @@
 #ifndef __HIDRD_UTIL_STR_H__
 #define __HIDRD_UTIL_STR_H__
 
+#include <stddef.h>
 #include <stdbool.h>
 
 #ifdef __cplusplus
