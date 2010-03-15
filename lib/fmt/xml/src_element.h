@@ -43,6 +43,73 @@ typedef enum element_rc {
 
 
 /**
+ * Prototype for an element processing function.
+ *
+ * @param xml_src   XML source instance.
+ * @param e         Element to handle (src->cur - the encountered element).
+ * 
+ * @return Element processing result code.
+ */
+typedef element_rc element_fn(hidrd_xml_src_inst   *xml_src,
+                              xmlNodePtr            e);
+
+/**
+ * Generate element handling function prototype.
+ *
+ * @param _name Element name.
+ *
+ * @return Element processing result code.
+ */
+#define ELEMENT(_name) \
+    element_rc                                                  \
+    element_##_name(hidrd_xml_src_inst *xml_src, xmlNodePtr e)
+
+/**
+ * Generate element exit handling function prototype.
+ *
+ * @param _name Element name.
+ *
+ * @return Element processing result code.
+ */
+#define ELEMENT_EXIT(_name) \
+    element_rc                                                          \
+    element_##_name##_exit(hidrd_xml_src_inst *xml_src, xmlNodePtr e)
+
+/**
+ * Generate element property variable declarations.
+ *
+ * @param _type Internal representation type name (without hidrd_ prefix).
+ * @param _name Property name token.
+ */
+#define ELEMENT_PROP_DECL(_type, _name) \
+    char           *_name##_str = NULL; \
+    hidrd_##_type   _name
+
+/**
+ * Generate element property value retrieval.
+ *
+ * @param _type Internal representation type name (without hidrd_ prefix).
+ * @param _name Property name token.
+ * @param _repr Representation token (e.g. dec, or token_or_hex).
+ */
+#define ELEMENT_PROP_RETR(_type, _name, _repr) \
+    do {                                                        \
+        _name##_str = (char *)xmlGetProp(e, BAD_CAST #_name);   \
+        if (_name##_str == NULL)                                \
+            goto cleanup;                                       \
+        if (!hidrd_##_type##_from_##_repr(&_name, _name##_str)) \
+            goto cleanup;                                       \
+    } while (0)
+
+/**
+ * Generate element property cleanup code (a call to xmlFree).
+ *
+ * @param _name Property name token.
+ */
+#define ELEMENT_PROP_CLNP(_name) \
+    xmlFree(_name##_str)
+
+/**
  * Handle an element.
  *
  * @param xml_src   XML source instance; element to be processed is

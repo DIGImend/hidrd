@@ -20,12 +20,16 @@
 noinst_LTLIBRARIES = libhidrd_xml.la
 
 noinst_HEADERS = \
-    src_element.h
+    src_element.h           \
+    src_element_bitmap.h    \
+    src_element_unit.h
 
 libhidrd_xml_la_SOURCES = \
     snk.c                   \
     src.c                   \
-    src_element.c
+    src_element.c           \
+    src_element_bitmap.c    \
+    src_element_unit.c
 
 libhidrd_xml_la_LIBADD = \
     ../../util/libhidrd_util.la
