@@ -20,3 +20,7 @@ lib_LTLIBRARIES = libhidrd_unit.la
 
 libhidrd_unit_la_SOURCES = \
     unit.c
+
+libhidrd_unit_la_LIBADD = \
+    ../util/libhidrd_util.la
+

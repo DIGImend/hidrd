@@ -89,12 +89,12 @@ AC_ARG_ENABLE(
 AC_ARG_ENABLE(
     opt,
     AS_HELP_STRING([--disable-opt],
-                   [disable building options library (it is needed for streams and formats)]),
+                   [disable building options library (required by streams)]),
     [], [enable_opt="yes"])
 
 AC_ARG_ENABLE(
     streams,
-    AS_HELP_STRING([--disable-streams], [disable building stream library (required by hidrd-convert)]),
+    AS_HELP_STRING([--disable-streams], [disable building stream library (required by formats)]),
     [], [enable_streams="yes"])
 
 AC_ARG_ENABLE(
@@ -104,26 +104,26 @@ AC_ARG_ENABLE(
 
 AC_ARG_ENABLE(
     hidrd-convert,
-    AS_HELP_STRING([--disable-hidrd-convert], [disable building hidrd-convert tool (requires streams and formats)]),
+    AS_HELP_STRING([--disable-hidrd-convert], [disable building hidrd-convert tool (requires formats)]),
     [], [enable_hidrd_convert="yes"])
 
 AC_ARG_ENABLE(
     tokens,
     AS_HELP_STRING([--disable-tokens],
-                   [disable tokens (tokens are needed for XML format)]),
+                   [disable tokens (required by XML format)]),
     [], [enable_tokens="yes"])
 
 AC_ARG_ENABLE(
     names,
     AS_HELP_STRING([--disable-names],
-                   [disable names (names are needed for XML format)]),
+                   [disable names (required by XML format)]),
     [], [enable_names="yes"])
 
 AC_ARG_ENABLE(
     xml-format,
     AS_HELP_STRING(
         [--disable-xml-format],
-        [disable building XML format support (requires tokens, names, options library and libxml2 to be enabled)]),
+        [disable building XML format support (requires tokens, names and libxml2)]),
     [], [enable_xml_format="yes"])
 
 # Check for stream library dependencies
@@ -136,20 +136,9 @@ fi
 
 # Check for format library dependencies
 if test "$enable_formats" = "yes"; then
-    if test "$enable_opt" != "yes"; then
-        AC_MSG_WARN([option library is disabled, so disabling formats])
-        enable_formats="no"
-    fi
-fi
-
-# Check hidrd-convert tool dependencies
-if test "$enable_hidrd_convert" = "yes"; then
     if test "$enable_streams" != "yes"; then
-        AC_MSG_WARN([stream library is disabled, so disabling hidrd-convert tool])
-        enable_hidrd_convert="no"
-    elif test "$enable_formats" != "yes"; then
-        AC_MSG_WARN([format library is disabled, so disabling hidrd-convert tool])
-        enable_hidrd_convert="no"
+        AC_MSG_WARN([stream library is disabled, so disabling formats])
+        enable_formats="no"
     fi
 fi
 
@@ -167,6 +156,14 @@ if test "$enable_xml_format" = "yes"; then
     elif test -z "$XML2_CONFIG"; then
         AC_MSG_WARN([no xml2-config, so disabling XML format])
         enable_xml_format="no"
+    fi
+fi
+
+# Check hidrd-convert tool dependencies
+if test "$enable_hidrd_convert" = "yes"; then
+    if test "$enable_formats" != "yes"; then
+        AC_MSG_WARN([format library is disabled, so disabling hidrd-convert tool])
+        enable_hidrd_convert="no"
     fi
 fi
 

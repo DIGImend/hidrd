@@ -23,6 +23,9 @@ libhidrd_usage_la_SOURCES = \
     type.c                  \
     id.c
 
+libhidrd_usage_la_LIBADD = \
+    ../util/libhidrd_util.la
+
 %.c: %.c.m4 @top_srcdir@/m4/hidrd/*.m4 @top_srcdir@/db/usage/*.m4
 	m4 -I "@top_srcdir@" $< > $@
 

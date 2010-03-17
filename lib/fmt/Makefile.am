@@ -27,8 +27,8 @@ libhidrd_fmt_la_SOURCES = \
     natv.c
 
 libhidrd_fmt_la_LIBADD = \
-    ../item/libhidrd_item.la    \
-    ../opt/libhidrd_opt.la      \
+    ../strm/libhidrd_strm.la    \
+    ../util/libhidrd_util.la    \
     natv/libhidrd_natv.la
 
 TESTS = hidrd_natv_test
