@@ -28,644 +28,40 @@
 #include "hidrd/util/str.h"
 #include "hidrd/fmt/xml/prop.h"
 #include "hidrd/fmt/xml/snk.h"
-
-
-/**
- * Prototype for a function used to create and setup an element.
- *
- * @param doc       Document.
- * @param ns        Namespace.
- *
- * @return Created element, or NULL if failed.
- */
-typedef xmlNodePtr create_element_fn(xmlDocPtr doc, xmlNsPtr ns);
-
-
-/**
- * Break open an element.
- *
- * @alg Add a starting element next to the original element, with
- *      specified name, and the original element's properties. Move the
- *      contents of the original element right after the new element. Add an
- *      ending element with specified name next to the moved original
- *      contents. Remove the original element.
- *
- * @param element       The element to break.
- * @param create_start  Starting element creation function, could be NULL,
- *                      if starting element is not needed.
- * @param create_end    Ending element creation function, could be NULL,
- *                      if ending element is not needed.
- *
- * @return True if broken successfully, false otherwise.
- */
-static bool
-break_element(xmlNodePtr            element,
-              create_element_fn    *create_start,
-              create_element_fn    *create_end)
-{
-    xmlNodePtr  sibling;
-    xmlNodePtr  child;
-    xmlNodePtr  next_child;
-    xmlAttrPtr  prop;
-    xmlAttrPtr  last_prop;
-
-    assert(element != NULL);
-    assert(element->parent != NULL);
-
-    /* If starting element is NOT requested */
-    if (create_start == NULL)
-        sibling = element;
-    else
-    {
-        /* Create starting element */
-        sibling = create_start(element->doc, element->ns);
-        if (sibling == NULL)
-            return false;
-
-        /* Add it right after the original one */
-        sibling = xmlAddNextSibling(element, sibling);
-        if (sibling == NULL)
-            return false;
-
-        /* Copy original element's property list, if not empty */
-        if (element->properties != NULL)
-        {
-            prop = xmlCopyPropList(sibling, element->properties);
-            if (prop == NULL)
-                return false;
-
-            /*
-             * Attach copied property list to the created element property
-             * list.
-             */
-            if (sibling->properties == NULL)
-                sibling->properties = prop;
-            else
-            {
-                /* Find the last property */
-                for (last_prop = sibling->properties;
-                     last_prop->next == NULL;
-                     last_prop = last_prop->next);
-                last_prop->next = prop;
-                prop->prev = last_prop;
-            }
-        }
-    }
-
-    /* For each child of the original element */
-    for (child = element->children;
-         child != NULL; child = next_child)
-    {
-        /* Remember next child before this one is unlinked */
-        next_child = child->next;
-        /* Move the child after the new element */
-        sibling = xmlAddNextSibling(sibling, child);
-        if (sibling == NULL)
-            return false;
-    }
-
-    /* If ending element is requested */
-    if (create_end != NULL)
-    {
-        /* Create ending element */
-        sibling = create_end(element->doc, element->ns);
-        if (sibling == NULL)
-            return false;
-
-        /* Add it right after the contents */
-        sibling = xmlAddNextSibling(element, sibling);
-        if (sibling == NULL)
-            return false;
-    }
-
-    /* Unlink original element */
-    xmlUnlinkNode(element);
-
-    /* Free original element */
-    xmlFreeNode(element);
-
-    return true;
-}
-
-
-/**
- * Prototype for a function used to retrieve names of the starting and
- * ending elements when breaking.
- *
- * @param name          Element name to break.
- * @param pcreate_start Location for a pointer to the start element creation
- *                      function.
- * @param pcreate_end   Location for a pointer to the end element creation
- *                      function.
- *
- * @return True if element is known, false otherwise.
- */
-typedef bool break_fn(const char *name,
-                      create_element_fn **pcreate_start,
-                      create_element_fn **pcreate_end);
-
-/**
- * Break open an element branch up to the specified parent.
- *
- * @alg Break open the specified element and all its parent elements up to
- *      but not including the specified parent element.
- *
- * @param parent    Parent element to stop at.
- * @param element   Element to start breaking from.
- * @param cb        Break function - used to retrieve starting and ending
- *                  element creation functions when breaking.
- *
- * @return True if broken successfuly, false otherwise.
- */
-static bool
-break_branch(xmlNodePtr parent, xmlNodePtr element, break_fn *cb)
-{
-    create_element_fn  *create_start;
-    create_element_fn  *create_end;
-    xmlNodePtr          element_parent;
-
-    /* For each element in the stack until the target one */
-    for (; element != parent; element = element_parent)
-    {
-        if (!(*cb)((const char *)element->name, &create_start, &create_end))
-            return false;
-
-        /* Remember parent element before this one is unlinked and freed */
-        element_parent = element->parent;
-
-        /* Break open the element - it is not finished */
-        if (!break_element(element, create_start, create_end))
-            return false;
-    }
-
-    return true;
-}
-
-
-/** String formatting type */
-typedef enum str_fmt {
-    STR_FMT_NULL,   /**< NULL string */
-    STR_FMT_INT,    /**< Signed integer */
-    STR_FMT_UINT,   /**< Unsigned integer */
-    STR_FMT_STRDUP, /**< String duplication */
-    STR_FMT_STROWN, /**< String ownership taking */
-    STR_FMT_HEX     /**< Hex string */
-} str_fmt;
-
-
-/**
- * Format a string according to format type.
- *
- * @param pstr  Location for a (dynamically allocated) resulting string
- *              pointer.
- * @param fmt   Format type.
- * @param ap    Format arguments.
- *
- * @return True if formatted successfully, false otherwise.
- */
-static bool
-fmt_strpv(char     **pstr,
-          str_fmt    fmt,
-          va_list   *pap)
-{
-    char       *str;
-
-    switch (fmt)
-    {
-        case STR_FMT_NULL:
-            str = NULL;
-            break;
-        case STR_FMT_INT:
-            if (asprintf(&str, "%d", va_arg(*pap, int)) < 0)
-                return false;
-            break;
-        case STR_FMT_UINT:
-            if (asprintf(&str, "%u", va_arg(*pap, unsigned int)) < 0)
-                return false;
-            break;
-        case STR_FMT_STRDUP:
-            {
-                const char *arg = va_arg(*pap, const char *);
-
-                assert(arg != NULL);
-
-                str = strdup(arg);
-                if (str == NULL)
-                    return false;
-            }
-            break;
-        case STR_FMT_STROWN:
-            {
-                char       *arg = va_arg(*pap, char *);
-
-                assert(arg != NULL);
-
-                str = arg;
-            }
-            break;
-        case STR_FMT_HEX:
-            {
-                void   *buf     = va_arg(*pap, void *);
-                size_t  size    = va_arg(*pap, size_t);
-
-                str = hidrd_hex_buf_to_str(buf, size);
-                if (str == NULL)
-                    return false;
-            }
-            break;
-        default:
-            assert(!"Unknown string format");
-            return false;
-    }
-
-    if (pstr != NULL)
-        *pstr = str;
-    else
-        free(str);
-
-    return true;
-}
-
-
-static bool
-element_new(hidrd_xml_snk_inst        *xml_snk,
-            const char                 *name)
-{
-    assert(xml_snk->cur == NULL);
-
-    xml_snk->cur = xmlNewChild(xml_snk->prnt, NULL, BAD_CAST name, NULL);
-
-    return (xml_snk->cur != NULL);
-}
-
-
-static bool
-element_set_attrpv(hidrd_xml_snk_inst  *xml_snk,
-                   const char           *name,
-                   str_fmt               fmt,
-                   va_list              *pap)
-{
-    char       *value;
-    xmlAttrPtr  attr;
-
-    assert(xml_snk->cur != NULL);
-
-    if (!fmt_strpv(&value, fmt, pap))
-        return false;
-
-    attr = xmlSetProp(xml_snk->cur, BAD_CAST name, BAD_CAST value);
-
-    free(value);
-
-    return (attr != NULL);
-}
-
-
-static bool
-element_add_contentpv(hidrd_xml_snk_inst   *xml_snk,
-                      str_fmt                fmt,
-                      va_list               *pap)
-{
-    char   *content;
-
-    assert(xml_snk->cur != NULL);
-
-    if (!fmt_strpv(&content, fmt, pap))
-        return false;
-
-    xmlNodeAddContent(xml_snk->cur, BAD_CAST content);
-
-    free(content);
-
-    return true;
-}
-
-
-static bool
-element_add_commentpv(hidrd_xml_snk_inst   *xml_snk,
-                      str_fmt                fmt,
-                      va_list               *pap)
-{
-    char       *content;
-    xmlNodePtr  comment;
-
-    assert(xml_snk->cur != NULL);
-
-    if (!fmt_strpv(&content, fmt, pap))
-        return false;
-
-    comment = xmlNewDocComment(xml_snk->doc, BAD_CAST content);
-    free(content);
-    if (comment == NULL)
-        return false;
-
-    return (xmlAddChild(xml_snk->cur, comment) != NULL);
-}
-
-
-static void
-element_commit(hidrd_xml_snk_inst *xml_snk,
-               bool                 container)
-{
-    assert(xml_snk->cur != NULL);
-    
-    if (container)
-        xml_snk->prnt = xml_snk->cur;
-
-    xml_snk->cur = NULL;
-}
-
-
-/** Node type */
-typedef enum nt {
-    NT_NONE,
-    NT_CONTENT,
-    NT_COMMENT,
-    NT_ATTR
-} nt;
-
-static bool
-element_addpv(hidrd_xml_snk_inst   *xml_snk,
-              bool                   container,
-              const char            *name,
-              va_list               *pap)
-{
-    bool    success = true;
-    bool    end     = false;
-
-    assert(xml_snk->cur == NULL);
-
-    if (!element_new(xml_snk, name))
-        return false;
-
-    while (success && !end)
-    {
-        nt  node_type = va_arg(*pap, nt);
-
-        switch (node_type)
-        {
-            case NT_ATTR:
-                {
-                    const char *name        = va_arg(*pap, const char *);
-                    str_fmt     value_fmt   = va_arg(*pap, str_fmt);
-
-                    success = element_set_attrpv(xml_snk,
-                                                 name, value_fmt, pap);
-                }
-                break;
-
-            case NT_COMMENT:
-                {
-                    str_fmt comment_fmt  = va_arg(*pap, str_fmt);
-
-                    success = element_add_commentpv(xml_snk,
-                                                    comment_fmt, pap);
-                }
-                break;
-
-            case NT_CONTENT:
-                {
-                    str_fmt content_fmt  = va_arg(*pap, str_fmt);
-
-                    success = element_add_contentpv(xml_snk,
-                                                    content_fmt, pap);
-                }
-                break;
-
-            case NT_NONE:
-                end = true;
-                break;
-
-            default:
-                assert(!"Unknown node type");
-                success = false;
-                break;
-        }
-    }
-
-    element_commit(xml_snk, container);
-
-    return success;
-}
-
-
-static bool
-element_add(hidrd_xml_snk_inst    *xml_snk,
-            bool                    container,
-            const char             *name,
-            ...)
-{
-    va_list ap;
-    bool    success;
-
-    va_start(ap, name);
-    success = element_addpv(xml_snk, container, name, &ap);
-    va_end(ap);
-
-    return success;
-}
-
-
-typedef struct group {
-    const char *name;
-    create_element_fn  *create_start;
-    create_element_fn  *create_end;
-} group;
-
-#ifndef NDEBUG
-static bool
-group_valid(const group *g)
-{
-    return g != NULL &&
-           g->name != NULL &&
-           *g->name != '\0' &&
-           g->create_start != NULL &&
-           g->create_end != NULL;
-}
-#endif
-
-static xmlNodePtr
-create_element_collection(xmlDocPtr doc, xmlNsPtr ns)
-{
-    return xmlNewDocNode(doc, ns, BAD_CAST "collection", NULL);
-}
-
-static xmlNodePtr
-create_element_end_collection(xmlDocPtr doc, xmlNsPtr ns)
-{
-    return xmlNewDocNode(doc, ns, BAD_CAST "end_collection", NULL);
-}
-
-static xmlNodePtr
-create_element_push(xmlDocPtr doc, xmlNsPtr ns)
-{
-    return xmlNewDocNode(doc, ns, BAD_CAST "push", NULL);
-}
-
-static xmlNodePtr
-create_element_pop(xmlDocPtr doc, xmlNsPtr ns)
-{
-    return xmlNewDocNode(doc, ns, BAD_CAST "pop", NULL);
-}
-
-static xmlNodePtr
-create_element_delimiter_open(xmlDocPtr doc, xmlNsPtr ns)
-{
-    xmlNodePtr  e;
-
-    e = xmlNewDocNode(doc, ns, BAD_CAST "delimiter", NULL);
-    if (e == NULL)
-        return NULL;
-
-    if (xmlSetProp(e, BAD_CAST "open", BAD_CAST "true") == NULL)
-        return NULL;
-
-    return e;
-}
-
-static xmlNodePtr
-create_element_delimiter_close(xmlDocPtr doc, xmlNsPtr ns)
-{
-    xmlNodePtr  e;
-
-    e = xmlNewDocNode(doc, ns, BAD_CAST "delimiter", NULL);
-    if (e == NULL)
-        return NULL;
-
-    if (xmlSetProp(e, BAD_CAST "open", BAD_CAST "false") == NULL)
-        return NULL;
-
-    return e;
-}
-
-
-static const group group_list[] = {
-    {.name          = "COLLECTION",
-     .create_start  = create_element_collection,
-     .create_end    = create_element_end_collection},
-    {.name          = "PUSH",
-     .create_start  = create_element_push,
-     .create_end    = create_element_pop},
-    {.name          = "SET",
-     .create_start  = create_element_delimiter_open,
-     .create_end    = create_element_delimiter_close},
-    {.name = NULL}
-};
-
-static const group *
-lookup_group(const char *name)
-{
-    const group    *g;
-    for (g = group_list; g->name != NULL; g++)
-        if (strcmp(g->name, name) == 0)
-        {
-            assert(group_valid(g));
-            return g;
-        }
-
-    return NULL;
-}
-
-static break_fn group_break_cb;
-static bool
-group_break_cb(const char          *name,
-               create_element_fn  **pcreate_start,
-               create_element_fn  **pcreate_end)
-{
-    const group    *g;
-
-    assert(name != NULL);
-
-    g = lookup_group(name);
-    assert(g != NULL);
-
-    if (g == NULL)
-        return false;
-
-    if (pcreate_start != NULL)
-        *pcreate_start = g->create_start;
-
-    if (pcreate_end != NULL)
-        *pcreate_end = NULL;
-
-    return true;
-}
-
-
-static bool
-group_end(hidrd_xml_snk_inst  *xml_snk,
-          const char           *name)
-{
-    const group    *target_group;
-    xmlNodePtr      target_element;
-
-    assert(xml_snk->cur == NULL);
-    assert(name != NULL);
-
-    target_group = lookup_group(name);
-    /* There must be such group */
-    assert(target_group != NULL);
-
-    /* Look up an element with the same name up the parent stack */
-    for (target_element = xml_snk->prnt;
-         target_element != NULL && target_element->type == XML_ELEMENT_NODE;
-         target_element = target_element->parent)
-        if (strcmp((const char *)target_element->name, name) == 0)
-            break;
-
-    /* If not found */
-    if (target_element == NULL || target_element->type != XML_ELEMENT_NODE)
-    {
-        xmlNodePtr  end_element;
-
-        /* Insert closing element */
-        end_element = target_group->create_end(xml_snk->doc, NULL);
-        return xmlAddChild(xml_snk->prnt, end_element) != NULL;
-    }
-    else
-    {
-        /* Break open the branch up to the target element */
-        if (!break_branch(target_element, xml_snk->prnt, group_break_cb))
-            return false;
-
-        /* Element done */
-        xml_snk->prnt = target_element->parent;
-    }
-
-    return true;
-}
+#include "snk/element.h"
+#include "snk/group.h"
 
 
 #define ATTR(_name, _fmt, _args...) \
-    NT_ATTR, #_name, STR_FMT_##_fmt, ##_args
+    ELEMENT_NT_ATTR, #_name, HIDRD_FMT_TYPE_##_fmt, ##_args
 
 #define CONTENT(_fmt, _args...) \
-    NT_CONTENT, STR_FMT_##_fmt, ##_args
+    ELEMENT_NT_CONTENT, HIDRD_FMT_TYPE_##_fmt, ##_args
 
 #define COMMENT(_fmt, _args...) \
-    NT_COMMENT, STR_FMT_##_fmt, ##_args
+    ELEMENT_NT_COMMENT, HIDRD_FMT_TYPE_##_fmt, ##_args
 
 #define ADD_SIMPLE(_name, _args...) \
-    element_add(xml_snk, false, #_name, ##_args, NT_NONE)
+    element_add(xml_snk, false, #_name, ##_args, ELEMENT_NT_NONE)
 
 #define GROUP_START(_name, _args...) \
-    element_add(xml_snk, true, #_name, ##_args, NT_NONE)
+    group_start(xml_snk, #_name, ##_args, ELEMENT_NT_NONE)
 
 #define GROUP_END(_name) \
     group_end(xml_snk, #_name)
 
-#define CASE_SIMPLE_INT(_TYPE, _NAME, _name) \
+#define CASE_SIMPLE_S32(_TYPE, _NAME, _name) \
     case HIDRD_ITEM_##_TYPE##_TAG_##_NAME:                          \
         return ADD_SIMPLE(                                          \
                 _name,                                              \
-                CONTENT(INT,                                        \
+                CONTENT(S32,                                        \
                         (int)hidrd_item_##_name##_get_value(item)))
 
-#define CASE_SIMPLE_UINT(_TYPE, _NAME, _name) \
+#define CASE_SIMPLE_U32(_TYPE, _NAME, _name) \
     case HIDRD_ITEM_##_TYPE##_TAG_##_NAME:                          \
         return ADD_SIMPLE(                                          \
                 _name,                                              \
-                CONTENT(INT,                                        \
+                CONTENT(U32,                                       \
                         (unsigned int)                              \
                             hidrd_item_##_name##_get_value(item)))
 
@@ -712,7 +108,7 @@ write_main_bit_elements(hidrd_xml_snk_inst   *xml_snk,
                 (int)sizeof(name))
                 return false;
 
-            if (!element_add(xml_snk, false, name, NT_NONE))
+            if (!element_add(xml_snk, false, name, ELEMENT_NT_NONE))
                 return false;
         }
 
@@ -749,7 +145,7 @@ write_main_element(hidrd_xml_snk_inst   *xml_snk,
 
                 token = hidrd_item_main_tag_to_token(tag);
                 assert(token != NULL);
-                result = element_add(xml_snk, true, token, NT_NONE);
+                result = element_add(xml_snk, true, token, ELEMENT_NT_NONE);
                 if (!result)
                     return false;
 
@@ -786,7 +182,7 @@ write_unit_generic_element(hidrd_xml_snk_inst *xml_snk,
                      ATTR(system, STROWN,
                           hidrd_unit_system_to_token_or_dec(
                             hidrd_unit_get_system(unit))),
-                     NT_NONE))
+                     ELEMENT_NT_NONE))
         goto cleanup;
 
     inside = true;
@@ -804,7 +200,7 @@ write_unit_generic_element(hidrd_xml_snk_inst *xml_snk,
             else                                                        \
             {                                                           \
                 if (!ADD_SIMPLE(_name,                                  \
-                                CONTENT(INT,                            \
+                                CONTENT(S32,                            \
                                         hidrd_unit_exp_to_int(exp))))   \
                     goto cleanup;                                       \
             }                                                           \
@@ -845,7 +241,7 @@ write_unit_specific_element(hidrd_xml_snk_inst *xml_snk,
     assert(hidrd_unit_system_known(system));
 
     if (!element_add(xml_snk, true, hidrd_unit_system_to_token(system),
-                     NT_NONE))
+                     ELEMENT_NT_NONE))
         goto cleanup;
 
     inside = true;
@@ -859,15 +255,16 @@ write_unit_specific_element(hidrd_xml_snk_inst *xml_snk,
                                                                         \
             if (exp == HIDRD_UNIT_EXP_1)                                \
             {                                                           \
-                if (!element_add(xml_snk, false, _spec_name, NT_NONE)) \
+                if (!element_add(xml_snk, false, _spec_name,            \
+                                 ELEMENT_NT_NONE))                      \
                     goto cleanup;                                       \
             }                                                           \
             else                                                        \
             {                                                           \
-                if (!element_add(xml_snk, false, _spec_name,           \
-                                 CONTENT(INT,                           \
+                if (!element_add(xml_snk, false, _spec_name,            \
+                                 CONTENT(S32,                           \
                                          hidrd_unit_exp_to_int(exp)),   \
-                                 NT_NONE))                              \
+                                 ELEMENT_NT_NONE))                      \
                     goto cleanup;                                       \
             }                                                           \
         }                                                               \
@@ -915,7 +312,7 @@ write_unit_element(hidrd_xml_snk_inst *xml_snk,
     bool    success     = false;
     bool    inside      = false;
 
-    if (!element_add(xml_snk, true, "unit", NT_NONE))
+    if (!element_add(xml_snk, true, "unit", ELEMENT_NT_NONE))
         goto cleanup;
     inside = true;
 
@@ -957,14 +354,14 @@ write_global_element(hidrd_xml_snk_inst   *xml_snk,
 
     switch (tag = hidrd_item_global_get_tag(item))
     {
-        CASE_SIMPLE_INT(GLOBAL, LOGICAL_MINIMUM, logical_minimum);
-        CASE_SIMPLE_INT(GLOBAL, LOGICAL_MAXIMUM, logical_maximum);
-        CASE_SIMPLE_INT(GLOBAL, PHYSICAL_MINIMUM, physical_minimum);
-        CASE_SIMPLE_INT(GLOBAL, PHYSICAL_MAXIMUM, physical_maximum);
-        CASE_SIMPLE_INT(GLOBAL, UNIT_EXPONENT, unit_exponent);
-        CASE_SIMPLE_UINT(GLOBAL, REPORT_SIZE, report_size);
-        CASE_SIMPLE_UINT(GLOBAL, REPORT_ID, report_id);
-        CASE_SIMPLE_UINT(GLOBAL, REPORT_COUNT, report_count);
+        CASE_SIMPLE_S32(GLOBAL, LOGICAL_MINIMUM, logical_minimum);
+        CASE_SIMPLE_S32(GLOBAL, LOGICAL_MAXIMUM, logical_maximum);
+        CASE_SIMPLE_S32(GLOBAL, PHYSICAL_MINIMUM, physical_minimum);
+        CASE_SIMPLE_S32(GLOBAL, PHYSICAL_MAXIMUM, physical_maximum);
+        CASE_SIMPLE_S32(GLOBAL, UNIT_EXPONENT, unit_exponent);
+        CASE_SIMPLE_U32(GLOBAL, REPORT_SIZE, report_size);
+        CASE_SIMPLE_U32(GLOBAL, REPORT_ID, report_id);
+        CASE_SIMPLE_U32(GLOBAL, REPORT_COUNT, report_count);
 
         case HIDRD_ITEM_GLOBAL_TAG_UNIT:
             return write_unit_element(xml_snk,
@@ -1059,7 +456,8 @@ write_usage_element(hidrd_xml_snk_inst    *xml_snk,
     if (*desc == '\0')
     {
         success = element_add(xml_snk, false, name,
-                              CONTENT(STROWN, token_or_hex), NT_NONE);
+                              CONTENT(STROWN, token_or_hex),
+                              ELEMENT_NT_NONE);
         token_or_hex = NULL;
     }
     else
@@ -1068,7 +466,7 @@ write_usage_element(hidrd_xml_snk_inst    *xml_snk,
                               CONTENT(STROWN, token_or_hex),
                               COMMENT(STROWN, hidrd_str_apada(
                                                 hidrd_str_uc_first(desc))),
-                              NT_NONE);
+                              ELEMENT_NT_NONE);
         token_or_hex = NULL;
         desc = NULL;
     }
@@ -1092,12 +490,12 @@ write_local_element(hidrd_xml_snk_inst   *xml_snk,
 
     switch (tag = hidrd_item_local_get_tag(item))
     {
-        CASE_SIMPLE_UINT(LOCAL, DESIGNATOR_INDEX, designator_index);
-        CASE_SIMPLE_UINT(LOCAL, DESIGNATOR_MINIMUM, designator_minimum);
-        CASE_SIMPLE_UINT(LOCAL, DESIGNATOR_MAXIMUM, designator_maximum);
-        CASE_SIMPLE_UINT(LOCAL, STRING_INDEX, string_index);
-        CASE_SIMPLE_UINT(LOCAL, STRING_MINIMUM, string_minimum);
-        CASE_SIMPLE_UINT(LOCAL, STRING_MAXIMUM, string_maximum);
+        CASE_SIMPLE_U32(LOCAL, DESIGNATOR_INDEX, designator_index);
+        CASE_SIMPLE_U32(LOCAL, DESIGNATOR_MINIMUM, designator_minimum);
+        CASE_SIMPLE_U32(LOCAL, DESIGNATOR_MAXIMUM, designator_maximum);
+        CASE_SIMPLE_U32(LOCAL, STRING_INDEX, string_index);
+        CASE_SIMPLE_U32(LOCAL, STRING_MINIMUM, string_minimum);
+        CASE_SIMPLE_U32(LOCAL, STRING_MAXIMUM, string_maximum);
 
         case HIDRD_ITEM_LOCAL_TAG_USAGE:
             return write_usage_element(xml_snk, "usage",
@@ -1171,7 +569,7 @@ write_basic_element(hidrd_xml_snk_inst   *xml_snk,
         case HIDRD_ITEM_BASIC_FORMAT_LONG:
             return ADD_SIMPLE(
                         long,
-                        ATTR(tag, UINT, hidrd_item_long_get_tag(item)),
+                        ATTR(tag, U32, hidrd_item_long_get_tag(item)),
                         CONTENT(
                             HEX,
                             /* We promise we won't change it */
@@ -1188,7 +586,7 @@ write_basic_element(hidrd_xml_snk_inst   *xml_snk,
                     ATTR(tag, STROWN,
                          hidrd_item_basic_tag_to_dec(
                              hidrd_item_basic_get_tag(item))),
-                    ATTR(tag, UINT,
+                    ATTR(tag, U32,
                          hidrd_item_basic_get_data_bytes(item)));
     }
 }
@@ -1305,25 +703,6 @@ hidrd_xml_snk_valid(const hidrd_snk *snk)
 
 
 static bool
-hidrd_xml_snk_break_groups(hidrd_snk *snk)
-{
-    hidrd_xml_snk_inst *xml_snk = (hidrd_xml_snk_inst *)snk;
-    xmlNodePtr          root;
-
-    assert(xml_snk->doc != NULL);
-    assert(xml_snk->prnt != NULL);
-
-    root = xmlDocGetRootElement(xml_snk->doc);
-    if (!break_branch(root, xml_snk->prnt, group_break_cb))
-        return false;
-
-    xml_snk->prnt = root;
-
-    return true;
-}
-
-
-static bool
 hidrd_xml_snk_flush(hidrd_snk *snk)
 {
     bool                result      = false;
@@ -1334,7 +713,7 @@ hidrd_xml_snk_flush(hidrd_snk *snk)
     size_t              new_size;
 
     /* Break any unfinished groups */
-    if (!hidrd_xml_snk_break_groups(snk))
+    if (!group_break_branch(snk))
         goto finish;
 
     /* Create an XML buffer */

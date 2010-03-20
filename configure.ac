@@ -246,6 +246,7 @@ AC_CONFIG_FILES([Makefile
                  lib/fmt/Makefile
                  lib/fmt/natv/Makefile
                  lib/fmt/xml/Makefile
+                 lib/fmt/xml/snk/Makefile
                  lib/fmt/xml/src/Makefile
                  lib/usage/Makefile
                  lib/unit/Makefile

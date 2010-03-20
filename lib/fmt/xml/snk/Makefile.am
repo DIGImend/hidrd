@@ -17,19 +17,20 @@
 # along with hidrd; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-SUBDIRS = snk src
+noinst_LTLIBRARIES = libhidrd_xml_snk.la
 
-noinst_LTLIBRARIES = libhidrd_xml.la
+noinst_HEADERS = \
+    element.h       \
+    element_break.h \
+    group.h
 
-libhidrd_xml_la_SOURCES = \
-    snk.c                   \
-    src.c
+libhidrd_xml_snk_la_SOURCES = \
+    element.c                   \
+    element_break.c             \
+    group.c
 
-libhidrd_xml_la_LIBADD = \
-    snk/libhidrd_xml_snk.la \
-    src/libhidrd_xml_src.la
+libhidrd_xml_snk_la_LIBADD = \
+    ../../../util/libhidrd_util.la
 
-libhidrd_xml_la_CFLAGS = @LIBXML2_CFLAGS@
-libhidrd_xml_la_LDFLAGS = @LIBXML2_LIBS@
-
-dist_noinst_DATA = hidrd.xsd
+libhidrd_xml_snk_la_CFLAGS = @LIBXML2_CFLAGS@
+libhidrd_xml_snk_la_LDFLAGS = @LIBXML2_LIBS@
