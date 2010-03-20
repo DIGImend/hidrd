@@ -23,6 +23,7 @@ hidrd_util_HEADERS = \
     bit.h               \
     bool.h              \
     dec.h               \
+    fmt.h               \
     hex.h               \
     num.h               \
     str.h

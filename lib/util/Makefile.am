@@ -22,6 +22,7 @@ lib_LTLIBRARIES = libhidrd_util.la
 libhidrd_util_la_SOURCES = \
     bool.c                  \
     dec.c                   \
+    fmt.c                   \
     hex.c                   \
     num.c                   \
     str.c
