@@ -204,7 +204,7 @@ ELEMENT(unit)
          e = e->next);
     /* If none */
     if (e == NULL)
-        return ELEMENT_RC_ERROR;
+        return XML_SRC_ELEMENT_RC_ERROR;
 
 #define MATCH(_name) (strcmp((const char *)e->name, #_name) == 0)
     if (MATCH(none))
@@ -237,7 +237,7 @@ ELEMENT(unit)
 #undef MAP
 #undef MATCH
 
-    return ELEMENT_RC_ERROR;
+    return XML_SRC_ELEMENT_RC_ERROR;
 
 finish:
 
@@ -247,9 +247,9 @@ finish:
          e = e->next);
     /* If any */
     if (e != NULL)
-        return ELEMENT_RC_ERROR;
+        return XML_SRC_ELEMENT_RC_ERROR;
 
-    hidrd_item_unit_init(xml_src->item, unit);
+    hidrd_item_unit_init(item, unit);
 
-    return ELEMENT_RC_ITEM;
+    return XML_SRC_ELEMENT_RC_ITEM;
 }

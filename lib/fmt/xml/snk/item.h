@@ -24,8 +24,8 @@
  * @(#) $Id: element.h 283 2010-03-20 12:58:33Z spb_nick $
  */
 
-#ifndef __SNK_ITEM_H__
-#define __SNK_ITEM_H__
+#ifndef __XML_SNK_ITEM_H__
+#define __XML_SNK_ITEM_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -46,4 +46,4 @@ extern bool xml_snk_item_basic(hidrd_xml_snk_inst  *xml_snk,
 } /* extern "C" */
 #endif
 
-#endif /* __SNK_ITEM_H__ */
+#endif /* __XML_SNK_ITEM_H__ */

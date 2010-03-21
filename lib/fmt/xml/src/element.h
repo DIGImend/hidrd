@@ -24,8 +24,8 @@
  * @(#) $Id$
  */
 
-#ifndef __SRC_ELEMENT_H__
-#define __SRC_ELEMENT_H__
+#ifndef __XML_SRC_ELEMENT_H__
+#define __XML_SRC_ELEMENT_H__
 
 #include "hidrd/fmt/xml/src.h"
 
@@ -34,24 +34,24 @@ extern "C" {
 #endif
 
 /** Element processing result code */
-typedef enum element_rc {
-    ELEMENT_RC_ERROR,   /**< An error has occured */
-    ELEMENT_RC_END,     /**< End of stream */
-    ELEMENT_RC_ITEM,    /**< An item has been read */
-    ELEMENT_RC_NONE,    /**< No item has been read */
-} element_rc;
+typedef enum xml_src_element_rc {
+    XML_SRC_ELEMENT_RC_ERROR,   /**< An error has occured */
+    XML_SRC_ELEMENT_RC_END,     /**< End of stream */
+    XML_SRC_ELEMENT_RC_ITEM,    /**< An item has been read */
+    XML_SRC_ELEMENT_RC_NONE,    /**< No item has been read */
+} xml_src_element_rc;
 
 
 /**
  * Prototype for an element processing function.
  *
- * @param xml_src   XML source instance.
- * @param e         Element to handle (src->cur - the encountered element).
+ * @param item  Output item location.
+ * @param e     Element to handle (src->cur - the encountered element).
  * 
  * @return Element processing result code.
  */
-typedef element_rc element_fn(hidrd_xml_src_inst   *xml_src,
-                              xmlNodePtr            e);
+typedef xml_src_element_rc xml_src_element_fn(hidrd_item   *item,
+                                              xmlNodePtr    e);
 
 /**
  * Generate element handling function prototype.
@@ -61,8 +61,8 @@ typedef element_rc element_fn(hidrd_xml_src_inst   *xml_src,
  * @return Element processing result code.
  */
 #define ELEMENT(_name) \
-    element_rc                                                  \
-    element_##_name(hidrd_xml_src_inst *xml_src, xmlNodePtr e)
+    xml_src_element_rc                                      \
+    xml_src_element_##_name(hidrd_item *item, xmlNodePtr e)
 
 /**
  * Generate element exit handling function prototype.
@@ -72,8 +72,8 @@ typedef element_rc element_fn(hidrd_xml_src_inst   *xml_src,
  * @return Element processing result code.
  */
 #define ELEMENT_EXIT(_name) \
-    element_rc                                                          \
-    element_##_name##_exit(hidrd_xml_src_inst *xml_src, xmlNodePtr e)
+    xml_src_element_rc                                              \
+    xml_src_element_##_name##_exit(hidrd_item *item, xmlNodePtr e)
 
 /**
  * Generate element property variable declarations.
@@ -119,7 +119,8 @@ typedef element_rc element_fn(hidrd_xml_src_inst   *xml_src,
  *
  * @return Element processing result code.
  */
-extern element_rc element(hidrd_xml_src_inst *xml_src, bool *penter);
+extern xml_src_element_rc xml_src_element(hidrd_xml_src_inst   *xml_src,
+                                          bool                 *penter);
 
 
 /**
@@ -130,10 +131,11 @@ extern element_rc element(hidrd_xml_src_inst *xml_src, bool *penter);
  *
  * @return Element processing result code.
  */
-extern element_rc element_exit(hidrd_xml_src_inst *xml_src);
+extern xml_src_element_rc xml_src_element_exit(
+                                            hidrd_xml_src_inst  *xml_src);
 
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
 
-#endif /* __SRC_ELEMENT_H__ */
+#endif /* __XML_SRC_ELEMENT_H__ */

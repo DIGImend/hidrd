@@ -124,11 +124,11 @@ cleanup:
         uint32_t    bitmap;                                 \
                                                             \
         if (!parse_bitmap_element(&bitmap, e, _name##_bmd)) \
-            return ELEMENT_RC_ERROR;                        \
+            return XML_SRC_ELEMENT_RC_ERROR;                \
                                                             \
-        hidrd_item_##_name##_init(xml_src->item, bitmap);   \
+        hidrd_item_##_name##_init(item, bitmap);            \
                                                             \
-        return ELEMENT_RC_ITEM;                             \
+        return XML_SRC_ELEMENT_RC_ITEM;                     \
     }
 
 BITMAP_ELEMENT(input)

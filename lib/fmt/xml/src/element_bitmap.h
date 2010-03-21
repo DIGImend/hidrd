@@ -24,8 +24,8 @@
  * @(#) $Id: src_element.h 244 2010-03-08 19:13:53Z spb_nick $
  */
 
-#ifndef __SRC_ELEMENT_BITMAP_H__
-#define __SRC_ELEMENT_BITMAP_H__
+#ifndef __XML_SRC_ELEMENT_BITMAP_H__
+#define __XML_SRC_ELEMENT_BITMAP_H__
 
 #include "element.h"
 
@@ -44,4 +44,4 @@ extern ELEMENT(feature);
 } /* extern "C" */
 #endif
 
-#endif /* __SRC_ELEMENT_BITMAP_H__ */
+#endif /* __XML_SRC_ELEMENT_BITMAP_H__ */

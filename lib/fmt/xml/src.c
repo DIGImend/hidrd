@@ -101,7 +101,7 @@ static const hidrd_item *
 hidrd_xml_src_get(hidrd_src *src)
 {
     hidrd_xml_src_inst *xml_src     = (hidrd_xml_src_inst *)src;
-    element_rc          rc;
+    xml_src_element_rc  rc;
     bool                enter;
 
     do {
@@ -117,22 +117,25 @@ hidrd_xml_src_get(hidrd_src *src)
                 assert(xml_src->prnt != NULL);
 
                 /* Handle the exit from an element */
-                rc = element_exit(xml_src);
+                rc = xml_src_element_exit(xml_src);
                 /* If an error occurred */
-                if (rc == ELEMENT_RC_ERROR)
+                if (rc == XML_SRC_ELEMENT_RC_ERROR)
                     xml_src->src.error = true;
                 /* If we shouldn't stop here */
-                if (rc != ELEMENT_RC_ERROR && rc != ELEMENT_RC_END)
+                if (rc != XML_SRC_ELEMENT_RC_ERROR &&
+                    rc != XML_SRC_ELEMENT_RC_END)
                 {
                     /* Go up (exit) */
                     xml_src->cur = xml_src->prnt->next;
                     xml_src->prnt = xml_src->prnt->parent;
-                    /* We don't go above the root element (only start there) */
+                    /*
+                     * We don't go above the root element (only start there)
+                     */
                     assert(xml_src->prnt != NULL);
                 }
                 /* If we have something to return */
-                if (rc != ELEMENT_RC_NONE)
-                    return (rc == ELEMENT_RC_ITEM)
+                if (rc != XML_SRC_ELEMENT_RC_NONE)
+                    return (rc == XML_SRC_ELEMENT_RC_ITEM)
                         ? hidrd_item_validate(xml_src->item)
                         : NULL;
             }
@@ -149,12 +152,12 @@ hidrd_xml_src_get(hidrd_src *src)
          * Process the element
          */
         enter = false;
-        rc = element(xml_src, &enter);
+        rc = xml_src_element(xml_src, &enter);
         /* If an error occurred */
-        if (rc == ELEMENT_RC_ERROR)
+        if (rc == XML_SRC_ELEMENT_RC_ERROR)
             xml_src->src.error = true;
         /* If we shouldn't stop here */
-        if (rc != ELEMENT_RC_ERROR && rc != ELEMENT_RC_END)
+        if (rc != XML_SRC_ELEMENT_RC_ERROR && rc != XML_SRC_ELEMENT_RC_END)
         {
             if (enter)
             {
@@ -164,9 +167,9 @@ hidrd_xml_src_get(hidrd_src *src)
             else
                 xml_src->cur = xml_src->cur->next;
         }
-    } while (rc == ELEMENT_RC_NONE); /* While we have nothing to return */
+    } while (rc == XML_SRC_ELEMENT_RC_NONE); /* While nothing to return */
 
-    return (rc == ELEMENT_RC_ITEM)
+    return (rc == XML_SRC_ELEMENT_RC_ITEM)
                 ? hidrd_item_validate(xml_src->item)
                 : NULL;
 }
