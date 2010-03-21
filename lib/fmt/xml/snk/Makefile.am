@@ -22,12 +22,14 @@ noinst_LTLIBRARIES = libhidrd_xml_snk.la
 noinst_HEADERS = \
     element.h       \
     element_break.h \
-    group.h
+    group.h         \
+    item.h
 
 libhidrd_xml_snk_la_SOURCES = \
     element.c                   \
     element_break.c             \
-    group.c
+    group.c                     \
+    item.c
 
 libhidrd_xml_snk_la_LIBADD = \
     ../../../util/libhidrd_util.la
