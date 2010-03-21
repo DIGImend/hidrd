@@ -50,9 +50,11 @@ usage(FILE *stream, const char *progname)
             "Options:\n"
             "  -h, --help                       this help message\n"
             "  -i, --input-format=FORMAT        use FORMAT for input\n"
-            "  --io=LIST, --input-options=LIST  use LIST input format options\n"
+            "  --io=LIST, --input-options=LIST  "
+                                        "use LIST input format options\n"
             "  -o, --output-format=FORMAT       use FORMAT for output\n"
-            "  --oo=LIST, --output-options=LIST use LIST output format options\n"
+            "  --oo=LIST, --output-options=LIST "
+                                        "use LIST output format options\n"
             "\n"
             "Default options are \"-i natv -o natv\".\n"
             "\n",

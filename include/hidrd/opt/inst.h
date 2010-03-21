@@ -72,8 +72,8 @@ extern bool hidrd_opt_get_boolean(const hidrd_opt *opt);
 /**
  * Parse a token pair representation of an option.
  *
- * @param opt   Output option; will contain name and possibly value referenced from
- *              the token pair.
+ * @param opt   Output option; will contain name and possibly value
+ *              referenced from the token pair.
  * @param spec  Option specification to apply to conversion.
  * @param tkns  Token pair to parse; the name and possibly value tokens will
  *              be referenced in the resulting option.
@@ -88,8 +88,8 @@ extern bool hidrd_opt_parse_tkns(hidrd_opt             *opt,
  * Parse a string representation of an option, modifying and referencing in
  * the resulting option.
  *
- * @param opt   Output option; will contain name and possibly value referenced from
- *              the original string.
+ * @param opt   Output option; will contain name and possibly value
+ *              referenced from the original string.
  * @param spec  Option specification to apply to conversion.
  * @param buf   String to parse; will be modified and referenced in the
  *              resulting option.

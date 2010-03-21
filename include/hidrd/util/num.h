@@ -267,30 +267,31 @@ hidrd_num_s8_to_str(int8_t num, hidrd_num_base base)
  *                  (lowercase - dec or hex).
  */
 #define HIDRD_NUM_CONV_DEFS(_type, _t, _n, _b) \
-    char *                                                                  \
-    hidrd_##_type##_to_##_b(hidrd_##_type _t)                               \
-    {                                                                       \
-        assert(hidrd_##_type##_valid(_t));                                  \
-        return hidrd_num_##_n##_to_str(_t, HIDRD_NUM_BASE_##_b);            \
-    }                                                                       \
-                                                                            \
-                                                                            \
-    bool                                                                    \
-    hidrd_##_type##_from_##_b(hidrd_##_type *p##_t,                         \
-                              const char      *str)                         \
-    {                                                                       \
-        HIDRD_NUM_##_n##_TYPE   _t;                                         \
-                                                                            \
-        assert(str != NULL);                                                \
-                                                                            \
-        if (!hidrd_num_##_n##_from_str(&_t, str, HIDRD_NUM_BASE_##_b) ||    \
-            !hidrd_##_type##_valid(_t))                                     \
-            return false;                                                   \
-                                                                            \
-        if (p##_t != NULL)                                                  \
-            *p##_t = _t;                                                    \
-                                                                            \
-        return true;                                                        \
+    char *                                                          \
+    hidrd_##_type##_to_##_b(hidrd_##_type _t)                       \
+    {                                                               \
+        assert(hidrd_##_type##_valid(_t));                          \
+        return hidrd_num_##_n##_to_str(_t, HIDRD_NUM_BASE_##_b);    \
+    }                                                               \
+                                                                    \
+                                                                    \
+    bool                                                            \
+    hidrd_##_type##_from_##_b(hidrd_##_type *p##_t,                 \
+                              const char      *str)                 \
+    {                                                               \
+        HIDRD_NUM_##_n##_TYPE   _t;                                 \
+                                                                    \
+        assert(str != NULL);                                        \
+                                                                    \
+        if (!hidrd_num_##_n##_from_str(&_t, str,                    \
+                                       HIDRD_NUM_BASE_##_b) ||      \
+            !hidrd_##_type##_valid(_t))                             \
+            return false;                                           \
+                                                                    \
+        if (p##_t != NULL)                                          \
+            *p##_t = _t;                                            \
+                                                                    \
+        return true;                                                \
     }
 
 /**

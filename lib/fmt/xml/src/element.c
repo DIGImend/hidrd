@@ -495,11 +495,12 @@ typedef struct xml_src_element_handler {
 
 /** Element handler list */
 static const xml_src_element_handler handler_list[] = {
-#define IGNORE(_name)       {.name = #_name}
-#define HANDLE(_name)       {.name = #_name, .handle = xml_src_element_##_name}
-#define ENTER(_name)        {.name = #_name, \
-                             .handle = xml_src_element_##_name,             \
-                             .handle_exit = xml_src_element_##_name##_exit}
+#define IGNORE(_name)   {.name = #_name}
+#define HANDLE(_name)   {.name      = #_name, \
+                         .handle    = xml_src_element_##_name}
+#define ENTER(_name)    {.name        = #_name, \
+                         .handle      = xml_src_element_##_name,        \
+                         .handle_exit = xml_src_element_##_name##_exit}
     HANDLE(basic),
     HANDLE(short),
     HANDLE(main),

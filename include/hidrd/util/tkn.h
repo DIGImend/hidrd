@@ -92,15 +92,16 @@ extern const char *hidrd_tkn_from_num(uint32_t              num,
  *              missing token strings.
  */
 #define HIDRD_TKN_CONV_DECLS(_type, _t, _b) \
-    extern const char *hidrd_##_type##_to_token(hidrd_##_type   _t);        \
-                                                                            \
-    extern bool hidrd_##_type##_from_token(hidrd_##_type   *p##_t,          \
-                                           const char      *str);           \
-                                                                            \
-    extern char *hidrd_##_type##_to_token_or_##_b(hidrd_##_type _t);        \
-                                                                            \
-    extern bool hidrd_##_type##_from_token_or_##_b(hidrd_##_type   *p##_t,  \
-                                                   const char      *str)
+    extern const char *hidrd_##_type##_to_token(hidrd_##_type   _t);    \
+                                                                        \
+    extern bool hidrd_##_type##_from_token(hidrd_##_type   *p##_t,      \
+                                           const char      *str);       \
+                                                                        \
+    extern char *hidrd_##_type##_to_token_or_##_b(hidrd_##_type _t);    \
+                                                                        \
+    extern bool hidrd_##_type##_from_token_or_##_b(                     \
+                                                hidrd_##_type   *p##_t, \
+                                                const char      *str)
 
 /**
  * Define token conversion functions for specified type, conversion to

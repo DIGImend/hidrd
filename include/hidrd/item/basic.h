@@ -512,7 +512,8 @@ hidrd_item_basic_get_data_bytes(const hidrd_item *item)
  *       prefix.
  */
 static inline hidrd_item *
-hidrd_item_basic_set_data_size(hidrd_item *item, hidrd_item_basic_data_size size)
+hidrd_item_basic_set_data_size(hidrd_item                  *item,
+                               hidrd_item_basic_data_size   size)
 {
     assert(hidrd_item_basic_valid(item));
     assert(hidrd_item_basic_data_size_valid(size));
