@@ -30,19 +30,19 @@
 
 typedef const char *unit_system_desc[HIDRD_UNIT_NIBBLE_INDEX_EXP_NUM];
 
-const unit_system_desc  generic_usd = {
+static const unit_system_desc  generic_usd = {
     "length", "mass", "time", "temperature", "current", "luminous_intensity"
 };
-const unit_system_desc  si_linear_usd = {
+static const unit_system_desc  si_linear_usd = {
     "centimeter", "gram", "seconds", "kelvin", "ampere", "candela"
 };
-const unit_system_desc  si_rotation_usd = {
+static const unit_system_desc  si_rotation_usd = {
     "radians", "gram", "seconds", "kelvin", "ampere", "candela"
 };
-const unit_system_desc  english_linear_usd = {
+static const unit_system_desc  english_linear_usd = {
     "inch", "slug", "seconds", "fahrenheit", "ampere", "candela"
 };
-const unit_system_desc  english_rotation_usd = {
+static const unit_system_desc  english_rotation_usd = {
     "degrees", "slug", "seconds", "fahrenheit", "ampere", "candela"
 };
 
@@ -131,7 +131,8 @@ cleanup:
 }
 
 
-const unit_system_desc *known_system_list[HIDRD_UNIT_SYSTEM_KNOWN_NUM] = {
+static const unit_system_desc
+                *known_system_list[HIDRD_UNIT_SYSTEM_KNOWN_NUM] = {
 #define MAP(_NAME, _name) \
     [HIDRD_UNIT_SYSTEM_##_NAME - HIDRD_UNIT_SYSTEM_KNOWN_MIN] = &_name##_usd
     MAP(SI_LINEAR, si_linear),

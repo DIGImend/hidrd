@@ -354,14 +354,14 @@ static ELEMENT_EXIT(COLLECTION)
         return result_rc;                                       \
     }
 
-NUM_ELEMENT(logical_minimum,    s32)
-NUM_ELEMENT(logical_maximum,    s32)
-NUM_ELEMENT(physical_minimum,   s32)
-NUM_ELEMENT(physical_maximum,   s32)
-NUM_ELEMENT(unit_exponent,      s32)
-NUM_ELEMENT(report_size,        u32)
-NUM_ELEMENT(report_count,       u32)
-NUM_ELEMENT(report_id,          u8)
+static NUM_ELEMENT(logical_minimum,    s32)
+static NUM_ELEMENT(logical_maximum,    s32)
+static NUM_ELEMENT(physical_minimum,   s32)
+static NUM_ELEMENT(physical_maximum,   s32)
+static NUM_ELEMENT(unit_exponent,      s32)
+static NUM_ELEMENT(report_size,        u32)
+static NUM_ELEMENT(report_count,       u32)
+static NUM_ELEMENT(report_id,          u8)
 
 #define USAGE_ELEMENT(_name) \
     ELEMENT(_name)                                              \
@@ -387,16 +387,16 @@ NUM_ELEMENT(report_id,          u8)
         return result_rc;                                       \
     }
 
-USAGE_ELEMENT(usage);
-USAGE_ELEMENT(usage_minimum);
-USAGE_ELEMENT(usage_maximum);
+static USAGE_ELEMENT(usage);
+static USAGE_ELEMENT(usage_minimum);
+static USAGE_ELEMENT(usage_maximum);
 
-NUM_ELEMENT(designator_index,   u32)
-NUM_ELEMENT(designator_minimum, u32)
-NUM_ELEMENT(designator_maximum, u32)
-NUM_ELEMENT(string_index,       u32)
-NUM_ELEMENT(string_minimum,     u32)
-NUM_ELEMENT(string_maximum,     u32)
+static NUM_ELEMENT(designator_index,   u32)
+static NUM_ELEMENT(designator_minimum, u32)
+static NUM_ELEMENT(designator_maximum, u32)
+static NUM_ELEMENT(string_index,       u32)
+static NUM_ELEMENT(string_minimum,     u32)
+static NUM_ELEMENT(string_maximum,     u32)
 
 static ELEMENT(delimiter)
 {

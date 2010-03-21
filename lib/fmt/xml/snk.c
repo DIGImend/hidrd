@@ -105,7 +105,7 @@ hidrd_xml_snk_init(hidrd_snk *snk, va_list ap)
 
 
 #ifdef HIDRD_WITH_OPT
-const hidrd_opt_spec hidrd_xml_snk_opts_spec[] = {
+static const hidrd_opt_spec hidrd_xml_snk_opts_spec[] = {
     {.name  = "format",
      .type  = HIDRD_OPT_TYPE_BOOLEAN,
      .req   = false,

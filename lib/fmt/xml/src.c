@@ -97,7 +97,7 @@ hidrd_xml_src_valid(const hidrd_src *src)
            (xml_src->prnt != NULL || xml_src->cur != NULL);
 }
 
-const hidrd_item *
+static const hidrd_item *
 hidrd_xml_src_get(hidrd_src *src)
 {
     hidrd_xml_src_inst *xml_src     = (hidrd_xml_src_inst *)src;
