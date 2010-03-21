@@ -33,6 +33,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <getopt.h>
+#include "hidrd/util/fd.h"
 #include "hidrd/fmt.h"
 
 static int
@@ -59,84 +60,6 @@ usage(FILE *stream, const char *progname)
             "Default options are \"-i natv -o natv\".\n"
             "\n",
             progname);
-}
-
-
-static bool
-read_whole(int fd, void **pbuf, size_t *psize)
-{
-    bool    result      = false;
-    void   *buf         = NULL;
-    void   *new_buf;
-    size_t  alloc       = 0;
-    size_t  new_alloc   = 4096;
-    size_t  size        = 0;
-    ssize_t read_size;
-
-    new_buf = malloc(new_alloc);
-    if (new_buf == NULL)
-        goto cleanup;
-    buf = new_buf;
-    alloc = new_alloc;
-
-    while ((read_size = read(fd, buf + size, alloc - size)) > 0)
-    {
-        size += read_size;
-
-        if (size > alloc / 2)
-        {
-            new_alloc = alloc * 2;
-            new_buf = realloc(buf, new_alloc);
-            if (new_buf == NULL)
-                goto cleanup;
-            buf = new_buf;
-            alloc = new_alloc;
-        }
-    }
-
-    if (errno != 0)
-        goto cleanup;
-
-    new_buf = realloc(buf, size);
-    if (size > 0 && new_buf == NULL)
-        goto cleanup;
-    buf = new_buf;
-    alloc = size;
-
-    if (pbuf != NULL)
-    {
-        *pbuf = buf;
-        buf = NULL;
-    }
-
-    if (psize != NULL)
-        *psize = size;
-
-    result = true;
-
-cleanup:
-
-    free(buf);
-
-    return result;
-}
-
-
-static bool
-write_whole(int fd, void *buf, size_t size)
-{
-    ssize_t write_size;
-
-    while (size > 0)
-    {
-        write_size = write(fd, buf, size);
-        if (write_size < 0)
-            return false;
-        size -= write_size;
-        buf += write_size;
-    }
-
-    return true;
 }
 
 
@@ -252,7 +175,7 @@ process(const char *input_name,
     /*
      * Read the whole input file
      */
-    if (!read_whole(input_fd, &input_buf, &input_size))
+    if (!hidrd_fd_read_whole(input_fd, &input_buf, &input_size))
     {
         fprintf(stderr, "Failed to read input: %s\n", strerror(errno));
         goto cleanup;
@@ -306,7 +229,7 @@ process(const char *input_name,
     /*
      * Write the output file
      */
-    if (!write_whole(output_fd, output_buf, output_size))
+    if (!hidrd_fd_write_whole(output_fd, output_buf, output_size))
     {
         fprintf(stderr, "Failed to write output stream: %s\n",
                 strerror(errno));
