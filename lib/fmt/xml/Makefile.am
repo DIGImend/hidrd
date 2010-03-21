@@ -33,3 +33,20 @@ libhidrd_xml_la_CFLAGS = @LIBXML2_CFLAGS@
 libhidrd_xml_la_LDFLAGS = @LIBXML2_LIBS@
 
 dist_noinst_DATA = hidrd.xsd
+
+
+TESTS =
+bin_PROGRAMS =
+TEST_TOOLS = hidrd_xml_src_test
+check_PROGRAMS =  $(TEST_TOOLS) $(TESTS)
+
+
+hidrd_xml_src_test_SOURCES = src_test.c
+hidrd_xml_src_test_LDADD = ../libhidrd_fmt.la
+hidrd_xml_src_test_CFLAGS = @LIBXML2_CFLAGS@
+hidrd_xml_src_test_LDFLAGS = @LIBXML2_LIBS@
+
+
+if ENABLE_TESTS_INSTALL
+bin_PROGRAMS += $(TEST_TOOLS) $(TESTS)
+endif
