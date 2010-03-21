@@ -57,7 +57,7 @@ extern bool hidrd_fd_read_whole(int fd, void **pbuf, size_t *psize);
  * @return True if written successfully, false otherwise (see errno in this
  *         case).
  */
-extern bool hidrd_fd_write_whole(int fd, void *buf, size_t size);
+extern bool hidrd_fd_write_whole(int fd, const void *buf, size_t size);
 
 #ifdef __cplusplus
 } /* extern "C" */

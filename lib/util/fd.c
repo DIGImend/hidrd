@@ -90,7 +90,7 @@ cleanup:
 
 
 bool
-hidrd_fd_write_whole(int fd, void *buf, size_t size)
+hidrd_fd_write_whole(int fd, const void *buf, size_t size)
 {
     ssize_t write_size;
 
