@@ -24,8 +24,8 @@
  * @(#) $Id$
  */
 
-#ifndef __SNK_GROUP_H__
-#define __SNK_GROUP_H__
+#ifndef __XML_SNK_GROUP_H__
+#define __XML_SNK_GROUP_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -42,9 +42,9 @@ extern "C" {
  *
  * @return True if started successfully, false otherwise.
  */
-extern bool group_start(hidrd_xml_snk_inst *xml_snk,
-                        const char         *name,
-                        ...);
+extern bool xml_snk_group_start(hidrd_xml_snk_inst *xml_snk,
+                                const char         *name,
+                                ...);
 
 /**
  * End a group.
@@ -54,8 +54,8 @@ extern bool group_start(hidrd_xml_snk_inst *xml_snk,
  *
  * @return True if ended successfully, false otherwise.
  */
-extern bool group_end(hidrd_xml_snk_inst   *xml_snk,
-                      const char           *name);
+extern bool xml_snk_group_end(hidrd_xml_snk_inst   *xml_snk,
+                              const char           *name);
 
 /**
  * Break groups from the current element up to the root.
@@ -64,10 +64,10 @@ extern bool group_end(hidrd_xml_snk_inst   *xml_snk,
  *
  * @return True if broken successfully, false otherwise.
  */
-extern bool group_break_branch(hidrd_snk *snk);
+extern bool xml_snk_group_break_branch(hidrd_snk *snk);
 
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
 
-#endif /* __SNK_GROUP_H__ */
+#endif /* __XML_SNK_GROUP_H__ */

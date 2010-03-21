@@ -31,22 +31,23 @@
 
 
 #define ATTR(_name, _fmt, _args...) \
-    ELEMENT_NT_ATTR, #_name, HIDRD_FMT_TYPE_##_fmt, ##_args
+    XML_SNK_ELEMENT_NT_ATTR, #_name, HIDRD_FMT_TYPE_##_fmt, ##_args
 
 #define CONTENT(_fmt, _args...) \
-    ELEMENT_NT_CONTENT, HIDRD_FMT_TYPE_##_fmt, ##_args
+    XML_SNK_ELEMENT_NT_CONTENT, HIDRD_FMT_TYPE_##_fmt, ##_args
 
 #define COMMENT(_fmt, _args...) \
-    ELEMENT_NT_COMMENT, HIDRD_FMT_TYPE_##_fmt, ##_args
+    XML_SNK_ELEMENT_NT_COMMENT, HIDRD_FMT_TYPE_##_fmt, ##_args
 
 #define ADD_SIMPLE(_name, _args...) \
-    element_add(xml_snk, false, #_name, ##_args, ELEMENT_NT_NONE)
+    xml_snk_element_add(xml_snk, false, #_name, ##_args,    \
+                        XML_SNK_ELEMENT_NT_NONE)
 
 #define GROUP_START(_name, _args...) \
-    group_start(xml_snk, #_name, ##_args, ELEMENT_NT_NONE)
+    xml_snk_group_start(xml_snk, #_name, ##_args, XML_SNK_ELEMENT_NT_NONE)
 
 #define GROUP_END(_name) \
-    group_end(xml_snk, #_name)
+    xml_snk_group_end(xml_snk, #_name)
 
 #define CASE_SIMPLE_S32(_TYPE, _NAME, _name) \
     case HIDRD_ITEM_##_TYPE##_TAG_##_NAME:                          \
@@ -106,7 +107,8 @@ xml_snk_item_main_bitmap(hidrd_xml_snk_inst    *xml_snk,
                 (int)sizeof(name))
                 return false;
 
-            if (!element_add(xml_snk, false, name, ELEMENT_NT_NONE))
+            if (!xml_snk_element_add(xml_snk, false, name,
+                                     XML_SNK_ELEMENT_NT_NONE))
                 return false;
         }
 
@@ -143,7 +145,8 @@ xml_snk_item_main(hidrd_xml_snk_inst   *xml_snk,
 
                 token = hidrd_item_main_tag_to_token(tag);
                 assert(token != NULL);
-                result = element_add(xml_snk, true, token, ELEMENT_NT_NONE);
+                result = xml_snk_element_add(xml_snk, true, token,
+                                             XML_SNK_ELEMENT_NT_NONE);
                 if (!result)
                     return false;
 
@@ -176,11 +179,11 @@ xml_snk_item_unit_generic(hidrd_xml_snk_inst   *xml_snk,
     bool            inside  = false;
     hidrd_unit_exp  exp;
 
-    if (!element_add(xml_snk, true, "generic",
+    if (!xml_snk_element_add(xml_snk, true, "generic",
                      ATTR(system, STROWN,
                           hidrd_unit_system_to_token_or_dec(
                             hidrd_unit_get_system(unit))),
-                     ELEMENT_NT_NONE))
+                     XML_SNK_ELEMENT_NT_NONE))
         goto cleanup;
 
     inside = true;
@@ -238,8 +241,9 @@ xml_snk_item_unit_specific(hidrd_xml_snk_inst  *xml_snk,
     system = hidrd_unit_get_system(unit);
     assert(hidrd_unit_system_known(system));
 
-    if (!element_add(xml_snk, true, hidrd_unit_system_to_token(system),
-                     ELEMENT_NT_NONE))
+    if (!xml_snk_element_add(xml_snk, true,
+                             hidrd_unit_system_to_token(system),
+                             XML_SNK_ELEMENT_NT_NONE))
         goto cleanup;
 
     inside = true;
@@ -253,16 +257,17 @@ xml_snk_item_unit_specific(hidrd_xml_snk_inst  *xml_snk,
                                                                         \
             if (exp == HIDRD_UNIT_EXP_1)                                \
             {                                                           \
-                if (!element_add(xml_snk, false, _spec_name,            \
-                                 ELEMENT_NT_NONE))                      \
+                if (!xml_snk_element_add(xml_snk, false, _spec_name,    \
+                                         XML_SNK_ELEMENT_NT_NONE))      \
                     goto cleanup;                                       \
             }                                                           \
             else                                                        \
             {                                                           \
-                if (!element_add(xml_snk, false, _spec_name,            \
-                                 CONTENT(S32,                           \
-                                         hidrd_unit_exp_to_int(exp)),   \
-                                 ELEMENT_NT_NONE))                      \
+                if (!xml_snk_element_add(                               \
+                                xml_snk, false, _spec_name,             \
+                                CONTENT(S32,                            \
+                                        hidrd_unit_exp_to_int(exp)),    \
+                                XML_SNK_ELEMENT_NT_NONE))               \
                     goto cleanup;                                       \
             }                                                           \
         }                                                               \
@@ -310,7 +315,8 @@ xml_snk_item_unit(hidrd_xml_snk_inst   *xml_snk,
     bool    success     = false;
     bool    inside      = false;
 
-    if (!element_add(xml_snk, true, "unit", ELEMENT_NT_NONE))
+    if (!xml_snk_element_add(xml_snk, true, "unit",
+                             XML_SNK_ELEMENT_NT_NONE))
         goto cleanup;
     inside = true;
 
@@ -453,18 +459,19 @@ xml_snk_item_usage(hidrd_xml_snk_inst  *xml_snk,
 
     if (*desc == '\0')
     {
-        success = element_add(xml_snk, false, name,
-                              CONTENT(STROWN, token_or_hex),
-                              ELEMENT_NT_NONE);
+        success = xml_snk_element_add(xml_snk, false, name,
+                                      CONTENT(STROWN, token_or_hex),
+                                      XML_SNK_ELEMENT_NT_NONE);
         token_or_hex = NULL;
     }
     else
     {
-        success = element_add(xml_snk, false, name,
-                              CONTENT(STROWN, token_or_hex),
-                              COMMENT(STROWN, hidrd_str_apada(
+        success = xml_snk_element_add(xml_snk, false, name,
+                                      CONTENT(STROWN, token_or_hex),
+                                      COMMENT(STROWN,
+                                              hidrd_str_apada(
                                                 hidrd_str_uc_first(desc))),
-                              ELEMENT_NT_NONE);
+                                      XML_SNK_ELEMENT_NT_NONE);
         token_or_hex = NULL;
         desc = NULL;
     }

@@ -24,8 +24,8 @@
  * @(#) $Id$
  */
 
-#ifndef __SNK_ELEMENT_H__
-#define __SNK_ELEMENT_H__
+#ifndef __XML_SNK_ELEMENT_H__
+#define __XML_SNK_ELEMENT_H__
 
 #include "hidrd/util/fmt.h"
 #include "hidrd/fmt/xml/snk.h"
@@ -42,7 +42,7 @@ extern "C" {
  *
  * @return Created element, or NULL if failed.
  */
-typedef xmlNodePtr element_create_fn(xmlDocPtr doc, xmlNsPtr ns);
+typedef xmlNodePtr xml_snk_element_create_fn(xmlDocPtr doc, xmlNsPtr ns);
 
 /**
  * Create a new element and make it current.
@@ -52,8 +52,8 @@ typedef xmlNodePtr element_create_fn(xmlDocPtr doc, xmlNsPtr ns);
  *
  * @return True if created successfully, false otherwise.
  */
-extern bool element_new(hidrd_xml_snk_inst *xml_snk,
-                        const char         *name);
+extern bool xml_snk_element_new(hidrd_xml_snk_inst *xml_snk,
+                                const char         *name);
 
 /**
  * Set attribute of the current element.
@@ -65,10 +65,10 @@ extern bool element_new(hidrd_xml_snk_inst *xml_snk,
  *
  * @return True if set successfully, false otherwise.
  */
-extern bool element_set_attrpv(hidrd_xml_snk_inst  *xml_snk,
-                               const char          *name,
-                               hidrd_fmt_type       fmt,
-                               va_list             *pap);
+extern bool xml_snk_element_set_attrpv(hidrd_xml_snk_inst  *xml_snk,
+                                       const char          *name,
+                                       hidrd_fmt_type       fmt,
+                                       va_list             *pap);
 
 /**
  * Add content to the current element.
@@ -80,9 +80,9 @@ extern bool element_set_attrpv(hidrd_xml_snk_inst  *xml_snk,
  *
  * @return True if added successfully, false otherwise.
  */
-extern bool element_add_contentpv(hidrd_xml_snk_inst   *xml_snk,
-                                  hidrd_fmt_type        fmt,
-                                  va_list              *pap);
+extern bool xml_snk_element_add_contentpv(hidrd_xml_snk_inst   *xml_snk,
+                                          hidrd_fmt_type        fmt,
+                                          va_list              *pap);
 
 /**
  * Add a comment node to the current element.
@@ -94,9 +94,9 @@ extern bool element_add_contentpv(hidrd_xml_snk_inst   *xml_snk,
  *
  * @return True if added successfully, false otherwise.
  */
-extern bool element_add_commentpv(hidrd_xml_snk_inst   *xml_snk,
-                                  hidrd_fmt_type        fmt,
-                                  va_list              *pap);
+extern bool xml_snk_element_add_commentpv(hidrd_xml_snk_inst   *xml_snk,
+                                          hidrd_fmt_type        fmt,
+                                          va_list              *pap);
 
 /**
  * Commit the current element.
@@ -105,16 +105,16 @@ extern bool element_add_commentpv(hidrd_xml_snk_inst   *xml_snk,
  * @param container "Container" flag - should be true if the current element
  *                  should become a parent.
  */
-extern void element_commit(hidrd_xml_snk_inst  *xml_snk,
-                           bool                 container);
+extern void xml_snk_element_commit(hidrd_xml_snk_inst  *xml_snk,
+                                   bool                 container);
 
 /** Element sub-node type */
-typedef enum element_nt {
-    ELEMENT_NT_NONE,
-    ELEMENT_NT_CONTENT,
-    ELEMENT_NT_COMMENT,
-    ELEMENT_NT_ATTR
-} element_nt;
+typedef enum xml_snk_element_nt {
+    XML_SNK_ELEMENT_NT_NONE,
+    XML_SNK_ELEMENT_NT_CONTENT,
+    XML_SNK_ELEMENT_NT_COMMENT,
+    XML_SNK_ELEMENT_NT_ATTR
+} xml_snk_element_nt;
 
 /**
  * Add element with a contents.
@@ -124,14 +124,15 @@ typedef enum element_nt {
  *                  should become a parent.
  * @param name      Element name.
  * @param ...       Contents specification - a list of node type/node
- *                  parameter sequences, terminated by ELEMENT_NT_NONE.
+ *                  parameter sequences, terminated by
+ *                  XML_SNK_ELEMENT_NT_NONE.
  *
  * @return True if added successfully, false otherwise.
  */
-extern bool element_add(hidrd_xml_snk_inst *xml_snk,
-                        bool                container,
-                        const char         *name,
-                        ...);
+extern bool xml_snk_element_add(hidrd_xml_snk_inst *xml_snk,
+                                bool                container,
+                                const char         *name,
+                                ...);
 
 /**
  * Add element with a contents, va_list pointer version.
@@ -142,17 +143,18 @@ extern bool element_add(hidrd_xml_snk_inst *xml_snk,
  * @param name      Element name.
  * @param pap       Pointer to a variable arguments list (va_list) with
  *                  contents specification - a list of node type/node
- *                  parameter sequences, terminated by ELEMENT_NT_NONE.
+ *                  parameter sequences, terminated by
+ *                  XML_SNK_ELEMENT_NT_NONE.
  *
  * @return True if added successfully, false otherwise.
  */
-extern bool element_addpv(hidrd_xml_snk_inst   *xml_snk,
-                          bool                  container,
-                          const char           *name,
-                          va_list              *pap);
+extern bool xml_snk_element_addpv(hidrd_xml_snk_inst   *xml_snk,
+                                  bool                  container,
+                                  const char           *name,
+                                  va_list              *pap);
 
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
 
-#endif /* __SNK_ELEMENT_H__ */
+#endif /* __XML_SNK_ELEMENT_H__ */

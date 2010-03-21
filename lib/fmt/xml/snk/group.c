@@ -30,11 +30,11 @@
 
 /** Group description */
 typedef struct group {
-    const char *name;                   /**< Element name */
-    element_create_fn  *create_start;   /**< Broken start element creation
-                                             function */
-    element_create_fn  *create_end;     /**< Broken end element creation
-                                             function */
+    const char                 *name;           /**< Element name */
+    xml_snk_element_create_fn  *create_start;   /**< Broken start element
+                                                     creation function */
+    xml_snk_element_create_fn  *create_end;     /**< Broken end element
+                                                     creation function */
 } group;
 
 #ifndef NDEBUG
@@ -131,11 +131,11 @@ lookup_group(const char *name)
     return NULL;
 }
 
-static element_break_fn group_break_cb;
+static xml_snk_element_break_fn group_break_cb;
 static bool
-group_break_cb(const char          *name,
-               element_create_fn  **pcreate_start,
-               element_create_fn  **pcreate_end)
+group_break_cb(const char                  *name,
+               xml_snk_element_create_fn  **pcreate_start,
+               xml_snk_element_create_fn  **pcreate_end)
 {
     const group    *g;
 
@@ -158,15 +158,15 @@ group_break_cb(const char          *name,
 
 
 bool
-group_start(hidrd_xml_snk_inst *xml_snk,
-            const char         *name,
-            ...)
+xml_snk_group_start(hidrd_xml_snk_inst *xml_snk,
+                    const char         *name,
+                    ...)
 {
     va_list ap;
     bool    success;
 
     va_start(ap, name);
-    success = element_addpv(xml_snk, true, name, &ap);
+    success = xml_snk_element_addpv(xml_snk, true, name, &ap);
     va_end(ap);
 
     return success;
@@ -174,8 +174,8 @@ group_start(hidrd_xml_snk_inst *xml_snk,
 
 
 bool
-group_end(hidrd_xml_snk_inst  *xml_snk,
-          const char           *name)
+xml_snk_group_end(hidrd_xml_snk_inst  *xml_snk,
+                  const char           *name)
 {
     const group    *target_group;
     xmlNodePtr      target_element;
@@ -206,7 +206,7 @@ group_end(hidrd_xml_snk_inst  *xml_snk,
     else
     {
         /* Break open the branch up to the target element */
-        if (!element_break_branch(target_element, xml_snk->prnt,
+        if (!xml_snk_element_break_branch(target_element, xml_snk->prnt,
                                   group_break_cb))
             return false;
 
@@ -219,7 +219,7 @@ group_end(hidrd_xml_snk_inst  *xml_snk,
 
 
 bool
-group_break_branch(hidrd_snk *snk)
+xml_snk_group_break_branch(hidrd_snk *snk)
 {
     hidrd_xml_snk_inst *xml_snk = (hidrd_xml_snk_inst *)snk;
     xmlNodePtr          root;
@@ -228,7 +228,7 @@ group_break_branch(hidrd_snk *snk)
     assert(xml_snk->prnt != NULL);
 
     root = xmlDocGetRootElement(xml_snk->doc);
-    if (!element_break_branch(root, xml_snk->prnt, group_break_cb))
+    if (!xml_snk_element_break_branch(root, xml_snk->prnt, group_break_cb))
         return false;
 
     xml_snk->prnt = root;

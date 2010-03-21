@@ -27,9 +27,9 @@
 #include "element_break.h"
 
 bool
-element_break(xmlNodePtr            element,
-              element_create_fn    *create_start,
-              element_create_fn    *create_end)
+xml_snk_element_break(xmlNodePtr                    element,
+                      xml_snk_element_create_fn    *create_start,
+                      xml_snk_element_create_fn    *create_end)
 {
     xmlNodePtr  sibling;
     xmlNodePtr  child;
@@ -117,13 +117,13 @@ element_break(xmlNodePtr            element,
 
 
 bool
-element_break_branch(xmlNodePtr         parent,
-                     xmlNodePtr         element,
-                     element_break_fn  *cb)
+xml_snk_element_break_branch(xmlNodePtr                 parent,
+                             xmlNodePtr                 element,
+                             xml_snk_element_break_fn  *cb)
 {
-    element_create_fn  *create_start;
-    element_create_fn  *create_end;
-    xmlNodePtr          element_parent;
+    xml_snk_element_create_fn  *create_start;
+    xml_snk_element_create_fn  *create_end;
+    xmlNodePtr                  element_parent;
 
     /* For each element in the stack until the target one */
     for (; element != parent; element = element_parent)
@@ -135,7 +135,7 @@ element_break_branch(xmlNodePtr         parent,
         element_parent = element->parent;
 
         /* Break open the element - it is not finished */
-        if (!element_break(element, create_start, create_end))
+        if (!xml_snk_element_break(element, create_start, create_end))
             return false;
     }
 

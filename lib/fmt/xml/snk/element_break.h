@@ -24,8 +24,8 @@
  * @(#) $Id$
  */
 
-#ifndef __SNK_ELEMENT_BREAK_H__
-#define __SNK_ELEMENT_BREAK_H__
+#ifndef __XML_SNK_ELEMENT_BREAK_H__
+#define __XML_SNK_ELEMENT_BREAK_H__
 
 #include "element.h"
 
@@ -50,9 +50,9 @@ extern "C" {
  *
  * @return True if broken successfully, false otherwise.
  */
-extern bool element_break(xmlNodePtr            element,
-                          element_create_fn    *create_start,
-                          element_create_fn    *create_end);
+extern bool xml_snk_element_break(xmlNodePtr                 element,
+                                  xml_snk_element_create_fn *create_start,
+                                  xml_snk_element_create_fn *create_end);
 
 /**
  * Prototype for a function used to retrieve starting and
@@ -66,9 +66,10 @@ extern bool element_break(xmlNodePtr            element,
  *
  * @return True if element is known, false otherwise.
  */
-typedef bool element_break_fn(const char *name,
-                              element_create_fn **pcreate_start,
-                              element_create_fn **pcreate_end);
+typedef bool xml_snk_element_break_fn(
+                                const char                 *name,
+                                xml_snk_element_create_fn **pcreate_start,
+                                xml_snk_element_create_fn **pcreate_end);
 
 /**
  * Break open an element branch up to the specified parent.
@@ -83,14 +84,12 @@ typedef bool element_break_fn(const char *name,
  *
  * @return True if broken successfuly, false otherwise.
  */
-extern bool element_break_branch(xmlNodePtr         parent,
-                                 xmlNodePtr         element,
-                                 element_break_fn  *cb);
+extern bool xml_snk_element_break_branch(xmlNodePtr         parent,
+                                         xmlNodePtr         element,
+                                         xml_snk_element_break_fn  *cb);
 
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
 
-#endif /* __SNK_ELEMENT_BREAK_H__ */
-
-
+#endif /* __XML_SNK_ELEMENT_BREAK_H__ */

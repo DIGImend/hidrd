@@ -27,8 +27,8 @@
 #include "element.h"
 
 bool
-element_new(hidrd_xml_snk_inst        *xml_snk,
-            const char                 *name)
+xml_snk_element_new(hidrd_xml_snk_inst        *xml_snk,
+                    const char                 *name)
 {
     assert(xml_snk->cur == NULL);
 
@@ -39,10 +39,10 @@ element_new(hidrd_xml_snk_inst        *xml_snk,
 
 
 bool
-element_set_attrpv(hidrd_xml_snk_inst  *xml_snk,
-                   const char           *name,
-                   hidrd_fmt_type        fmt,
-                   va_list              *pap)
+xml_snk_element_set_attrpv(hidrd_xml_snk_inst  *xml_snk,
+                           const char           *name,
+                           hidrd_fmt_type        fmt,
+                           va_list              *pap)
 {
     char       *value;
     xmlAttrPtr  attr;
@@ -61,9 +61,9 @@ element_set_attrpv(hidrd_xml_snk_inst  *xml_snk,
 
 
 bool
-element_add_contentpv(hidrd_xml_snk_inst   *xml_snk,
-                      hidrd_fmt_type        fmt,
-                      va_list               *pap)
+xml_snk_element_add_contentpv(hidrd_xml_snk_inst   *xml_snk,
+                              hidrd_fmt_type        fmt,
+                              va_list               *pap)
 {
     char   *content;
 
@@ -81,9 +81,9 @@ element_add_contentpv(hidrd_xml_snk_inst   *xml_snk,
 
 
 bool
-element_add_commentpv(hidrd_xml_snk_inst   *xml_snk,
-                      hidrd_fmt_type        fmt,
-                      va_list              *pap)
+xml_snk_element_add_commentpv(hidrd_xml_snk_inst   *xml_snk,
+                              hidrd_fmt_type        fmt,
+                              va_list              *pap)
 {
     char       *content;
     xmlNodePtr  comment;
@@ -103,8 +103,8 @@ element_add_commentpv(hidrd_xml_snk_inst   *xml_snk,
 
 
 void
-element_commit(hidrd_xml_snk_inst *xml_snk,
-               bool                 container)
+xml_snk_element_commit(hidrd_xml_snk_inst *xml_snk,
+                       bool                 container)
 {
     assert(xml_snk->cur != NULL);
     
@@ -116,58 +116,58 @@ element_commit(hidrd_xml_snk_inst *xml_snk,
 
 
 bool
-element_addpv(hidrd_xml_snk_inst   *xml_snk,
-              bool                   container,
-              const char            *name,
-              va_list               *pap)
+xml_snk_element_addpv(hidrd_xml_snk_inst   *xml_snk,
+                      bool                   container,
+                      const char            *name,
+                      va_list               *pap)
 {
     bool    success = true;
     bool    end     = false;
 
     assert(xml_snk->cur == NULL);
 
-    if (!element_new(xml_snk, name))
+    if (!xml_snk_element_new(xml_snk, name))
         return false;
 
     while (success && !end)
     {
-        element_nt  nt  = va_arg(*pap, element_nt);
+        xml_snk_element_nt  nt  = va_arg(*pap, xml_snk_element_nt);
 
         switch (nt)
         {
-            case ELEMENT_NT_ATTR:
+            case XML_SNK_ELEMENT_NT_ATTR:
                 {
                     const char     *name        = va_arg(*pap,
                                                          const char *);
                     hidrd_fmt_type  value_fmt   = va_arg(*pap,
                                                          hidrd_fmt_type);
 
-                    success = element_set_attrpv(xml_snk,
-                                                 name, value_fmt, pap);
+                    success = xml_snk_element_set_attrpv(
+                                        xml_snk, name, value_fmt, pap);
                 }
                 break;
 
-            case ELEMENT_NT_COMMENT:
+            case XML_SNK_ELEMENT_NT_COMMENT:
                 {
                     hidrd_fmt_type  comment_fmt = va_arg(*pap,
                                                          hidrd_fmt_type);
 
-                    success = element_add_commentpv(xml_snk,
-                                                    comment_fmt, pap);
+                    success = xml_snk_element_add_commentpv(
+                                        xml_snk, comment_fmt, pap);
                 }
                 break;
 
-            case ELEMENT_NT_CONTENT:
+            case XML_SNK_ELEMENT_NT_CONTENT:
                 {
                     hidrd_fmt_type  content_fmt = va_arg(*pap,
                                                          hidrd_fmt_type);
 
-                    success = element_add_contentpv(xml_snk,
-                                                    content_fmt, pap);
+                    success = xml_snk_element_add_contentpv(
+                                        xml_snk, content_fmt, pap);
                 }
                 break;
 
-            case ELEMENT_NT_NONE:
+            case XML_SNK_ELEMENT_NT_NONE:
                 end = true;
                 break;
 
@@ -178,23 +178,23 @@ element_addpv(hidrd_xml_snk_inst   *xml_snk,
         }
     }
 
-    element_commit(xml_snk, container);
+    xml_snk_element_commit(xml_snk, container);
 
     return success;
 }
 
 
 bool
-element_add(hidrd_xml_snk_inst    *xml_snk,
-            bool                    container,
-            const char             *name,
-            ...)
+xml_snk_element_add(hidrd_xml_snk_inst    *xml_snk,
+                    bool                    container,
+                    const char             *name,
+                    ...)
 {
     va_list ap;
     bool    success;
 
     va_start(ap, name);
-    success = element_addpv(xml_snk, container, name, &ap);
+    success = xml_snk_element_addpv(xml_snk, container, name, &ap);
     va_end(ap);
 
     return success;

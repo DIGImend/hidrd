@@ -147,7 +147,7 @@ hidrd_xml_snk_flush(hidrd_snk *snk)
     size_t              new_size;
 
     /* Break any unfinished groups */
-    if (!group_break_branch(snk))
+    if (!xml_snk_group_break_branch(snk))
         goto finish;
 
     /* Create an XML buffer */
