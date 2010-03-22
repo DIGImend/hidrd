@@ -30,7 +30,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include "hidrd/util/fd.h"
-#include "hidrd/fmt/xml/src.h"
+#include "hidrd/fmt/xml.h"
 
 static int
 usage(FILE *stream, const char *progname)
@@ -70,7 +70,7 @@ main(int argc, char **argv)
     size_t              i;
 
     /* Initialize XML parser global state */
-    xmlInitParser();
+    hidrd_fmt_init(&hidrd_xml);
 
     /*
      * Collect arguments
@@ -127,7 +127,7 @@ main(int argc, char **argv)
     /*
      * Open input stream
      */
-    input = hidrd_src_new_opts(&hidrd_xml_src,
+    input = hidrd_src_new_opts(hidrd_xml.src,
                                input_buf, input_size, input_options);
     if (input == NULL)
     {
@@ -161,7 +161,7 @@ cleanup:
         close(output_fd);
 
     /* Cleanup XML parser global state */
-    xmlCleanupParser();
+    hidrd_fmt_clnp(&hidrd_xml);
 
     return result;
 }
