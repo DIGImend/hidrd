@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<descriptor xmlns="http://digimend.sourceforge.net" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://digimend.sourceforge.net hidrd.xsd">
+  <usage_page>digitizer<!-- Digitizer --></usage_page>
+  <usage>digitizer_pen<!-- Pen (02, top-level) --></usage>
+  <COLLECTION type="1">
+    <report_id>7</report_id>
+    <usage>digitizer_stylus<!-- Stylus (20) --></usage>
+    <COLLECTION type="physical">
+      <usage>digitizer_tip_switch<!-- Tip switch (42) --></usage>
+    </COLLECTION>
+  </COLLECTION>
+</descriptor>

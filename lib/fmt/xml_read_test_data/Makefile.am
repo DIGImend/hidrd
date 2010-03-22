@@ -18,5 +18,23 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 dist_noinst_DATA = \
+    SET.bin         \
+    SET.xml         \
     basic.bin       \
-    basic.xml
+    basic.xml       \
+    collection.bin  \
+    collection.xml  \
+    empty.bin       \
+    empty.xml       \
+    global.bin      \
+    global.xml      \
+    local.bin       \
+    local.xml       \
+    long.bin        \
+    long.xml        \
+    main.bin        \
+    main.xml        \
+    short.bin       \
+    short.xml       \
+    unit.bin        \
+    unit.xml

@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<descriptor xmlns="http://digimend.sourceforge.net" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://digimend.sourceforge.net hidrd.xsd">
+  <unit>
+    <generic system="si_rotation">
+      <length>2</length>
+      <mass/>
+      <time/>
+    </generic>
+  </unit>
+  <unit>
+    <english_rotation>
+      <degrees/>
+    </english_rotation>
+  </unit>
+  <unit>
+    <none/>
+  </unit>
+  <unit>
+    <si_linear>
+      <centimeter>2</centimeter>
+      <gram/>
+    </si_linear>
+  </unit>
+  <basic type="1" tag="6" size="2">2110</basic>
+  <short type="global" tag="6">2110</short>
+  <global tag="unit">2110</global>
+  <unit>
+    <value>21100000</value>
+  </unit>
+  <unit>
+    <value>211000</value>
+  </unit>
+  <unit>
+    <value>2110</value>
+  </unit>
+</descriptor>
