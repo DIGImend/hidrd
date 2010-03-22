@@ -1,0 +1,93 @@
+#!/bin/bash
+# 
+# XML source reading test script
+#
+# Copyright (C) 2010 Nikolai Kondrashov
+# 
+# This file is part of hidrd.
+# 
+# Hidrd is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# Hidrd is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with hidrd; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+# 
+
+set -e -u -o pipefail
+shopt -s nullglob
+
+function hexdump_col ()
+{
+    hexdump -v -e '1/1 "%.2X\n"' "$@"
+}
+
+function run ()
+{
+    local cmd="$1"; shift
+    local options="$1"; shift
+    local input="$1"; shift
+    local output="$1"; shift
+    local test_output="$output.test"
+    local txt_output="${output%.bin}.txt"
+    local test_txt_output="${output%.bin}.txt.test"
+    local status
+
+    echo "Checking XML reading from \"$input\" against \"$output\"" \
+         "with options \"$options\"..." >&2
+
+    (
+        local output_size
+        local test_output_size
+        local max_size
+
+        "$cmd" "$options" "$input" "$test_output"
+
+        output_size=`stat -c %s "$output"`
+        test_output_size=`stat -c %s "$test_output"`
+        if (( $test_output_size > $output_size )); then
+            max_size=$test_output_size
+        else
+            max_size=$output_size
+        fi
+
+        hexdump_col "$output" > "$txt_output"
+        hexdump_col "$test_output" > "$test_txt_output"
+
+        diff -u -U$max_size "$txt_output" "$test_txt_output" >&2
+    ) && status=$? || status=$?
+
+    rm -f "$test_output"
+    rm -f "$txt_output"
+    rm -f "$test_txt_output"
+
+    if (( $status == 0 )); then
+        echo "PASSED." >&2
+    else
+        echo "FAILED." >&2
+    fi
+
+    return $status
+}
+
+
+cd xml_read_test_data
+
+for input_file in *.xml; do
+    options=""
+    output_file="${input_file%.xml}.bin"
+    options_file="${input_file%.xml}.opt"
+    if [ -e "$options_file" ]; then
+        options=`cat "$options_file"`
+    fi
+    run ../hidrd_xml_read "$options" "$input_file" "$output_file"
+done
+
+

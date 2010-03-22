@@ -31,10 +31,10 @@ libhidrd_fmt_la_LIBADD = \
     ../util/libhidrd_util.la    \
     natv/libhidrd_natv.la
 
-TEST_TOOLS =
 TESTS = hidrd_natv_test
 bin_PROGRAMS =
-check_PROGRAMS = $(TEST_TOOLS) $(TESTS)
+check_PROGRAMS = hidrd_natv_test
+check_SCRIPTS = 
 
 hidrd_natv_test_SOURCES = natv_test.c
 hidrd_natv_test_LDADD = ../strm/libhidrd_strm.la $(lib_LTLIBRARIES)
@@ -47,8 +47,9 @@ libhidrd_fmt_la_CFLAGS = @LIBXML2_CFLAGS@
 libhidrd_fmt_la_LDFLAGS = @LIBXML2_LIBS@
 libhidrd_fmt_la_LIBADD += xml/libhidrd_xml.la
 
-TEST_TOOLS += hidrd_xml_read hidrd_xml_write
-TESTS += hidrd_xml_test
+check_SCRIPTS += xml_read_test xml_write_test
+check_PROGRAMS += hidrd_xml_test hidrd_xml_read hidrd_xml_write
+TESTS += hidrd_xml_test xml_read_test xml_write_test
 
 hidrd_xml_test_CFLAGS = @LIBXML2_CFLAGS@
 hidrd_xml_test_SOURCES = xml_test.c
@@ -65,5 +66,5 @@ hidrd_xml_write_LDADD = $(lib_LTLIBRARIES) ../strm/libhidrd_strm.la
 endif	# ENABLE_FMT_XML
 
 if ENABLE_TESTS_INSTALL
-bin_PROGRAMS += $(TEST_TOOLS) $(TESTS)
+bin_PROGRAMS += $(check_PROGRAMS)
 endif
