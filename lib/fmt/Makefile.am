@@ -42,7 +42,7 @@ hidrd_natv_test_LDADD = ../strm/libhidrd_strm.la $(lib_LTLIBRARIES)
 
 if ENABLE_FMT_XML
 
-SUBDIRS += xml xml_read_test_data
+SUBDIRS += xml xml_read_test_data xml_write_test_data
 libhidrd_fmt_la_SOURCES += xml.c
 libhidrd_fmt_la_CFLAGS = @LIBXML2_CFLAGS@
 libhidrd_fmt_la_LDFLAGS = @LIBXML2_LIBS@

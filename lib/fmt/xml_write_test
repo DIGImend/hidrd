@@ -22,5 +22,60 @@
 # 
 
 set -e -u -o pipefail
+shopt -s nullglob
 
-exit 0
+function run ()
+{
+    local cmd="$1"; shift
+    local options="$1"; shift
+    local input="$1"; shift
+    local output="$1"; shift
+    local test_output="$output.test"
+    local status
+
+    echo "Checking XML writing of \"$input\" against \"$output\"" \
+         "with options \"$options\"..." >&2
+
+    (
+        local output_lines
+        local test_output_lines
+        local max_lines
+
+        "$cmd" "$options" "$input" "$test_output"
+
+        output_lines=`wc -l < "$output"`
+        test_output_lines=`wc -l < "$test_output"`
+        if (( $test_output_lines > $output_lines )); then
+            max_lines=$test_output_lines
+        else
+            max_lines=$output_lines
+        fi
+
+        diff -u -U$max_lines "$output" "$test_output" >&2
+    ) && status=$? || status=$?
+
+    rm -f "$test_output"
+
+    if (( $status == 0 )); then
+        echo "PASSED." >&2
+    else
+        echo "FAILED." >&2
+    fi
+
+    return $status
+}
+
+
+cd xml_write_test_data
+
+for INPUT_FILE in *.bin; do
+    OPTIONS=""
+    OUTPUT_FILE="${INPUT_FILE%.bin}.xml"
+    OPTIONS_FILE="${INPUT_FILE%.bin}.opt"
+    if [ -e "$OPTIONS_FILE" ]; then
+        OPTIONS=`cat "$OPTIONS_FILE"`
+    fi
+    run ../hidrd_xml_write "$OPTIONS" "$INPUT_FILE" "$OUTPUT_FILE"
+done
+
+

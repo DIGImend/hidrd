@@ -249,6 +249,7 @@ AC_CONFIG_FILES([Makefile
                  lib/fmt/xml/snk/Makefile
                  lib/fmt/xml/src/Makefile
                  lib/fmt/xml_read_test_data/Makefile
+                 lib/fmt/xml_write_test_data/Makefile
                  lib/usage/Makefile
                  lib/unit/Makefile
                  

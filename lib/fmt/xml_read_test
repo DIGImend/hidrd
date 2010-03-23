@@ -80,14 +80,14 @@ function run ()
 
 cd xml_read_test_data
 
-for input_file in *.xml; do
-    options=""
-    output_file="${input_file%.xml}.bin"
-    options_file="${input_file%.xml}.opt"
-    if [ -e "$options_file" ]; then
-        options=`cat "$options_file"`
+for INPUT_FILE in *.xml; do
+    OPTIONS=""
+    OUTPUT_FILE="${INPUT_FILE%.xml}.bin"
+    OPTIONS_FILE="${INPUT_FILE%.xml}.opt"
+    if [ -e "$OPTIONS_FILE" ]; then
+        OPTIONS=`cat "$OPTIONS_FILE"`
     fi
-    run ../hidrd_xml_read "$options" "$input_file" "$output_file"
+    run ../hidrd_xml_read "$OPTIONS" "$INPUT_FILE" "$OUTPUT_FILE"
 done
 
 
