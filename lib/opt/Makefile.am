@@ -31,6 +31,9 @@ libhidrd_opt_la_SOURCES = \
     type.c                  \
     value_tkn.c
 
+libhidrd_opt_la_LIBADD = \
+    ../util/libhidrd_util.la
+
 TESTS = hidrd_opt_test
 
 hidrd_opt_test_SOURCES = test.c

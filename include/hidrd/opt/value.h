@@ -28,6 +28,7 @@
 #define __HIDRD_OPT_VALUE_H__
 
 #include <stdbool.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,6 +37,8 @@ extern "C" {
 typedef union hidrd_opt_value {
     const char *string;     /**< String */
     bool        boolean;    /**< Boolean */
+    int32_t     s32;        /**< Signed 32-bit integer */
+    uint32_t    u32;        /**< Unsigned 32-bit integer */
 } hidrd_opt_value;
 
 #ifdef __cplusplus

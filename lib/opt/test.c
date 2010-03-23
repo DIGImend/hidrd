@@ -118,9 +118,9 @@ main(int argc, char **argv)
     /*******************************************
      * Test normal option specification list processing
      *******************************************/
-    orig_norm_spec_str = "format=b?yes'Format XML output,"
+    orig_norm_spec_str = "format=b?true'Format XML output,"
                     "author=s?Nikolai Kondrashov'Descriptor author,"
-                    "group=b?yes'Group paired items into single elements,"
+                    "group=b?true'Group paired items into single elements,"
                     "type=s'Type,"
                     "obscure=b";
 

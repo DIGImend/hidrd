@@ -27,7 +27,6 @@
 #ifndef __HIDRD_OPT_TYPE_H__
 #define __HIDRD_OPT_TYPE_H__
 
-#include <stdbool.h>
 #include "hidrd/opt/value.h"
 
 #ifdef __cplusplus
@@ -38,6 +37,8 @@ extern "C" {
 typedef enum hidrd_opt_type {
     HIDRD_OPT_TYPE_STRING   = 's',  /**< String  */
     HIDRD_OPT_TYPE_BOOLEAN  = 'b',  /**< Boolean */
+    HIDRD_OPT_TYPE_S32      = 'S',  /**< Signed 32-bit integer */
+    HIDRD_OPT_TYPE_U32      = 'U',  /**< Unsigned 32-bit integer */
 } hidrd_opt_type;
 
 /**
@@ -47,24 +48,13 @@ typedef enum hidrd_opt_type {
  *
  * @return True if the type is valid, false otherwise.
  */
-static inline bool
-hidrd_opt_type_valid(hidrd_opt_type type)
-{
-    switch (type)
-    {
-        case HIDRD_OPT_TYPE_STRING:
-        case HIDRD_OPT_TYPE_BOOLEAN:
-            return true;
-        default:
-            return false;
-    }
-}
+extern bool hidrd_opt_type_valid(hidrd_opt_type type);
 
 /**
  * Parse a string as a string value (simply reference it).
  *
  * @param pval  Location for resulting string pointer.
- * @param str   String to parse as a string value.
+ * @param str   String to parse.
  *
  * @return True if parsed successfully, false otherwise.
  */
@@ -74,11 +64,31 @@ extern bool hidrd_opt_type_parse_string(const char **pval, const char *str);
  * Parse a string as a boolean value.
  *
  * @param pval  Location for resulting value.
- * @param str   String to parse as a boolean value.
+ * @param str   String to parse.
  *
  * @return True if parsed successfully, false otherwise.
  */
 extern bool hidrd_opt_type_parse_boolean(bool *pval, const char *str);
+
+/**
+ * Parse a string as a signed 32-bit integer value.
+ *
+ * @param pval  Location for resulting value.
+ * @param str   String to parse.
+ *
+ * @return True if parsed successfully, false otherwise.
+ */
+extern bool hidrd_opt_type_parse_s32(int32_t *pval, const char *str);
+
+/**
+ * Parse a string as an unsigned 32-bit integer value.
+ *
+ * @param pval  Location for resulting value.
+ * @param str   String to parse.
+ *
+ * @return True if parsed successfully, false otherwise.
+ */
+extern bool hidrd_opt_type_parse_u32(uint32_t *pval, const char *str);
 
 /**
  * Parse a string as a value of specified type, possibly referencing it in
@@ -99,7 +109,7 @@ hidrd_opt_type_parse_value(hidrd_opt_type   type,
 /**
  * Format a string representation of a string value (simply duplicate it).
  *
- * @param val  String value to format.
+ * @param val  Value to format.
  *
  * @return Dynamically allocated string representation of the value, or
  *         NULL, if failed to allocate.
@@ -109,12 +119,32 @@ extern char *hidrd_opt_type_format_string(const char *val);
 /**
  * Format a string representation of a boolean value ("yes" or "no").
  *
- * @param val  Boolean value to format.
+ * @param val  Value to format.
  *
  * @return Dynamically allocated string representation of the value, or
  *         NULL, if failed to allocate.
  */
 extern char *hidrd_opt_type_format_boolean(bool val);
+
+/**
+ * Format a string representation of a signed 32-bit integer value.
+ *
+ * @param val  Value to format.
+ *
+ * @return Dynamically allocated string representation of the value, or
+ *         NULL, if failed to allocate.
+ */
+extern char *hidrd_opt_type_format_s32(int32_t val);
+
+/**
+ * Format a string representation of an unsigned 32-bit integer value.
+ *
+ * @param val  Value to format.
+ *
+ * @return Dynamically allocated string representation of the value, or
+ *         NULL, if failed to allocate.
+ */
+extern char *hidrd_opt_type_format_u32(uint32_t val);
 
 /**
  * Format a string representation of a value of specified type.
@@ -147,6 +177,26 @@ extern int hidrd_opt_type_cmp_boolean(bool a, bool b);
  * @return 0 if values are equal, -1 if @e a less than @e b, 1 otherwise.
  */
 extern int hidrd_opt_type_cmp_string(const char *a, const char *b);
+
+/**
+ * Compare two signed 32-bit integer values.
+ *
+ * @param a Left-hand operand.
+ * @param b Right-hand operand.
+ *
+ * @return 0 if values are equal, -1 if @e a less than @e b, 1 otherwise.
+ */
+extern int hidrd_opt_type_cmp_s32(int32_t a, int32_t b);
+
+/**
+ * Compare two unsigned 32-bit integer values.
+ *
+ * @param a Left-hand operand.
+ * @param b Right-hand operand.
+ *
+ * @return 0 if values are equal, -1 if @e a less than @e b, 1 otherwise.
+ */
+extern int hidrd_opt_type_cmp_u32(uint32_t a, uint32_t b);
 
 /**
  * Compare two values of specified type.
