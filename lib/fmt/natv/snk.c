@@ -1,5 +1,5 @@
 /** @file
- * @brief HID report descriptor - native stream type
+ * @brief HID report descriptor - native sink
  *
  * Copyright (C) 2009 Nikolai Kondrashov
  *

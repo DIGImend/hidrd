@@ -1,5 +1,5 @@
 /** @file
- * @brief HID report descriptor - native source type
+ * @brief HID report descriptor - native source
  *
  * Copyright (C) 2009-2010 Nikolai Kondrashov
  *
