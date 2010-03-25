@@ -100,3 +100,23 @@ hidrd_fmtpva(char             **pstr,
 }
 
 
+void
+hidrd_fmtfreepv(hidrd_fmt_type  type,
+                va_list        *pap)
+{
+    switch (type)
+    {
+        case HIDRD_FMT_TYPE_STROWN:
+            {
+                char   *arg = va_arg(*pap, char *);
+
+                assert(arg != NULL);
+                free(arg);
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+

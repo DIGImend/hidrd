@@ -61,6 +61,15 @@ extern bool hidrd_fmtpva(char             **pstr,
                          hidrd_fmt_type     type,
                          va_list           *pap);
 
+/**
+ * Free format arguments for a specified format, if needed.
+ *
+ * @param type  Format type.
+ * @param pap   Pointer to a va_list containing format arguments.
+ */
+extern void hidrd_fmtfreepv(hidrd_fmt_type      type,
+                            va_list            *pap);
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
