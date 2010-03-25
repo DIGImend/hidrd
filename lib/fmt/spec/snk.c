@@ -69,7 +69,7 @@ static const hidrd_opt_spec hidrd_spec_snk_opts_spec[] = {
     {.name  = "indent",
      .type  = HIDRD_OPT_TYPE_U32,
      .req   = false,
-     .dflt  = {.u32 = 2},
+     .dflt  = {.u32 = 4},
      .desc  = "Number of indentation columns per nesting level"},
     {.name  = NULL}
 };

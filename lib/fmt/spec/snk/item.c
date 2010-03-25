@@ -27,6 +27,26 @@
 #include "item.h"
 
 static bool
+spec_snk_item_main(hidrd_spec_snk_inst *spec_snk,
+                   const hidrd_item    *item)
+{
+    assert(hidrd_item_main_valid(item));
+
+    switch (hidrd_item_short_get_type(item))
+    {
+        case HIDRD_ITEM_MAIN_TAG_COLLECTION:
+            return text_itemf(spec_snk,
+                              HIDRD_FMT_TYPE_STRDUP, "Collection",
+                              HIDRD_FMT_TYPE_NULL, NULL,
+                              HIDRD_FMT_TYPE_STROWN, NULL);
+        default:
+            /* Unknown short item type */
+            return false;
+    }
+}
+
+
+static bool
 spec_snk_item_short(hidrd_spec_snk_inst    *spec_snk,
                     const hidrd_item       *item)
 {
@@ -36,12 +56,14 @@ spec_snk_item_short(hidrd_spec_snk_inst    *spec_snk,
     {
         case HIDRD_ITEM_SHORT_TYPE_MAIN:
             return spec_snk_item_main(spec_snk, item);
+#if 0
         case HIDRD_ITEM_SHORT_TYPE_GLOBAL:
             return spec_snk_item_global(spec_snk, item);
         case HIDRD_ITEM_SHORT_TYPE_LOCAL:
             return spec_snk_item_local(spec_snk, item);
+#endif
         default:
-            assert(!"Unknown short item type");
+            /* Unknown short item type */
             return false;
     }
 }
@@ -56,7 +78,7 @@ spec_snk_item_basic(hidrd_spec_snk_inst    *spec_sink,
         case HIDRD_ITEM_BASIC_FORMAT_SHORT:
             return spec_snk_item_short(spec_snk, item);
         default:
-            assert(!"Unknown basic format");
+            /* Unknown basic format */
             return false;
     }
 }
