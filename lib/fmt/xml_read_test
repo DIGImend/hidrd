@@ -43,7 +43,9 @@ function run ()
     echo "Checking XML reading from \"$input\" against \"$output\"" \
          "with options \"$options\"..." >&2
 
+    set +e
     (
+        set -e
         local output_size
         local test_output_size
         local max_size
@@ -62,7 +64,9 @@ function run ()
         hexdump_col "$test_output" > "$test_txt_output"
 
         diff -u -U$max_size "$txt_output" "$test_txt_output" >&2
-    ) && status=$? || status=$?
+    )
+    status=$?
+    set -e
 
     rm -f "$test_output"
     rm -f "$txt_output"

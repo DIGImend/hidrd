@@ -36,7 +36,9 @@ function run ()
     echo "Checking XML writing of \"$input\" against \"$output\"" \
          "with options \"$options\"..." >&2
 
+    set +e
     (
+        set -e
         local output_lines
         local test_output_lines
         local max_lines
@@ -52,7 +54,9 @@ function run ()
         fi
 
         diff -u -U$max_lines "$output" "$test_output" >&2
-    ) && status=$? || status=$?
+    )
+    status=$?
+    set -e
 
     rm -f "$test_output"
 
