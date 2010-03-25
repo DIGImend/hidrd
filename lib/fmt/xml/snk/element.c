@@ -178,9 +178,44 @@ xml_snk_element_addpv(hidrd_xml_snk_inst   *xml_snk,
         }
     }
 
-    xml_snk_element_commit(xml_snk, container);
+    if (success)
+    {
+        xml_snk_element_commit(xml_snk, container);
+        return true;
+    }
 
-    return success;
+    /*
+     * Cleanup
+     */
+    while (!end)
+    {
+        xml_snk_element_nt  nt  = va_arg(*pap, xml_snk_element_nt);
+        hidrd_fmt_type      fmt;
+
+        switch (nt)
+        {
+            case XML_SNK_ELEMENT_NT_ATTR:
+                /* Retrieve name */
+                (void)va_arg(*pap, const char *);
+                break;
+
+            case XML_SNK_ELEMENT_NT_COMMENT:
+            case XML_SNK_ELEMENT_NT_CONTENT:
+            case XML_SNK_ELEMENT_NT_NONE:
+                break;
+
+            default:
+                assert(!"Unknown node type");
+                return false;
+                break;
+        }
+
+        fmt =  va_arg(*pap, hidrd_fmt_type);
+
+        hidrd_fmtfreepv(fmt, pap);
+    }
+
+    return false;
 }
 
 
