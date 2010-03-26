@@ -17,7 +17,7 @@
 # along with hidrd; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-dist_noinst_DATA = \
+check_DATA = \
     SET.bin         \
     SET.xml         \
     basic.bin       \
@@ -38,3 +38,10 @@ dist_noinst_DATA = \
     short.xml       \
     unit.bin        \
     unit.xml
+
+if ENABLE_TESTS_INSTALL
+xml_read_test_datadir = $(pkgdatadir)/xml_read_test_data
+xml_read_test_data_DATA = $(check_DATA)
+else
+dist_noinst_DATA = $(check_DATA)
+endif

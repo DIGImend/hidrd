@@ -90,7 +90,6 @@ if [ -z "$DIR" ]; then
     echo
     exit 1
 fi
-echo "DIR=$DIR" >&2
 
 HIDRD_XML_READ="`readlink -f \"\`which hidrd_xml_read\`\"`"
 
