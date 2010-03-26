@@ -58,11 +58,11 @@ hidrd_xml_test_LDADD = $(lib_LTLIBRARIES) ../strm/libhidrd_strm.la
 
 hidrd_xml_read_CFLAGS = @LIBXML2_CFLAGS@
 hidrd_xml_read_SOURCES = xml_read.c
-hidrd_xml_read_LDADD = $(lib_LTLIBRARIES) ../strm/libhidrd_strm.la
+hidrd_xml_read_LDADD = $(lib_LTLIBRARIES) ../strm/libhidrd_strm.la ../item/libhidrd_item.la ../util/libhidrd_util.la
 
 hidrd_xml_write_CFLAGS = @LIBXML2_CFLAGS@
 hidrd_xml_write_SOURCES = xml_write.c
-hidrd_xml_write_LDADD = $(lib_LTLIBRARIES) ../strm/libhidrd_strm.la
+hidrd_xml_write_LDADD = $(lib_LTLIBRARIES) ../strm/libhidrd_strm.la ../item/libhidrd_item.la ../util/libhidrd_util.la
 
 endif	# ENABLE_FMT_XML
 
