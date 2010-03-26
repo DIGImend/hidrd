@@ -35,9 +35,10 @@ function run ()
     local options="$1"; shift
     local input="$1"; shift
     local output="$1"; shift
-    local test_output="$output.test"
-    local txt_output="${output%.bin}.txt"
-    local test_txt_output="${output%.bin}.txt.test"
+    local output_basename="`basename \"$output\"`"
+    local test_output="`tempfile -s\"_$output_basename.test\"`"
+    local txt_output="`tempfile -s\"_$output_basename.txt\"`"
+    local test_txt_output="`tempfile -s\"_$output_basename.txt.test\"`"
     local status
 
     echo "Checking XML reading from \"$input\" against \"$output\"" \
@@ -82,7 +83,18 @@ function run ()
 }
 
 
-cd xml_read_test_data
+DIR=${1:-${HIDRD_XML_READ_TEST_DATA:-}}
+if [ -z "$DIR" ]; then
+    echo "Data directory is not specified." >&2
+    echo "Usage: `basename \"$0\"` <data_dir>" >&2
+    echo
+    exit 1
+fi
+echo "DIR=$DIR" >&2
+
+HIDRD_XML_READ="`readlink -f \"\`which hidrd_xml_read\`\"`"
+
+cd "$DIR"
 
 for INPUT_FILE in *.xml; do
     OPTIONS=""
@@ -91,7 +103,7 @@ for INPUT_FILE in *.xml; do
     if [ -e "$OPTIONS_FILE" ]; then
         OPTIONS=`cat "$OPTIONS_FILE"`
     fi
-    run ../hidrd_xml_read "$OPTIONS" "$INPUT_FILE" "$OUTPUT_FILE"
+    run "$HIDRD_XML_READ" "$OPTIONS" "$INPUT_FILE" "$OUTPUT_FILE"
 done
 
 

@@ -32,7 +32,12 @@ libhidrd_fmt_la_LIBADD = \
     natv/libhidrd_natv.la
 
 TESTS = hidrd_natv_test
+TESTS_ENVIRONMENT = PATH="$$PATH:$(builddir)" \
+					HIDRD_XML_READ_TEST_DATA="$(srcdir)/xml_read_test_data" \
+					HIDRD_XML_WRITE_TEST_DATA="$(srcdir)/xml_write_test_data"
+
 bin_PROGRAMS =
+bin_SCRIPTS =
 check_PROGRAMS = hidrd_natv_test
 check_SCRIPTS = 
 dist_noinst_SCRIPTS = $(check_SCRIPTS)
@@ -48,9 +53,9 @@ libhidrd_fmt_la_CFLAGS = @LIBXML2_CFLAGS@
 libhidrd_fmt_la_LDFLAGS = @LIBXML2_LIBS@
 libhidrd_fmt_la_LIBADD += xml/libhidrd_xml.la
 
-check_SCRIPTS += xml_read_test xml_write_test
+check_SCRIPTS += hidrd_xml_read_test hidrd_xml_write_test
 check_PROGRAMS += hidrd_xml_test hidrd_xml_read hidrd_xml_write
-TESTS += hidrd_xml_test xml_read_test xml_write_test
+TESTS += hidrd_xml_test hidrd_xml_read_test hidrd_xml_write_test
 
 hidrd_xml_test_CFLAGS = @LIBXML2_CFLAGS@
 hidrd_xml_test_SOURCES = xml_test.c
@@ -68,4 +73,5 @@ endif	# ENABLE_FMT_XML
 
 if ENABLE_TESTS_INSTALL
 bin_PROGRAMS += $(check_PROGRAMS)
+bin_SCRIPTS += $(check_SCRIPTS)
 endif
