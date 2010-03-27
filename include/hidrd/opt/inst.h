@@ -70,6 +70,24 @@ extern const char *hidrd_opt_get_string(const hidrd_opt *opt);
 extern bool hidrd_opt_get_boolean(const hidrd_opt *opt);
 
 /**
+ * Get a signed 32-bit integer value.
+ *
+ * @param opt   Option pointer.
+ *
+ * @return Option value.
+ */
+extern int32_t hidrd_opt_get_s32(const hidrd_opt *opt);
+
+/**
+ * Get an unsigned 32-bit integer value.
+ *
+ * @param opt   Option pointer.
+ *
+ * @return Option value.
+ */
+extern uint32_t hidrd_opt_get_u32(const hidrd_opt *opt);
+
+/**
  * Parse a token pair representation of an option.
  *
  * @param opt   Output option; will contain name and possibly value

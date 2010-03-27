@@ -77,6 +77,26 @@ hidrd_opt_get_boolean(const hidrd_opt *opt)
 }
 
 
+int32_t
+hidrd_opt_get_s32(const hidrd_opt *opt)
+{
+    assert(hidrd_opt_valid(opt));
+    assert(opt->type == HIDRD_OPT_TYPE_S32);
+
+    return opt->value.s32;
+}
+
+
+uint32_t
+hidrd_opt_get_u32(const hidrd_opt *opt)
+{
+    assert(hidrd_opt_valid(opt));
+    assert(opt->type == HIDRD_OPT_TYPE_U32);
+
+    return opt->value.u32;
+}
+
+
 bool
 hidrd_opt_format_tkns(hidrd_opt_tkns   *tkns,
                       const hidrd_opt  *opt)

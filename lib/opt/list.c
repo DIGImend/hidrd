@@ -105,6 +105,28 @@ hidrd_opt_list_get_string(const hidrd_opt  *list,
 }
 
 
+int32_t
+hidrd_opt_list_get_s32(const hidrd_opt *list,
+                       const char      *name)
+{
+    assert(hidrd_opt_list_valid(list));
+    assert(hidrd_opt_name_tkn_valid(name));
+
+    return hidrd_opt_get_s32(hidrd_opt_list_lkp(list, name));
+}
+
+
+uint32_t
+hidrd_opt_list_get_u32(const hidrd_opt *list,
+                       const char      *name)
+{
+    assert(hidrd_opt_list_valid(list));
+    assert(hidrd_opt_name_tkn_valid(name));
+
+    return hidrd_opt_get_u32(hidrd_opt_list_lkp(list, name));
+}
+
+
 hidrd_opt *
 hidrd_opt_list_parse_tkns_list(const hidrd_opt_spec    *spec_list,
                                const hidrd_opt_tkns    *tkns_list)

@@ -79,7 +79,6 @@ extern const hidrd_opt *hidrd_opt_list_lkp(const hidrd_opt *list,
  *
  * @param list  Option list array pointer.
  * @param name  Option name to get value from.
- * @param dflt  Default value.
  *
  * @return Option value.
  */
@@ -91,12 +90,33 @@ extern bool hidrd_opt_list_get_boolean(const hidrd_opt *list,
  *
  * @param list  Option list array pointer.
  * @param name  Option name to get value from.
- * @param dflt  Default value.
  *
  * @return Option value.
  */
 extern const char *hidrd_opt_list_get_string(const hidrd_opt   *list,
                                              const char        *name);
+
+/**
+ * Get a signed 32-bit integer option value.
+ *
+ * @param list  Option list array pointer.
+ * @param name  Option name to get value from.
+ *
+ * @return Option value.
+ */
+extern int32_t hidrd_opt_list_get_s32(const hidrd_opt  *list,
+                                      const char       *name);
+
+/**
+ * Get an unsigned 32-bit integer option value.
+ *
+ * @param list  Option list array pointer.
+ * @param name  Option name to get value from.
+ *
+ * @return Option value.
+ */
+extern uint32_t hidrd_opt_list_get_u32(const hidrd_opt *list,
+                                       const char      *name);
 
 /**
  * Parse a token pair list representation of an option list.
