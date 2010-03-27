@@ -35,6 +35,20 @@ extern "C" {
 #endif
 
 /**
+ * Check if a character is a token character; only standard ASCII is
+ * supported.
+ *
+ * @param c Character to check.
+ *
+ * @return True if the character is a token character, false otherwise.
+ */
+static inline bool
+hidrd_char_istkn(char c)
+{
+    return (isalnum(c) || c == '_');
+}
+
+/**
  * Check if a character is word character; only standard ASCII is supported.
  *
  * @param c Character to check.

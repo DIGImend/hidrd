@@ -32,6 +32,22 @@
 
 
 bool
+hidrd_tkn_valid(const char *tkn)
+{
+    const char *p;
+
+    if (tkn == NULL)
+        return false;
+
+    for (p = tkn; *p != '\0'; p++)
+        if (!hidrd_char_istkn(*p))
+            return false;
+
+    return (p > tkn);
+}
+
+
+bool
 hidrd_tkn_strip(const char **ptkn, size_t *plen, const char *str)
 {
     const char *start;
@@ -42,7 +58,7 @@ hidrd_tkn_strip(const char **ptkn, size_t *plen, const char *str)
     assert(str != NULL);
 
     for (start = str; isspace(*start); start++);
-    for (end = start; isalnum(*end) || *end == '_'; end++);
+    for (end = start; hidrd_char_istkn(*end); end++);
     len = end - start;
     if (len == 0)
         return false;
@@ -97,6 +113,90 @@ hidrd_tkn_from_num(uint32_t num, const hidrd_tkn_link *map)
             return link->str;
 
     return NULL;
+}
+
+
+bool
+hidrd_tkn_hmnzbl(const char *tkn)
+{
+    const char *p;
+    bool        u;
+
+    assert(hidrd_tkn_valid(tkn));
+
+    for (p = tkn, u = false; *p != '\0'; p++)
+    {
+        if (*p == '_')
+        {
+            if (p == tkn)
+                return false;
+            if (u)
+                return false;
+            u = true;
+        }
+        else
+            u = false;
+    }
+
+    return !u;
+}
+
+
+bool
+hidrd_tkn_hmnz_cap_valid(hidrd_tkn_hmnz_cap cap)
+{
+    switch (cap)
+    {
+        case HIDRD_TKN_HMNZ_CAP_NONE:
+        case HIDRD_TKN_HMNZ_CAP_FWF:
+        case HIDRD_TKN_HMNZ_CAP_WF:
+        case HIDRD_TKN_HMNZ_CAP_ALL:
+            return true;
+        default:
+            return false;
+    }
+}
+
+
+char *
+hidrd_tkn_hmnz(char *tkn, hidrd_tkn_hmnz_cap cap)
+{
+    hidrd_str_cp_set    set;
+
+    assert(tkn != NULL);
+    assert(hidrd_tkn_valid(tkn));
+    assert(hidrd_tkn_hmnzbl(tkn));
+    assert(hidrd_tkn_hmnz_cap_valid(cap));
+
+    hidrd_str_crplc(tkn, '_', ' ');
+
+    switch (cap)
+    {
+        case HIDRD_TKN_HMNZ_CAP_FWF:
+            set = HIDRD_STR_CP_FIRST_WORD | HIDRD_STR_CP_WORD_FIRST;
+            break;
+        case HIDRD_TKN_HMNZ_CAP_WF:
+            set = HIDRD_STR_CP_WORD_FIRST;
+            break;
+        case HIDRD_TKN_HMNZ_CAP_ALL:
+            set = HIDRD_STR_CP_SET_ALL;
+            break;
+        default:
+            return tkn;
+    }
+
+    return hidrd_str_cp_uc(tkn, hidrd_str_cp_match_and, &set);
+}
+
+
+char *
+hidrd_tkn_ahmnz(const char *tkn, hidrd_tkn_hmnz_cap cap)
+{
+    assert(hidrd_tkn_valid(tkn));
+    assert(hidrd_tkn_hmnzbl(tkn));
+    assert(hidrd_tkn_hmnz_cap_valid(cap));
+
+    return hidrd_tkn_hmnz(strdup(tkn), cap);
 }
 
 

@@ -93,7 +93,7 @@ typedef enum hidrd_str_cp_bit {
     HIDRD_STR_CP_BIT_WORD_FIRST,    /**< First character of a word */
 } hidrd_str_cp_bit;
 
-#define HIDRD_STR_CP_BIT_MAX    HIDRD_STR_CP_BIT_WORD_FIRST;
+#define HIDRD_STR_CP_BIT_MAX    HIDRD_STR_CP_BIT_WORD_FIRST
 
 static inline bool
 hidrd_str_cp_bit_valid(hidrd_str_cp_bit bit)
@@ -196,7 +196,7 @@ extern bool hidrd_str_cp_match_or(hidrd_str_cp_set set, void *data);
  *
  * @return Modified (original) string pointer.
  */
-extern char *hidrd_str_cp_iproc(char *str,
+extern char *hidrd_str_cp_proc(char *str,
                                 hidrd_str_cp_match_fn  *match,
                                 void                   *match_data,
                                 hidrd_char_proc_fn     *proc);
@@ -211,14 +211,25 @@ extern char *hidrd_str_cp_iproc(char *str,
  * @return Uppercase (original) string pointer.
  */
 static inline char *
-hidrd_str_cp_iuc(char *str, hidrd_str_cp_match_fn *match, void *data)
+hidrd_str_cp_uc(char *str, hidrd_str_cp_match_fn *match, void *data)
 {
     assert(str != NULL);
     assert(match != NULL);
 
-    return hidrd_str_cp_iproc(str, match, data, hidrd_char_uc);
+    return hidrd_str_cp_proc(str, match, data, hidrd_char_uc);
 }
 
+
+/**
+ * Replace character in a string.
+ *
+ * @param str   String to replace characters in.
+ * @param match Character to replace.
+ * @param rplc  Character to replace with.
+ *
+ * @return The (original) string with replaced characters.
+ */
+extern char *hidrd_str_crplc(char *str, char match, char rplc);
 
 #ifdef __cplusplus
 } /* extern "C" */

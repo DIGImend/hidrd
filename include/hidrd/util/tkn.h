@@ -165,6 +165,57 @@ extern const char *hidrd_tkn_from_num(uint32_t              num,
                hidrd_##_type##_from_##_b(p##_t, str);           \
     }
 
+
+/**
+ * Check if a token could be "humanized", in effect if it doesn't contain
+ * leading, trailing or successive underscores.
+ *
+ * @param tkn   Token to check.
+ *
+ * @return True if the token could be "humanized", false otherwise.
+ */
+extern bool hidrd_tkn_hmnzbl(const char *tkn);
+
+
+/** "Humanized" token capitalization type */
+typedef enum hidrd_tkn_hmnz_cap {
+    HIDRD_TKN_HMNZ_CAP_NONE,    /**< None */
+    HIDRD_TKN_HMNZ_CAP_FWF,     /**< First character of the first word */
+    HIDRD_TKN_HMNZ_CAP_WF,      /**< First character of every word */
+    HIDRD_TKN_HMNZ_CAP_ALL,     /**< All characters */
+} hidrd_tkn_hmnz_cap;
+
+/**
+ * Check if a humanized token capitalization type is valid.
+ *
+ * @param cap   Capitalization type to check.
+ *
+ * @return True if the capitalization type to check, false otherwise.
+ */
+extern bool hidrd_tkn_hmnz_cap_valid(hidrd_tkn_hmnz_cap cap);
+
+/**
+ * "Humanize" a token: convert underscores to spaces and uppercase specified
+ * character positions.
+ *
+ * @param tkn   Token to "humanize".
+ * @param cap   Capitalization type.
+ *
+ * @return "Humanized" (original) token pointer.
+ */
+extern char *hidrd_tkn_hmnz(char *tkn, hidrd_tkn_hmnz_cap cap);
+
+/**
+ * "Humanize" a token: convert underscores to spaces and uppercase specified
+ * character positions; this version returns dynamically allocated result.
+ *
+ * @param tkn   Token to "humanize".
+ * @param cap   Capitalization type.
+ *
+ * @return Dynamically allocated "humanized" token pointer.
+ */
+extern char *hidrd_tkn_ahmnz(const char *tkn, hidrd_tkn_hmnz_cap cap);
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif

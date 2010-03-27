@@ -167,10 +167,10 @@ hidrd_str_cp_match_or(hidrd_str_cp_set set, void *data)
 
 
 char *
-hidrd_str_cp_iproc(char                    *str,
-                   hidrd_str_cp_match_fn   *match,
-                   void                    *data,
-                   hidrd_char_proc_fn      *proc)
+hidrd_str_cp_proc(char                     *str,
+                  hidrd_str_cp_match_fn    *match,
+                  void                     *data,
+                  hidrd_char_proc_fn       *proc)
 {
     hidrd_str_cp_clsf   clsf;
     hidrd_str_cp_set    set;
@@ -186,6 +186,16 @@ hidrd_str_cp_iproc(char                    *str,
         if ((*match)(set, data))
             *p = (*proc)(*p);
 
+    return str;
+}
+
+
+char *
+hidrd_str_crplc(char *str, char match, char rplc)
+{
+    for (; *str != '\0'; str++)
+        if (*str == match)
+            *str = rplc;
     return str;
 }
 
