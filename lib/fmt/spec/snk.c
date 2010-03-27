@@ -45,8 +45,9 @@ init(hidrd_snk *snk, size_t indent)
 
     spec_snk->indent    = indent;
 
+    spec_snk->got_item  = false;
     spec_snk->depth     = 0;
-    spec_snk->state     = 0;
+    spec_snk->state     = state;
 
     spec_snk->buf       = buf;
     spec_snk->size      = size;
@@ -107,10 +108,15 @@ static bool
 hidrd_spec_snk_put(hidrd_snk *snk, const hidrd_item *item)
 {
     hidrd_spec_snk_inst    *spec_snk   = (hidrd_spec_snk_inst *)snk;
+    bool                    result;
 
     assert(hidrd_item_valid(item));
 
-    return spec_snk_item_basic(spec_snk, item);
+    result = spec_snk_item_basic(spec_snk, item);
+    if (result)
+        spec_snk->got_item = true;
+
+    return result;
 }
 
 

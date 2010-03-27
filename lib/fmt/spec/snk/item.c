@@ -28,15 +28,17 @@
 #include "text.h"
 #include "item.h"
 
-#define ITEM(_name, _args...) \
+#define ITEM(_name_tkn, _args...) \
     text_itemf(spec_snk,                                            \
-               TEXT_ITEM_NT_NAME, HIDRD_FMT_TYPE_STRDUP, #_name,    \
+               TEXT_ITEM_NT_NAME,                                   \
+               HIDRD_FMT_TYPE_STROWN,                               \
+               hidrd_tkn_ahmnz(#_name_tkn, HIDRD_TKN_HMNZ_CAP_WF),  \
                ##_args,                                             \
                TEXT_ITEM_NT_NONE)
 #define VALUE(_fmt, _args...) \
-    TEXT_ITEM_NT_VALUE, HIDRD_FMT_TYPE##_fmt, ##_args
+    TEXT_ITEM_NT_VALUE, HIDRD_FMT_TYPE_##_fmt, ##_args
 #define COMMENT(_fmt, _args...) \
-    TEXT_ITEM_NT_COMMENT, HIDRD_FMT_TYPE##_fmt, ##_args
+    TEXT_ITEM_NT_COMMENT, HIDRD_FMT_TYPE_##_fmt, ##_args
 
 static bool
 spec_snk_item_main(hidrd_spec_snk_inst *spec_snk,
@@ -44,16 +46,16 @@ spec_snk_item_main(hidrd_spec_snk_inst *spec_snk,
 {
     assert(hidrd_item_main_valid(item));
 
-    switch (hidrd_item_short_get_type(item))
+    switch (hidrd_item_main_get_tag(item))
     {
         case HIDRD_ITEM_MAIN_TAG_COLLECTION:
-            return text_itemf(spec_snk,
-                              HIDRD_FMT_TYPE_STRDUP, "Collection",
-                              HIDRD_FMT_TYPE_NULL, NULL,
-                              HIDRD_FMT_TYPE_STROWN, NULL);
+            return ITEM(collection,
+                        VALUE(STROWN,
+                              hidrd_item_collection_type_to_token_or_dec(
+                                hidrd_item_collection_get_type(item))));
         default:
-            /* Unknown short item type */
-            return false;
+            /* TODO add contents value */
+            return ITEM(main);
     }
 }
 
@@ -87,7 +89,9 @@ static bool
 spec_snk_item_long(hidrd_spec_snk_inst *spec_snk,
                    const hidrd_item    *item)
 {
+    assert(hidrd_item_long_valid(item));
     (void)item;
+
     /* TODO add contents value */
     return ITEM(long);
                 
