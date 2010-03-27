@@ -126,6 +126,13 @@ AC_ARG_ENABLE(
         [disable building XML format support (requires tokens, names and libxml2)]),
     [], [enable_xml_format="yes"])
 
+AC_ARG_ENABLE(
+    spec-format,
+    AS_HELP_STRING(
+        [--disable-spec-format],
+        [disable building specification example format support (requires tokens and names)]),
+    [], [enable_spec_format="yes"])
+
 # Check for stream library dependencies
 if test "$enable_streams" = "yes"; then
     if test "$enable_opt" != "yes"; then
@@ -159,6 +166,20 @@ if test "$enable_xml_format" = "yes"; then
     fi
 fi
 
+# Check for spec format dependencies
+if test "$enable_spec_format" = "yes"; then
+    if test "$enable_formats" != "yes"; then
+        # Disable silently - quite obvious
+        enable_spec_format="no"
+    elif test "$enable_tokens" != "yes"; then
+        AC_MSG_WARN([tokens are disabled, so disabling specification example format])
+        enable_spec_format="no"
+    elif test "$enable_names" != "yes"; then
+        AC_MSG_WARN([names are disabled, so disabling specification example format])
+        enable_spec_format="no"
+    fi
+fi
+
 # Check hidrd-convert tool dependencies
 if test "$enable_hidrd_convert" = "yes"; then
     if test "$enable_formats" != "yes"; then
@@ -176,6 +197,7 @@ AM_CONDITIONAL([ENABLE_HIDRD_CONVERT], [test "$enable_hidrd_convert" = "yes"])
 AM_CONDITIONAL([ENABLE_TOKENS], [test "$enable_tokens" = "yes"])
 AM_CONDITIONAL([ENABLE_NAMES], [test "$enable_names" = "yes"])
 AM_CONDITIONAL([ENABLE_FMT_XML], [test "$enable_xml_format" = "yes"])
+AM_CONDITIONAL([ENABLE_FMT_SPEC], [test "$enable_spec_format" = "yes"])
 
 # Output features to preprocessor and compiler
 if test "$enable_debug" == "yes"; then
@@ -250,6 +272,8 @@ AC_CONFIG_FILES([Makefile
                  lib/fmt/xml/src/Makefile
                  lib/fmt/xml_read_test_data/Makefile
                  lib/fmt/xml_write_test_data/Makefile
+                 lib/fmt/spec/Makefile
+                 lib/fmt/spec/snk/Makefile
                  lib/usage/Makefile
                  lib/unit/Makefile
                  

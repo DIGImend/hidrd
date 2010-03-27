@@ -29,6 +29,9 @@
 #ifdef HIDRD_FMT_WITH_XML
 #include "hidrd/fmt/xml.h"
 #endif
+#ifdef HIDRD_FMT_WITH_SPEC
+#include "hidrd/fmt/spec.h"
+#endif
 #include "hidrd/fmt/list.h"
 
 /** Supported format list, terminated by NULL */
@@ -36,6 +39,9 @@ static const hidrd_fmt *fmt_list[]  = {
     &hidrd_natv,
 #ifdef HIDRD_FMT_WITH_XML
     &hidrd_xml,
+#endif
+#ifdef HIDRD_FMT_WITH_SPEC
+    &hidrd_spec,
 #endif
     NULL
 };

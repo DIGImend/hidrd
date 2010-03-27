@@ -104,7 +104,7 @@ hidrd_natv_snk_put(hidrd_snk *snk, const hidrd_item *item)
 static bool
 hidrd_natv_snk_flush(hidrd_snk *snk)
 {
-    hidrd_natv_snk_inst   *natv_snk   = (hidrd_natv_snk_inst *)snk;
+    hidrd_natv_snk_inst    *natv_snk   = (hidrd_natv_snk_inst *)snk;
     void                   *new_buf;
 
     /* Retension buffer, if needed */

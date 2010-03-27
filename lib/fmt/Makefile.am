@@ -71,6 +71,15 @@ hidrd_xml_write_LDADD = $(lib_LTLIBRARIES) ../strm/libhidrd_strm.la ../item/libh
 
 endif	# ENABLE_FMT_XML
 
+if ENABLE_FMT_SPEC
+
+SUBDIRS += spec
+libhidrd_fmt_la_SOURCES += spec.c
+libhidrd_fmt_la_LIBADD += spec/libhidrd_spec.la
+
+endif	# ENABLE_FMT_SPEC
+
+
 if ENABLE_TESTS_INSTALL
 bin_PROGRAMS += $(check_PROGRAMS)
 bin_SCRIPTS += $(check_SCRIPTS)

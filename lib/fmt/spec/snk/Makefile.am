@@ -17,11 +17,19 @@
 # along with hidrd; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-SUBDIRS = snk
+noinst_LTLIBRARIES = libhidrd_spec_snk.la
 
-noinst_LTLIBRARIES = libhidrd_spec.la
+noinst_HEADERS = \
+    item.h          \
+    text.h
 
-libhidrd_spec_la_LIBADD = \
-    snk/libhidrd_spec_snk.la
+libhidrd_spec_snk_la_SOURCES = \
+    item.c                      \
+    text.c
 
-libhidrd_spec_la_SOURCES = snk.c
+libhidrd_spec_snk_la_LIBADD = \
+    ../../../unit/libhidrd_unit.la      \
+    ../../../usage/libhidrd_usage.la    \
+    ../../../item/libhidrd_item.la      \
+    ../../../util/libhidrd_util.la
+

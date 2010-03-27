@@ -25,6 +25,7 @@
  */
 
 #include "hidrd/fmt/spec/snk.h"
+#include "snk/item.h"
 
 static bool
 init(hidrd_snk *snk, size_t indent)
@@ -52,6 +53,12 @@ init(hidrd_snk *snk, size_t indent)
     spec_snk->pos       = 0;
 
     return true;
+
+failure:
+
+    free(state);
+
+    return false;
 }
 
 
@@ -90,7 +97,7 @@ hidrd_spec_snk_valid(const hidrd_snk *snk)
                                     (const hidrd_spec_snk_inst *)snk;
 
     return (snk->type->size >= sizeof(hidrd_spec_snk_inst)) &&
-           xml_snk->state != NULL &&
+           spec_snk->state != NULL &&
            (spec_snk->size == 0 || spec_snk->buf != NULL) &&
            (spec_snk->pos <= spec_snk->size);
 }
@@ -103,14 +110,32 @@ hidrd_spec_snk_put(hidrd_snk *snk, const hidrd_item *item)
 
     assert(hidrd_item_valid(item));
 
-    return true;
+    return spec_snk_item_basic(spec_snk, item);
 }
 
 
 static bool
 hidrd_spec_snk_flush(hidrd_snk *snk)
 {
-    hidrd_spec_snk_inst   *spec_snk   = (hidrd_spec_snk_inst *)snk;
+    hidrd_spec_snk_inst    *spec_snk   = (hidrd_spec_snk_inst *)snk;
+    void                   *new_buf;
+
+    /* Retension buffer, if needed */
+    if (spec_snk->pos < spec_snk->size)
+    {
+        new_buf = realloc(spec_snk->buf, spec_snk->pos);
+        if (spec_snk->pos != 0 && new_buf == NULL)
+            return false;
+        spec_snk->buf = new_buf;
+        /* Sync user's buffer pointer */
+        if (snk->pbuf != NULL)
+            *snk->pbuf = new_buf;
+        spec_snk->size = spec_snk->pos;
+    }
+
+    /* Sync user's buffer size */
+    if (snk->psize != NULL)
+        *snk->psize = spec_snk->size;
 
     return true;
 }

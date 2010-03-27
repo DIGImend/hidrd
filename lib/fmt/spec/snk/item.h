@@ -27,6 +27,8 @@
 #ifndef __SPEC_SNK_ITEM_H__
 #define __SPEC_SNK_ITEM_H__
 
+#include "hidrd/fmt/spec/snk.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif

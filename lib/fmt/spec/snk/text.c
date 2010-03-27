@@ -122,7 +122,7 @@ text_vprintf(hidrd_spec_snk_inst   *spec_snk,
     assert(fmt != NULL);
 
     va_copy(ap_copy, ap);
-    len = vsprintf(NULL, 0, fmt, ap_copy);
+    len = vsnprintf(NULL, 0, fmt, ap_copy);
     va_end(ap_copy);
     if (len < 0)
         return false;
@@ -132,7 +132,7 @@ text_vprintf(hidrd_spec_snk_inst   *spec_snk,
     if (!text_grow(spec_snk, new_pos + 1))
         return false;
 
-    vsprintf(spec_snk->buf + spec_snk->pos, len + 1, fmt, ap);
+    vsnprintf(spec_snk->buf + spec_snk->pos, len + 1, fmt, ap);
     spec_snk->pos = new_pos;
 
     return true;
@@ -181,7 +181,98 @@ text_item(hidrd_spec_snk_inst  *spec_snk,
          text_printf(spec_snk,
                      ((name != NULL || value != NULL) ? " ; %s" : "; %s"),
                      comment)) &&
-        text_puts("\n")
+        text_puts(spec_snk, "\n");
+}
+
+
+bool
+text_item_nt_valid(text_item_nt nt)
+{
+    switch (nt)
+    {
+        case TEXT_ITEM_NT_NONE:
+        case TEXT_ITEM_NT_NAME:
+        case TEXT_ITEM_NT_VALUE:
+        case TEXT_ITEM_NT_COMMENT:
+            return true;
+        default:
+            return false;
+    }
+}
+
+
+static bool
+text_itemvf(hidrd_spec_snk_inst *spec_snk, va_list ap)
+{
+    bool    result  = false;
+    bool    end     = false;
+    char   *nl[3]   = {[TEXT_ITEM_NT_NAME] = NULL,
+                       [TEXT_ITEM_NT_VALUE] = NULL,
+                       [TEXT_ITEM_NT_COMMENT] = NULL};
+
+    while (!end)
+    {
+        text_item_nt    nt  = va_arg(ap, text_item_nt);
+
+        assert(text_item_nt_valid(nt));
+
+        if (nt == TEXT_ITEM_NT_NONE)
+            end = true;
+        else
+        {
+            hidrd_fmt_type  fmt = va_arg(ap, hidrd_fmt_type);
+            char           *str;
+
+            if (!hidrd_fmtpva(&str, fmt, &ap))
+                goto cleanup;
+
+            free(nl[nt]);
+            nl[nt] = str;
+        }
+    }
+
+    result = text_item(spec_snk,
+                       nl[TEXT_ITEM_NT_NAME],
+                       nl[TEXT_ITEM_NT_VALUE],
+                       nl[TEXT_ITEM_NT_COMMENT]);
+
+cleanup:
+
+    while (!end)
+    {
+        text_item_nt    nt  = va_arg(ap, text_item_nt);
+
+        assert(text_item_nt_valid(nt));
+
+        if (nt == TEXT_ITEM_NT_NONE)
+            end = true;
+        else
+        {
+            hidrd_fmt_type  fmt = va_arg(ap, hidrd_fmt_type);
+
+            hidrd_fmtfreepv(fmt, &ap);
+        }
+    }
+
+    free(nl[TEXT_ITEM_NT_NAME]);
+    free(nl[TEXT_ITEM_NT_VALUE]);
+    free(nl[TEXT_ITEM_NT_COMMENT]);
+
+    return result;
+}
+
+
+bool
+text_itemf(hidrd_spec_snk_inst *spec_snk, ...)
+{
+    va_list ap;
+    bool    result;
+
+    va_start(ap, spec_snk);
+    result = text_itemvf(spec_snk, ap);
+    va_end(ap);
+
+    return result;
 }
 
 
