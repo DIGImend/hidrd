@@ -22,6 +22,7 @@ hidrd_utildir = $(includedir)/hidrd/util
 hidrd_util_HEADERS = \
     bit.h               \
     bool.h              \
+    buf.h               \
     char.h              \
     dec.h               \
     fd.h                \
