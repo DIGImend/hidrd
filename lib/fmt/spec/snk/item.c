@@ -70,6 +70,36 @@ spec_snk_item_main(hidrd_spec_snk_inst *spec_snk,
 
 
 static bool
+spec_snk_item_global(hidrd_spec_snk_inst *spec_snk,
+                     const hidrd_item    *item)
+{
+    assert(hidrd_item_global_valid(item));
+
+    switch (hidrd_item_global_get_tag(item))
+    {
+        default:
+            /* TODO add contents value */
+            return ITEM(global);
+    }
+}
+
+
+static bool
+spec_snk_item_local(hidrd_spec_snk_inst *spec_snk,
+                    const hidrd_item    *item)
+{
+    assert(hidrd_item_local_valid(item));
+
+    switch (hidrd_item_local_get_tag(item))
+    {
+        default:
+            /* TODO add contents value */
+            return ITEM(local);
+    }
+}
+
+
+static bool
 spec_snk_item_short(hidrd_spec_snk_inst    *spec_snk,
                     const hidrd_item       *item)
 {
@@ -81,12 +111,10 @@ spec_snk_item_short(hidrd_spec_snk_inst    *spec_snk,
     {
         case HIDRD_ITEM_SHORT_TYPE_MAIN:
             return spec_snk_item_main(spec_snk, item);
-#if 0
         case HIDRD_ITEM_SHORT_TYPE_GLOBAL:
             return spec_snk_item_global(spec_snk, item);
         case HIDRD_ITEM_SHORT_TYPE_LOCAL:
             return spec_snk_item_local(spec_snk, item);
-#endif
         default:
             /* TODO add contents value */
             return ITEM(short);
