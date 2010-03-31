@@ -28,6 +28,7 @@
 #define __HIDRD_FMT_SPEC_SNK_H__
 
 #include "hidrd/strm/snk/inst.h"
+#include "hidrd/fmt/spec/snk/ent_list.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -45,16 +46,13 @@ struct hidrd_spec_snk_state {
 
 /** Specification example sink instance */
 typedef struct hidrd_spec_snk_inst {
-    hidrd_snk               snk;        /**< Parent structure */
-    size_t                  indent;     /**< Number of indent columns */
+    hidrd_snk                   snk;    /**< Parent structure */
+    size_t                      indent; /**< Number of indent columns */
 
-    bool                    got_item;   /**< Got the first item */
-    size_t                  depth;      /**< Current nesting depth */
-    hidrd_spec_snk_state   *state;      /**< Item state table stack */
+    int                         depth;  /**< Current nesting depth */
+    hidrd_spec_snk_state       *state;  /**< Item state table stack */
 
-    void                   *buf;        /**< Buffer pointer */
-    size_t                  size;       /**< Buffer size in bytes */
-    size_t                  pos;        /**< Buffer position in bytes */
+    hidrd_spec_snk_ent_list     list;   /**< Entry list */
 } hidrd_spec_snk_inst;
 
 #ifdef __cplusplus

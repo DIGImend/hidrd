@@ -33,9 +33,6 @@ init(hidrd_snk *snk, size_t indent)
     hidrd_spec_snk_inst    *spec_snk    = (hidrd_spec_snk_inst *)snk;
     hidrd_spec_snk_state   *state       = NULL;
 
-    void   *buf     = (snk->pbuf != NULL) ? *snk->pbuf : NULL;
-    size_t  size    = (snk->psize != NULL) ? *snk->psize : 0;
-
     /* Create item state table stack */
     state = malloc(sizeof(*state));
     if (state == NULL)
@@ -45,13 +42,10 @@ init(hidrd_snk *snk, size_t indent)
 
     spec_snk->indent    = indent;
 
-    spec_snk->got_item  = false;
     spec_snk->depth     = 0;
     spec_snk->state     = state;
 
-    spec_snk->buf       = buf;
-    spec_snk->size      = size;
-    spec_snk->pos       = 0;
+    hidrd_spec_snk_ent_list_init(&spec_snk->list);
 
     return true;
 
@@ -99,8 +93,7 @@ hidrd_spec_snk_valid(const hidrd_snk *snk)
 
     return (snk->type->size >= sizeof(hidrd_spec_snk_inst)) &&
            spec_snk->state != NULL &&
-           (spec_snk->size == 0 || spec_snk->buf != NULL) &&
-           (spec_snk->pos <= spec_snk->size);
+           hidrd_spec_snk_ent_list_valid(&spec_snk->list);
 }
 
 
@@ -108,15 +101,10 @@ static bool
 hidrd_spec_snk_put(hidrd_snk *snk, const hidrd_item *item)
 {
     hidrd_spec_snk_inst    *spec_snk   = (hidrd_spec_snk_inst *)snk;
-    bool                    result;
 
     assert(hidrd_item_valid(item));
 
-    result = spec_snk_item_basic(spec_snk, item);
-    if (result)
-        spec_snk->got_item = true;
-
-    return result;
+    return spec_snk_item_basic(spec_snk, item);
 }
 
 
@@ -124,26 +112,19 @@ static bool
 hidrd_spec_snk_flush(hidrd_snk *snk)
 {
     hidrd_spec_snk_inst    *spec_snk   = (hidrd_spec_snk_inst *)snk;
-    void                   *new_buf;
 
-    /* Retension buffer, if needed */
-    if (spec_snk->pos < spec_snk->size)
+    if (snk->pbuf != NULL)
     {
-        new_buf = realloc(spec_snk->buf, spec_snk->pos);
-        if (spec_snk->pos != 0 && new_buf == NULL)
-            return false;
-        spec_snk->buf = new_buf;
-        /* Sync user's buffer pointer */
-        if (snk->pbuf != NULL)
-            *snk->pbuf = new_buf;
-        spec_snk->size = spec_snk->pos;
+        free(*snk->pbuf);
+        *snk->pbuf = NULL;
     }
 
-    /* Sync user's buffer size */
     if (snk->psize != NULL)
-        *snk->psize = spec_snk->size;
+        *snk->psize = 0;
 
-    return true;
+    return hidrd_spec_snk_ent_list_render(snk->pbuf, snk->psize,
+                                          &spec_snk->list,
+                                          spec_snk->indent);
 }
 
 
@@ -151,15 +132,19 @@ static void
 hidrd_spec_snk_clnp(hidrd_snk *snk)
 {
     hidrd_spec_snk_inst   *spec_snk   = (hidrd_spec_snk_inst *)snk;
+    hidrd_spec_snk_state  *state;
+    hidrd_spec_snk_state  *prev_state;
 
-    /* If the user owns the buffer */
-    if (snk->pbuf != NULL)
-        return;
+    /* Free the state stack, if there is any */
+    for (state = spec_snk->state; state != NULL; state = prev_state)
+    {
+        prev_state = state->prev;
+        free(state);
+    }
+    spec_snk->state = NULL;
 
-    free(spec_snk->buf);
-    spec_snk->buf      = NULL;
-    spec_snk->size     = 0;
-    spec_snk->pos      = 0;
+    /* Free the entry list */
+    hidrd_spec_snk_ent_list_clnp(&spec_snk->list);
 }
 
 

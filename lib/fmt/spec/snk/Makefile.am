@@ -21,13 +21,13 @@ noinst_LTLIBRARIES = libhidrd_spec_snk.la
 
 noinst_HEADERS = \
     item.h          \
-    text.h
+    item_ent.h
 
 libhidrd_spec_snk_la_SOURCES = \
     ent.c                       \
     ent_list.c                  \
     item.c                      \
-    text.c
+    item_ent.c
 
 libhidrd_spec_snk_la_LIBADD = \
     ../../../unit/libhidrd_unit.la      \

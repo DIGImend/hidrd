@@ -25,20 +25,18 @@
  */
 
 #include "hidrd/item.h"
-#include "text.h"
+#include "item_ent.h"
 #include "item.h"
 
 #define ITEM(_name_tkn, _args...) \
-    text_itemf(spec_snk,                                            \
-               TEXT_ITEM_NT_NAME,                                   \
-               HIDRD_FMT_TYPE_STROWN,                               \
-               hidrd_tkn_ahmnz(#_name_tkn, HIDRD_TKN_HMNZ_CAP_WF),  \
-               ##_args,                                             \
-               TEXT_ITEM_NT_NONE)
+    spec_snk_item_entf(spec_snk, #_name_tkn,                \
+                       ##_args, SPEC_SNK_ITEM_ENT_NT_NONE)
+
 #define VALUE(_fmt, _args...) \
-    TEXT_ITEM_NT_VALUE, HIDRD_FMT_TYPE_##_fmt, ##_args
+    SPEC_SNK_ITEM_ENT_NT_VALUE, HIDRD_FMT_TYPE_##_fmt, ##_args
+
 #define COMMENT(_fmt, _args...) \
-    TEXT_ITEM_NT_COMMENT, HIDRD_FMT_TYPE_##_fmt, ##_args
+    SPEC_SNK_ITEM_ENT_NT_COMMENT, HIDRD_FMT_TYPE_##_fmt, ##_args
 
 static bool
 spec_snk_item_main(hidrd_spec_snk_inst *spec_snk,
@@ -49,10 +47,21 @@ spec_snk_item_main(hidrd_spec_snk_inst *spec_snk,
     switch (hidrd_item_main_get_tag(item))
     {
         case HIDRD_ITEM_MAIN_TAG_COLLECTION:
-            return ITEM(collection,
-                        VALUE(STROWN,
-                              hidrd_item_collection_type_to_token_or_dec(
-                                hidrd_item_collection_get_type(item))));
+            if (!ITEM(collection,
+                      VALUE(STROWN,
+                           hidrd_tkn_hmnz(
+                            hidrd_item_collection_type_to_token_or_dec(
+                                hidrd_item_collection_get_type(item)),
+                            HIDRD_TKN_HMNZ_CAP_WF))))
+                return false;
+
+            spec_snk->depth++;
+            return true;
+
+        case HIDRD_ITEM_MAIN_TAG_END_COLLECTION:
+            spec_snk->depth--;
+            return ITEM(end_collection);
+
         default:
             /* TODO add contents value */
             return ITEM(main);
