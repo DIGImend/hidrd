@@ -158,11 +158,18 @@ hidrd_spec_snk_ent_list_render(void                           **pbuf,
     hidrd_buf           buf         = HIDRD_BUF_EMPTY;
     int                 min_depth;
     hidrd_spec_snk_ent *p;
+    size_t              last_l;
     size_t              l;
 
     assert(hidrd_spec_snk_ent_list_valid(list));
 
+    /* Find minimum depth */
     min_depth = hidrd_spec_snk_ent_list_min_depth(list);
+
+    /* Find the last item */
+    for (last_l = list->len, p = list->ptr + last_l - 1;
+         last_l > 0 && p->name == NULL;
+         last_l--, p--);
 
     for (p = list->ptr, l = list->len; l > 0; p++, l--)
     {
@@ -180,11 +187,11 @@ hidrd_spec_snk_ent_list_render(void                           **pbuf,
                                         ? "(%s)" : " (%s)",
                                       p->value))
                 goto cleanup;
-
-            /* Add comma, if it is not the last item */
-            if (l > 1 && !hidrd_buf_add_str(&buf, ","))
-                goto cleanup;
         }
+
+        /* Add comma, if it is an item and it is not the last one */
+        if (p->name != NULL && l != last_l && !hidrd_buf_add_str(&buf, ","))
+            goto cleanup;
 
         if (p->comment != NULL)
         {
