@@ -36,6 +36,15 @@ extern "C" {
 #endif
 
 /**
+ * Check if a token is valid.
+ *
+ * @param tkn   Token to check.
+ *
+ * @return True if the token is valid, false otherwise.
+ */
+extern bool hidrd_tkn_valid(const char *tkn);
+
+/**
  * Find a token in a constant string; a token is considered to contain only
  * alphanumeric characters or underscores.
  *
