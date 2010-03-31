@@ -34,7 +34,7 @@ void
 hidrd_buf_init(hidrd_buf *buf)
 {
     assert(buf != NULL);
-    *buf = HIDRD_BUF_EMPTY;
+    *buf = (hidrd_buf)HIDRD_BUF_EMPTY;
 }
 
 
@@ -56,6 +56,7 @@ hidrd_buf_clnp(hidrd_buf *buf)
     assert(hidrd_buf_valid(buf));
 
     free(buf->ptr);
+    hidrd_buf_init(buf);
 }
 
 
@@ -70,6 +71,21 @@ hidrd_buf_retension(hidrd_buf *buf)
     assert(buf->ptr != NULL);
 
     buf->size = buf->len;
+}
+
+
+void
+hidrd_buf_detach(hidrd_buf *buf, void **pptr, size_t *plen)
+{
+    if (pptr != NULL)
+        *pptr = buf->ptr;
+    else
+        free(buf->ptr);
+
+    if (plen != NULL)
+        *plen = buf->len;
+
+    hidrd_buf_init(buf);
 }
 
 

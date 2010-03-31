@@ -47,7 +47,7 @@ typedef struct hidrd_buf {
 } hidrd_buf;
 
 /** Empty buffer initializer */
-#define HIDRD_BUF_EMPTY (hidrd_buf){.ptr = NULL, .len = 0, .size = 0}
+#define HIDRD_BUF_EMPTY {.ptr = NULL, .len = 0, .size = 0}
 
 /**
  * Initialize a buffer.
@@ -78,6 +78,16 @@ extern bool hidrd_buf_valid(const hidrd_buf *buf);
  * @param buf   Buffer to retension.
  */
 extern void hidrd_buf_retension(hidrd_buf *buf);
+
+/**
+ * Detach contents from the buffer.
+ *
+ * @param buf   Buffer to detach contents from.
+ * @param pptr  Location for buffer contents pointer; could be NULL, in this
+ *              case the buffer contents will be freed.
+ * @param plen  Location for buffer contents length; could be NULL.
+ */
+extern void hidrd_buf_detach(hidrd_buf *buf, void **pptr, size_t *plen);
 
 /**
  * Grow a buffer memory to fit specified contents length.
