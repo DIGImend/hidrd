@@ -136,6 +136,7 @@ hidrd_buf_add_span(hidrd_buf *buf, uint8_t val, size_t len)
         return false;
 
     memset(buf->ptr + buf->len, val, len);
+    buf->len = new_len;
 
     return true;
 }
