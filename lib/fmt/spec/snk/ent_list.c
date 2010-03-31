@@ -167,10 +167,11 @@ hidrd_spec_snk_ent_list_render(void                           **pbuf,
     min_depth = hidrd_spec_snk_ent_list_min_depth(list);
 
     /* Find the last item */
-    for (last_l = list->len, p = list->ptr + last_l - 1;
-         last_l > 0 && p->name == NULL;
-         last_l--, p--);
+    for (p = list->ptr, l = list->len; l > 0; p++, l--)
+        if (p->name != NULL)
+            last_l = l;
 
+    /* Output the entries */
     for (p = list->ptr, l = list->len; l > 0; p++, l--)
     {
         if (!hidrd_buf_add_span(&buf, ' ',
