@@ -110,6 +110,12 @@ extern const char *hidrd_tkn_from_num(uint32_t              num,
                                                                         \
     extern bool hidrd_##_type##_from_token_or_##_b(                     \
                                                 hidrd_##_type   *p##_t, \
+                                                const char      *str);  \
+                                                                        \
+    extern char *hidrd_##_type##_to_token_or_b##_b(hidrd_##_type _t);   \
+                                                                        \
+    extern bool hidrd_##_type##_from_token_or_bstr(                     \
+                                                hidrd_##_type   *p##_t, \
                                                 const char      *str)
 
 /**
@@ -172,6 +178,29 @@ extern const char *hidrd_tkn_from_num(uint32_t              num,
     {                                                           \
         return hidrd_##_type##_from_token(p##_t, str) ||        \
                hidrd_##_type##_from_##_b(p##_t, str);           \
+    }                                                           \
+                                                                \
+                                                                \
+    char *                                                      \
+    hidrd_##_type##_to_token_or_b##_b(hidrd_##_type _t)         \
+    {                                                           \
+        const char *token;                                      \
+                                                                \
+        assert(hidrd_##_type##_valid(_t));                      \
+                                                                \
+        token = hidrd_##_type##_to_token(_t);                   \
+                                                                \
+        return (token != NULL)                                  \
+                    ? strdup(token)                             \
+                    : hidrd_##_type##_to_b##_b(_t);             \
+    }                                                           \
+                                                                \
+    bool                                                        \
+    hidrd_##_type##_from_token_or_bstr(hidrd_##_type   *p##_t,  \
+                                       const char      *str)    \
+    {                                                           \
+        return hidrd_##_type##_from_token(p##_t, str) ||        \
+               hidrd_##_type##_from_bstr(p##_t, str);           \
     }
 
 

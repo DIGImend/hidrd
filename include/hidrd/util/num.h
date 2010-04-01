@@ -408,8 +408,9 @@ hidrd_num_s8_to_bstr(int8_t num, hidrd_num_base base)
                                                                     \
     extern bool hidrd_##_type##_from_##_b(hidrd_##_type *p##_t,     \
                                           const char      *str);    \
+                                                                    \
     extern bool hidrd_##_type##_from_bstr(hidrd_##_type *p##_t,     \
-                                          const char      *str);
+                                          const char      *str)
 
 
 /**
