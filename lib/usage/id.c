@@ -26,6 +26,7 @@
 
 #include <assert.h>
 #include <stdio.h>
+#include "hidrd/util/hex.h"
 #include "hidrd/usage/id.h"
 
 
@@ -43,20 +44,35 @@ hidrd_usage_id_to_hex(hidrd_usage_id id)
 }
 
 
+char *
+hidrd_usage_id_to_bhex(hidrd_usage_id id)
+{
+    char   *bhex;
+
+    assert(hidrd_usage_id_valid(id));
+
+    if (asprintf(&bhex, ((id <= UINT8_MAX) ? "%.2hXh" : "%.4hXh"), id) < 0)
+        return NULL;
+
+    return bhex;
+}
+
+
 bool
 hidrd_usage_id_from_hex(hidrd_usage_id *pid, const char *hex)
 {
-    hidrd_usage_id  id;
-
     assert(hex != NULL);
 
-    if (sscanf(hex, "%hX", &id) != 1)
-        return false;
+    return hidrd_hex_u16_from_str(pid, hex);
+}
 
-    if (pid != NULL)
-        *pid = id;
 
-    return true;
+bool
+hidrd_usage_id_from_bstr(hidrd_usage_id *pid, const char *str)
+{
+    assert(str != NULL);
+
+    return hidrd_num_u16_from_bstr(pid, str);
 }
 
 

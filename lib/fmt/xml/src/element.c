@@ -194,13 +194,12 @@ static ELEMENT(usage_page)
 {
     xml_src_element_rc      result_rc   = XML_SRC_ELEMENT_RC_ERROR;
     char                   *value_str   = NULL;
-    hidrd_usage             value;
+    hidrd_usage_page        value;
 
     value_str = (char *)xmlNodeGetContent(e);
     if (value_str == NULL)
         goto cleanup;
-    value = hidrd_usage_page_from_token_or_hex(value_str);
-    if (!hidrd_usage_page_valid(value))
+    if (!hidrd_usage_page_from_token_or_hex(&value, value_str))
         goto cleanup;
 
     hidrd_item_usage_page_init(item, value);

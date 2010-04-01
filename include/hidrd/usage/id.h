@@ -80,6 +80,16 @@ hidrd_usage_id_top_level(hidrd_usage_id id)
 extern char *hidrd_usage_id_to_hex(hidrd_usage_id id);
 
 /**
+ * Convert a usage ID to a base-suffixed hexadecimal code string.
+ *
+ * @param id    Usage ID.
+ *
+ * @return Dynamically allocated base-suffixed hexadecimal code string, or
+ *         NULL, if failed to allocate memory.
+ */
+extern char *hidrd_usage_id_to_bhex(hidrd_usage_id id);
+
+/**
  * Convert a usage ID hexadecimal code string to usage ID.
  *
  * @param pid   Location for the resulting usage ID; wil not be modified in
@@ -89,6 +99,17 @@ extern char *hidrd_usage_id_to_hex(hidrd_usage_id id);
  * @return True if the hexadecimal string valid, false otherwise.
  */
 extern bool hidrd_usage_id_from_hex(hidrd_usage_id *pid, const char *hex);
+
+/**
+ * Convert a usage ID base-suffixed code string to usage ID.
+ *
+ * @param pid   Location for the resulting usage ID; wil not be modified in
+ *              case of error; could be NULL.
+ * @param bstr  Base-suffixed code string.
+ *
+ * @return True if the base-suffixed string valid, false otherwise.
+ */
+extern bool hidrd_usage_id_from_bstr(hidrd_usage_id *pid, const char *str);
 
 #ifdef __cplusplus
 } /* extern "C" */

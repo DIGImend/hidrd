@@ -169,6 +169,26 @@ hidrd_usage_to_hex(hidrd_usage usage)
 }
 
 
+char *
+hidrd_usage_to_bhex(hidrd_usage usage)
+{
+    char   *str;
+
+    assert(hidrd_usage_valid(usage));
+
+    if (asprintf(&str,
+                 ((usage <= UINT8_MAX)
+                      ? "%.2Xh"
+                      : ((usage <= UINT16_MAX)
+                          ? "%.4Xh"
+                          : "%.8Xh")),
+                 (uint32_t)usage) < 0)
+        return NULL;
+
+    return str;
+}
+
+
 bool
 hidrd_usage_from_hex(hidrd_usage *pusage, const char *hex)
 {
@@ -177,6 +197,23 @@ hidrd_usage_from_hex(hidrd_usage *pusage, const char *hex)
     assert(hex != NULL);
 
     if (!hidrd_hex_u32_from_str(&usage, hex))
+        return false;
+
+    if (pusage != NULL)
+        *pusage = usage;
+
+    return true;
+}
+
+
+bool
+hidrd_usage_from_bstr(hidrd_usage *pusage, const char *str)
+{
+    uint32_t    usage;
+
+    assert(str != NULL);
+
+    if (!hidrd_num_u32_from_bstr(&usage, str))
         return false;
 
     if (pusage != NULL)
@@ -214,6 +251,19 @@ hidrd_usage_to_token_or_hex(hidrd_usage usage)
 
 
 char *
+hidrd_usage_to_token_or_bhex(hidrd_usage usage)
+{
+    const char         *token;
+
+    assert(hidrd_usage_valid(usage));
+
+    token = hidrd_usage_to_token(usage);
+
+    return (token != NULL) ? strdup(token) : hidrd_usage_to_bhex(usage);
+}
+
+
+char *
 hidrd_usage_to_token_or_hex_id(hidrd_usage usage)
 {
     const char         *token;
@@ -225,6 +275,21 @@ hidrd_usage_to_token_or_hex_id(hidrd_usage usage)
     return (token != NULL)
                 ? strdup(token)
                 : hidrd_usage_id_to_hex(hidrd_usage_get_id(usage));
+}
+
+
+char *
+hidrd_usage_to_token_or_bhex_id(hidrd_usage usage)
+{
+    const char         *token;
+
+    assert(hidrd_usage_valid(usage));
+
+    token = hidrd_usage_to_token(usage);
+
+    return (token != NULL)
+                ? strdup(token)
+                : hidrd_usage_id_to_bhex(hidrd_usage_get_id(usage));
 }
 
 
@@ -259,6 +324,16 @@ hidrd_usage_from_token_or_hex(hidrd_usage *pusage, const char *token_or_hex)
 
     return hidrd_usage_from_token(pusage, token_or_hex) ||
            hidrd_usage_from_hex(pusage, token_or_hex);
+}
+
+
+bool
+hidrd_usage_from_token_or_bstr(hidrd_usage *pusage, const char *token_or_bstr)
+{
+    assert(token_or_bstr != NULL);
+
+    return hidrd_usage_from_token(pusage, token_or_bstr) ||
+           hidrd_usage_from_bstr(pusage, token_or_bstr);
 }
 
 

@@ -228,10 +228,21 @@ hidrd_usage_top_level(hidrd_usage usage)
  *
  * @param usage Usage.
  *
- * @return Dynamically allocated hexadecimal code string, or NULL, if failed
- *         to allocate memory.
+ * @return Dynamically allocated string, or NULL, if failed to allocate
+ *         memory.
  */
 extern char *hidrd_usage_to_hex(hidrd_usage usage);
+
+
+/**
+ * Convert a usage to a base-suffixed hexadecimal code string.
+ *
+ * @param usage Usage.
+ *
+ * @return Dynamically allocated string, or NULL, if failed to allocate
+ *         memory.
+ */
+extern char *hidrd_usage_to_bhex(hidrd_usage usage);
 
 
 /**
@@ -241,9 +252,21 @@ extern char *hidrd_usage_to_hex(hidrd_usage usage);
  *                  case of error; could be NULL.
  * @param hex       Hexadecimal code string.
  *
- * @return True if the hexadecimal code string was valid, false otherwise.
+ * @return True if the string was valid, false otherwise.
  */
 extern bool hidrd_usage_from_hex(hidrd_usage *pusage, const char *hex);
+
+
+/**
+ * Convert a base-suffixed code string to a usage.
+ *
+ * @param pusage    Location for resulting usage; will not be modified in
+ *                  case of error; could be NULL.
+ * @param str       Base-suffixed code string.
+ *
+ * @return True if the string was valid, false otherwise.
+ */
+extern bool hidrd_usage_from_bstr(hidrd_usage *pusage, const char *str);
 
 
 #ifdef HIDRD_WITH_TOKENS
@@ -271,6 +294,19 @@ extern char *hidrd_usage_to_token_or_hex(hidrd_usage usage);
 
 
 /**
+ * Convert a usage to a string token or base-suffixed hexadecimal code
+ * string.
+ *
+ * @param usage Usage.
+ *
+ * @return Dynamically allocated string token, or (if there is no token)
+ *         base-suffixed hexadecimal code string; NULL if failed to allocate
+ *         memory.
+ */
+extern char *hidrd_usage_to_token_or_bhex(hidrd_usage usage);
+
+
+/**
  * Convert a usage to a string token or hexadecimal usage ID code string.
  *
  * @param usage Usage.
@@ -280,6 +316,19 @@ extern char *hidrd_usage_to_token_or_hex(hidrd_usage usage);
  *         memory.
  */
 extern char *hidrd_usage_to_token_or_hex_id(hidrd_usage usage);
+
+
+/**
+ * Convert a usage to a string token or base-suffixed hexadecimal usage ID
+ * code string.
+ *
+ * @param usage Usage.
+ *
+ * @return Dynamically allocated string token, or (if there is no token)
+ *         base-suffixed hexadecimal usage ID code string; NULL if failed to
+ *         allocate memory.
+ */
+extern char *hidrd_usage_to_token_or_bhex_id(hidrd_usage usage);
 
 
 /**
@@ -307,6 +356,19 @@ extern bool hidrd_usage_from_token(hidrd_usage *pusage,
  */
 extern bool hidrd_usage_from_token_or_hex(hidrd_usage  *pusage,
                                           const char   *token_or_hex);
+
+/**
+ * Convert a token or base-suffixed code string to a usage.
+ *
+ * @param pusage        Location for usage; will not be modified in case of
+ *                      error; could be NULL.
+ * @param token_or_bstr Token or base-suffixed code string.
+ *
+ * @return True if the token was found or base-suffixed code string was
+ *         valid, false otherwise.
+ */
+extern bool hidrd_usage_from_token_or_bstr(hidrd_usage  *pusage,
+                                           const char   *token_or_bstr);
 
 #endif
 

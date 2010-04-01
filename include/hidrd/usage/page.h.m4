@@ -74,9 +74,7 @@ pushdef(PAGE,dnl
 ')dnl
 include(`db/usage/page.m4')dnl
 popdef(`PAGE')dnl
-`    /** Invalid */
-    HIDRD_USAGE_PAGE_INVALID = 0x10000
-} hidrd_usage_page;
+`} hidrd_usage_page;
 
 #define HIDRD_USAGE_PAGE_MIN    0x0000
 #define HIDRD_USAGE_PAGE_MAX    0xFFFF
@@ -151,16 +149,6 @@ include(`db/usage/page_set.m4')dnl
 undefine(`PAGE_SET')dnl
 `
 /**
- * Convert a usage page hexadecimal code string to a code.
- *
- * @param token Usage page hexadecimal code string.
- *
- * @return Usage page code; will be HIDRD_USAGE_PAGE_INVALID, if the
- *         hexadecimal code string is invalid.
- */
-extern hidrd_usage_page hidrd_usage_page_from_hex(const char *hex);
-
-/**
  * Convert a usage page code to a hexadecimal code string.
  *
  * @param page  Usage page code.
@@ -168,6 +156,37 @@ extern hidrd_usage_page hidrd_usage_page_from_hex(const char *hex);
  * @return Dynamically allocated hexadecimal page code string.
  */
 extern char *hidrd_usage_page_to_hex(hidrd_usage_page page);
+
+/**
+ * Convert a usage page code to a base-suffixed hexadecimal code string.
+ *
+ * @param page  Usage page code.
+ *
+ * @return Dynamically allocated base-suffixed hexadecimal page code string.
+ */
+extern char *hidrd_usage_page_to_bhex(hidrd_usage_page page);
+
+/**
+ * Convert a usage page hexadecimal code string to a code.
+ *
+ * @param ppage Location for resulting page code.
+ * @param hex   Usage page hexadecimal code string.
+ *
+ * @return True if the hexadecimal code string was valid, false otherwise.
+ */
+extern bool hidrd_usage_page_from_hex(hidrd_usage_page *ppage,
+                                      const char       *hex);
+
+/**
+ * Convert a usage page base-suffixed code string to a code.
+ *
+ * @param ppage Location for resulting page code.
+ * @param str   Usage page base-suffixed code string.
+ *
+ * @return True if the base-suffixed code string was valid, false otherwise.
+ */
+extern bool hidrd_usage_page_from_bstr(hidrd_usage_page    *ppage,
+                                       const char          *str);
 
 #ifdef HIDRD_WITH_TOKENS
 
@@ -192,27 +211,54 @@ extern const char *hidrd_usage_page_to_token(hidrd_usage_page page);
 extern char *hidrd_usage_page_to_token_or_hex(hidrd_usage_page page);
 
 /**
+ * Convert a usage page code to a string token or (if there is no token) to
+ * a base-suffixed hexadecimal code string.
+ *
+ * @param page  Usage page code.
+ *
+ * @return Dynamically allocated usage page token or base-suffixed
+ *         hexadecimal code string; NULL if failed to allocate memory.
+ */
+extern char *hidrd_usage_page_to_token_or_bhex(hidrd_usage_page page);
+
+/**
  * Convert a usage page string token to a code.
  *
+ * @param ppage Location for resulting page code.
  * @param token Usage page string token (case insensitive).
  *
- * @return Usage page code; will be HIDRD_USAGE_PAGE_INVALID, if the token
- *         is not recognized.
+ * @return True if token is found, false otherwise.
  */
-extern hidrd_usage_page hidrd_usage_page_from_token(const char *token);
+extern bool hidrd_usage_page_from_token(hidrd_usage_page   *ppage,
+                                        const char         *token);
 
 /**
  * Convert a usage page token or (if the token is not recognized)
  * hexadecimal code string to a code.
  *
+ * @param ppage         Location for resulting page code.
  * @param token_or_hex  Usage page token or hexadecimal code string.
  *
- * @return Usage page code; will be HIDRD_USAGE_PAGE_INVALID, if the
- *         token is not recognized and the string is not a valid hexadecimal
- *         code.
+ * @return True if the token was found or hexadecimal code string was valid,
+ *         false otherwise.
  */
-extern hidrd_usage_page hidrd_usage_page_from_token_or_hex(
-                                        const char *token_or_hex);
+extern bool hidrd_usage_page_from_token_or_hex(
+                                        hidrd_usage_page   *ppage,
+                                        const char         *token_or_hex);
+
+/**
+ * Convert a usage page token or (if the token is not recognized)
+ * base-suffixed code string to a code.
+ *
+ * @param ppage         Location for resulting page code.
+ * @param token_or_bstr Usage page token or base-suffixed code string.
+ *
+ * @return True if the token was found or base-suffixed code string was
+ *         valid, false otherwise.
+ */
+extern bool hidrd_usage_page_from_token_or_bstr(
+                                        hidrd_usage_page   *ppage,
+                                        const char         *token_or_bstr);
 
 #endif /* HIDRD_WITH_TOKENS */
 
