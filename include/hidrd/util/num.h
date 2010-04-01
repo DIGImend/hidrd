@@ -58,19 +58,30 @@ typedef enum hidrd_num_base {
 /** A lowercase version of HIDRD_NUM_BASE_HEX - for macro convenience */
 #define HIDRD_NUM_BASE_hex  HIDRD_NUM_BASE_HEX
 
-static inline bool
-hidrd_num_base_valid(hidrd_num_base base)
-{
-    return (base == HIDRD_NUM_BASE_DEC || base == HIDRD_NUM_BASE_HEX);
-}
+/**
+ * Check if a number base is valid.
+ *
+ * @param base  Base to check.
+ *
+ * @return True if the base is valid, false otherwise.
+ */
+extern bool hidrd_num_base_valid(hidrd_num_base base);
+
+/**
+ * Retrieve a number base character.
+ *
+ * @param base  Number base to retrieve character for.
+ *
+ * @return Number base character.
+ */
+extern char hidrd_num_base_to_char(hidrd_num_base base);
 
 /**
  * Convert a string to an unsigned 32-bit integer.
  *
  * @param pnum  Location for the converted number; could be NULL.
  * @param str   String to convert from.
- * @param base  Number base to convert from; only decimal and hexadecimal
- *              bases are supported.
+ * @param base  Number base to convert from.
  *
  * @return True if the string was valid and converted successfully, false
  *         otherwise.
@@ -80,12 +91,22 @@ extern bool hidrd_num_u32_from_str(uint32_t        *pnum,
                                    hidrd_num_base   base);
 
 /**
+ * Convert a base-suffixed string to an unsigned 32-bit integer.
+ *
+ * @param pnum  Location for the converted number; could be NULL.
+ * @param str   String to convert from.
+ *
+ * @return True if the string was valid and converted successfully, false
+ *         otherwise.
+ */
+extern bool hidrd_num_u32_from_bstr(uint32_t *pnum, const char *str);
+
+/**
  * Convert a string to an unsigned 16-bit integer.
  *
  * @param pnum  Location for the converted number; could be NULL.
  * @param str   String to convert from.
- * @param base  Number base to convert from; only decimal and hexadecimal
- *              bases are supported.
+ * @param base  Number base to convert from.
  *
  * @return True if the string was valid and converted successfully, false
  *         otherwise.
@@ -95,12 +116,22 @@ extern bool hidrd_num_u16_from_str(uint16_t        *pnum,
                                    hidrd_num_base   base);
 
 /**
+ * Convert a base-suffixed string to an unsigned 16-bit integer.
+ *
+ * @param pnum  Location for the converted number; could be NULL.
+ * @param str   String to convert from.
+ *
+ * @return True if the string was valid and converted successfully, false
+ *         otherwise.
+ */
+extern bool hidrd_num_u16_from_bstr(uint16_t *pnum, const char *str);
+
+/**
  * Convert a string to an unsigned 8-bit integer.
  *
  * @param pnum  Location for the converted number; could be NULL.
  * @param str   String to convert from.
- * @param base  Number base to convert from; only decimal and hexadecimal
- *              bases are supported.
+ * @param base  Number base to convert from.
  *
  * @return True if the string was valid and converted successfully, false
  *         otherwise.
@@ -110,11 +141,21 @@ extern bool hidrd_num_u8_from_str(uint8_t          *pnum,
                                   hidrd_num_base    base);
 
 /**
+ * Convert a base-suffixed string to an unsigned 8-bit integer.
+ *
+ * @param pnum  Location for the converted number; could be NULL.
+ * @param str   String to convert from.
+ *
+ * @return True if the string was valid and converted successfully, false
+ *         otherwise.
+ */
+extern bool hidrd_num_u8_from_bstr(uint8_t *pnum, const char *str);
+
+/**
  * Convert an unsigned 32-bit integer to a string.
  *
  * @param num   The number to convert.
- * @param base  Number base to convert to; only decimal and hexadecimal
- *              bases are supported.
+ * @param base  Number base to convert to.
  *
  * @return Dynamically allocated string, or NULL if failed to allocate
  *         memory.
@@ -122,11 +163,21 @@ extern bool hidrd_num_u8_from_str(uint8_t          *pnum,
 extern char *hidrd_num_u32_to_str(uint32_t num, hidrd_num_base base);
 
 /**
+ * Convert an unsigned 32-bit integer to a base-suffixed string.
+ *
+ * @param num   The number to convert.
+ * @param base  Number base to convert to.
+ *
+ * @return Dynamically allocated string, or NULL if failed to allocate
+ *         memory.
+ */
+extern char *hidrd_num_u32_to_bstr(uint32_t num, hidrd_num_base base);
+
+/**
  * Convert an unsigned 16-bit integer to a string.
  *
  * @param num   The number to convert.
- * @param base  Number base to convert to; only decimal and hexadecimal
- *              bases are supported.
+ * @param base  Number base to convert to.
  *
  * @return Dynamically allocated string, or NULL if failed to allocate
  *         memory.
@@ -138,11 +189,25 @@ hidrd_num_u16_to_str(uint16_t num, hidrd_num_base base)
 }
 
 /**
+ * Convert an unsigned 16-bit integer to a base-suffixed string.
+ *
+ * @param num   The number to convert.
+ * @param base  Number base to convert to.
+ *
+ * @return Dynamically allocated string, or NULL if failed to allocate
+ *         memory.
+ */
+static inline char *
+hidrd_num_u16_to_bstr(uint16_t num, hidrd_num_base base)
+{
+    return hidrd_num_u32_to_bstr(num, base);
+}
+
+/**
  * Convert an unsigned 8-bit integer to a string.
  *
  * @param num   The number to convert.
- * @param base  Number base to convert to; only decimal and hexadecimal
- *              bases are supported.
+ * @param base  Number base to convert to.
  *
  * @return Dynamically allocated string, or NULL if failed to allocate
  *         memory.
@@ -154,11 +219,26 @@ hidrd_num_u8_to_str(uint8_t num, hidrd_num_base base)
 }
 
 /**
+ * Convert an unsigned 8-bit integer to a base-suffixed string.
+ *
+ * @param num   The number to convert.
+ * @param base  Number base to convert to.
+ *
+ * @return Dynamically allocated string, or NULL if failed to allocate
+ *         memory.
+ */
+static inline char *
+hidrd_num_u8_to_bstr(uint8_t num, hidrd_num_base base)
+{
+    return hidrd_num_u32_to_bstr(num, base);
+}
+
+/**
  * Convert a string to a signed 32-bit integer.
  *
  * @param pnum  Location for the converted number; could be NULL.
  * @param str   String to convert from.
- * @param base  Number base to convert from; only decimal base is supported.
+ * @param base  Number base to convert from.
  *
  * @return True if the string was valid and converted successfully, false
  *         otherwise.
@@ -168,11 +248,22 @@ extern bool hidrd_num_s32_from_str(int32_t         *pnum,
                                    hidrd_num_base   base);
 
 /**
+ * Convert a base-suffixed string to a signed 32-bit integer.
+ *
+ * @param pnum  Location for the converted number; could be NULL.
+ * @param str   String to convert from.
+ *
+ * @return True if the string was valid and converted successfully, false
+ *         otherwise.
+ */
+extern bool hidrd_num_s32_from_bstr(int32_t *pnum, const char *str);
+
+/**
  * Convert a string to a signed 16-bit integer.
  *
  * @param pnum  Location for the converted number; could be NULL.
  * @param str   String to convert from.
- * @param base  Number base to convert from; only decimal base is supported.
+ * @param base  Number base to convert from.
  *
  * @return True if the string was valid and converted successfully, false
  *         otherwise.
@@ -182,11 +273,22 @@ extern bool hidrd_num_s16_from_str(int16_t         *pnum,
                                    hidrd_num_base   base);
 
 /**
+ * Convert a base-suffixed string to a signed 16-bit integer.
+ *
+ * @param pnum  Location for the converted number; could be NULL.
+ * @param str   String to convert from.
+ *
+ * @return True if the string was valid and converted successfully, false
+ *         otherwise.
+ */
+extern bool hidrd_num_s16_from_bstr(int16_t *pnum, const char *str);
+
+/**
  * Convert a string to a signed 8-bit integer.
  *
  * @param pnum  Location for the converted number; could be NULL.
  * @param str   String to convert from.
- * @param base  Number base to convert from; only decimal base is supported.
+ * @param base  Number base to convert from.
  *
  * @return True if the string was valid and converted successfully, false
  *         otherwise.
@@ -196,10 +298,21 @@ extern bool hidrd_num_s8_from_str(int8_t           *pnum,
                                   hidrd_num_base    base);
 
 /**
+ * Convert a base-suffixed string to a signed 8-bit integer.
+ *
+ * @param pnum  Location for the converted number; could be NULL.
+ * @param str   String to convert from.
+ *
+ * @return True if the string was valid and converted successfully, false
+ *         otherwise.
+ */
+extern bool hidrd_num_s8_from_bstr(int8_t *pnum, const char *str);
+
+/**
  * Convert a signed 32-bit integer to a string.
  *
  * @param num   The number to convert.
- * @param base  Number base to convert to; only decimal base is supported.
+ * @param base  Number base to convert to.
  *
  * @return Dynamically allocated string, or NULL if failed to allocate
  *         memory.
@@ -207,10 +320,21 @@ extern bool hidrd_num_s8_from_str(int8_t           *pnum,
 extern char *hidrd_num_s32_to_str(int32_t num, hidrd_num_base base);
 
 /**
+ * Convert a signed 32-bit integer to a base-suffixed string.
+ *
+ * @param num   The number to convert.
+ * @param base  Number base to convert to.
+ *
+ * @return Dynamically allocated string, or NULL if failed to allocate
+ *         memory.
+ */
+extern char *hidrd_num_s32_to_bstr(int32_t num, hidrd_num_base base);
+
+/**
  * Convert a signed 16-bit integer to a string.
  *
  * @param num   The number to convert.
- * @param base  Number base to convert to; only decimal base is supported.
+ * @param base  Number base to convert to.
  *
  * @return Dynamically allocated string, or NULL if failed to allocate
  *         memory.
@@ -222,10 +346,25 @@ hidrd_num_s16_to_str(int16_t num, hidrd_num_base base)
 }
 
 /**
+ * Convert a signed 16-bit integer to a base-suffixed string.
+ *
+ * @param num   The number to convert.
+ * @param base  Number base to convert to.
+ *
+ * @return Dynamically allocated string, or NULL if failed to allocate
+ *         memory.
+ */
+static inline char *
+hidrd_num_s16_to_bstr(int16_t num, hidrd_num_base base)
+{
+    return hidrd_num_s32_to_bstr(num, base);
+}
+
+/**
  * Convert a signed 8-bit integer to a string.
  *
  * @param num   The number to convert.
- * @param base  Number base to convert to; only decimal base is supported.
+ * @param base  Number base to convert to.
  *
  * @return Dynamically allocated string, or NULL if failed to allocate
  *         memory.
@@ -237,20 +376,39 @@ hidrd_num_s8_to_str(int8_t num, hidrd_num_base base)
 }
 
 /**
- * Declare a function pair for converting specified number type to/from a
+ * Convert a signed 8-bit integer to a base-suffixed string.
+ *
+ * @param num   The number to convert.
+ * @param base  Number base to convert to.
+ *
+ * @return Dynamically allocated string, or NULL if failed to allocate
+ *         memory.
+ */
+static inline char *
+hidrd_num_s8_to_bstr(int8_t num, hidrd_num_base base)
+{
+    return hidrd_num_s32_to_bstr(num, base);
+}
+
+/**
+ * Declare a function set for converting specified number type to/from a
  * string.
  *
  * @param _type     Long (global) name of the type being converted; will be
  *                  used in the function names.
  * @param _t        Short (local) name of the type being converted; will be
  *                  used for local variable names.
- * @param _b        Base of the string representation of the number
- *                  (lowercase).
+ * @param _b        Base of the canonical string representation of the number
+ *                  (lowercase - dec or hex).
  */
 #define HIDRD_NUM_CONV_DECLS(_type, _t, _b) \
     extern char *hidrd_##_type##_to_##_b(hidrd_##_type _t);         \
                                                                     \
+    extern char *hidrd_##_type##_to_b##_b(hidrd_##_type _t);        \
+                                                                    \
     extern bool hidrd_##_type##_from_##_b(hidrd_##_type *p##_t,     \
+                                          const char      *str);    \
+    extern bool hidrd_##_type##_from_bstr(hidrd_##_type *p##_t,     \
                                           const char      *str);
 
 
@@ -263,8 +421,8 @@ hidrd_num_s8_to_str(int8_t num, hidrd_num_base base)
  * @param _t        Short (local) name of the type being converted; will be
  *                  used for local variable names.
  * @param _n        Short (convenience) name of the number type (like s8).
- * @param _b        Base of the string representation of the number
- *                  (lowercase - dec or hex).
+ * @param _b        Base of the canonical string representation of the
+ *                  number (lowercase - dec or hex).
  */
 #define HIDRD_NUM_CONV_DEFS(_type, _t, _n, _b) \
     char *                                                          \
@@ -272,6 +430,14 @@ hidrd_num_s8_to_str(int8_t num, hidrd_num_base base)
     {                                                               \
         assert(hidrd_##_type##_valid(_t));                          \
         return hidrd_num_##_n##_to_str(_t, HIDRD_NUM_BASE_##_b);    \
+    }                                                               \
+                                                                    \
+                                                                    \
+    char *                                                          \
+    hidrd_##_type##_to_b##_b(hidrd_##_type _t)                      \
+    {                                                               \
+        assert(hidrd_##_type##_valid(_t));                          \
+        return hidrd_num_##_n##_to_bstr(_t, HIDRD_NUM_BASE_##_b);   \
     }                                                               \
                                                                     \
                                                                     \
@@ -285,6 +451,25 @@ hidrd_num_s8_to_str(int8_t num, hidrd_num_base base)
                                                                     \
         if (!hidrd_num_##_n##_from_str(&_t, str,                    \
                                        HIDRD_NUM_BASE_##_b) ||      \
+            !hidrd_##_type##_valid(_t))                             \
+            return false;                                           \
+                                                                    \
+        if (p##_t != NULL)                                          \
+            *p##_t = _t;                                            \
+                                                                    \
+        return true;                                                \
+    }                                                               \
+                                                                    \
+                                                                    \
+    bool                                                            \
+    hidrd_##_type##_from_bstr(hidrd_##_type *p##_t,                 \
+                              const char      *str)                 \
+    {                                                               \
+        HIDRD_NUM_##_n##_TYPE   _t;                                 \
+                                                                    \
+        assert(str != NULL);                                        \
+                                                                    \
+        if (!hidrd_num_##_n##_from_bstr(&_t, str) ||                \
             !hidrd_##_type##_valid(_t))                             \
             return false;                                           \
                                                                     \
