@@ -48,7 +48,7 @@ static inline bool
 hidrd_dec_u32_from_str(uint32_t *pnum, const char *str)
 {
     assert(str != NULL);
-    return hidrd_num_u32_from_str(pnum, str, 10);
+    return hidrd_num_u32_from_str(pnum, str, HIDRD_NUM_BASE_DEC);
 }
 
 /**
@@ -62,7 +62,7 @@ hidrd_dec_u32_from_str(uint32_t *pnum, const char *str)
 static inline char *
 hidrd_dec_u32_to_str(uint32_t num)
 {
-    return hidrd_num_u32_to_str(num, 10);
+    return hidrd_num_u32_to_str(num, HIDRD_NUM_BASE_DEC);
 }
 
 /**
@@ -78,7 +78,7 @@ static inline bool
 hidrd_dec_u16_from_str(uint16_t *pnum, const char *str)
 {
     assert(str != NULL);
-    return hidrd_num_u16_from_str(pnum, str, 10);
+    return hidrd_num_u16_from_str(pnum, str, HIDRD_NUM_BASE_DEC);
 }
 
 /**
@@ -92,7 +92,7 @@ hidrd_dec_u16_from_str(uint16_t *pnum, const char *str)
 static inline char *
 hidrd_dec_u16_to_str(uint16_t num)
 {
-    return hidrd_num_u16_to_str(num, 10);
+    return hidrd_num_u16_to_str(num, HIDRD_NUM_BASE_DEC);
 }
 
 /**
@@ -108,7 +108,7 @@ static inline bool
 hidrd_dec_u8_from_str(uint8_t *pnum, const char *str)
 {
     assert(str != NULL);
-    return hidrd_num_u8_from_str(pnum, str, 10);
+    return hidrd_num_u8_from_str(pnum, str, HIDRD_NUM_BASE_DEC);
 }
 
 /**
@@ -122,7 +122,7 @@ hidrd_dec_u8_from_str(uint8_t *pnum, const char *str)
 static inline char *
 hidrd_dec_u8_to_str(uint8_t num)
 {
-    return hidrd_num_u8_to_str(num, 10);
+    return hidrd_num_u8_to_str(num, HIDRD_NUM_BASE_DEC);
 }
 
 /**
@@ -138,7 +138,7 @@ static inline bool
 hidrd_dec_s32_from_str(int32_t *pnum, const char *str)
 {
     assert(str != NULL);
-    return hidrd_num_s32_from_str(pnum, str, 10);
+    return hidrd_num_s32_from_str(pnum, str, HIDRD_NUM_BASE_DEC);
 }
 
 /**
@@ -152,7 +152,7 @@ hidrd_dec_s32_from_str(int32_t *pnum, const char *str)
 static inline char *
 hidrd_dec_s32_to_str(int32_t num)
 {
-    return hidrd_num_s32_to_str(num, 10);
+    return hidrd_num_s32_to_str(num, HIDRD_NUM_BASE_DEC);
 }
 
 /**
@@ -168,7 +168,7 @@ static inline bool
 hidrd_dec_s16_from_str(int16_t *pnum, const char *str)
 {
     assert(str != NULL);
-    return hidrd_num_s16_from_str(pnum, str, 10);
+    return hidrd_num_s16_from_str(pnum, str, HIDRD_NUM_BASE_DEC);
 }
 
 /**
@@ -182,7 +182,7 @@ hidrd_dec_s16_from_str(int16_t *pnum, const char *str)
 static inline char *
 hidrd_dec_s16_to_str(int16_t num)
 {
-    return hidrd_num_s16_to_str(num, 10);
+    return hidrd_num_s16_to_str(num, HIDRD_NUM_BASE_DEC);
 }
 
 /**
@@ -198,7 +198,7 @@ static inline bool
 hidrd_dec_s8_from_str(int8_t *pnum, const char *str)
 {
     assert(str != NULL);
-    return hidrd_num_s8_from_str(pnum, str, 10);
+    return hidrd_num_s8_from_str(pnum, str, HIDRD_NUM_BASE_DEC);
 }
 
 /**
@@ -212,7 +212,7 @@ hidrd_dec_s8_from_str(int8_t *pnum, const char *str)
 static inline char *
 hidrd_dec_s8_to_str(int8_t num)
 {
-    return hidrd_num_s8_to_str(num, 10);
+    return hidrd_num_s8_to_str(num, HIDRD_NUM_BASE_DEC);
 }
 
 /**

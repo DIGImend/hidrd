@@ -48,7 +48,7 @@ static inline bool
 hidrd_hex_u32_from_str(uint32_t *pnum, const char *str)
 {
     assert(str != NULL);
-    return hidrd_num_u32_from_str(pnum, str, 16);
+    return hidrd_num_u32_from_str(pnum, str, HIDRD_NUM_BASE_HEX);
 }
 
 /**
@@ -62,7 +62,21 @@ hidrd_hex_u32_from_str(uint32_t *pnum, const char *str)
 static inline char *
 hidrd_hex_u32_to_str(uint32_t num)
 {
-    return hidrd_num_u32_to_str(num, 16);
+    return hidrd_num_u32_to_str(num, HIDRD_NUM_BASE_HEX);
+}
+
+/**
+ * Convert an unsigned 32-bit integer to a base-suffixed hexadecimal string.
+ *
+ * @param num   The number to convert.
+ *
+ * @return Dynamically allocated base-suffixed hexadecimal string, or NULL
+ *         if failed to allocate memory.
+ */
+static inline char *
+hidrd_hex_u32_to_bstr(uint32_t num)
+{
+    return hidrd_num_u32_to_bstr(num, HIDRD_NUM_BASE_HEX);
 }
 
 /**
@@ -78,7 +92,7 @@ static inline bool
 hidrd_hex_u16_from_str(uint16_t *pnum, const char *str)
 {
     assert(str != NULL);
-    return hidrd_num_u16_from_str(pnum, str, 16);
+    return hidrd_num_u16_from_str(pnum, str, HIDRD_NUM_BASE_HEX);
 }
 
 /**
@@ -92,7 +106,21 @@ hidrd_hex_u16_from_str(uint16_t *pnum, const char *str)
 static inline char *
 hidrd_hex_u16_to_str(uint16_t num)
 {
-    return hidrd_num_u16_to_str(num, 16);
+    return hidrd_num_u16_to_str(num, HIDRD_NUM_BASE_HEX);
+}
+
+/**
+ * Convert an unsigned 16-bit integer to a base-suffixed hexadecimal string.
+ *
+ * @param num   The number to convert.
+ *
+ * @return Dynamically allocated base-suffixed hexadecimal string, or NULL
+ *         if failed to allocate memory.
+ */
+static inline char *
+hidrd_hex_u16_to_bstr(uint16_t num)
+{
+    return hidrd_num_u16_to_bstr(num, HIDRD_NUM_BASE_HEX);
 }
 
 /**
@@ -108,7 +136,7 @@ static inline bool
 hidrd_hex_u8_from_str(uint8_t *pnum, const char *str)
 {
     assert(str != NULL);
-    return hidrd_num_u8_from_str(pnum, str, 16);
+    return hidrd_num_u8_from_str(pnum, str, HIDRD_NUM_BASE_HEX);
 }
 
 /**
@@ -122,7 +150,21 @@ hidrd_hex_u8_from_str(uint8_t *pnum, const char *str)
 static inline char *
 hidrd_hex_u8_to_str(uint8_t num)
 {
-    return hidrd_num_u8_to_str(num, 16);
+    return hidrd_num_u8_to_str(num, HIDRD_NUM_BASE_HEX);
+}
+
+/**
+ * Convert an unsigned 8-bit integer to a base-suffixed hexadecimal string.
+ *
+ * @param num   The number to convert.
+ *
+ * @return Dynamically allocated base-suffixed hexadecimal string, or NULL
+ *         if failed to allocate memory.
+ */
+static inline char *
+hidrd_hex_u8_to_bstr(uint8_t num)
+{
+    return hidrd_num_u8_to_bstr(num, HIDRD_NUM_BASE_HEX);
 }
 
 /**
