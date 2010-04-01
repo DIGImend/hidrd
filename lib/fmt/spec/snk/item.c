@@ -109,7 +109,7 @@ spec_snk_item_global(hidrd_spec_snk_inst *spec_snk,
                 ITEM(usage_page,
                      VALUE(STROWN,
                            hidrd_tkn_hmnz(
-                            hidrd_usage_page_to_token_or_hex(
+                            hidrd_usage_page_to_token_or_bhex(
                                 hidrd_item_usage_page_get_value(item)),
                             HIDRD_TKN_HMNZ_CAP_WF)),
                      COMMENT(STROWN,
