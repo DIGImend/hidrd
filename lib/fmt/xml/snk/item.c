@@ -50,18 +50,18 @@
     xml_snk_group_end(xml_snk, #_name)
 
 #define CASE_SIMPLE_S32(_TYPE, _NAME, _name) \
-    case HIDRD_ITEM_##_TYPE##_TAG_##_NAME:                          \
-        return ADD_SIMPLE(                                          \
-                _name,                                              \
-                CONTENT(S32,                                        \
-                        (int)hidrd_item_##_name##_get_value(item)))
+    case HIDRD_ITEM_##_TYPE##_TAG_##_NAME:                              \
+        return ADD_SIMPLE(                                              \
+                _name,                                                  \
+                CONTENT(S32,                                            \
+                        (int32_t)hidrd_item_##_name##_get_value(item)))
 
 #define CASE_SIMPLE_U32(_TYPE, _NAME, _name) \
     case HIDRD_ITEM_##_TYPE##_TAG_##_NAME:                          \
         return ADD_SIMPLE(                                          \
                 _name,                                              \
                 CONTENT(U32,                                        \
-                        (unsigned int)                              \
+                        (uint32_t)                                  \
                             hidrd_item_##_name##_get_value(item)))
 
 
