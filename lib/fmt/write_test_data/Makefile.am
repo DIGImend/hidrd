@@ -22,6 +22,9 @@ check_DATA = \
     SET.xml         \
     basic.bin       \
     basic.xml       \
+    bitmap.bin      \
+    bitmap.spec     \
+    bitmap.xml      \
     collection.bin  \
     collection.xml  \
     empty.bin       \

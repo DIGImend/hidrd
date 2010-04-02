@@ -26,6 +26,7 @@
 
 #include "hidrd/util/str.h"
 #include "hidrd/util/hex.h"
+#include "hidrd/util/buf.h"
 #include "hidrd/item.h"
 #include "item_ent.h"
 #include "item.h"
@@ -83,6 +84,88 @@
     } while (0)
 
 static bool
+spec_snk_item_main_bitmap(hidrd_spec_snk_inst  *spec_snk,
+                          const hidrd_item     *item)
+{
+    bool        result          = false;
+    bool        first           = true;
+    hidrd_buf   buf             = HIDRD_BUF_EMPTY;
+    char        name_buf[32];
+    uint8_t     bit;
+
+    assert(hidrd_item_input_valid(item) ||
+           hidrd_item_output_valid(item) ||
+           hidrd_item_feature_valid(item));
+
+#define BIT(_idx, _off_name, _on_name) \
+    do {                                                            \
+        if (hidrd_item_main_get_bit(item, _idx))                    \
+        {                                                           \
+            if (snprintf(name_buf, sizeof(name_buf),                \
+                         "%s", #_on_name) >= (int)sizeof(name_buf)) \
+                goto cleanup;                                       \
+            hidrd_tkn_hmnz(name_buf, HIDRD_TKN_HMNZ_CAP_WF);        \
+                                                                    \
+            if (!hidrd_buf_add_printf(&buf,                         \
+                                      (first ? "%s" : ", %s"),      \
+                                      name_buf))                    \
+                goto cleanup;                                       \
+                                                                    \
+            first = false;                                          \
+        }                                                           \
+    } while (0)
+
+    BIT(0, data, constant);
+    BIT(1, array, variable);
+    BIT(2, absolute, relative);
+    BIT(3, no_wrap, wrap);
+    BIT(4, linear, non_linear);
+    BIT(5, preferred_state, no_preferred);
+    BIT(6, no_null_position, null_state);
+    if (hidrd_item_main_get_tag(item) == HIDRD_ITEM_MAIN_TAG_INPUT)
+        BIT(7, no_bit7, bit7);
+    else
+        BIT(7, non_volatile, volatile);
+    BIT(8, bit_field, buffered_bytes);
+
+#undef BIT
+
+    for (bit = 9; bit < 32; bit++)
+        if (hidrd_item_main_get_bit(item, bit))
+        {
+            if (snprintf(name_buf, sizeof(name_buf), "bit%hhu", bit) >=
+                (int)sizeof(name_buf))
+                goto cleanup;
+            hidrd_tkn_hmnz(name_buf, HIDRD_TKN_HMNZ_CAP_WF);
+
+            if (!hidrd_buf_add_printf(&buf,
+                                      (first ? "%s" : ", %s"),
+                                      name_buf))
+                goto cleanup;
+
+            first = false;
+        }
+
+    hidrd_buf_add_span(&buf, '\0', 1);
+    hidrd_buf_retension(&buf);
+
+    result = spec_snk_item_entf(spec_snk,
+                                hidrd_item_main_tag_to_token(
+                                    hidrd_item_main_get_tag(item)),
+                                SPEC_SNK_ITEM_ENT_NT_VALUE,
+                                HIDRD_FMT_TYPE_STROWN, buf.ptr,
+                                SPEC_SNK_ITEM_ENT_NT_NONE);
+    hidrd_buf_init(&buf);
+
+cleanup:
+
+    hidrd_buf_clnp(&buf);
+
+    return result;
+}
+
+
+static bool
 spec_snk_item_main(hidrd_spec_snk_inst *spec_snk,
                    const hidrd_item    *item)
 {
@@ -105,6 +188,11 @@ spec_snk_item_main(hidrd_spec_snk_inst *spec_snk,
         case HIDRD_ITEM_MAIN_TAG_END_COLLECTION:
             spec_snk->depth--;
             return ITEM(end_collection);
+
+        case HIDRD_ITEM_MAIN_TAG_INPUT:
+        case HIDRD_ITEM_MAIN_TAG_OUTPUT:
+        case HIDRD_ITEM_MAIN_TAG_FEATURE:
+            return spec_snk_item_main_bitmap(spec_snk, item);
 
         default:
             RETURN_ITEM_SHORT_GENERIC(main);
