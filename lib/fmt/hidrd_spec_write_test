@@ -1,6 +1,6 @@
 #!/bin/bash
 # 
-# XML sink writing test script
+# Specification example sink writing test script
 #
 # Copyright (C) 2010 Nikolai Kondrashov
 # 
@@ -23,6 +23,6 @@
 
 set -e -u -o pipefail
 
-hidrd_write_test xml xml "$@"
+hidrd_write_test spec spec "$@"
 
 

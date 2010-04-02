@@ -86,6 +86,8 @@ endif	# ENABLE_FMT_XML
 if ENABLE_FMT_SPEC
 
 SUBDIRS += spec
+check_SCRIPTS += hidrd_spec_read_test hidrd_spec_write_test
+TESTS += hidrd_spec_read_test hidrd_spec_write_test
 libhidrd_fmt_la_SOURCES += spec.c
 libhidrd_fmt_la_LIBADD += spec/libhidrd_spec.la
 
