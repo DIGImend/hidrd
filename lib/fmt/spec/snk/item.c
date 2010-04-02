@@ -288,12 +288,20 @@ spec_snk_item_local(hidrd_spec_snk_inst *spec_snk,
         CASE_ITEM_U32(LOCAL, STRING_MAXIMUM, string_maximum);
 
         case HIDRD_ITEM_LOCAL_TAG_DELIMITER:
-            return ITEM(delimiter,
-                        VALUE(STRDUP,
-                              (hidrd_item_delimiter_get_value(item) ==
+        {
+            char   *value;
+
+            value = strdup((hidrd_item_delimiter_get_value(item) ==
                                HIDRD_ITEM_DELIMITER_SET_OPEN)
-                                ? "Open"
-                                : "Close"));
+                                ? "open"
+                                : "close");
+            if (value == NULL)
+                return false;
+
+            hidrd_tkn_hmnz(value, HIDRD_TKN_HMNZ_CAP_WF);
+
+            return ITEM(delimiter, VALUE(STROWN, value));
+        }
 
         default:
             RETURN_ITEM_SHORT_GENERIC(local);

@@ -19,6 +19,7 @@
 
 check_DATA = \
     SET.bin         \
+    SET.spec        \
     SET.xml         \
     basic.bin       \
     basic.xml       \
