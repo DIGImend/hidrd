@@ -28,6 +28,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include "hidrd/util/buf.h"
+#include "hidrd/util/str.h"
 #include "hidrd/fmt/spec/snk/ent_list.h"
 
 void
@@ -181,7 +182,7 @@ hidrd_spec_snk_ent_list_render(void                           **pbuf,
         if (p->name != NULL && !hidrd_buf_add_str(&buf, p->name))
             goto cleanup;
 
-        if (p->value != NULL)
+        if (p->value != NULL && !hidrd_str_isblank(p->value))
         {
             if (!hidrd_buf_add_printf(&buf,
                                       (p->name == NULL)
