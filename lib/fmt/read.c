@@ -102,7 +102,7 @@ main(int argc, char **argv)
     /* Check that input format supports reading */
     if (!hidrd_fmt_readable(input_format))
     {
-        fprintf(stderr, "%s reading is not supported", input_format->desc);
+        fprintf(stderr, "%s reading is not supported\n", input_format->desc);
         goto cleanup;
     }
 

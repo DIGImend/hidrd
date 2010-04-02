@@ -105,7 +105,7 @@ main(int argc, char **argv)
     /* Check that output format supports writing */
     if (!hidrd_fmt_writable(output_format))
     {
-        fprintf(stderr, "%s writing is not supported", output_format->desc);
+        fprintf(stderr, "%s writing is not supported\n", output_format->desc);
         goto cleanup;
     }
 

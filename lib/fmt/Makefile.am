@@ -39,7 +39,7 @@ TESTS_ENVIRONMENT = PATH="$$PATH:$(builddir)" \
 bin_PROGRAMS =
 bin_SCRIPTS =
 check_PROGRAMS = hidrd_natv_test hidrd_read hidrd_write
-check_SCRIPTS = 
+check_SCRIPTS = hidrd_read_test hidrd_write_test
 dist_noinst_SCRIPTS = $(check_SCRIPTS)
 
 hidrd_natv_test_SOURCES = natv_test.c

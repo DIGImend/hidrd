@@ -1,0 +1,114 @@
+#!/bin/bash
+# 
+# Sink writing test script
+#
+# Copyright (C) 2010 Nikolai Kondrashov
+# 
+# This file is part of hidrd.
+# 
+# Hidrd is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# Hidrd is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with hidrd; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+# 
+
+set -e -u -o pipefail
+shopt -s nullglob
+
+function run ()
+{
+    local cmd="$1"; shift
+    local format="$1"; shift
+    local options="$1"; shift
+    local input="$1"; shift
+    local output="$1"; shift
+    local output_basename="`basename \"$output\"`"
+    local test_output="`tempfile -s\"_$output_basename.test\"`"
+    local status
+
+    echo "Checking \"$format\" writing of \"$input\"" \
+         "against \"$output\"" \
+         "with options \"$options\"..." >&2
+
+    set +e
+    (
+        set -e
+        local output_lines
+        local test_output_lines
+        local max_lines
+
+        "$cmd" "$format" "$options" "$input" "$test_output"
+
+        output_lines=`wc -l < "$output"`
+        test_output_lines=`wc -l < "$test_output"`
+        if (( $test_output_lines > $output_lines )); then
+            max_lines=$test_output_lines
+        else
+            max_lines=$output_lines
+        fi
+
+        diff -u -U$max_lines "$output" "$test_output" >&2
+    )
+    status=$?
+    set -e
+
+    rm -f "$test_output"
+
+    if (( $status == 0 )); then
+        echo "PASSED." >&2
+    else
+        echo "FAILED." >&2
+    fi
+
+    return $status
+}
+
+
+function usage_exit ()
+{
+    echo "Usage: `basename \"$0\"` <format> <data_dir> <extension>" >&2
+    echo
+    exit 1
+}
+
+FMT=${1:-}
+DIR=${2:-}
+EXT=${3:-}
+
+if [ -z "$FMT" ]; then
+    echo "Format is not specified." >&2
+    usage_exit
+fi
+if [ -z "$DIR" ]; then
+    echo "Data directory is not specified." >&2
+    usage_exit
+fi
+if [ -z "$EXT" ]; then
+    echo "Extension is not specified." >&2
+    usage_exit
+fi
+
+HIDRD_WRITE="`readlink -f \"\`which hidrd_write\`\"`"
+
+cd "$DIR"
+
+for INPUT_FILE in *.bin; do
+    OPTIONS=""
+    OUTPUT_FILE="${INPUT_FILE%.bin}.${EXT}"
+    OPTIONS_FILE="${OUTPUT_FILE}.opt"
+    if [ -e "$OPTIONS_FILE" ]; then
+        OPTIONS=`cat "$OPTIONS_FILE"`
+    fi
+    run "$HIDRD_WRITE" "$FMT" "$OPTIONS" "$INPUT_FILE" "$OUTPUT_FILE"
+done
+
+
