@@ -38,12 +38,28 @@ TESTS_ENVIRONMENT = PATH="$$PATH:$(builddir)" \
 
 bin_PROGRAMS =
 bin_SCRIPTS =
-check_PROGRAMS = hidrd_natv_test
+check_PROGRAMS = hidrd_natv_test hidrd_read hidrd_write
 check_SCRIPTS = 
 dist_noinst_SCRIPTS = $(check_SCRIPTS)
 
 hidrd_natv_test_SOURCES = natv_test.c
 hidrd_natv_test_LDADD = ../strm/libhidrd_strm.la $(lib_LTLIBRARIES)
+
+hidrd_read_CFLAGS =
+hidrd_read_SOURCES = read.c
+hidrd_read_LDADD = \
+    $(lib_LTLIBRARIES)          \
+    ../strm/libhidrd_strm.la    \
+    ../item/libhidrd_item.la    \
+    ../util/libhidrd_util.la
+
+hidrd_write_CFLAGS =
+hidrd_write_SOURCES = write.c
+hidrd_write_LDADD = \
+    $(lib_LTLIBRARIES)          \
+    ../strm/libhidrd_strm.la    \
+    ../item/libhidrd_item.la    \
+    ../util/libhidrd_util.la
 
 if ENABLE_FMT_XML
 
@@ -60,6 +76,10 @@ TESTS += hidrd_xml_test hidrd_xml_read_test hidrd_xml_write_test
 hidrd_xml_test_CFLAGS = @LIBXML2_CFLAGS@
 hidrd_xml_test_SOURCES = xml_test.c
 hidrd_xml_test_LDADD = $(lib_LTLIBRARIES) ../strm/libhidrd_strm.la
+
+hidrd_read_CFLAGS += @LIBXML2_CFLAGS@
+
+hidrd_write_CFLAGS += @LIBXML2_CFLAGS@
 
 hidrd_xml_read_CFLAGS = @LIBXML2_CFLAGS@
 hidrd_xml_read_SOURCES = xml_read.c
