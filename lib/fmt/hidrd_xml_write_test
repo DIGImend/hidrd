@@ -22,75 +22,7 @@
 # 
 
 set -e -u -o pipefail
-shopt -s nullglob
 
-function run ()
-{
-    local cmd="$1"; shift
-    local options="$1"; shift
-    local input="$1"; shift
-    local output="$1"; shift
-    local output_basename="`basename \"$output\"`"
-    local test_output="`tempfile -s\"_$output_basename.test\"`"
-    local status
-
-    echo "Checking XML writing of \"$input\" against \"$output\"" \
-         "with options \"$options\"..." >&2
-
-    set +e
-    (
-        set -e
-        local output_lines
-        local test_output_lines
-        local max_lines
-
-        "$cmd" "$options" "$input" "$test_output"
-
-        output_lines=`wc -l < "$output"`
-        test_output_lines=`wc -l < "$test_output"`
-        if (( $test_output_lines > $output_lines )); then
-            max_lines=$test_output_lines
-        else
-            max_lines=$output_lines
-        fi
-
-        diff -u -U$max_lines "$output" "$test_output" >&2
-    )
-    status=$?
-    set -e
-
-    rm -f "$test_output"
-
-    if (( $status == 0 )); then
-        echo "PASSED." >&2
-    else
-        echo "FAILED." >&2
-    fi
-
-    return $status
-}
-
-
-DIR=${1:-${HIDRD_XML_WRITE_TEST_DATA:-}}
-if [ -z "$DIR" ]; then
-    echo "Data directory is not specified." >&2
-    echo "Usage: `basename \"$0\"` <data_dir>" >&2
-    echo
-    exit 1
-fi
-
-HIDRD_XML_WRITE="`readlink -f \"\`which hidrd_xml_write\`\"`"
-
-cd "$DIR"
-
-for INPUT_FILE in *.bin; do
-    OPTIONS=""
-    OUTPUT_FILE="${INPUT_FILE%.bin}.xml"
-    OPTIONS_FILE="${INPUT_FILE%.bin}.opt"
-    if [ -e "$OPTIONS_FILE" ]; then
-        OPTIONS=`cat "$OPTIONS_FILE"`
-    fi
-    run "$HIDRD_XML_WRITE" "$OPTIONS" "$INPUT_FILE" "$OUTPUT_FILE"
-done
+hidrd_write_test xml xml
 
 

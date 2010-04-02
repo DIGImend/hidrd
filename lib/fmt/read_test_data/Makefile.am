@@ -40,8 +40,8 @@ check_DATA = \
     unit.xml
 
 if ENABLE_TESTS_INSTALL
-xml_write_test_datadir = $(pkgdatadir)/xml_write_test_data
-xml_write_test_data_DATA = $(check_DATA)
+read_test_datadir = $(pkgdatadir)/read_test_data
+read_test_data_DATA = $(check_DATA)
 else
 dist_noinst_DATA = $(check_DATA)
 endif

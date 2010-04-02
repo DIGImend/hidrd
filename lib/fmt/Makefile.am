@@ -17,7 +17,7 @@
 # along with hidrd; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-SUBDIRS = natv
+SUBDIRS = natv read_test_data write_test_data
 
 lib_LTLIBRARIES = libhidrd_fmt.la
 
@@ -33,8 +33,8 @@ libhidrd_fmt_la_LIBADD = \
 
 TESTS = hidrd_natv_test
 TESTS_ENVIRONMENT = PATH="$$PATH:$(builddir)" \
-					HIDRD_XML_READ_TEST_DATA="$(srcdir)/xml_read_test_data" \
-					HIDRD_XML_WRITE_TEST_DATA="$(srcdir)/xml_write_test_data"
+					HIDRD_READ_TEST_DATA="$(srcdir)/read_test_data" \
+					HIDRD_WRITE_TEST_DATA="$(srcdir)/write_test_data"
 
 bin_PROGRAMS =
 bin_SCRIPTS =
@@ -63,14 +63,15 @@ hidrd_write_LDADD = \
 
 if ENABLE_FMT_XML
 
-SUBDIRS += xml xml_read_test_data xml_write_test_data
+SUBDIRS += xml
+
 libhidrd_fmt_la_SOURCES += xml.c
 libhidrd_fmt_la_CFLAGS = @LIBXML2_CFLAGS@
 libhidrd_fmt_la_LDFLAGS = @LIBXML2_LIBS@
 libhidrd_fmt_la_LIBADD += xml/libhidrd_xml.la
 
 check_SCRIPTS += hidrd_xml_read_test hidrd_xml_write_test
-check_PROGRAMS += hidrd_xml_test hidrd_xml_read hidrd_xml_write
+check_PROGRAMS += hidrd_xml_test
 TESTS += hidrd_xml_test hidrd_xml_read_test hidrd_xml_write_test
 
 hidrd_xml_test_CFLAGS = @LIBXML2_CFLAGS@
@@ -78,16 +79,7 @@ hidrd_xml_test_SOURCES = xml_test.c
 hidrd_xml_test_LDADD = $(lib_LTLIBRARIES) ../strm/libhidrd_strm.la
 
 hidrd_read_CFLAGS += @LIBXML2_CFLAGS@
-
 hidrd_write_CFLAGS += @LIBXML2_CFLAGS@
-
-hidrd_xml_read_CFLAGS = @LIBXML2_CFLAGS@
-hidrd_xml_read_SOURCES = xml_read.c
-hidrd_xml_read_LDADD = $(lib_LTLIBRARIES) ../strm/libhidrd_strm.la ../item/libhidrd_item.la ../util/libhidrd_util.la
-
-hidrd_xml_write_CFLAGS = @LIBXML2_CFLAGS@
-hidrd_xml_write_SOURCES = xml_write.c
-hidrd_xml_write_LDADD = $(lib_LTLIBRARIES) ../strm/libhidrd_strm.la ../item/libhidrd_item.la ../util/libhidrd_util.la
 
 endif	# ENABLE_FMT_XML
 
