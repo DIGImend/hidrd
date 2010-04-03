@@ -33,6 +33,9 @@
 #include <string.h>
 #include <strings.h>
 #include <stdio.h>
+#ifdef HIDRD_WITH_TOKENS
+#include "hidrd/util/tkn.h"
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -156,8 +159,7 @@ extern bool hidrd_unit_system_from_token_or_dec(
  */
 static inline bool
 hidrd_unit_system_known(hidrd_unit_system system)
-{
-    return (system >= HIDRD_UNIT_SYSTEM_KNOWN_MIN) &&
+{ return (system >= HIDRD_UNIT_SYSTEM_KNOWN_MIN) &&
            (system <= HIDRD_UNIT_SYSTEM_KNOWN_MAX);
 }
 
@@ -467,6 +469,21 @@ hidrd_unit_void(hidrd_unit unit)
            /* May you forgive us for using an obscure constant :) */
            ((unit & 0xFFFFFFF0) == 0);
 }
+
+#ifdef HIDRD_WITH_TOKENS
+
+/**
+ * Convert a known unit with known system to an expression string.
+ *
+ * @param unit  Unit to convert.
+ * @param cap   Capitalization type for token humanization.
+ *
+ * @return Dynamically allocated expression string, or NULL if failed to
+ *         allocate memory.
+ */
+extern char *hidrd_unit_to_expr(hidrd_unit unit, hidrd_tkn_hmnz_cap cap);
+
+#endif /* HIDRD_WITH_TOKENS */
 
 #ifdef __cplusplus
 } /* extern "C" */
