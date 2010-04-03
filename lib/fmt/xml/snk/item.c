@@ -332,6 +332,7 @@ xml_snk_item_unit(hidrd_xml_snk_inst   *xml_snk,
      * unknown, (cannot be interpreted by our API)
      */
     else if (hidrd_unit_void(unit) || !hidrd_unit_known(unit))
+        /* FIXME decide on byte order */
         success = ADD_SIMPLE(value, CONTENT(HEX, &unit, sizeof(unit)));
     else
         /* If the unit system is known to us */
