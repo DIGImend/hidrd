@@ -28,7 +28,7 @@
 #define __HIDRD_ITEM_UNIT_H__
 
 #include "hidrd/item/global.h"
-#include "hidrd/unit.h"
+#include "hidrd/util/unit.h"
 
 #ifdef __cplusplus
 extern "C" {

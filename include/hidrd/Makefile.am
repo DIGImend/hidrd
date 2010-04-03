@@ -22,8 +22,7 @@ SUBDIRS = util usage item
 hidrddir = $(includedir)/hidrd
 
 hidrd_HEADERS = \
-    item.h      \
-    unit.h
+    item.h
 
 if ENABLE_OPT
 SUBDIRS += opt

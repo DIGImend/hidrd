@@ -28,7 +28,8 @@ libhidrd_util_la_SOURCES = \
     fmt.c                   \
     hex.c                   \
     num.c                   \
-    str.c
+    str.c                   \
+    unit.c
 
 if ENABLE_TOKENS
 libhidrd_util_la_SOURCES += tkn.c

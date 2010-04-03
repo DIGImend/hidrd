@@ -29,7 +29,8 @@ hidrd_util_HEADERS = \
     fmt.h               \
     hex.h               \
     num.h               \
-    str.h
+    str.h               \
+    unit.h
 
 if ENABLE_TOKENS
 hidrd_util_HEADERS += tkn.h

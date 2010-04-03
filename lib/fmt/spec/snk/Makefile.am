@@ -30,7 +30,6 @@ libhidrd_spec_snk_la_SOURCES = \
     item_ent.c
 
 libhidrd_spec_snk_la_LIBADD = \
-    ../../../unit/libhidrd_unit.la      \
     ../../../usage/libhidrd_usage.la    \
     ../../../item/libhidrd_item.la      \
     ../../../util/libhidrd_util.la

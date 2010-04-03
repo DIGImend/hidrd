@@ -27,7 +27,7 @@
 #include "hidrd/util/dec.h"
 #include "hidrd/util/str.h"
 #include "hidrd/util/tkn.h"
-#include "hidrd/unit.h"
+#include "hidrd/util/unit.h"
 
 
 char *

@@ -31,7 +31,6 @@ libhidrd_item_la_SOURCES = \
     short.c
 
 libhidrd_item_la_LIBADD = \
-    ../unit/libhidrd_unit.la    \
     ../usage/libhidrd_usage.la  \
     ../util/libhidrd_util.la
 

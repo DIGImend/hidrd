@@ -1,5 +1,5 @@
 /** @file
- * @brief HID report descriptor - unit value
+ * @brief HID report descriptor - utilities - unit value
  *
  * Copyright (C) 2010 Nikolai Kondrashov
  *
@@ -24,8 +24,8 @@
  * @(#) $Id$
  */
 
-#ifndef __HIDRD_UNIT_H__
-#define __HIDRD_UNIT_H__
+#ifndef __HIDRD_UTIL_UNIT_H__
+#define __HIDRD_UTIL_UNIT_H__
 
 #include <assert.h>
 #include <stdbool.h>
@@ -472,4 +472,4 @@ hidrd_unit_void(hidrd_unit unit)
 } /* extern "C" */
 #endif
 
-#endif /* __HIDRD_UNIT_H__ */
+#endif /* __HIDRD_UTIL_UNIT_H__ */
