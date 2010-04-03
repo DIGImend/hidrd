@@ -233,6 +233,26 @@ spec_snk_item_global(hidrd_spec_snk_inst *spec_snk,
                                     hidrd_item_usage_page_get_value(
                                         item)))));
 
+        case HIDRD_ITEM_GLOBAL_TAG_UNIT:
+            {
+                hidrd_unit  unit    = hidrd_item_unit_get_value(item);
+
+                if (unit == HIDRD_UNIT_NONE)
+                    return ITEM(unit);
+                else if (!hidrd_unit_void(unit) && hidrd_unit_known(unit) &&
+                         hidrd_unit_system_known(
+                             hidrd_unit_get_system(unit)))
+                    return
+                        ITEM(unit,
+                             VALUE(STROWN,
+                                   hidrd_unit_to_expr(
+                                      unit, HIDRD_TKN_HMNZ_CAP_WF)));
+                else
+                {
+                    /* TODO add proper value output */
+                    return ITEM(unit);
+                }
+            }
         case HIDRD_ITEM_GLOBAL_TAG_PUSH:
             {
                 hidrd_spec_snk_state   *new_state;
