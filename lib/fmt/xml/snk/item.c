@@ -442,7 +442,7 @@ xml_snk_item_usage(hidrd_xml_snk_inst  *xml_snk,
                    hidrd_usage          usage)
 {
     bool    success         = false;
-    char   *token_or_hex;
+    char   *token_or_hex    = NULL;
     char   *desc            = NULL;
 
     if (!hidrd_usage_defined_page(usage))
