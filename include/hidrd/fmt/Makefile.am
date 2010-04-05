@@ -30,3 +30,8 @@ if ENABLE_FMT_XML
 SUBDIRS += xml
 hidrd_fmt_HEADERS += xml.h
 endif
+
+if ENABLE_FMT_SPEC
+SUBDIRS += spec
+hidrd_fmt_HEADERS += spec.h
+endif
