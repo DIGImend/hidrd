@@ -310,10 +310,15 @@ cleanup:
 
 static bool
 xml_snk_item_unit(hidrd_xml_snk_inst   *xml_snk,
-                  hidrd_unit            unit)
+                  const hidrd_item     *item)
 {
-    bool    success     = false;
-    bool    inside      = false;
+    hidrd_unit  unit;
+    bool        success     = false;
+    bool        inside      = false;
+
+    assert(hidrd_item_unit_valid(item));
+
+    unit = hidrd_item_unit_get_value(item);
 
     if (!xml_snk_element_add(xml_snk, true, "unit",
                              XML_SNK_ELEMENT_NT_NONE))
@@ -332,8 +337,13 @@ xml_snk_item_unit(hidrd_xml_snk_inst   *xml_snk,
      * unknown, (cannot be interpreted by our API)
      */
     else if (hidrd_unit_void(unit) || !hidrd_unit_known(unit))
-        /* FIXME decide on byte order */
-        success = ADD_SIMPLE(value, CONTENT(HEX, &unit, sizeof(unit)));
+        success =
+            ADD_SIMPLE(
+                value,
+                CONTENT(HEX,
+                        /* We promise we won't change it */
+                        hidrd_item_short_get_data((hidrd_item *)item),
+                        hidrd_item_short_get_data_bytes(item)));
     else
         /* If the unit system is known to us */
         success = hidrd_unit_system_known(hidrd_unit_get_system(unit))
@@ -369,8 +379,7 @@ xml_snk_item_global(hidrd_xml_snk_inst *xml_snk,
         CASE_SIMPLE_U32(GLOBAL, REPORT_COUNT, report_count);
 
         case HIDRD_ITEM_GLOBAL_TAG_UNIT:
-            return xml_snk_item_unit(xml_snk,
-                                     hidrd_item_unit_get_value(item));
+            return xml_snk_item_unit(xml_snk, item);
 
         case HIDRD_ITEM_GLOBAL_TAG_USAGE_PAGE:
             xml_snk->state->usage_page =
