@@ -22,39 +22,12 @@
     </si_linear>
   </unit>
   <unit>
-    <si_linear>
-      <centimeter>2</centimeter>
-      <seconds/>
-    </si_linear>
+    <value>12345678</value>
   </unit>
   <unit>
-    <si_linear>
-      <centimeter>2</centimeter>
-      <seconds/>
-    </si_linear>
-  </unit>
-  <unit>
-    <si_linear>
-      <centimeter>2</centimeter>
-      <seconds/>
-    </si_linear>
-  </unit>
-  <unit>
-    <si_linear>
-      <centimeter>2</centimeter>
-      <seconds/>
-    </si_linear>
-  </unit>
-  <unit>
-    <si_linear>
-      <centimeter>2</centimeter>
-      <seconds/>
-    </si_linear>
-  </unit>
-  <unit>
-    <si_linear>
-      <centimeter>2</centimeter>
-      <seconds/>
-    </si_linear>
+    <generic system="8">
+      <length/>
+      <time/>
+    </generic>
   </unit>
 </descriptor>

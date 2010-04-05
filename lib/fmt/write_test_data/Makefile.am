@@ -41,6 +41,7 @@ check_DATA = \
     short.bin       \
     short.xml       \
     unit.bin        \
+    unit.spec       \
     unit.xml
 
 if ENABLE_TESTS_INSTALL

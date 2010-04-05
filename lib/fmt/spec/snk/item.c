@@ -247,11 +247,12 @@ spec_snk_item_global(hidrd_spec_snk_inst *spec_snk,
                              VALUE(STROWN,
                                    hidrd_unit_to_expr(
                                       unit, HIDRD_TKN_HMNZ_CAP_WF)));
-                else
-                {
-                    /* TODO add proper value output */
-                    return ITEM(unit);
-                }
+
+                return
+                    ITEM(unit,
+                        VALUE(BHEX,
+                              hidrd_item_short_get_data((hidrd_item *)item),
+                              hidrd_item_short_get_data_bytes(item)));
             }
         case HIDRD_ITEM_GLOBAL_TAG_PUSH:
             {
