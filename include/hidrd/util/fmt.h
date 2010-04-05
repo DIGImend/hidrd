@@ -41,7 +41,8 @@ typedef enum hidrd_fmt_type {
     HIDRD_FMT_TYPE_U32,     /**< Unsigned 32-bit integer */
     HIDRD_FMT_TYPE_STRDUP,  /**< String duplication */
     HIDRD_FMT_TYPE_STROWN,  /**< String ownership taking */
-    HIDRD_FMT_TYPE_HEX      /**< Hex string */
+    HIDRD_FMT_TYPE_HEX,     /**< Hex string */
+    HIDRD_FMT_TYPE_BHEX     /**< Base-suffixed hex string */
 } hidrd_fmt_type;
 
 /**

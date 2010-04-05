@@ -86,6 +86,18 @@ hidrd_fmtpva(char             **pstr,
                     return false;
             }
             break;
+        case HIDRD_FMT_TYPE_BHEX:
+            {
+                void   *buf     = va_arg(*pap, void *);
+                size_t  size    = va_arg(*pap, size_t);
+
+                assert(buf != NULL || size == 0);
+
+                str = hidrd_hex_buf_to_bstr(buf, size);
+                if (str == NULL)
+                    return false;
+            }
+            break;
         default:
             assert(!"Unknown string format");
             return false;
