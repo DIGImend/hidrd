@@ -195,6 +195,17 @@ extern bool hidrd_hex_buf_from_str(void        *buf,
 extern char *hidrd_hex_buf_to_str(void *buf, size_t size);
 
 /**
+ * Convert a buffer to a base-suffixed hexadecimal string.
+ *
+ * @param buf   Pointer to buffer to format.
+ * @param size  Size of the buffer to format.
+ *
+ * @return Dynamically allocated base-suffixed hexadecimal string, or NULL
+ *         if failed to allocate memory.
+ */
+extern char *hidrd_hex_buf_to_bstr(void *buf, size_t size);
+
+/**
  * Declare a function pair for converting specified number type to from a
  * hexadecimal string.
  *

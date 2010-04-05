@@ -108,3 +108,32 @@ hidrd_hex_buf_to_str(void *buf, size_t size)
 
     return str;
 }
+
+
+char *
+hidrd_hex_buf_to_bstr(void *buf, size_t size)
+{
+    static const char   map[16] = "0123456789ABCDEF";
+    uint8_t            *bbuf    = (uint8_t *)buf;
+    char               *str;
+    char               *p;
+    uint8_t             b;
+
+    assert(buf != NULL || size == 0);
+
+    str = malloc((size * 2) + 2);
+    if (str == NULL)
+        return NULL;
+
+    for (p = str; size > 0; size--, bbuf++)
+    {
+        b = *bbuf;
+        *p++ = map[b >> 4];
+        *p++ = map[b & 0xF];
+    }
+
+    *p++ = 'h';
+    *p = '\0';
+
+    return str;
+}
