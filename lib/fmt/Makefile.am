@@ -32,7 +32,7 @@ libhidrd_fmt_la_LIBADD = \
     natv/libhidrd_natv.la
 
 TESTS = hidrd_natv_test
-TESTS_ENVIRONMENT = PATH="$$PATH:$(builddir)" \
+TESTS_ENVIRONMENT = PATH="$$PATH:$(builddir):$(srcdir)" \
 					HIDRD_READ_TEST_DATA="$(srcdir)/read_test_data" \
 					HIDRD_WRITE_TEST_DATA="$(srcdir)/write_test_data"
 
