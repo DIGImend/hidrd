@@ -159,7 +159,7 @@ hidrd_spec_snk_ent_list_render(void                           **pbuf,
     hidrd_buf           buf         = HIDRD_BUF_EMPTY;
     int                 min_depth;
     hidrd_spec_snk_ent *p;
-    size_t              last_l;
+    size_t              last_l      = 0;
     size_t              l;
 
     assert(hidrd_spec_snk_ent_list_valid(list));
