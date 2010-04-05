@@ -260,8 +260,10 @@ AC_CONFIG_FILES([Makefile
                  include/hidrd/fmt/Makefile
                  include/hidrd/fmt/natv/Makefile
                  include/hidrd/fmt/xml/Makefile
+                 include/hidrd/fmt/spec/Makefile
+                 include/hidrd/fmt/spec/snk/Makefile
                  include/hidrd/usage/Makefile
-                 
+
                  lib/Makefile
                  lib/util/Makefile
                  lib/item/Makefile
@@ -279,7 +281,6 @@ AC_CONFIG_FILES([Makefile
                  lib/fmt/spec/Makefile
                  lib/fmt/spec/snk/Makefile
                  lib/usage/Makefile
-                 lib/unit/Makefile
-                 
+
                  src/Makefile])
 AC_OUTPUT
