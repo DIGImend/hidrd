@@ -102,8 +102,8 @@ hidrd_num_u32_from_bstr(uint32_t *pnum, const char *str)
     /* Just to be safe on all archs */
     const unsigned long int     max     = UINT32_MAX;
     const char                 *b;
-    const char                 *b_end;
-    hidrd_num_base              base;
+    const char                 *b_end   = NULL;
+    hidrd_num_base              base    = 0;
     unsigned long int           num;
     const char                 *start;
     const char                 *end;
@@ -301,8 +301,8 @@ hidrd_num_s32_from_bstr(int32_t *pnum, const char *str)
     /* Just to be safe on all archs */
     const long int  max     = INT32_MAX;
     const char     *b;
-    const char     *b_end;
-    hidrd_num_base  base;
+    const char     *b_end   = NULL;
+    hidrd_num_base  base    = 0;
     long int        num;
     const char     *end;
 
