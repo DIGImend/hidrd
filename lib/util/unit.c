@@ -31,29 +31,8 @@
 #include "hidrd/util/unit.h"
 
 
-char *
-hidrd_unit_system_to_dec(hidrd_unit_system system)
-{
-    assert(hidrd_unit_system_valid(system));
-    return HIDRD_NUM_TO_STR(u32, system, NONE, DEC);
-}
-
-
-bool
-hidrd_unit_system_from_dec(hidrd_unit_system *psystem, const char *dec)
-{
-    uint32_t    system;
-
-    assert(dec != NULL);
-
-    if (!HIDRD_NUM_FROM_STR(u32, &system, dec, NONE, DEC))
-        return false;
-
-    if (psystem != NULL)
-        *psystem = system;
-
-    return true;
-}
+/* Define unit system to numeric string conversion functions */
+HIDRD_NUM_CONV_DEFS(unit_system, u32);
 
 
 char *
@@ -85,70 +64,16 @@ hidrd_unit_exp_from_dec(hidrd_unit_exp *pexp, const char *str)
 
 
 #ifdef HIDRD_WITH_TOKENS
-const char *
-hidrd_unit_system_to_token(hidrd_unit_system system)
-{
-    assert(hidrd_unit_system_valid(system));
-
-    switch (system)
-    {
-#define MAP(_NAME, _name) \
-    case HIDRD_UNIT_SYSTEM_##_NAME: \
-        return #_name
-
-        MAP(NONE, none);
-        MAP(SI_LINEAR, si_linear);
-        MAP(SI_ROTATION, si_rotation);
-        MAP(ENGLISH_LINEAR, english_linear);
-        MAP(ENGLISH_ROTATION, english_rotation);
-        MAP(VENDOR, vendor);
-
+/* Define unit system <-> token conversion functions */
+#define MAP(_N, _n) HIDRD_TKN_LINK(HIDRD_UNIT_SYSTEM_##_N, _n)
+HIDRD_TKN_CONV_DEFS(unit_system,
+                    MAP(NONE, none),
+                    MAP(SI_LINEAR, si_linear),
+                    MAP(SI_ROTATION, si_rotation),
+                    MAP(ENGLISH_LINEAR, english_linear),
+                    MAP(ENGLISH_ROTATION, english_rotation),
+                    MAP(VENDOR, vendor))
 #undef MAP
-        default:
-            return NULL;
-    }
-}
-
-
-bool
-hidrd_unit_system_from_token(hidrd_unit_system *psystem, const char *token)
-{
-    hidrd_unit_system   system;
-    const char         *tkn;
-    size_t              len;
-
-    assert(token != NULL);
-
-    if (!hidrd_tkn_strip(&tkn, &len, token))
-        return false;
-
-#define MAP(_NAME, _name) \
-    do {                                                \
-        if (hidrd_str_ncasecmpn(#_name, tkn, len) == 0) \
-        {                                               \
-            system = HIDRD_UNIT_SYSTEM_##_NAME;         \
-            goto found;                                 \
-        }                                               \
-    } while (0)
-
-    MAP(NONE, none);
-    MAP(SI_LINEAR, si_linear);
-    MAP(SI_ROTATION, si_rotation);
-    MAP(ENGLISH_LINEAR, english_linear);
-    MAP(ENGLISH_ROTATION, english_rotation);
-    MAP(VENDOR, vendor);
-
-#undef MAP
-
-    return false;
-
-found:
-
-    if (psystem != NULL)
-        *psystem = system;
-
-    return true;
-}
 
 
 static const char *exp_tkn[HIDRD_UNIT_NIBBLE_INDEX_EXP_NUM]
