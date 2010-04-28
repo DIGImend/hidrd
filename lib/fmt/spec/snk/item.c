@@ -152,8 +152,7 @@ spec_snk_item_main_bitmap(hidrd_spec_snk_inst  *spec_snk,
     result = spec_snk_item_entf(spec_snk,
                                 hidrd_item_main_tag_to_token(
                                     hidrd_item_main_get_tag(item)),
-                                SPEC_SNK_ITEM_ENT_NT_VALUE,
-                                HIDRD_FMT_TYPE_STROWN, buf.ptr,
+                                VALUE(STROWN, buf.ptr),
                                 SPEC_SNK_ITEM_ENT_NT_NONE);
     hidrd_buf_init(&buf);
 
@@ -177,8 +176,10 @@ spec_snk_item_main(hidrd_spec_snk_inst *spec_snk,
             if (!ITEM(collection,
                       VALUE(STROWN,
                            hidrd_tkn_hmnz(
-                            hidrd_item_collection_type_to_token_or_dec(
-                                hidrd_item_collection_get_type(item)),
+                            HIDRD_NUM_TO_ALT_STRCD(
+                                item_collection_type,
+                                hidrd_item_collection_get_type(item),
+                                token, dec),
                             HIDRD_TKN_HMNZ_CAP_WF))))
                 return false;
 
@@ -224,12 +225,14 @@ spec_snk_item_global(hidrd_spec_snk_inst *spec_snk,
                 ITEM(usage_page,
                      VALUE(STROWN,
                            hidrd_tkn_hmnz(
-                            hidrd_usage_page_to_token_or_bhex(
-                                hidrd_item_usage_page_get_value(item)),
+                            HIDRD_NUM_TO_ALT_STRCD(
+                                usage_page,
+                                hidrd_item_usage_page_get_value(item),
+                                token, shex),
                             HIDRD_TKN_HMNZ_CAP_WF)),
                      COMMENT(STROWN,
                              hidrd_str_uc_first(
-                                hidrd_usage_page_desc(
+                                hidrd_usage_page_fmt_desc(
                                     hidrd_item_usage_page_get_value(
                                         item)))));
 
@@ -293,6 +296,64 @@ spec_snk_item_global(hidrd_spec_snk_inst *spec_snk,
 }
 
 
+static char *
+hidrd_usage_to_shex_id(hidrd_usage usage)
+{
+    return hidrd_usage_id_to_shex(hidrd_usage_get_id(usage));
+}
+
+
+static bool
+spec_snk_item_usage(hidrd_spec_snk_inst    *spec_snk,
+                    const char             *name_tkn,
+                    hidrd_usage             usage)
+{
+    bool    result          = false;
+    char   *token_or_bhex   = NULL;
+    char   *desc            = NULL;
+
+    if (!hidrd_usage_defined_page(usage))
+        usage = hidrd_usage_set_page(usage, spec_snk->state->usage_page);
+
+    if (hidrd_usage_get_page(usage) == spec_snk->state->usage_page)
+    {
+        token_or_bhex = HIDRD_NUM_TO_ALT_STR2D(usage, usage,
+                                               token, shex_id);
+        if (token_or_bhex == NULL)
+            goto cleanup;
+        desc = hidrd_usage_fmt_desc_id(usage);
+        if (desc == NULL)
+            goto cleanup;
+    }
+    else
+    {
+        token_or_bhex = HIDRD_NUM_TO_ALT_STR2D(usage, usage, token, shex);
+        if (token_or_bhex == NULL)
+            goto cleanup;
+        desc = hidrd_usage_fmt_desc(usage);
+        if (desc == NULL)
+            goto cleanup;
+    }
+
+    hidrd_tkn_hmnz(token_or_bhex, HIDRD_TKN_HMNZ_CAP_WF);
+
+    result = spec_snk_item_entf(spec_snk,
+                                name_tkn,
+                                VALUE(STROWN, token_or_bhex),
+                                COMMENT(STROWN, desc),
+                                SPEC_SNK_ITEM_ENT_NT_NONE);
+    token_or_bhex = NULL;
+    desc = NULL;
+
+cleanup:
+
+    free(desc);
+    free(token_or_bhex);
+
+    return result;
+}
+
+
 static bool
 spec_snk_item_local(hidrd_spec_snk_inst *spec_snk,
                     const hidrd_item    *item)
@@ -307,6 +368,20 @@ spec_snk_item_local(hidrd_spec_snk_inst *spec_snk,
         CASE_ITEM_U32(LOCAL, STRING_INDEX, string_index);
         CASE_ITEM_U32(LOCAL, STRING_MINIMUM, string_minimum);
         CASE_ITEM_U32(LOCAL, STRING_MAXIMUM, string_maximum);
+
+        case HIDRD_ITEM_LOCAL_TAG_USAGE:
+            return spec_snk_item_usage(spec_snk, "usage",
+                                       hidrd_item_usage_get_value(item));
+
+        case HIDRD_ITEM_LOCAL_TAG_USAGE_MINIMUM:
+            return spec_snk_item_usage(
+                        spec_snk, "usage_minimum",
+                        hidrd_item_usage_minimum_get_value(item));
+
+        case HIDRD_ITEM_LOCAL_TAG_USAGE_MAXIMUM:
+            return spec_snk_item_usage(
+                        spec_snk, "usage_maximum",
+                        hidrd_item_usage_maximum_get_value(item));
 
         case HIDRD_ITEM_LOCAL_TAG_DELIMITER:
         {
