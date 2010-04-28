@@ -48,6 +48,24 @@ extern "C" {
 extern bool hidrd_str_isblank(const char *str);
 
 /**
+ * Lowercase a string.
+ *
+ * @param str   String to modify.
+ *
+ * @return Modified string.
+ */
+extern char *hidrd_str_lc(char *str);
+
+/**
+ * Uppercase a string.
+ *
+ * @param str   String to modify.
+ *
+ * @return Modified string.
+ */
+extern char *hidrd_str_uc(char *str);
+
+/**
  * Uppercase the first character of a string.
  *
  * @param str   String to modify.

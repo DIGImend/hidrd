@@ -58,6 +58,36 @@ hidrd_str_uc_first(char *str)
 
 
 char *
+hidrd_str_uc(char *str)
+{
+    char   *p;
+
+    assert(str != NULL);
+
+    for (p = str; *p != '\0'; p++)
+        if (*p >= 'a' && *p <= 'z')
+            *p -= ('a' - 'A');
+
+    return str;
+}
+
+
+char *
+hidrd_str_lc(char *str)
+{
+    char   *p;
+
+    assert(str != NULL);
+
+    for (p = str; *p != '\0'; p++)
+        if (*p >= 'A' && *p <= 'Z')
+            *p += ('a' - 'A');
+
+    return str;
+}
+
+
+char *
 hidrd_str_apada(char *str)
 {
     char   *padded;
