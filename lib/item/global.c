@@ -27,11 +27,11 @@
 #include <string.h>
 #include "hidrd/item/global.h"
 
-/* Define tag decimal string conversion functions */
-HIDRD_DEC_CONV_DEFS(item_global_tag, tag, u32);
+/* Define tag numeric string conversion functions */
+HIDRD_NUM_CONV_DEFS(item_global_tag, u32);
 
 #ifdef HIDRD_WITH_TOKENS
-static const hidrd_tkn_link tag_map[] = {
+static const hidrd_tkn_link item_global_tag_map[] = {
 #define MAP(_NAME, _name)   \
     {.str= #_name, .num = HIDRD_ITEM_GLOBAL_TAG_##_NAME}
     MAP(USAGE_PAGE, usage_page),
@@ -51,6 +51,6 @@ static const hidrd_tkn_link tag_map[] = {
 };
 
 /* Define tag token conversion functions */
-HIDRD_TKN_CONV_DEFS(item_global_tag, tag, dec)
+HIDRD_TKN_CONV_DEFS(item_global_tag)
 
 #endif /* HIDRD_WITH_TOKENS */

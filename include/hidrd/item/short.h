@@ -70,12 +70,12 @@ hidrd_item_short_type_valid(hidrd_item_short_type type)
     }
 }
 
-/* Declare type decimal string conversion functions */
-HIDRD_DEC_CONV_DECLS(item_short_type, type);
+/* Declare type numeric string conversion functions */
+HIDRD_NUM_CONV_DECLS(item_short_type);
 
 #ifdef HIDRD_WITH_TOKENS
 /* Declare type token conversion functions */
-HIDRD_TKN_CONV_DECLS(item_short_type, type, dec);
+HIDRD_TKN_CONV_DECLS(item_short_type);
 #endif /* HIDRD_WITH_TOKENS */
 
 /** Short item tag */
@@ -96,8 +96,8 @@ hidrd_item_short_tag_valid(hidrd_item_short_tag tag)
     return hidrd_item_basic_tag_valid(tag);
 }
 
-/* Declare tag decimal string conversion functions */
-HIDRD_DEC_CONV_DECLS(item_short_tag, tag);
+/* Declare tag numeric string conversion functions */
+HIDRD_NUM_CONV_DECLS(item_short_tag);
 
 /** Short item data size code */
 typedef hidrd_item_basic_data_size hidrd_item_short_data_size;
@@ -163,8 +163,8 @@ hidrd_item_short_data_size_from_bytes(hidrd_item_short_data_bytes bytes)
 }
 
 
-/* Declare decimal string conversion functions for data size in bytes */
-HIDRD_DEC_CONV_DECLS(item_short_data_bytes, bytes);
+/* Declare numeric string conversion functions for data size in bytes */
+HIDRD_NUM_CONV_DECLS(item_short_data_bytes);
 
 
 /**
@@ -566,8 +566,8 @@ hidrd_item_short_init_unsigned(hidrd_item              *item,
         return hidrd_item_short_set_tag(item, tag);                     \
     }                                                                   \
                                                                         \
-    /* Declare tag decimal string conversion functions */               \
-    HIDRD_DEC_CONV_DECLS(item_##_name##_tag, tag);                      \
+    /* Declare tag numeric string conversion functions */               \
+    HIDRD_NUM_CONV_DECLS(item_##_name##_tag);                           \
                                                                         \
     static inline hidrd_item *                                          \
     hidrd_item_##_name##_init(hidrd_item               *item,           \
@@ -640,8 +640,8 @@ hidrd_item_short_init_unsigned(hidrd_item              *item,
 
 #ifdef HIDRD_WITH_TOKENS
 #define HIDRD_ITEM_SHORT_GEN_TOKEN_FUNCS(_name) \
-    /* Declare tag token conversion functions */        \
-    HIDRD_TKN_CONV_DECLS(item_##_name##_tag, tag, dec);
+    /* Declare tag token conversion functions */    \
+    HIDRD_TKN_CONV_DECLS(item_##_name##_tag);
 #else
 #define HIDRD_ITEM_SHORT_GEN_TOKEN_FUNCS(_name)
 #endif

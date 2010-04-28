@@ -28,11 +28,11 @@
 #include <stdio.h>
 #include "hidrd/item/collection.h"
 
-/* Define type decimal string conversion functions */
-HIDRD_DEC_CONV_DEFS(item_collection_type, type, u32);
+/* Define type numeric string conversion functions */
+HIDRD_NUM_CONV_DEFS(item_collection_type, u32);
 
 #ifdef HIDRD_WITH_TOKENS
-static const hidrd_tkn_link type_map[] = {
+static const hidrd_tkn_link item_collection_type_map[] = {
 #define MAP(_NAME, _name)   \
     {.str= #_name, .num = HIDRD_ITEM_COLLECTION_TYPE_##_NAME}
     MAP(PHYSICAL, physical),
@@ -47,6 +47,6 @@ static const hidrd_tkn_link type_map[] = {
 };
 
 /* Define type token conversion functions */
-HIDRD_TKN_CONV_DEFS(item_collection_type, type, dec)
+HIDRD_TKN_CONV_DEFS(item_collection_type)
 
 #endif /* HIDRD_WITH_TOKENS */

@@ -67,12 +67,12 @@ hidrd_item_basic_type_valid(hidrd_item_basic_type type)
 }
 
 
-/* Declare type decimal string conversion functions */
-HIDRD_DEC_CONV_DECLS(item_basic_type, type);
+/* Declare type numeric string conversion functions */
+HIDRD_NUM_CONV_DECLS(item_basic_type);
 
 #ifdef HIDRD_WITH_TOKENS
 /* Declare type token conversion functions */
-HIDRD_TKN_CONV_DECLS(item_basic_type, type, dec);
+HIDRD_TKN_CONV_DECLS(item_basic_type);
 #endif /* HIDRD_WITH_TOKENS */
 
 /** Basic item prefix' tag bitfield value */
@@ -94,8 +94,8 @@ hidrd_item_basic_tag_valid(hidrd_item_basic_tag tag)
     return hidrd_item_pfx_tag_valid(tag);
 }
 
-/* Declare tag decimal string conversion functions */
-HIDRD_DEC_CONV_DECLS(item_basic_tag, tag);
+/* Declare tag numeric string conversion functions */
+HIDRD_NUM_CONV_DECLS(item_basic_tag);
 
 /** Basic item data size value */
 typedef hidrd_item_pfx_size hidrd_item_basic_data_size;
@@ -161,8 +161,8 @@ hidrd_item_basic_data_size_from_bytes(hidrd_item_basic_data_bytes bytes)
     return hidrd_item_pfx_size_from_bytes(bytes);
 }
 
-/* Declare decimal string conversion functions for data size in bytes */
-HIDRD_DEC_CONV_DECLS(item_basic_data_bytes, bytes);
+/* Declare numeric string conversion functions for data size in bytes */
+HIDRD_NUM_CONV_DECLS(item_basic_data_bytes);
 
 
 /**

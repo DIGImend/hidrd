@@ -126,8 +126,8 @@ hidrd_item_long_set_tag(hidrd_item *item, hidrd_item_long_tag tag)
     return item;
 }
 
-/* Declare tag decimal string conversion functions */
-HIDRD_DEC_CONV_DECLS(item_long_tag, tag);
+/* Declare tag numeric string conversion functions */
+HIDRD_NUM_CONV_DECLS(item_long_tag);
 
 static inline void *
 hidrd_item_long_get_data(hidrd_item *item)

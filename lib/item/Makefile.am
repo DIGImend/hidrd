@@ -37,11 +37,11 @@ libhidrd_item_la_LIBADD = \
 TESTS = hidrd_item_any_test
 
 hidrd_item_any_test_SOURCES = any_test.c
-hidrd_item_any_test_LDADD = $(lib_LTLIBRARIES)
+hidrd_item_any_test_LDADD = ../usage/libhidrd_usage.la $(lib_LTLIBRARIES)
 
 bin_PROGRAMS =
 check_PROGRAMS = $(TESTS)
 
 if ENABLE_TESTS_INSTALL
-bin_PROGRAMS += $(TESTS)
+bin_PROGRAMS += $(check_PROGRAMS)
 endif

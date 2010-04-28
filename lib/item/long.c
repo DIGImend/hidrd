@@ -27,5 +27,5 @@
 
 #include "hidrd/item/long.h"
 
-/* Define tag decimal string conversion functions */
-HIDRD_DEC_CONV_DEFS(item_long_tag, tag, u8);
+/* Define tag numeric string conversion functions */
+HIDRD_NUM_CONV_DEFS(item_long_tag, u8);

@@ -66,12 +66,12 @@ hidrd_item_collection_type_valid(hidrd_item_collection_type type)
 }
 
 
-/* Declare type decimal string conversion functions */
-HIDRD_DEC_CONV_DECLS(item_collection_type, type);
+/* Declare type numeric string conversion functions */
+HIDRD_NUM_CONV_DECLS(item_collection_type);
 
 #ifdef HIDRD_WITH_TOKENS
 /* Declare type token conversion functions */
-HIDRD_TKN_CONV_DECLS(item_collection_type, type, dec);
+HIDRD_TKN_CONV_DECLS(item_collection_type);
 #endif /* HIDRD_WITH_TOKENS */
 
 static inline bool

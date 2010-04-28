@@ -28,17 +28,17 @@
 #include <stdio.h>
 #include "hidrd/item/basic.h"
 
-/* Define decimal string conversion functions for data size in bytes */
-HIDRD_DEC_CONV_DEFS(item_basic_data_bytes, bytes, u32);
+/* Define numeric string conversion functions for data size in bytes */
+HIDRD_NUM_CONV_DEFS(item_basic_data_bytes, u32);
 
-/* Define type decimal string conversion functions */
-HIDRD_DEC_CONV_DEFS(item_basic_type, type, u32);
+/* Define type numeric string conversion functions */
+HIDRD_NUM_CONV_DEFS(item_basic_type, u32);
 
-/* Define tag decimal string conversion functions */
-HIDRD_DEC_CONV_DEFS(item_basic_tag, tag, u32);
+/* Define tag numeric string conversion functions */
+HIDRD_NUM_CONV_DEFS(item_basic_tag, u32);
 
 #ifdef HIDRD_WITH_TOKENS
-static const hidrd_tkn_link type_map[] = {
+static const hidrd_tkn_link item_basic_type_map[] = {
 #define MAP(_NAME, _name)   \
     {.str= #_name, .num = HIDRD_ITEM_BASIC_TYPE_##_NAME}
     MAP(MAIN,       main),
@@ -50,6 +50,6 @@ static const hidrd_tkn_link type_map[] = {
 };
 
 /* Define type token conversion functions */
-HIDRD_TKN_CONV_DEFS(item_basic_type, type, dec)
+HIDRD_TKN_CONV_DEFS(item_basic_type)
 
 #endif /* HIDRD_WITH_TOKENS */
