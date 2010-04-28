@@ -25,3 +25,5 @@ define(`capitalize_first',
 dnl
 define(`uppercase', `translit(`$1', `a-z', `A-Z')')dnl
 dnl
+define(`lowercase', `translit(`$1', `A-Z', `a-z')')dnl
+dnl
