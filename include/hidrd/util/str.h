@@ -82,7 +82,6 @@ extern int hidrd_str_ncasecmpn(const char  *str,
                                const char  *chunk,
                                size_t len);
 
-
 /** String character position bit */
 typedef enum hidrd_str_cp_bit {
     HIDRD_STR_CP_BIT_FIRST,         /**< First character */
