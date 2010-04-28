@@ -95,112 +95,44 @@ extern const char *hidrd_tkn_from_num(uint32_t              num,
 /**
  * Declare token conversion functions for specified type.
  *
- * @param _type Long (global) type name (without hidrd_ prefix).
- * @param _t    Short (local) type name (possibly just last word).
- * @param _b    Number base (dec or hex) used in string representation for
- *              missing token strings.
+ * @param _t    Name of the type being converted, without hidrd_ prefix.
  */
-#define HIDRD_TKN_CONV_DECLS(_type, _t, _b) \
-    extern const char *hidrd_##_type##_to_token(hidrd_##_type   _t);    \
-                                                                        \
-    extern bool hidrd_##_type##_from_token(hidrd_##_type   *p##_t,      \
-                                           const char      *str);       \
-                                                                        \
-    extern char *hidrd_##_type##_to_token_or_##_b(hidrd_##_type _t);    \
-                                                                        \
-    extern bool hidrd_##_type##_from_token_or_##_b(                     \
-                                                hidrd_##_type   *p##_t, \
-                                                const char      *str);  \
-                                                                        \
-    extern char *hidrd_##_type##_to_token_or_b##_b(hidrd_##_type _t);   \
-                                                                        \
-    extern bool hidrd_##_type##_from_token_or_bstr(                     \
-                                                hidrd_##_type   *p##_t, \
-                                                const char      *str)
+#define HIDRD_TKN_CONV_DECLS(_t) \
+    extern const char *hidrd_##_t##_to_token(hidrd_##_t v);             \
+    extern bool hidrd_##_t##_from_token(hidrd_##_t *pv, const char *s);
 
 /**
- * Define token conversion functions for specified type, conversion to
- * numeric strings and validation functions, token map must be declared and
- * defined separately.
+ * Define token conversion functions for specified type, token map must be
+ * declared and defined separately.
  *
- * @param _type Long (global) type name (without hidrd_ prefix).
- * @param _t    Short (local) type name (possibly just last word).
- * @param _b    Number base (dec or hex) used in string representation for
- *              missing tokens.
+ * @param _t    Name of the type being converted, without hidrd_ prefix.
  */
-#define HIDRD_TKN_CONV_DEFS(_type, _t, _b) \
+#define HIDRD_TKN_CONV_DEFS(_t) \
     const char *                                                \
-    hidrd_##_type##_to_token(hidrd_##_type _t)                  \
+    hidrd_##_t##_to_token(hidrd_##_t v)                         \
     {                                                           \
-        assert(hidrd_##_type##_valid(_t));                      \
-        return hidrd_tkn_from_num(_t, _t##_map);                \
+        assert(hidrd_##_t##_valid(v));                          \
+        return hidrd_tkn_from_num(v, _t##_map);                 \
     }                                                           \
                                                                 \
                                                                 \
     bool                                                        \
-    hidrd_##_type##_from_token(hidrd_##_type   *p##_t,          \
-                               const char      *str)            \
+    hidrd_##_t##_from_token(hidrd_##_t *pv, const char *str)    \
     {                                                           \
-        uint32_t    _t;                                         \
+        uint32_t    v;                                          \
                                                                 \
         assert(str != NULL);                                    \
                                                                 \
-        if (!hidrd_tkn_to_num(&_t, str, _t##_map))              \
+        if (!hidrd_tkn_to_num(&v, str, _t##_map))               \
             return false;                                       \
                                                                 \
-        if (!hidrd_##_type##_valid(_t))                         \
+        if (!hidrd_##_t##_valid(v))                             \
             return false;                                       \
                                                                 \
-        if (p##_t != NULL)                                      \
-            *p##_t = _t;                                        \
+        if (pv != NULL)                                         \
+            *pv = v;                                            \
                                                                 \
         return true;                                            \
-    }                                                           \
-                                                                \
-                                                                \
-    char *                                                      \
-    hidrd_##_type##_to_token_or_##_b(hidrd_##_type _t)          \
-    {                                                           \
-        const char *token;                                      \
-                                                                \
-        assert(hidrd_##_type##_valid(_t));                      \
-                                                                \
-        token = hidrd_##_type##_to_token(_t);                   \
-                                                                \
-        return (token != NULL)                                  \
-                    ? strdup(token)                             \
-                    : hidrd_##_type##_to_##_b(_t);              \
-    }                                                           \
-                                                                \
-    bool                                                        \
-    hidrd_##_type##_from_token_or_##_b(hidrd_##_type   *p##_t,  \
-                                       const char      *str)    \
-    {                                                           \
-        return hidrd_##_type##_from_token(p##_t, str) ||        \
-               hidrd_##_type##_from_##_b(p##_t, str);           \
-    }                                                           \
-                                                                \
-                                                                \
-    char *                                                      \
-    hidrd_##_type##_to_token_or_b##_b(hidrd_##_type _t)         \
-    {                                                           \
-        const char *token;                                      \
-                                                                \
-        assert(hidrd_##_type##_valid(_t));                      \
-                                                                \
-        token = hidrd_##_type##_to_token(_t);                   \
-                                                                \
-        return (token != NULL)                                  \
-                    ? strdup(token)                             \
-                    : hidrd_##_type##_to_b##_b(_t);             \
-    }                                                           \
-                                                                \
-    bool                                                        \
-    hidrd_##_type##_from_token_or_bstr(hidrd_##_type   *p##_t,  \
-                                       const char      *str)    \
-    {                                                           \
-        return hidrd_##_type##_from_token(p##_t, str) ||        \
-               hidrd_##_type##_from_bstr(p##_t, str);           \
     }
 
 
