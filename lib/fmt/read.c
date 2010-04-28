@@ -92,7 +92,8 @@ main(int argc, char **argv)
     input_format = hidrd_fmt_list_lkp(input_format_name);
     if (input_format == NULL)
     {
-        fprintf(stderr, "Input format \"%s\" not found", input_format_name);
+        fprintf(stderr, "Input format \"%s\" not found\n",
+                input_format_name);
         goto cleanup;
     }
 
@@ -102,7 +103,8 @@ main(int argc, char **argv)
     /* Check that input format supports reading */
     if (!hidrd_fmt_readable(input_format))
     {
-        fprintf(stderr, "%s reading is not supported\n", input_format->desc);
+        fprintf(stderr, "%s reading is not supported\n",
+                input_format->desc);
         goto cleanup;
     }
 

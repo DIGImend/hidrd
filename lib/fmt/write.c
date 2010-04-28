@@ -94,7 +94,7 @@ main(int argc, char **argv)
     output_format = hidrd_fmt_list_lkp(output_format_name);
     if (output_format == NULL)
     {
-        fprintf(stderr, "Output format \"%s\" not found",
+        fprintf(stderr, "Output format \"%s\" not found\n",
                 output_format_name);
         goto cleanup;
     }
@@ -105,7 +105,8 @@ main(int argc, char **argv)
     /* Check that output format supports writing */
     if (!hidrd_fmt_writable(output_format))
     {
-        fprintf(stderr, "%s writing is not supported\n", output_format->desc);
+        fprintf(stderr, "%s writing is not supported\n",
+                output_format->desc);
         goto cleanup;
     }
 
