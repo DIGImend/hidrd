@@ -29,6 +29,8 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <assert.h>
+#include "hidrd/util/num.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -56,11 +58,11 @@ hidrd_usage_id_valid(hidrd_usage_id id)
 }
 
 /**
- * Check if a usage ID is valid.
+ * Check if a usage ID is top-level.
  *
  * @param id    Usage ID to check.
  *
- * @return True if the usage ID is valid, false otherwise.
+ * @return True if the usage ID is top-level, false otherwise.
  */
 static inline bool
 hidrd_usage_id_top_level(hidrd_usage_id id)
@@ -69,47 +71,8 @@ hidrd_usage_id_top_level(hidrd_usage_id id)
     return (id >= 0x01) && (id <= 0x1F);
 }
 
-/**
- * Convert a usage ID to a hexadecimal code string.
- *
- * @param id    Usage ID.
- *
- * @return Dynamically allocated hexadecimal code string, or NULL, if failed
- *         to allocate memory.
- */
-extern char *hidrd_usage_id_to_hex(hidrd_usage_id id);
-
-/**
- * Convert a usage ID to a base-suffixed hexadecimal code string.
- *
- * @param id    Usage ID.
- *
- * @return Dynamically allocated base-suffixed hexadecimal code string, or
- *         NULL, if failed to allocate memory.
- */
-extern char *hidrd_usage_id_to_bhex(hidrd_usage_id id);
-
-/**
- * Convert a usage ID hexadecimal code string to usage ID.
- *
- * @param pid   Location for the resulting usage ID; wil not be modified in
- *              case of error; could be NULL.
- * @param hex   Hexadecimal code string.
- *
- * @return True if the hexadecimal string valid, false otherwise.
- */
-extern bool hidrd_usage_id_from_hex(hidrd_usage_id *pid, const char *hex);
-
-/**
- * Convert a usage ID base-suffixed code string to usage ID.
- *
- * @param pid   Location for the resulting usage ID; wil not be modified in
- *              case of error; could be NULL.
- * @param bstr  Base-suffixed code string.
- *
- * @return True if the base-suffixed string valid, false otherwise.
- */
-extern bool hidrd_usage_id_from_bstr(hidrd_usage_id *pid, const char *str);
+/* Declare usage ID to numeric string conversion functions */
+HIDRD_NUM_CONV_DECLS(usage_id);
 
 #ifdef __cplusplus
 } /* extern "C" */
