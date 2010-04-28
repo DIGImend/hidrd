@@ -102,17 +102,30 @@ extern const char *hidrd_tkn_from_num(uint32_t              num,
     extern bool hidrd_##_t##_from_token(hidrd_##_t *pv, const char *s);
 
 /**
- * Define token conversion functions for specified type, token map must be
- * declared and defined separately.
+ * Generate a hidrd_tkn_1ink initializer.
  *
- * @param _t    Name of the type being converted, without hidrd_ prefix.
+ * @param _val  Value.
+ * @param _tkn  Token.
  */
-#define HIDRD_TKN_CONV_DEFS(_t) \
+#define HIDRD_TKN_LINK(_val, _tkn) {.num = _val, .str = #_tkn}
+
+/**
+ * Define token map and conversion functions for specified type.
+ *
+ * @param _t        Name of the type being converted, without hidrd_ prefix.
+ * @param _links    List of HIDRD_TKN_LINK macro calls.
+ */
+#define HIDRD_TKN_CONV_DEFS(_t, _links...) \
+    static const hidrd_tkn_link hidrd_##_t##_tkn_map[] = {      \
+        _links,                                                 \
+        {.str = NULL}                                           \
+    };                                                          \
+                                                                \
     const char *                                                \
     hidrd_##_t##_to_token(hidrd_##_t v)                         \
     {                                                           \
         assert(hidrd_##_t##_valid(v));                          \
-        return hidrd_tkn_from_num(v, _t##_map);                 \
+        return hidrd_tkn_from_num(v, hidrd_##_t##_tkn_map);     \
     }                                                           \
                                                                 \
                                                                 \
@@ -123,7 +136,7 @@ extern const char *hidrd_tkn_from_num(uint32_t              num,
                                                                 \
         assert(str != NULL);                                    \
                                                                 \
-        if (!hidrd_tkn_to_num(&v, str, _t##_map))               \
+        if (!hidrd_tkn_to_num(&v, str, hidrd_##_t##_tkn_map))   \
             return false;                                       \
                                                                 \
         if (!hidrd_##_t##_valid(v))                             \

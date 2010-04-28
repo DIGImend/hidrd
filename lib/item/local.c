@@ -31,25 +31,19 @@
 HIDRD_NUM_CONV_DEFS(item_local_tag, u32);
 
 #ifdef HIDRD_WITH_TOKENS
-static const hidrd_tkn_link item_local_tag_map[] = {
-#define MAP(_NAME, _name)   \
-    {.str= #_name, .num = HIDRD_ITEM_LOCAL_TAG_##_NAME}
-    MAP(USAGE, usage),
-    MAP(USAGE_MINIMUM, usage_minimum),
-    MAP(USAGE_MAXIMUM, usage_maximum),
-    MAP(DESIGNATOR_INDEX, designator_index),
-    MAP(DESIGNATOR_MINIMUM, designator_minimum),
-    MAP(DESIGNATOR_MAXIMUM, designator_maximum),
-    MAP(INVALID, invalid),
-    MAP(STRING_INDEX, string_index),
-    MAP(STRING_MINIMUM, string_minimum),
-    MAP(STRING_MAXIMUM, string_maximum),
-    MAP(DELIMITER, delimiter),
-#undef MAP
-    {.str = NULL}
-};
-
 /* Define tag token conversion functions */
-HIDRD_TKN_CONV_DEFS(item_local_tag)
-
+#define MAP(_N, _n) HIDRD_TKN_LINK(HIDRD_ITEM_LOCAL_TAG_##_N, _n)
+HIDRD_TKN_CONV_DEFS(item_local_tag,
+                    MAP(USAGE, usage),
+                    MAP(USAGE_MINIMUM, usage_minimum),
+                    MAP(USAGE_MAXIMUM, usage_maximum),
+                    MAP(DESIGNATOR_INDEX, designator_index),
+                    MAP(DESIGNATOR_MINIMUM, designator_minimum),
+                    MAP(DESIGNATOR_MAXIMUM, designator_maximum),
+                    MAP(INVALID, invalid),
+                    MAP(STRING_INDEX, string_index),
+                    MAP(STRING_MINIMUM, string_minimum),
+                    MAP(STRING_MAXIMUM, string_maximum),
+                    MAP(DELIMITER, delimiter))
+#undef MAP
 #endif /* HIDRD_WITH_TOKENS */

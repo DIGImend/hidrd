@@ -32,21 +32,15 @@
 HIDRD_NUM_CONV_DEFS(item_collection_type, u32);
 
 #ifdef HIDRD_WITH_TOKENS
-static const hidrd_tkn_link item_collection_type_map[] = {
-#define MAP(_NAME, _name)   \
-    {.str= #_name, .num = HIDRD_ITEM_COLLECTION_TYPE_##_NAME}
-    MAP(PHYSICAL, physical),
-    MAP(APPLICATION, application),
-    MAP(LOGICAL, logical),
-    MAP(REPORT, report),
-    MAP(NAMED_ARRAY, named_array),
-    MAP(USAGE_SWITCH, usage_switch),
-    MAP(USAGE_MODIFIER, usage_modifier),
-#undef MAP
-    {.str = NULL}
-};
-
 /* Define type token conversion functions */
-HIDRD_TKN_CONV_DEFS(item_collection_type)
-
+#define MAP(_N, _n) HIDRD_TKN_LINK(HIDRD_ITEM_COLLECTION_TYPE_##_N, _n)
+HIDRD_TKN_CONV_DEFS(item_collection_type,
+                    MAP(PHYSICAL, physical),
+                    MAP(APPLICATION, application),
+                    MAP(LOGICAL, logical),
+                    MAP(REPORT, report),
+                    MAP(NAMED_ARRAY, named_array),
+                    MAP(USAGE_SWITCH, usage_switch),
+                    MAP(USAGE_MODIFIER, usage_modifier))
+#undef MAP
 #endif /* HIDRD_WITH_TOKENS */

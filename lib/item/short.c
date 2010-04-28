@@ -195,19 +195,13 @@ HIDRD_NUM_CONV_DEFS(item_short_type, u32);
 HIDRD_NUM_CONV_DEFS(item_short_tag, u32);
 
 #ifdef HIDRD_WITH_TOKENS
-static const hidrd_tkn_link item_short_type_map[] = {
-#define MAP(_NAME, _name)   \
-    {.str= #_name, .num = HIDRD_ITEM_SHORT_TYPE_##_NAME}
-    MAP(MAIN,       main),
-    MAP(GLOBAL,     global),
-    MAP(LOCAL,      local),
-#undef MAP
-    {.str = NULL}
-};
-
 /* Define type token conversion functions */
-HIDRD_TKN_CONV_DEFS(item_short_type)
-
+#define MAP(_N, _n) HIDRD_TKN_LINK(HIDRD_ITEM_SHORT_TYPE_##_N, _n)
+HIDRD_TKN_CONV_DEFS(item_short_type,
+                    MAP(MAIN,       main),
+                    MAP(GLOBAL,     global),
+                    MAP(LOCAL,      local))
+#undef MAP
 #endif /* HIDRD_WITH_TOKENS */
 
 
