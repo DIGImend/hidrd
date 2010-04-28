@@ -77,7 +77,7 @@ parse_unit_system_element(hidrd_unit               *punit,
                 goto cleanup;
             if (hidrd_str_isblank(exp_str))
                 exp = HIDRD_UNIT_EXP_1;
-            else if (!hidrd_unit_exp_from_str(&exp, exp_str))
+            else if (!hidrd_unit_exp_from_dec(&exp, exp_str))
                 goto cleanup;
             xmlFree(exp_str);
             exp_str = NULL;

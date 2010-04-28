@@ -41,7 +41,7 @@ static ELEMENT(basic)
     ELEMENT_PROP_DECL(item_basic_tag,           tag);
 
     ELEMENT_PROP_RETR(item_basic_data_bytes,    size,   dec);
-    ELEMENT_PROP_RETR(item_basic_type,          type,   token_or_dec);
+    ELEMENT_PROP_RETR_ALT2(item_basic_type,     type,   token, dec);
     ELEMENT_PROP_RETR(item_basic_tag,           tag,    dec);
 
     hidrd_item_basic_init(item, type, tag,
@@ -82,8 +82,8 @@ static ELEMENT(short)
     ELEMENT_PROP_DECL(item_short_type,  type);
     ELEMENT_PROP_DECL(item_short_tag,   tag);
 
-    ELEMENT_PROP_RETR(item_short_type,  type,   token_or_dec);
-    ELEMENT_PROP_RETR(item_short_tag,   tag,    dec);
+    ELEMENT_PROP_RETR_ALT2(item_short_type, type, token, dec);
+    ELEMENT_PROP_RETR(item_short_tag, tag, dec);
 
     hidrd_item_short_init(item, type, tag);
 
@@ -120,9 +120,9 @@ static ELEMENT(main)
     char               *data_str    = NULL;
     size_t              data_len;
 
-    ELEMENT_PROP_DECL(item_main_tag,    tag);
+    ELEMENT_PROP_DECL(item_main_tag, tag);
 
-    ELEMENT_PROP_RETR(item_main_tag,    tag,    token_or_dec);
+    ELEMENT_PROP_RETR_ALT2(item_main_tag, tag, token, dec);
 
     hidrd_item_main_init(item, tag);
 
@@ -158,9 +158,9 @@ static ELEMENT(global)
     char               *data_str    = NULL;
     size_t              data_len;
 
-    ELEMENT_PROP_DECL(item_global_tag,    tag);
+    ELEMENT_PROP_DECL(item_global_tag, tag);
 
-    ELEMENT_PROP_RETR(item_global_tag,    tag,    token_or_dec);
+    ELEMENT_PROP_RETR_ALT2(item_global_tag, tag, token, dec);
 
     hidrd_item_global_init(item, tag);
 
@@ -199,7 +199,7 @@ static ELEMENT(usage_page)
     value_str = (char *)xmlNodeGetContent(e);
     if (value_str == NULL)
         goto cleanup;
-    if (!hidrd_usage_page_from_token_or_hex(&value, value_str))
+    if (!HIDRD_NUM_FROM_ALT_STR2(usage_page, &value, value_str, token, hex))
         goto cleanup;
 
     hidrd_item_usage_page_init(item, value);
@@ -249,7 +249,7 @@ static ELEMENT(local)
 
     ELEMENT_PROP_DECL(item_local_tag,    tag);
 
-    ELEMENT_PROP_RETR(item_local_tag,    tag,    token_or_dec);
+    ELEMENT_PROP_RETR_ALT2(item_local_tag, tag, token, dec);
 
     hidrd_item_local_init(item, tag);
 
@@ -285,7 +285,7 @@ static ELEMENT(collection)
 
     ELEMENT_PROP_DECL(item_collection_type, type);
 
-    ELEMENT_PROP_RETR(item_collection_type, type,   token_or_dec);
+    ELEMENT_PROP_RETR_ALT2(item_collection_type, type, token, dec);
 
     hidrd_item_collection_init(item, type);
 
@@ -310,7 +310,7 @@ static ELEMENT(COLLECTION)
 
     ELEMENT_PROP_DECL(item_collection_type, type);
 
-    ELEMENT_PROP_RETR(item_collection_type, type,   token_or_dec);
+    ELEMENT_PROP_RETR_ALT2(item_collection_type, type, token, dec);
 
     hidrd_item_collection_init(item, type);
 
@@ -339,7 +339,7 @@ static ELEMENT_EXIT(COLLECTION)
         value_str = (char *)xmlNodeGetContent(e);                       \
         if (value_str == NULL)                                          \
             goto cleanup;                                               \
-        if (!hidrd_dec_##_t##_from_str(&value, value_str))              \
+        if (!HIDRD_DEC_FROM_STR(_t, &value, value_str))                 \
             goto cleanup;                                               \
                                                                         \
         hidrd_item_##_name##_init(item, value);                         \
@@ -372,7 +372,8 @@ static NUM_ELEMENT(report_id,          u8)
         value_str = (char *)xmlNodeGetContent(e);                   \
         if (value_str == NULL)                                      \
             goto cleanup;                                           \
-        if (!hidrd_usage_from_token_or_hex(&value, value_str))      \
+        if (!HIDRD_NUM_FROM_ALT_STR2(usage, &value, value_str,      \
+                                     token, hex))                   \
             goto cleanup;                                           \
                                                                     \
         hidrd_item_##_name##_init(item, value);                     \

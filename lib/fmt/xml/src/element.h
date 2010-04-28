@@ -86,11 +86,11 @@ typedef xml_src_element_rc xml_src_element_fn(hidrd_item   *item,
     hidrd_##_type   _name
 
 /**
- * Generate element property value retrieval.
+ * Generate element property value retrieval from a single representation.
  *
  * @param _type Internal representation type name (without hidrd_ prefix).
  * @param _name Property name token.
- * @param _repr Representation token (e.g. dec, or token_or_hex).
+ * @param _repr Representation token (e.g. dec, token).
  */
 #define ELEMENT_PROP_RETR(_type, _name, _repr) \
     do {                                                        \
@@ -99,6 +99,26 @@ typedef xml_src_element_rc xml_src_element_fn(hidrd_item   *item,
             goto cleanup;                                       \
         if (!hidrd_##_type##_from_##_repr(&_name, _name##_str)) \
             goto cleanup;                                       \
+    } while (0)
+
+/**
+ * Generate element property value retrieval from two alternative
+ * representations.
+ *
+ * @param _type     Internal representation type name (without hidrd_
+ *                  prefix).
+ * @param _name     Property name token.
+ * @param _repr1    First representation token.
+ * @param _repr2    Second representation token.
+ */
+#define ELEMENT_PROP_RETR_ALT2(_type, _name, _repr1, _repr2) \
+    do {                                                            \
+        _name##_str = (char *)xmlGetProp(e, BAD_CAST #_name);       \
+        if (_name##_str == NULL)                                    \
+            goto cleanup;                                           \
+        if (!HIDRD_NUM_FROM_ALT_STR2(_type, &_name, _name##_str,    \
+                                     _repr1, _repr2))               \
+            goto cleanup;                                           \
     } while (0)
 
 /**

@@ -129,8 +129,10 @@ xml_snk_item_main(hidrd_xml_snk_inst   *xml_snk,
             return GROUP_START(
                     COLLECTION,
                     ATTR(type, STROWN,
-                         hidrd_item_collection_type_to_token_or_dec(
-                             hidrd_item_collection_get_type(item))));
+                         HIDRD_NUM_TO_ALT_STRCD(
+                             item_collection_type,
+                             hidrd_item_collection_get_type(item),
+                             token, dec)));
         case HIDRD_ITEM_MAIN_TAG_END_COLLECTION:
             return GROUP_END(COLLECTION);
 
@@ -161,7 +163,8 @@ xml_snk_item_main(hidrd_xml_snk_inst   *xml_snk,
             return ADD_SIMPLE(
                     main,
                     ATTR(tag, STROWN,
-                         hidrd_item_main_tag_to_token_or_dec(tag)),
+                         HIDRD_NUM_TO_ALT_STRCD(
+                             item_main_tag, tag, token, dec)),
                     CONTENT(
                         HEX,
                         /* We promise we won't change it */
@@ -387,12 +390,14 @@ xml_snk_item_global(hidrd_xml_snk_inst *xml_snk,
             return ADD_SIMPLE(
                     usage_page,
                     CONTENT(STROWN,
-                            hidrd_usage_page_to_token_or_hex(
-                                hidrd_item_usage_page_get_value(item))),
+                            HIDRD_NUM_TO_ALT_STRCD(
+                                usage_page,
+                                hidrd_item_usage_page_get_value(item),
+                                token, hex)),
                     COMMENT(STROWN,
                             hidrd_str_apada(
                                 hidrd_str_uc_first(
-                                    hidrd_usage_page_desc(
+                                    hidrd_usage_page_fmt_desc(
                                         hidrd_item_usage_page_get_value(
                                             item))))));
 
@@ -427,12 +432,20 @@ xml_snk_item_global(hidrd_xml_snk_inst *xml_snk,
             return ADD_SIMPLE(
                     global,
                     ATTR(tag, STROWN,
-                         hidrd_item_global_tag_to_token_or_dec(tag)),
+                         HIDRD_NUM_TO_ALT_STRCD(
+                             item_global_tag, tag, token, dec)),
                     CONTENT(HEX,
                             /* We promise we won't change it */
                             hidrd_item_short_get_data((hidrd_item *)item)),
                             hidrd_item_short_get_data_bytes(item));
     }
+}
+
+
+static char *
+hidrd_usage_to_hex_id(hidrd_usage usage)
+{
+    return hidrd_usage_id_to_hex(hidrd_usage_get_id(usage));
 }
 
 
@@ -450,19 +463,19 @@ xml_snk_item_usage(hidrd_xml_snk_inst  *xml_snk,
 
     if (hidrd_usage_get_page(usage) == xml_snk->state->usage_page)
     {
-        token_or_hex = hidrd_usage_to_token_or_hex_id(usage);
+        token_or_hex = HIDRD_NUM_TO_ALT_STR2D(usage, usage, token, hex_id);
         if (token_or_hex == NULL)
             goto cleanup;
-        desc = hidrd_usage_desc_id(usage);
+        desc = hidrd_usage_fmt_desc_id(usage);
         if (desc == NULL)
             goto cleanup;
     }
     else
     {
-        token_or_hex = hidrd_usage_to_token_or_hex(usage);
+        token_or_hex = HIDRD_NUM_TO_ALT_STR2D(usage, usage, token, hex);
         if (token_or_hex == NULL)
             goto cleanup;
-        desc = hidrd_usage_desc(usage);
+        desc = hidrd_usage_fmt_desc(usage);
         if (desc == NULL)
             goto cleanup;
     }
@@ -536,7 +549,8 @@ xml_snk_item_local(hidrd_xml_snk_inst  *xml_snk,
             return ADD_SIMPLE(
                     local,
                     ATTR(tag, STROWN,
-                         hidrd_item_local_tag_to_token_or_dec(tag)),
+                         HIDRD_NUM_TO_ALT_STRCD(
+                             item_local_tag, tag, token, dec)),
                     CONTENT(HEX,
                             /* We promise we won't change it */
                             hidrd_item_short_get_data((hidrd_item *)item)),
@@ -562,8 +576,10 @@ xml_snk_item_short(hidrd_xml_snk_inst  *xml_snk,
         default:
             return ADD_SIMPLE(short,
                     ATTR(type, STROWN,
-                         hidrd_item_short_type_to_token_or_dec(
-                             hidrd_item_short_get_type(item))),
+                         HIDRD_NUM_TO_ALT_STRCD(
+                             item_short_type,
+                             hidrd_item_short_get_type(item),
+                             token, dec)),
                     ATTR(tag, STROWN,
                          hidrd_item_short_tag_to_dec(
                              hidrd_item_short_get_tag(item))),
@@ -596,8 +612,10 @@ xml_snk_item_basic(hidrd_xml_snk_inst  *xml_snk,
         default:
             return ADD_SIMPLE(basic,
                     ATTR(type, STROWN,
-                         hidrd_item_basic_type_to_token_or_dec(
-                             hidrd_item_basic_get_type(item))),
+                         HIDRD_NUM_TO_ALT_STRCD(
+                             item_basic_type,
+                             hidrd_item_basic_get_type(item),
+                             token, dec)),
                     ATTR(tag, STROWN,
                          hidrd_item_basic_tag_to_dec(
                              hidrd_item_basic_get_tag(item))),
