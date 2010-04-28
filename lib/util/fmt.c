@@ -45,16 +45,12 @@ hidrd_fmtpva(char             **pstr,
             str = NULL;
             break;
         case HIDRD_FMT_TYPE_S32:
-            str = hidrd_num_s32_to_str(va_arg(*pap, int32_t),
-                                       HIDRD_NUM_BMRK_NONE,
-                                       HIDRD_NUM_BASE_DEC);
+            str = HIDRD_DEC_TO_STR(s32, va_arg(*pap, int32_t));
             if (str == NULL)
                 return false;
             break;
         case HIDRD_FMT_TYPE_U32:
-            str = hidrd_num_u32_to_str(va_arg(*pap, uint32_t),
-                                       HIDRD_NUM_BMRK_NONE,
-                                       HIDRD_NUM_BASE_DEC);
+            str = HIDRD_DEC_TO_STR(u32, va_arg(*pap, uint32_t));
             if (str == NULL)
                 return false;
             break;
