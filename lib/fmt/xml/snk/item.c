@@ -184,8 +184,10 @@ xml_snk_item_unit_generic(hidrd_xml_snk_inst   *xml_snk,
 
     if (!xml_snk_element_add(xml_snk, true, "generic",
                      ATTR(system, STROWN,
-                          hidrd_unit_system_to_token_or_dec(
-                            hidrd_unit_get_system(unit))),
+                          HIDRD_NUM_TO_ALT_STRCD(
+                              unit_system,
+                              hidrd_unit_get_system(unit),
+                              token, dec)),
                      XML_SNK_ELEMENT_NT_NONE))
         goto cleanup;
 

@@ -151,32 +151,6 @@ found:
 }
 
 
-char *
-hidrd_unit_system_to_token_or_dec(hidrd_unit_system system)
-{
-    const char *token;
-
-    assert(hidrd_unit_system_valid(system));
-
-    token = hidrd_unit_system_to_token(system);
-
-    return (token != NULL)
-            ? strdup(token)
-            : hidrd_unit_system_to_dec(system);
-}
-
-
-bool
-hidrd_unit_system_from_token_or_dec(hidrd_unit_system  *psystem,
-                                    const char         *token_or_dec)
-{
-    assert(token_or_dec != NULL);
-
-    return hidrd_unit_system_from_token(psystem, token_or_dec) ||
-           hidrd_unit_system_from_dec(psystem, token_or_dec);
-}
-
-
 static const char *exp_tkn[HIDRD_UNIT_NIBBLE_INDEX_EXP_NUM]
                           [HIDRD_UNIT_SYSTEM_KNOWN_NUM + 1]    = {
 #define EXP(_type, \

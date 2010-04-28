@@ -101,7 +101,6 @@ extern bool hidrd_unit_system_from_dec(hidrd_unit_system   *psystem,
 
 
 #ifdef HIDRD_WITH_TOKENS
-
 /**
  * Convert a unit system code to a token.
  *
@@ -122,32 +121,6 @@ extern const char *hidrd_unit_system_to_token(hidrd_unit_system system);
  */
 extern bool hidrd_unit_system_from_token(hidrd_unit_system *psystem,
                                          const char        *token);
-
-/**
- * Convert a unit system code to a token or (if there is no token) to a
- * decimal string.
- *
- * @param system    Unit system code to convert.
- *
- * @return Dynamically allocated unit system token or decimal string; NULL
- *         if failed to allocate memory.
- */
-extern char *hidrd_unit_system_to_token_or_dec(hidrd_unit_system system);
-
-/**
- * Convert a unit system token or decimal string to a unit system code.
- *
- * @param psystem       Location for resulting unit system code; will not be
- *                      modified in case of error; could be NULL.
- * @param token_or_dec  Unit system token or decimal string to convert.
- *
- * @return True if either unit system token was recognized or decimal string
- *         was valid, false otherwise.
- */
-extern bool hidrd_unit_system_from_token_or_dec(
-                                        hidrd_unit_system  *psystem,
-                                        const char         *token_or_dec);
-
 #endif /* HIDRD_WITH_TOKENS */
 
 /**

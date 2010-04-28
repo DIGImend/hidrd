@@ -111,7 +111,7 @@ parse_unit_system_gen_element(hidrd_unit *punit, xmlNodePtr e)
     
     ELEMENT_PROP_DECL(unit_system, system);
 
-    ELEMENT_PROP_RETR(unit_system, system, token_or_dec);
+    ELEMENT_PROP_RETR_ALT2(unit_system, system, token, dec);
 
     if (!parse_unit_system_element(&unit, generic_usd, e))
         goto cleanup;
