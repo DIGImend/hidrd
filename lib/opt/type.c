@@ -79,14 +79,14 @@ hidrd_opt_type_parse_boolean(bool *pval, const char *str)
 bool
 hidrd_opt_type_parse_s32(int32_t *pval, const char *str)
 {
-    return hidrd_dec_s32_from_str(pval, str);
+    return HIDRD_DEC_FROM_STR(s32, pval, str);
 }
 
 
 bool
 hidrd_opt_type_parse_u32(uint32_t *pval, const char *str)
 {
-    return hidrd_dec_u32_from_str(pval, str);
+    return HIDRD_DEC_FROM_STR(u32, pval, str);
 }
 
 
@@ -133,14 +133,14 @@ hidrd_opt_type_format_boolean(bool val)
 char *
 hidrd_opt_type_format_s32(int32_t val)
 {
-    return hidrd_dec_s32_to_str(val);
+    return HIDRD_DEC_TO_STR(s32, val);
 }
 
 
 char *
 hidrd_opt_type_format_u32(uint32_t val)
 {
-    return hidrd_dec_u32_to_str(val);
+    return HIDRD_DEC_TO_STR(u32, val);
 }
 
 
