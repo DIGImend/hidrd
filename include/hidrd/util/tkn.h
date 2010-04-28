@@ -93,13 +93,74 @@ extern const char *hidrd_tkn_from_num(uint32_t              num,
                                       const hidrd_tkn_link *map);
 
 /**
+ * Declare case-changing number to token conversion function wrappers.
+ *
+ * @param _t    Type name.
+ */
+#define HIDRD_TKN_CONV_CASE_DECLS(_t) \
+    /**                                                                     \
+     * Convert a _t to a lowercase token.                                   \
+     *                                                                      \
+     * @param v _t value.                                                   \
+     *                                                                      \
+     * @return Dynamically allocated token, or NULL if match is not found,  \
+     *         or an error occurred; check errno for the latter.            \
+     */                                                                     \
+    extern char *hidrd_##_t##_to_token_lc(hidrd_##_t v);
+
+/**
+ * Define case-changing number to token conversion function wrappers, for
+ * dynamically allocating converters.
+ *
+ * @param _t    Type name.
+ */
+#define HIDRD_TKN_CONV_CASE_DEFSA(_t) \
+    char *                                                  \
+    hidrd_##_t##_to_token_lc(hidrd_##_t v)                  \
+    {                                                       \
+        char   *token;                                      \
+                                                            \
+        assert(hidrd_##_t##_valid(v));                      \
+                                                            \
+        token = hidrd_##_t##_to_token(v);                   \
+        return token == NULL ? NULL : hidrd_str_lc(token);  \
+    }
+
+/**
+ * Define case-changing number to token conversion function wrappers, for
+ * constant converters.
+ *
+ * @param _t    Type name.
+ */
+#define HIDRD_TKN_CONV_CASE_DEFS(_t) \
+    char *                                  \
+    hidrd_##_t##_to_token_lc(hidrd_##_t v)  \
+    {                                       \
+        const char *token;                  \
+        char       *atoken;                 \
+                                            \
+        assert(hidrd_##_t##_valid(v));      \
+                                            \
+        token = hidrd_##_t##_to_token(v);   \
+        if (token == NULL)                  \
+            return NULL;                    \
+                                            \
+        atoken = strdup(token);             \
+        if (atoken == NULL)                 \
+            return NULL;                    \
+                                            \
+        return hidrd_str_lc(atoken);        \
+    }
+
+/**
  * Declare token conversion functions for specified type.
  *
  * @param _t    Name of the type being converted, without hidrd_ prefix.
  */
 #define HIDRD_TKN_CONV_DECLS(_t) \
     extern const char *hidrd_##_t##_to_token(hidrd_##_t v);             \
-    extern bool hidrd_##_t##_from_token(hidrd_##_t *pv, const char *s);
+    extern bool hidrd_##_t##_from_token(hidrd_##_t *pv, const char *s); \
+    HIDRD_TKN_CONV_CASE_DECLS(_t)
 
 /**
  * Generate a hidrd_tkn_1ink initializer.
@@ -146,7 +207,9 @@ extern const char *hidrd_tkn_from_num(uint32_t              num,
             *pv = v;                                            \
                                                                 \
         return true;                                            \
-    }
+    }                                                           \
+                                                                \
+    HIDRD_TKN_CONV_CASE_DEFS(_t)
 
 
 /**
