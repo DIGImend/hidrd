@@ -237,7 +237,7 @@ hidrd_unit_exp_validate(hidrd_unit_exp exp)
  * @return Dynamically allocated (integer) string representing unit
  *         exponent, or NULL, if failed to allocate memory.
  */
-extern char *hidrd_unit_exp_to_str(hidrd_unit_exp exp);
+extern char *hidrd_unit_exp_to_dec(hidrd_unit_exp exp);
 
 /**
  * Convert (a decimal) string to a unit exponent.
@@ -247,7 +247,7 @@ extern char *hidrd_unit_exp_to_str(hidrd_unit_exp exp);
  *
  * @return True if converted successfully, false otherwise.
  */
-extern bool hidrd_unit_exp_from_str(hidrd_unit_exp *pexp, const char *str);
+extern bool hidrd_unit_exp_from_dec(hidrd_unit_exp *pexp, const char *str);
 
 #define HIDRD_UNIT_EXP_MIN_INT  -8
 #define HIDRD_UNIT_EXP_MAX_INT  7

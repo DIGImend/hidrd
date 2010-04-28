@@ -1,5 +1,5 @@
 /** @file
- * @brief HID report descriptor - unit value
+ * @brief HID report descriptor - utilities - unit value
  *
  * Copyright (C) 2010 Nikolai Kondrashov
  *
@@ -35,7 +35,7 @@ char *
 hidrd_unit_system_to_dec(hidrd_unit_system system)
 {
     assert(hidrd_unit_system_valid(system));
-    return hidrd_dec_u32_to_str(system);
+    return HIDRD_NUM_TO_STR(u32, system, NONE, DEC);
 }
 
 
@@ -46,7 +46,7 @@ hidrd_unit_system_from_dec(hidrd_unit_system *psystem, const char *dec)
 
     assert(dec != NULL);
 
-    if (!hidrd_dec_u32_from_str(&system, dec))
+    if (!HIDRD_NUM_FROM_STR(u32, &system, dec, NONE, DEC))
         return false;
 
     if (psystem != NULL)
@@ -57,21 +57,21 @@ hidrd_unit_system_from_dec(hidrd_unit_system *psystem, const char *dec)
 
 
 char *
-hidrd_unit_exp_to_str(hidrd_unit_exp exp)
+hidrd_unit_exp_to_dec(hidrd_unit_exp exp)
 {
     assert(hidrd_unit_exp_valid(exp));
-    return hidrd_dec_s32_to_str(hidrd_unit_exp_to_int(exp));
+    return HIDRD_NUM_TO_STR(s32, hidrd_unit_exp_to_int(exp), NONE, DEC);
 }
 
 
 bool
-hidrd_unit_exp_from_str(hidrd_unit_exp *pexp, const char *str)
+hidrd_unit_exp_from_dec(hidrd_unit_exp *pexp, const char *str)
 {
     int32_t exp_int;
 
     assert(str != NULL);
 
-    if (!hidrd_dec_s32_from_str(&exp_int, str))
+    if (!HIDRD_NUM_FROM_STR(s32, &exp_int, str, NONE, DEC))
         return false;
 
     if (!hidrd_unit_exp_valid_int(exp_int))
