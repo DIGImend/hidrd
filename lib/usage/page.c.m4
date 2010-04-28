@@ -61,6 +61,7 @@ dnl
 #include "hidrd/util/hex.h"
 #include "hidrd/util/str.h"
 #include "hidrd/util/tkn.h"
+#include "hidrd/usage/page_desc_list.h"
 #include "hidrd/usage/page.h"
 
 'pushdef(`PAGE_SET',
@@ -76,220 +77,67 @@ PAGE_SET_RANGE_CHECK($1)
 include(`db/usage/page_set.m4')dnl
 popdef(`PAGE_SET')dnl
 `
-#if defined(HIDRD_WITH_TOKENS) || defined(HIDRD_WITH_NAMES)
-
-typedef struct page_desc {
-    hidrd_usage_page    page;
-#ifdef HIDRD_WITH_TOKENS
-    const char         *token;
-#endif
-#ifdef HIDRD_WITH_NAMES
-    const char         *name;
-#endif
-} page_desc;
-
-#ifdef HIDRD_WITH_TOKENS
-#define PAGE_TOKEN(_token)  .token = _token,
-#else
-#define PAGE_TOKEN(_token)
-#endif
-
-#ifdef HIDRD_WITH_NAMES
-#define PAGE_NAME(_name)    .name = _name,
-#else
-#define PAGE_NAME(_name)
-#endif
-
-static const page_desc desc_list[] = {
-
-#define PAGE(_TOKEN, _token, _name) \
-    {.page = HIDRD_USAGE_PAGE_##_TOKEN,     \
-     PAGE_TOKEN(#_token) PAGE_NAME(_name)}
-
-    PAGE(UNDEFINED, undefined, "undefined"),
-
-'dnl
-define(`PAGE', `    `PAGE'(uppercase($2), $2, "$3"),
-')dnl
-include(`db/usage/page.m4')dnl
-`
-#undef PAGE
-};
-
-#undef PAGE_NAME
-#undef PAGE_TOKEN
-
-static const size_t desc_num = sizeof(desc_list) / sizeof(*desc_list);
-
-
-static const page_desc *
-lookup_desc_by_num(hidrd_usage_page page)
-{
-    size_t  i;
-
-    assert(hidrd_usage_page_valid(page));
-
-    for (i = 0; i < desc_num; i++)
-        if (desc_list[i].page == page)
-            return &desc_list[i];
-
-    return NULL;
-}
-
-
-char *
-hidrd_usage_page_to_hex(hidrd_usage_page page)
-{
-    assert(hidrd_usage_page_valid(page));
-
-    return hidrd_hex_u16_to_str((uint16_t)page);
-}
-
-
-char *
-hidrd_usage_page_to_bhex(hidrd_usage_page page)
-{
-    assert(hidrd_usage_page_valid(page));
-
-    return hidrd_hex_u16_to_bstr((uint16_t)page);
-}
-
 
 bool
-hidrd_usage_page_from_hex(hidrd_usage_page *ppage, const char *hex)
+hidrd_usage_page_valid(hidrd_usage_page page)
 {
-    uint16_t    page;
+    hidrd_usage_page    min = HIDRD_USAGE_PAGE_MIN;
+    hidrd_usage_page    max = HIDRD_USAGE_PAGE_MAX;
 
-    if (!hidrd_hex_u16_from_str(&page, hex))
-        return false;
-
-    if (ppage != NULL)
-        *ppage = (hidrd_usage_page)page;
-
-    return true;
+    return (page >= min) && (page <= max);
 }
 
 
-bool
-hidrd_usage_page_from_bstr(hidrd_usage_page *ppage, const char *str)
-{
-    uint16_t    page;
-
-    if (!hidrd_num_u16_from_bstr(&page, str))
-        return false;
-
-    if (ppage != NULL)
-        *ppage = (hidrd_usage_page)page;
-
-    return true;
-}
-
+/* Define usage page to numeric string conversion functions */
+HIDRD_NUM_CONV_DEFS(usage_page, u16)
 
 #ifdef HIDRD_WITH_TOKENS
 
 const char *
 hidrd_usage_page_to_token(hidrd_usage_page page)
 {
-    const page_desc    *desc;
+    const hidrd_usage_page_desc    *desc;
 
     assert(hidrd_usage_page_valid(page));
-    desc = lookup_desc_by_num(page);
+    desc = hidrd_usage_page_desc_list_lkp_by_value(page);
 
     return (desc != NULL) ? desc->token : NULL;
-}
-
-
-char *
-hidrd_usage_page_to_token_or_hex(hidrd_usage_page page)
-{
-    const char         *token;
-
-    assert(hidrd_usage_page_valid(page));
-
-    token = hidrd_usage_page_to_token(page);
-
-    return (token != NULL) ? strdup(token) : hidrd_usage_page_to_hex(page);
-}
-
-
-char *
-hidrd_usage_page_to_token_or_bhex(hidrd_usage_page page)
-{
-    const char         *token;
-
-    assert(hidrd_usage_page_valid(page));
-
-    token = hidrd_usage_page_to_token(page);
-
-    return (token != NULL) ? strdup(token) : hidrd_usage_page_to_bhex(page);
 }
 
 
 bool
 hidrd_usage_page_from_token(hidrd_usage_page *ppage, const char *token)
 {
-    const char *tkn;
-    size_t      len;
-    size_t      i;
+    const hidrd_usage_page_desc    *desc;
 
     assert(token != NULL);
 
-    if (!hidrd_tkn_strip(&tkn, &len, token))
+    desc = hidrd_usage_page_desc_list_lkp_by_token(token);
+    if (desc == NULL)
         return false;
 
-    for (i = 0; i < desc_num; i++)
-        if (hidrd_str_ncasecmpn(desc_list[i].token, tkn, len) == 0)
-        {
-            if (ppage != NULL)
-                *ppage = hidrd_usage_page_validate(desc_list[i].page);
-            return true;
-        }
+    if (ppage != NULL)
+        *ppage = desc->value;
 
-    return false;
+    return true;
 }
-
-
-bool
-hidrd_usage_page_from_token_or_hex(hidrd_usage_page    *ppage,
-                                   const char          *token_or_hex)
-{
-    assert(token_or_hex != NULL);
-
-    return hidrd_usage_page_from_token(ppage, token_or_hex) ||
-           hidrd_usage_page_from_hex(ppage, token_or_hex);
-}
-
-
-bool
-hidrd_usage_page_from_token_or_bstr(hidrd_usage_page   *ppage,
-                                    const char         *token_or_bstr)
-{
-    assert(token_or_bstr != NULL);
-
-    return hidrd_usage_page_from_token(ppage, token_or_bstr) ||
-           hidrd_usage_page_from_bstr(ppage, token_or_bstr);
-}
-
-#endif /* HIDRD_WITH_TOKENS */
 
 #ifdef HIDRD_WITH_NAMES
 
 const char *
 hidrd_usage_page_name(hidrd_usage_page page)
 {
-    const page_desc    *desc;
+    const hidrd_usage_page_desc    *desc;
 
     assert(hidrd_usage_page_valid(page));
 
-    desc = lookup_desc_by_num(page);
+    desc = hidrd_usage_page_desc_list_lkp_by_value(page);
 
     return (desc != NULL) ? desc->name : NULL;
 }
 
-#ifdef HIDRD_WITH_TOKENS
-
 char *
-hidrd_usage_page_desc(hidrd_usage_page page)
+hidrd_usage_page_fmt_desc(hidrd_usage_page page)
 {
     char       *result      = NULL;
     char       *str         = NULL;
@@ -334,9 +182,7 @@ cleanup:
     return result;
 }
 
-#endif /* HIDRD_WITH_TOKENS */
-
 #endif /* HIDRD_WITH_NAMES */
 
-#endif /* defined HIDRD_WITH_TOKENS || defined HIDRD_WITH_NAMES */
+#endif /* HIDRD_WITH_TOKENS */
 'dnl

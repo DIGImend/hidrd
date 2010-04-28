@@ -86,15 +86,7 @@ popdef(`PAGE')dnl
  *
  * @return True if the page is valid, false otherwise.
  */
-static inline bool
-hidrd_usage_page_valid(hidrd_usage_page page)
-{
-    hidrd_usage_page    min = HIDRD_USAGE_PAGE_MIN;
-    hidrd_usage_page    max = HIDRD_USAGE_PAGE_MAX;
-
-    return (page >= min) && (page <= max);
-}
-
+extern bool hidrd_usage_page_valid(hidrd_usage_page page);
 
 /**
  * Validate a usage page ID.
@@ -148,48 +140,11 @@ PAGE_SET_RANGE_CHECK($1)
 include(`db/usage/page_set.m4')dnl
 undefine(`PAGE_SET')dnl
 `
-/**
- * Convert a usage page code to a hexadecimal code string.
- *
- * @param page  Usage page code.
- *
- * @return Dynamically allocated hexadecimal page code string.
- */
-extern char *hidrd_usage_page_to_hex(hidrd_usage_page page);
 
-/**
- * Convert a usage page code to a base-suffixed hexadecimal code string.
- *
- * @param page  Usage page code.
- *
- * @return Dynamically allocated base-suffixed hexadecimal page code string.
- */
-extern char *hidrd_usage_page_to_bhex(hidrd_usage_page page);
-
-/**
- * Convert a usage page hexadecimal code string to a code.
- *
- * @param ppage Location for resulting page code.
- * @param hex   Usage page hexadecimal code string.
- *
- * @return True if the hexadecimal code string was valid, false otherwise.
- */
-extern bool hidrd_usage_page_from_hex(hidrd_usage_page *ppage,
-                                      const char       *hex);
-
-/**
- * Convert a usage page base-suffixed code string to a code.
- *
- * @param ppage Location for resulting page code.
- * @param str   Usage page base-suffixed code string.
- *
- * @return True if the base-suffixed code string was valid, false otherwise.
- */
-extern bool hidrd_usage_page_from_bstr(hidrd_usage_page    *ppage,
-                                       const char          *str);
+/* Declare usage page to numeric string conversion functions */
+HIDRD_NUM_CONV_DECLS(usage_page);
 
 #ifdef HIDRD_WITH_TOKENS
-
 /**
  * Convert a usage page code to a string token.
  *
@@ -198,28 +153,6 @@ extern bool hidrd_usage_page_from_bstr(hidrd_usage_page    *ppage,
  * @return Constant token string or NULL if the page has no token.
  */
 extern const char *hidrd_usage_page_to_token(hidrd_usage_page page);
-
-/**
- * Convert a usage page code to a string token or (if there is no token) to
- * a hexadecimal code string.
- *
- * @param page  Usage page code.
- *
- * @return Dynamically allocated usage page token or hexadecimal code
- *         string; NULL if failed to allocate memory.
- */
-extern char *hidrd_usage_page_to_token_or_hex(hidrd_usage_page page);
-
-/**
- * Convert a usage page code to a string token or (if there is no token) to
- * a base-suffixed hexadecimal code string.
- *
- * @param page  Usage page code.
- *
- * @return Dynamically allocated usage page token or base-suffixed
- *         hexadecimal code string; NULL if failed to allocate memory.
- */
-extern char *hidrd_usage_page_to_token_or_bhex(hidrd_usage_page page);
 
 /**
  * Convert a usage page string token to a code.
@@ -231,39 +164,9 @@ extern char *hidrd_usage_page_to_token_or_bhex(hidrd_usage_page page);
  */
 extern bool hidrd_usage_page_from_token(hidrd_usage_page   *ppage,
                                         const char         *token);
-
-/**
- * Convert a usage page token or (if the token is not recognized)
- * hexadecimal code string to a code.
- *
- * @param ppage         Location for resulting page code.
- * @param token_or_hex  Usage page token or hexadecimal code string.
- *
- * @return True if the token was found or hexadecimal code string was valid,
- *         false otherwise.
- */
-extern bool hidrd_usage_page_from_token_or_hex(
-                                        hidrd_usage_page   *ppage,
-                                        const char         *token_or_hex);
-
-/**
- * Convert a usage page token or (if the token is not recognized)
- * base-suffixed code string to a code.
- *
- * @param ppage         Location for resulting page code.
- * @param token_or_bstr Usage page token or base-suffixed code string.
- *
- * @return True if the token was found or base-suffixed code string was
- *         valid, false otherwise.
- */
-extern bool hidrd_usage_page_from_token_or_bstr(
-                                        hidrd_usage_page   *ppage,
-                                        const char         *token_or_bstr);
-
 #endif /* HIDRD_WITH_TOKENS */
 
 #ifdef HIDRD_WITH_NAMES
-
 /**
  * Retrieve usage page name string (close to specification).
  *
@@ -274,9 +177,8 @@ extern bool hidrd_usage_page_from_token_or_bstr(
 extern const char *hidrd_usage_page_name(hidrd_usage_page page);
 
 #ifdef HIDRD_WITH_TOKENS
-
 /**
- * Generate page description from page name and set membership.
+ * Format page description text from page name and set membership.
  *
  * @param page  Usage page code to generate description for.
  *
@@ -284,8 +186,7 @@ extern const char *hidrd_usage_page_name(hidrd_usage_page page);
  *         allocate memory; could be an empty string, if there is nothing to
  *         tell about the page.
  */
-extern char *hidrd_usage_page_desc(hidrd_usage_page page);
-
+extern char *hidrd_usage_page_fmt_desc(hidrd_usage_page page);
 #endif /* HIDRD_WITH_TOKENS */
 
 #endif /* HIDRD_WITH_NAMES */
