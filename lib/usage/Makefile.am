@@ -20,8 +20,10 @@
 lib_LTLIBRARIES = libhidrd_usage.la
 
 libhidrd_usage_la_SOURCES = \
-    type.c                  \
-    id.c
+    id.c                    \
+    id_desc.c               \
+    page_desc.c             \
+    type.c
 
 libhidrd_usage_la_LIBADD = \
     ../util/libhidrd_util.la
@@ -30,12 +32,16 @@ libhidrd_usage_la_LIBADD = \
 	m4 -I "@top_srcdir@" $< > $@
 
 dist_noinst_DATA = \
-    all.c.m4        \
-    page.c.m4
+    all.c.m4            \
+    id_desc_list.c.m4   \
+    page.c.m4           \
+    page_desc_list.c.m4
 
 BUILT_SOURCES = \
-    all.c       \
-    page.c
+    all.c               \
+    id_desc_list.c      \
+    page.c              \
+    page_desc_list.c
 
 CLEANFILES = $(BUILT_SOURCES)
 

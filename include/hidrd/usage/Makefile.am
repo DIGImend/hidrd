@@ -23,17 +23,23 @@ hidrd_usagedir = $(includedir)/hidrd/usage
 	m4 -I "@top_srcdir@" $< > $@
 
 dist_noinst_DATA = \
-    all.h.m4        \
-    page.h.m4
+    all.h.m4            \
+    id_desc_list.h.m4   \
+    page.h.m4           \
+    page_desc_list.h.m4
 
 BUILT_SOURCES = \
-	all.h          \
-	page.h
+    all.h               \
+    id_desc_list.h      \
+    page.h              \
+    page_desc_list.h
 
 CLEANFILES = $(BUILT_SOURCES)
 
 hidrd_usage_HEADERS = \
     id.h                \
+    id_desc.h           \
+    page_desc.h         \
     type.h
 
 nodist_hidrd_usage_HEADERS = \
