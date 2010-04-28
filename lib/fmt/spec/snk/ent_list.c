@@ -195,7 +195,7 @@ hidrd_spec_snk_ent_list_render(void                           **pbuf,
         if (p->name != NULL && l != last_l && !hidrd_buf_add_str(&buf, ","))
             goto cleanup;
 
-        if (p->comment != NULL)
+        if (p->comment != NULL && *p->comment != '\0')
         {
             if (!hidrd_buf_add_printf(&buf,
                                       (p->name == NULL &&

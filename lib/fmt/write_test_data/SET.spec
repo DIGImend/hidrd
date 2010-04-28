@@ -1,3 +1,3 @@
 Delimiter (Open),
-Local (tag:0 data:01020000h),
+Usage (0201h),
 Delimiter (Close)
