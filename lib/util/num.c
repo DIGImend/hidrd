@@ -24,10 +24,12 @@
  * @(#) $Id$
  */
 
+#include <stdarg.h>
 #include <ctype.h>
 #include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <strings.h>
 #include "hidrd/util/dec.h"
 
@@ -35,57 +37,147 @@
 bool
 hidrd_num_base_valid(hidrd_num_base base)
 {
-    return (base == HIDRD_NUM_BASE_DEC || base == HIDRD_NUM_BASE_HEX);
-}
-
-
-char
-hidrd_num_base_to_char(hidrd_num_base base)
-{
-    assert(hidrd_num_base_valid(base));
-
     switch (base)
     {
+        case HIDRD_NUM_BASE_NONE:
         case HIDRD_NUM_BASE_DEC:
-            return '\0';
         case HIDRD_NUM_BASE_HEX:
-            return 'h';
+            return true;
         default:
-            return '?';
+            return false;
     }
 }
 
 
 bool
-hidrd_num_u32_from_str(uint32_t *pnum, const char *str, hidrd_num_base base)
+hidrd_num_bmrk_valid(hidrd_num_bmrk bmrk)
 {
-    /* Just to be safe on all archs */
-    const unsigned long int     max     = UINT32_MAX;
-    unsigned long int           num;
-    const char                 *start;
-    const char                 *end;
+    switch (bmrk)
+    {
+        case HIDRD_NUM_BMRK_NONE:
+        case HIDRD_NUM_BMRK_SFX:
+        case HIDRD_NUM_BMRK_PFX:
+            return true;
+        default:
+            return false;
+    }
+}
+
+
+/**
+ * Find expected number end and base, if suffix base mark is expected.
+ *
+ * @param str       String to look through.
+ * @param bmrk      Expected base mark type.
+ * @param pbase     Location for base if suffix base mark is expected; could
+ *                  be NULL.
+ * @param pexp_end  Location for expected number end; could be NULL.
+ *
+ * @return True if the string is valid, false otherwise.
+ */
+static bool
+find_exp_end_and_sfx_base(const char       *str,
+                          hidrd_num_bmrk    bmrk,
+                          hidrd_num_base   *pbase,
+                          const char      **pexp_end)
+{
+    const char     *p;          /* Multi-purpose pointer */
+    bool            text;       /* "Within text run" flag */
+    const char     *exp_end;    /* Expected number end */
+    hidrd_num_base  base    = HIDRD_NUM_BASE_NONE;
 
     assert(str != NULL);
+    assert(hidrd_num_bmrk_valid(bmrk));
+
+    /* Lookup right padding start */
+    exp_end = NULL;
+    text = false;
+    p = str;
+    while (true)
+    {
+        if (*p == '\0' || isspace(*p))
+        {
+            if (text)
+            {
+                exp_end = p;
+                text = false;
+            }
+        }
+        else
+            text = true;
+
+        if (*p == '\0')
+            break;
+        p++;
+    }
+
+    /* If there is nothing except padding (space) */
+    if (exp_end == NULL)
+        return false;
+
+    /* If suffix base mark is expected */
+    if (bmrk == HIDRD_NUM_BMRK_SFX)
+    {
+        p = exp_end - 1;
+        if (*p == 'h' || *p == 'H')
+        {
+            exp_end = p;
+            base = HIDRD_NUM_BASE_HEX;
+        }
+        else if (isdigit(*p))
+            base = HIDRD_NUM_BASE_DEC;
+        else
+            return false;
+
+        if (pbase != NULL)
+            *pbase = base;
+    }
+
+    if (pexp_end != NULL)
+        *pexp_end = exp_end;
+
+    return true;
+}
+
+
+bool
+hidrd_num_u32_from_str(uint32_t        *pnum,
+                       const char      *str,
+                       hidrd_num_bmrk   bmrk,
+                       hidrd_num_base   base)
+{
+    /* Just to be safe on all archs */
+    const unsigned long int     max         = UINT32_MAX;
+    const char                 *exp_end;    /* Expected number end */
+    const char                 *start;      /* Number start */;
+    unsigned long int           num;        /* Converted number */;
+    const char                 *end;        /* Number end strtoul reports */
+
+    assert(str != NULL);
+    assert(hidrd_num_bmrk_valid(bmrk));
     assert(hidrd_num_base_valid(base));
+    assert(bmrk != HIDRD_NUM_BMRK_NONE || base != HIDRD_NUM_BASE_NONE);
+
+    /* Lookup expected number end and base, if needed */
+    if (!find_exp_end_and_sfx_base(str, bmrk, &base, &exp_end))
+        return false;
 
     /* Skip leading space ourselves */
     for (start = str; isspace(*start); start++);
-    /* Defeat possible sign which strtoul interprets */
-    if (!((base == HIDRD_NUM_BASE_DEC)
-                ? isdigit(*start)
-                : isxdigit(*start)))
+    /* Defeat possible negative sign which strtoul interprets */
+    if (*start == '-')
         return false;
 
     /* Convert to number */
     errno = 0;
-    num = strtoul(start, (char **)&end, base);
+    num = strtoul(start, (char **)&end,
+                  (bmrk == HIDRD_NUM_BMRK_PFX) ? 0 : base);
     /* Check for the conversion and range errors */
     if (errno != 0 || num > max)
         return false;
 
-    /* Check that there is nothing left, but space */
-    for (; isspace(*end); end++);
-    if (*end != '\0')
+    /* Check that the number ends where expected */
+    if (end != exp_end)
         return false;
 
     /* All is OK */
@@ -97,192 +189,39 @@ hidrd_num_u32_from_str(uint32_t *pnum, const char *str, hidrd_num_base base)
 
 
 bool
-hidrd_num_u32_from_bstr(uint32_t *pnum, const char *str)
-{
-    /* Just to be safe on all archs */
-    const unsigned long int     max     = UINT32_MAX;
-    const char                 *b;
-    const char                 *b_end   = NULL;
-    hidrd_num_base              base    = 0;
-    unsigned long int           num;
-    const char                 *start;
-    const char                 *end;
-
-    assert(str != NULL);
-
-    /* Lookup base character */
-    for (b = index(str, '\0'); b > str && isspace(*b); b--)
-    if (*b == 'h' || *b == 'H')
-    {
-        b_end = b;
-        base = HIDRD_NUM_BASE_HEX;
-    }
-    else if (isdigit(*b))
-    {
-        b_end = b + 1;
-        base = HIDRD_NUM_BASE_DEC;
-    }
-    else
-        return false;
-
-    /* Skip leading space ourselves */
-    for (start = str; isspace(*start); start++);
-    /* Defeat possible sign which strtoul interprets */
-    if (!((base == HIDRD_NUM_BASE_DEC)
-                ? isdigit(*start)
-                : isxdigit(*start)))
-        return false;
-
-    /* Convert to number */
-    errno = 0;
-    num = strtoul(start, (char **)&end, base);
-    /* Check for the conversion and range errors */
-    if (errno != 0 || num > max)
-        return false;
-
-    /* Check that the number ends at the base character */
-    if (end != b_end)
-        return false;
-
-    /* All is OK */
-    if (pnum != NULL)
-        *pnum = (uint32_t)num;
-
-    return true;
-}
-
-
-bool
-hidrd_num_u16_from_str(uint16_t *pnum, const char *str, hidrd_num_base base)
-{
-    uint32_t    num;
-
-    assert(str != NULL);
-
-    if (!hidrd_num_u32_from_str(&num, str, base))
-        return false;
-
-    if (num > UINT16_MAX)
-        return false;
-
-    if (pnum != NULL)
-        *pnum = (uint16_t)num;
-
-    return true;
-}
-
-
-bool
-hidrd_num_u16_from_bstr(uint16_t *pnum, const char *str)
-{
-    uint32_t    num;
-
-    assert(str != NULL);
-
-    if (!hidrd_num_u32_from_bstr(&num, str))
-        return false;
-
-    if (num > UINT16_MAX)
-        return false;
-
-    if (pnum != NULL)
-        *pnum = (uint16_t)num;
-
-    return true;
-}
-
-
-bool
-hidrd_num_u8_from_str(uint8_t *pnum, const char *str, hidrd_num_base base)
-{
-    uint32_t    num;
-
-    assert(str != NULL);
-
-    if (!hidrd_num_u32_from_str(&num, str, base))
-        return false;
-
-    if (num > UINT8_MAX)
-        return false;
-
-    if (pnum != NULL)
-        *pnum = (uint8_t)num;
-
-    return true;
-}
-
-
-bool
-hidrd_num_u8_from_bstr(uint8_t *pnum, const char *str)
-{
-    uint32_t    num;
-
-    assert(str != NULL);
-
-    if (!hidrd_num_u32_from_bstr(&num, str))
-        return false;
-
-    if (num > UINT8_MAX)
-        return false;
-
-    if (pnum != NULL)
-        *pnum = (uint8_t)num;
-
-    return true;
-}
-
-
-char *
-hidrd_num_u32_to_str(uint32_t num, hidrd_num_base base)
-{
-    char   *str;
-
-    assert(hidrd_num_base_valid(base));
-
-    if (asprintf(&str, (base == HIDRD_NUM_BASE_DEC ? "%u" : "%X"), num) < 0)
-        return NULL;
-
-    return str;
-}
-
-
-char *
-hidrd_num_u32_to_bstr(uint32_t num, hidrd_num_base base)
-{
-    char   *str;
-
-    assert(hidrd_num_base_valid(base));
-
-    if (asprintf(&str, (base == HIDRD_NUM_BASE_DEC ? "%u" : "%Xh"), num) < 0)
-        return NULL;
-
-    return str;
-}
-
-
-bool
-hidrd_num_s32_from_str(int32_t *pnum, const char *str, hidrd_num_base base)
+hidrd_num_s32_from_str(int32_t         *pnum,
+                       const char      *str,
+                       hidrd_num_bmrk   bmrk,
+                       hidrd_num_base   base)
 {
     /* Just to be safe on all archs */
     const long int  min     = INT32_MIN;
     /* Just to be safe on all archs */
     const long int  max     = INT32_MAX;
-    long int        num;
-    const char     *end;
+
+    const char     *exp_end;    /* Expected number end */
+    long int        num;        /* Converted number */;
+    const char     *end;        /* Number end strtoul reports */
 
     assert(str != NULL);
+    assert(hidrd_num_bmrk_valid(bmrk));
     assert(hidrd_num_base_valid(base));
+    assert(bmrk != HIDRD_NUM_BMRK_NONE || base != HIDRD_NUM_BASE_NONE);
+
+    /* Lookup expected number end and base, if needed */
+    if (!find_exp_end_and_sfx_base(str, bmrk, &base, &exp_end))
+        return false;
 
     /* Convert to number */
     errno = 0;
-    num = strtol(str, (char **)&end, base);
+    num = strtol(str, (char **)&end,
+                 (bmrk == HIDRD_NUM_BMRK_PFX) ? 0 : base);
     /* Check for the conversion and range errors */
     if (errno != 0 || (num > max) || (num < min))
         return false;
 
-    /* Check that there is nothing left, but space */
-    for (; isspace(*end); end++);
-    if (*end != '\0')
+    /* Check that the number ends where expected */
+    if (end != exp_end)
         return false;
 
     /* All is OK */
@@ -293,164 +232,174 @@ hidrd_num_s32_from_str(int32_t *pnum, const char *str, hidrd_num_base base)
 }
 
 
-bool
-hidrd_num_s32_from_bstr(int32_t *pnum, const char *str)
+char *
+hidrd_num_u32_to_str(uint32_t num, hidrd_num_bmrk bmrk, hidrd_num_base base)
 {
-    /* Just to be safe on all archs */
-    const long int  min     = INT32_MIN;
-    /* Just to be safe on all archs */
-    const long int  max     = INT32_MAX;
-    const char     *b;
-    const char     *b_end   = NULL;
-    hidrd_num_base  base    = 0;
-    long int        num;
-    const char     *end;
+    char   *str;
 
-    assert(str != NULL);
+    assert(hidrd_num_bmrk_valid(bmrk));
+    assert(hidrd_num_base_valid(base));
+    assert(base != HIDRD_NUM_BASE_NONE);
 
-    /* Lookup base character */
-    for (b = index(str, '\0'); b > str && isspace(*b); b--)
-    if (*b == 'h' || *b == 'H')
+    if (base == HIDRD_NUM_BASE_HEX)
     {
-        b_end = b;
-        base = HIDRD_NUM_BASE_HEX;
-    }
-    else if (isdigit(*b))
-    {
-        b_end = b + 1;
-        base = HIDRD_NUM_BASE_DEC;
+        if (asprintf(&str,
+                     ((bmrk == HIDRD_NUM_BMRK_NONE)
+                        ? "%.*X"
+                        : (bmrk == HIDRD_NUM_BMRK_SFX)
+                            ? "%.*Xh"
+                            : "0x%.*X"),
+                     ((num == 0 && bmrk == HIDRD_NUM_BMRK_NONE)
+                        ? 1
+                        : num <= UINT8_MAX
+                            ? 2
+                            : num <= UINT16_MAX
+                                ? 4
+                                : 8),
+                     (unsigned int)num) < 0)
+            return NULL;
     }
     else
-        return false;
-
-    /* Convert to number */
-    errno = 0;
-    num = strtol(str, (char **)&end, base);
-    /* Check for the conversion and range errors */
-    if (errno != 0 || (num > max) || (num < min))
-        return false;
-
-    /* Check that the number ends at the base character */
-    if (end != b_end)
-        return false;
-
-    /* All is OK */
-    if (pnum != NULL)
-        *pnum = (int32_t)num;
-
-    return true;
-}
-
-
-bool
-hidrd_num_s16_from_str(int16_t *pnum, const char *str, hidrd_num_base base)
-{
-    int32_t num;
-
-    assert(str != NULL);
-
-    if (!hidrd_num_s32_from_str(&num, str, base))
-        return false;
-
-    if (num > INT16_MAX || num < INT16_MIN)
-        return false;
-
-    if (pnum != NULL)
-        *pnum = (int16_t)num;
-
-    return true;
-}
-
-
-bool
-hidrd_num_s16_from_bstr(int16_t *pnum, const char *str)
-{
-    int32_t num;
-
-    assert(str != NULL);
-
-    if (!hidrd_num_s32_from_bstr(&num, str))
-        return false;
-
-    if (num > INT16_MAX || num < INT16_MIN)
-        return false;
-
-    if (pnum != NULL)
-        *pnum = (int16_t)num;
-
-    return true;
-}
-
-
-bool
-hidrd_num_s8_from_str(int8_t *pnum, const char *str, hidrd_num_base base)
-{
-    int32_t num;
-
-    assert(str != NULL);
-
-    if (!hidrd_num_s32_from_str(&num, str, base))
-        return false;
-
-    if (num > INT8_MAX || num < INT8_MIN)
-        return false;
-
-    if (pnum != NULL)
-        *pnum = (int8_t)num;
-
-    return true;
-}
-
-
-bool
-hidrd_num_s8_from_bstr(int8_t *pnum, const char *str)
-{
-    int32_t num;
-
-    assert(str != NULL);
-
-    if (!hidrd_num_s32_from_bstr(&num, str))
-        return false;
-
-    if (num > INT8_MAX || num < INT8_MIN)
-        return false;
-
-    if (pnum != NULL)
-        *pnum = (int8_t)num;
-
-    return true;
-}
-
-
-char *
-hidrd_num_s32_to_str(int32_t num, hidrd_num_base base)
-{
-    char   *str;
-
-    assert(hidrd_num_base_valid(base));
-
-    if (asprintf(&str,
-                 (base == HIDRD_NUM_BASE_DEC ? "%s%u" : "%s%X"),
-                 (num >= 0 ? "" : "-"), (num >= 0 ? num : -num)) < 0)
-        return NULL;
+    {
+        if (asprintf(&str, "%u", (unsigned int)num) < 0)
+            return NULL;
+    }
 
     return str;
 }
 
 
 char *
-hidrd_num_s32_to_bstr(int32_t num, hidrd_num_base base)
+hidrd_num_s32_to_str(int32_t num, hidrd_num_bmrk bmrk, hidrd_num_base base)
 {
     char   *str;
 
+    assert(hidrd_num_bmrk_valid(bmrk));
     assert(hidrd_num_base_valid(base));
+    assert(base != HIDRD_NUM_BASE_NONE);
 
-    if (asprintf(&str,
-                 (base == HIDRD_NUM_BASE_DEC ? "%s%u" : "%s%Xh"),
-                 (num >= 0 ? "" : "-"), (num >= 0 ? num : -num)) < 0)
-        return NULL;
+    if (base == HIDRD_NUM_BASE_HEX)
+    {
+        const char *sgn;
+
+        if (num >= 0)
+            sgn = "";
+        else
+        {
+            num = -num;
+            sgn = "-";
+        }
+
+        if (asprintf(&str,
+                     ((bmrk == HIDRD_NUM_BMRK_NONE)
+                        ? "%s%.*X"
+                        : (bmrk == HIDRD_NUM_BMRK_SFX)
+                            ? "%s%.*Xh"
+                            : "%s0x%.*X"),
+                     sgn,
+                     ((num == 0 && bmrk == HIDRD_NUM_BMRK_NONE)
+                        ? 1
+                        : num <= UINT8_MAX
+                            ? 2
+                            : num <= UINT16_MAX
+                                ? 4
+                                : 8),
+                     (unsigned int)num) < 0)
+            return NULL;
+    }
+    else
+    {
+        if (asprintf(&str, "%d", (int)num) < 0)
+            return NULL;
+    }
 
     return str;
+}
+
+
+#define U_FROM_STR_BODY(_b) \
+    do {                                                    \
+        uint32_t    num;                                    \
+                                                            \
+        assert(str != NULL);                                \
+        assert(hidrd_num_bmrk_valid(bmrk));                 \
+        assert(hidrd_num_base_valid(base));                 \
+        assert(bmrk != HIDRD_NUM_BMRK_NONE ||               \
+               base != HIDRD_NUM_BASE_NONE);                \
+                                                            \
+        if (!hidrd_num_u32_from_str(&num, str, bmrk, base)) \
+            return false;                                   \
+                                                            \
+        if (num > UINT##_b##_MAX)                           \
+            return false;                                   \
+                                                            \
+        if (pnum != NULL)                                   \
+            *pnum = (uint##_b##_t)num;                      \
+                                                            \
+        return true;                                        \
+    } while (0)
+
+
+bool
+hidrd_num_u16_from_str(uint16_t        *pnum,
+                       const char      *str,
+                       hidrd_num_bmrk   bmrk,
+                       hidrd_num_base   base)
+{
+    U_FROM_STR_BODY(16);
+}
+
+
+bool
+hidrd_num_u8_from_str(uint8_t          *pnum,
+                      const char       *str,
+                      hidrd_num_bmrk    bmrk,
+                      hidrd_num_base    base)
+{
+    U_FROM_STR_BODY(8);
+}
+
+
+#define S_FROM_STR_BODY(_b) \
+    do {                                                    \
+        int32_t    num;                                     \
+                                                            \
+        assert(str != NULL);                                \
+        assert(hidrd_num_bmrk_valid(bmrk));                 \
+        assert(hidrd_num_base_valid(base));                 \
+        assert(bmrk != HIDRD_NUM_BMRK_NONE ||               \
+               base != HIDRD_NUM_BASE_NONE);                \
+                                                            \
+        if (!hidrd_num_s32_from_str(&num, str, bmrk, base)) \
+            return false;                                   \
+                                                            \
+        if (num > INT##_b##_MAX || num < INT##_b##_MIN)     \
+            return false;                                   \
+                                                            \
+        if (pnum != NULL)                                   \
+            *pnum = (int##_b##_t)num;                       \
+                                                            \
+        return true;                                        \
+    } while (0)
+
+
+bool
+hidrd_num_s16_from_str(int16_t         *pnum,
+                       const char      *str,
+                       hidrd_num_bmrk   bmrk,
+                       hidrd_num_base   base)
+{
+    S_FROM_STR_BODY(16);
+}
+
+
+bool
+hidrd_num_s8_from_str(int8_t           *pnum,
+                      const char       *str,
+                      hidrd_num_bmrk    bmrk,
+                      hidrd_num_base    base)
+{
+    S_FROM_STR_BODY(8);
 }
 
 
@@ -488,6 +437,75 @@ hidrd_num_u32_from_le(const uint32_t *ple)
     num |= *++p << 24;
 
     return num;
+}
+
+
+bool
+hidrd_num_from_alt_str(void *pnum, const char *str, ...)
+{
+    va_list             ap;
+    hidrd_num_parse_fn *fn;
+
+    va_start(ap, str);
+
+    while ((fn = va_arg(ap, hidrd_num_parse_fn *)) != NULL)
+        if ((*fn)(pnum, str))
+        {
+            va_end(ap);
+            return true;
+        }
+
+    va_end(ap);
+    return false;
+}
+
+
+char *
+hidrd_num_to_alt_str(size_t bits, size_t cnum, ...)
+{
+    va_list     ap;
+    char       *result  = NULL;
+    size_t      i       = 0;
+    const char *str;
+
+    assert(bits == 8 || bits == 16 || bits == 32);
+
+    va_start(ap, cnum);
+    errno = 0;
+
+    switch (bits)
+    {
+#define BITS_CASE(_b, _a) \
+    case _b:                                                            \
+        {                                                               \
+            uint##_b##_t            n   = (uint##_b##_t)va_arg(ap, _a); \
+            hidrd_num_fmt##_b##_fn *fn;                                 \
+                                                                        \
+            while ((fn = va_arg(ap, hidrd_num_fmt##_b##_fn *)) != NULL) \
+            {                                                           \
+                str = (*fn)(n);                                         \
+                if (str != NULL)                                        \
+                    result = (i < cnum) ? strdup(str) : (char *)str;    \
+                else if (errno == 0)                                    \
+                {                                                       \
+                    i++;                                                \
+                    continue;                                           \
+                }                                                       \
+                break;                                                  \
+            }                                                           \
+        }                                                               \
+        break
+
+        BITS_CASE(8, int);
+        BITS_CASE(16, int);
+        BITS_CASE(32, uint32_t);
+
+#undef BITS_CASE
+    }
+
+    va_end(ap);
+
+    return result;
 }
 
 

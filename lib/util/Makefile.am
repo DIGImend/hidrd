@@ -34,3 +34,15 @@ libhidrd_util_la_SOURCES = \
 if ENABLE_TOKENS
 libhidrd_util_la_SOURCES += tkn.c
 endif
+
+bin_PROGRAMS =
+check_PROGRAMS = hidrd_num_test
+
+hidrd_num_test_SOURCES = num_test.c
+hidrd_num_test_LDADD = $(lib_LTLIBRARIES)
+
+TESTS = hidrd_num_test
+
+if ENABLE_TESTS_INSTALL
+bin_PROGRAMS += $(check_PROGRAMS)
+endif
