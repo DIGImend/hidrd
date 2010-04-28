@@ -26,6 +26,7 @@
 
 #include <ctype.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "hidrd/util/hex.h"
 
 
@@ -111,29 +112,21 @@ hidrd_hex_buf_to_str(void *buf, size_t size)
 
 
 char *
-hidrd_hex_buf_to_bstr(void *buf, size_t size)
+hidrd_hex_buf_to_sstr(void *buf, size_t size)
 {
-    static const char   map[16] = "0123456789ABCDEF";
-    uint8_t            *bbuf    = (uint8_t *)buf;
-    char               *str;
-    char               *p;
-    uint8_t             b;
+    char   *str;
+    char   *sstr;
 
-    assert(buf != NULL || size == 0);
-
-    str = malloc((size * 2) + 2);
+    str = hidrd_hex_buf_to_str(buf, size);
     if (str == NULL)
         return NULL;
 
-    for (p = str; size > 0; size--, bbuf++)
+    if (asprintf(&sstr, "%sh", str) < 0)
     {
-        b = *bbuf;
-        *p++ = map[b >> 4];
-        *p++ = map[b & 0xF];
+        free(str);
+        return NULL;
     }
+    free(str);
 
-    *p++ = 'h';
-    *p = '\0';
-
-    return str;
+    return sstr;
 }
