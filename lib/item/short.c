@@ -25,6 +25,7 @@
  */
 
 #include <string.h>
+#include "hidrd/util/str.h"
 #include "hidrd/item/short.h"
 
 static uint32_t

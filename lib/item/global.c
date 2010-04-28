@@ -25,6 +25,7 @@
  */
 
 #include <string.h>
+#include "hidrd/util/str.h"
 #include "hidrd/item/global.h"
 
 /* Define tag numeric string conversion functions */
@@ -42,7 +43,7 @@ HIDRD_TKN_CONV_DEFS(item_global_tag,
                     MAP(UNIT_EXPONENT, unit_exponent),
                     MAP(UNIT, unit),
                     MAP(REPORT_SIZE, report_size),
-                    MAP(REPORT_ID, report_id),
+                    MAP(REPORT_ID, report_ID),
                     MAP(REPORT_COUNT, report_count),
                     MAP(PUSH, push),
                     MAP(POP, pop))

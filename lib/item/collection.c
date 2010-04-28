@@ -26,6 +26,7 @@
 
 #include <string.h>
 #include <stdio.h>
+#include "hidrd/util/str.h"
 #include "hidrd/item/collection.h"
 
 /* Define type numeric string conversion functions */

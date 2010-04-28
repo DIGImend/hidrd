@@ -22,14 +22,14 @@ dnl
 dnl
 dnl ID_SET_POINT - describe a usage ID set item.
 dnl Arguments:
-dnl     * Set token (lowercase, underscores as spaces)
+dnl     * Set token (non-capitalized, underscores for spaces)
 dnl     * Hexadecimal usage ID (four digits, uppercase)
 dnl
 define(`ID_SET_POINT', `ID_SET_RANGE(`$1', `$2', `$2')')dnl
 dnl
 dnl ID_SET_RANGE - describe a usage ID set range.
 dnl Arguments:
-dnl     * Set token (lowercase, underscores as spaces)
+dnl     * Set token (non-capitalized, underscores for spaces)
 dnl     * Minimum hexadecimal usage ID (four digits, uppercase)
 dnl     * Maximum hexadecimal usage ID (four digits, uppercase)
 dnl

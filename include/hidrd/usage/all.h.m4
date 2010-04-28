@@ -82,7 +82,7 @@ typedef enum hidrd_usage {
      */
 `#'define _PU(_id) _U(uppercase(`$2'), _id)
 
-sinclude(`db/usage/id_$2.m4')dnl
+sinclude(`db/usage/id_'lowercase($2)`.m4')dnl
 
 #undef _PU
 
@@ -243,18 +243,22 @@ extern char *hidrd_usage_to_token(hidrd_usage usage);
  */
 extern bool hidrd_usage_from_token(hidrd_usage *pusage,
                                    const char  *token);
-#endif
+
+/* Declare case-changing token conversion functions */
+HIDRD_TKN_CONV_CASE_DECLS(usage);
+
+#endif /* HIDRD_WITH_TOKENS */
 
 #ifdef HIDRD_WITH_NAMES
 
 /**
- * Retrieve usage name string (close to specification).
+ * Retrieve usage ID name string (close to specification).
  *
  * @param usage Usage code.
  *
- * @return Usage name string, or NULL if not found.
+ * @return Usage ID name string, or NULL if not found.
  */
-extern const char *hidrd_usage_name(hidrd_usage usage);
+extern const char *hidrd_usage_id_name(hidrd_usage usage);
 
 #ifdef HIDRD_WITH_TOKENS
 

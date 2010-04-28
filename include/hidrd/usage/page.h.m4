@@ -127,9 +127,9 @@ hidrd_usage_page_defined(hidrd_usage_page page)
  * @return True if the page is $2, false otherwise.
  */
 ifelse(eval(PAGE_SET_RANGE_NUM($1) > 1), 1,
-extern bool hidrd_usage_page_$1(hidrd_usage_page page);,
+extern bool hidrd_usage_page_`'lowercase($1)(hidrd_usage_page page);,
 static inline bool
-hidrd_usage_page_$1(hidrd_usage_page page)
+hidrd_usage_page_`'lowercase($1)(hidrd_usage_page page)
 {
     assert(hidrd_usage_page_valid(page));
 PAGE_SET_RANGE_CHECK($1)
@@ -164,6 +164,9 @@ extern const char *hidrd_usage_page_to_token(hidrd_usage_page page);
  */
 extern bool hidrd_usage_page_from_token(hidrd_usage_page   *ppage,
                                         const char         *token);
+
+/* Declare case-changing token conversion functions */
+HIDRD_TKN_CONV_CASE_DECLS(usage_page);
 #endif /* HIDRD_WITH_TOKENS */
 
 #ifdef HIDRD_WITH_NAMES

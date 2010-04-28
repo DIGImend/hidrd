@@ -134,7 +134,7 @@ pushdef(`TYPE_SET',
 dnl
 pushdef(`PAGE',
 `const hidrd_usage_id_desc   dnl
-hidrd_usage_id_desc_list_`'$2[PAGE_ID_NUM(`$2')] = {
+hidrd_usage_id_desc_list_`'lowercase($2)[PAGE_ID_NUM(`$2')] = {
 #define _PU(_TOKEN, _token, _name, _type_set) \
     _U(uppercase($2)_##_TOKEN, _token, _name, _type_set)
 
@@ -143,7 +143,7 @@ pushdef(`ID',
         "$'`4",
         TYPE_SET($'`3)),
 ')dnl
-sinclude(`db/usage/id_$2.m4')dnl
+sinclude(`db/usage/id_'lowercase($2)`.m4')dnl
 popdef(`ID')dnl
 
 #undef _PU

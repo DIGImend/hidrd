@@ -21,7 +21,7 @@ dnl Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 dnl
 dnl ID_SET - describe a usage ID set.
 dnl Arguments:
-dnl     * Set token (lowercase, underscores as spaces)
+dnl     * Set token (non-capitalized, underscores for spaces)
 dnl     * Set description (non-capitalized)
 dnl
 ID_SET(`reserved', `reserved')dnl

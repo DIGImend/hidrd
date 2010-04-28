@@ -22,14 +22,14 @@ dnl
 dnl
 dnl PAGE_SET_POINT - describe a page set item.
 dnl Arguments:
-dnl     * Set token (lowercase, underscores as spaces)
+dnl     * Set token (non-capitalized, underscores for spaces)
 dnl     * Hexadecimal page ID (four digits, uppercase)
 dnl
 define(`PAGE_SET_POINT', `PAGE_SET_RANGE(`$1', `$2', `$2')')dnl
 dnl
 dnl PAGE_SET_RANGE - describe a page set range.
 dnl Arguments:
-dnl     * Set token (lowercase, underscores as spaces)
+dnl     * Set token (non-capitalized, underscores for spaces)
 dnl     * Minimum hexadecimal page ID (four digits, uppercase)
 dnl     * Maximum hexadecimal page ID (four digits, uppercase)
 dnl
@@ -43,5 +43,5 @@ PAGE_SET_POINT(`reserved',    `008F')dnl
 PAGE_SET_RANGE(`reserved',    `0092',   `FEFF')dnl
 PAGE_SET_RANGE(`monitor',     `0080',   `0083')dnl
 PAGE_SET_RANGE(`power',       `0084',   `0087')dnl
-PAGE_SET_RANGE(`pos',         `008C',   `008F')dnl
+PAGE_SET_RANGE(`POS',         `008C',   `008F')dnl
 PAGE_SET_RANGE(`vendor',      `FF00',   `FFFF')dnl

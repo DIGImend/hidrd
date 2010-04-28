@@ -26,6 +26,7 @@
 
 #include <string.h>
 #include <stdio.h>
+#include "hidrd/util/str.h"
 #include "hidrd/item/basic.h"
 
 /* Define numeric string conversion functions for data size in bytes */

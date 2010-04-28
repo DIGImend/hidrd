@@ -68,10 +68,10 @@ hidrd_unit_exp_from_dec(hidrd_unit_exp *pexp, const char *str)
 #define MAP(_N, _n) HIDRD_TKN_LINK(HIDRD_UNIT_SYSTEM_##_N, _n)
 HIDRD_TKN_CONV_DEFS(unit_system,
                     MAP(NONE, none),
-                    MAP(SI_LINEAR, si_linear),
-                    MAP(SI_ROTATION, si_rotation),
-                    MAP(ENGLISH_LINEAR, english_linear),
-                    MAP(ENGLISH_ROTATION, english_rotation),
+                    MAP(SI_LINEAR, SI_linear),
+                    MAP(SI_ROTATION, SI_rotation),
+                    MAP(ENGLISH_LINEAR, English_linear),
+                    MAP(ENGLISH_ROTATION, English_rotation),
                     MAP(VENDOR, vendor))
 #undef MAP
 

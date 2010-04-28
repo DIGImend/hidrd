@@ -176,6 +176,11 @@ changequote([,])['_']changequote(`,')` &&
 }
 
 
+/* Define case-changing token conversion functions */
+HIDRD_TKN_CONV_CASE_DEFSA(usage);
+#endif /* HIDRD_WITH_TOKENS */
+
+
 #ifdef HIDRD_WITH_NAMES
 const char *
 hidrd_usage_id_name(hidrd_usage usage)
@@ -189,6 +194,7 @@ hidrd_usage_id_name(hidrd_usage usage)
     return (desc != NULL) ? desc->name : NULL;
 }
 
+#ifdef HIDRD_WITH_TOKENS
 char *
 hidrd_usage_fmt_desc_id(hidrd_usage usage)
 {
@@ -299,8 +305,8 @@ cleanup:
 
     return result;
 }
-#endif /* HIDRD_WITH_NAMES */
-
 #endif /* HIDRD_WITH_TOKENS */
+
+#endif /* HIDRD_WITH_NAMES */
 
 'dnl

@@ -23,7 +23,7 @@ dnl
 dnl ID - describe a delegated usage ID.
 dnl Arguments:
 dnl     * Hexadecimal usage ID (four digits, uppercase)
-dnl     * ID token (lowercase, underscores as spaces)
+dnl     * ID token (non-capitalized, underscores for spaces)
 dnl     * Usage types (comma separated, case as per specification)
 dnl     * ID description (non-capitalized)
 dnl
@@ -34,7 +34,7 @@ ID(`0004', `touchscreen',                 `CA',   `touch screen')dnl
 ID(`0005', `touchpad',                    `CA',   `touch pad')dnl
 ID(`0006', `whiteboard',                  `CA',   `white board')dnl
 ID(`0007', `coord_measuring_machine',     `CA',   `coordinate measuring machine')dnl
-ID(`0008', `3d_digitizer',                `CA',   `3D digitizer')dnl
+ID(`0008', `3D_digitizer',                `CA',   `3D digitizer')dnl
 ID(`0009', `stereo_plotter',              `CA',   `stereo plotter')dnl
 ID(`000A', `articulated_arm',             `CA',   `articulated arm')dnl
 ID(`000B', `armature',                    `CA',   `armature')dnl
@@ -56,8 +56,8 @@ ID(`0039', `tablet_function_keys',        `CL',   `tablet function keys')dnl
 ID(`003A', `program_change_keys',         `CL',   `program change keys')dnl
 ID(`003B', `battery_strength',            `DV',   `battery strength')dnl
 ID(`003C', `invert',                      `MC',   `invert')dnl
-ID(`003D', `x_tilt',                      `DV',   `x tilt')dnl
-ID(`003E', `y_tilt',                      `DV',   `y tilt')dnl
+ID(`003D', `X_tilt',                      `DV',   `X tilt')dnl
+ID(`003E', `Y_tilt',                      `DV',   `Y tilt')dnl
 ID(`003F', `azimuth',                     `DV',   `azimuth')dnl
 ID(`0040', `altitude',                    `DV',   `altitude')dnl
 ID(`0041', `twist',                       `DV',   `twist')dnl

@@ -83,7 +83,7 @@ const hidrd_usage_id_desc *hidrd_usage_id_desc_list_lkp_by_token(
 pushdef(`PAGE',
 `/** capitalize_first($3) page ID list */
 extern const hidrd_usage_id_desc    dnl
-hidrd_usage_id_desc_list_`'$2[PAGE_ID_NUM(`$2')];
+hidrd_usage_id_desc_list_`'lowercase($2)[PAGE_ID_NUM(`$2')];
 ')
 include(`db/usage/page.m4')dnl
 popdef(`PAGE')dnl

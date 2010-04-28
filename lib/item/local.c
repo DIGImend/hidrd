@@ -25,6 +25,7 @@
  */
 
 #include <string.h>
+#include "hidrd/util/str.h"
 #include "hidrd/item/local.h"
 
 /* Define tag numeric string conversion functions */

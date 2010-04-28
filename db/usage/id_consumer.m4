@@ -23,7 +23,7 @@ dnl
 dnl ID - describe a delegated usage ID.
 dnl Arguments:
 dnl     * Hexadecimal usage ID (four digits, uppercase)
-dnl     * ID token (lowercase, underscores as spaces)
+dnl     * ID token (non-capitalized, underscores for spaces)
 dnl     * Usage types (comma separated, case as per specification)
 dnl     * ID description (non-capitalized)
 dnl
@@ -35,7 +35,7 @@ ID(`0005',  `headphone',                        `CA',   `headphone')dnl
 ID(`0006',  `graphic_equalizer',                `CA',   `graphic equalizer')dnl
 ID(`0020',  `plus_10',                          `OSC',  `+10')dnl
 ID(`0021',  `plus_100',                         `OSC',  `+100')dnl
-ID(`0022',  `am_pm',                            `OSC',  `AM/PM')dnl
+ID(`0022',  `AM_PM',                            `OSC',  `AM/PM')dnl
 ID(`0030',  `power',                            `OOC',  `power')dnl
 ID(`0031',  `reset',                            `OSC',  `reset')dnl
 ID(`0032',  `sleep',                            `OSC',  `sleep')dnl
@@ -55,7 +55,7 @@ ID(`0048',  `menu_value_dec',                   `OSC',  `menu value decrease')dn
 ID(`0060',  `data_on_screen',                   `OOC',  `data on screen')dnl
 ID(`0061',  `closed_caption',                   `OOC',  `closed caption')dnl
 ID(`0062',  `closed_caption_select',            `OSC',  `closed caption select')dnl
-ID(`0063',  `vcr_tv',                           `OOC',  `VCR/TV')dnl
+ID(`0063',  `VCR_TV',                           `OOC',  `VCR/TV')dnl
 ID(`0064',  `broadcast_mode',                   `OSC',  `broadcast mode')dnl
 ID(`0065',  `snapshot',                         `OSC',  `snapshot')dnl
 ID(`0066',  `still',                            `OSC',  `still')dnl
@@ -68,16 +68,16 @@ ID(`0085',  `order_movie',                      `OSC',  `order movie')dnl
 ID(`0086',  `channel',                          `LC',   `channel')dnl
 ID(`0087',  `media_selection',                  `NAry', `media selection')dnl
 ID(`0088',  `media_select_computer',            `Sel',  `media select computer')dnl
-ID(`0089',  `media_select_tv',                  `Sel',  `media select TV')dnl
-ID(`008A',  `media_select_www',                 `Sel',  `media select WWW')dnl
-ID(`008B',  `media_select_dvd',                 `Sel',  `media select DVD')dnl
+ID(`0089',  `media_select_TV',                  `Sel',  `media select TV')dnl
+ID(`008A',  `media_select_WWW',                 `Sel',  `media select WWW')dnl
+ID(`008B',  `media_select_DVD',                 `Sel',  `media select DVD')dnl
 ID(`008C',  `media_select_telephone',           `Sel',  `media select telephone')dnl
 ID(`008D',  `media_select_program_guide',       `Sel',  `media select program guide')dnl
 ID(`008E',  `media_select_video_phone',         `Sel',  `media select video phone')dnl
 ID(`008F',  `media_select_games',               `Sel',  `media select games')dnl
 ID(`0090',  `media_select_messages',            `Sel',  `media select messages')dnl
-ID(`0091',  `media_select_cd',                  `Sel',  `media select CD')dnl
-ID(`0092',  `media_select_vcr',                 `Sel',  `media select VCR')dnl
+ID(`0091',  `media_select_CD',                  `Sel',  `media select CD')dnl
+ID(`0092',  `media_select_VCR',                 `Sel',  `media select VCR')dnl
 ID(`0093',  `media_select_tuner',               `Sel',  `media select tuner')dnl
 ID(`0094',  `quit',                             `OSC',  `quit')dnl
 ID(`0095',  `help',                             `OOC',  `help')dnl
@@ -89,8 +89,8 @@ ID(`009A',  `media_select_home',                `Sel',  `media select home')dnl
 ID(`009B',  `media_select_call',                `Sel',  `media select call')dnl
 ID(`009C',  `channel_inc',                      `OSC',  `channel increment')dnl
 ID(`009D',  `channel_dec',                      `OSC',  `channel decrement')dnl
-ID(`009E',  `media_select_sap',                 `Sel',  `media select SAP')dnl
-ID(`00A0',  `vcr_plus',                         `OSC',  `VCR plus')dnl
+ID(`009E',  `media_select_SAP',                 `Sel',  `media select SAP')dnl
+ID(`00A0',  `VCR_plus',                         `OSC',  `VCR plus')dnl
 ID(`00A1',  `once',                             `OSC',  `once')dnl
 ID(`00A2',  `daily',                            `OSC',  `daily')dnl
 ID(`00A3',  `weekly',                           `OSC',  `weekly')dnl
@@ -134,7 +134,7 @@ ID(`00E4',  `treble',                           `LC',   `treble')dnl
 ID(`00E5',  `bass_boost',                       `OOC',  `bass boost')dnl
 ID(`00E6',  `surround_mode',                    `OSC',  `surround mode')dnl
 ID(`00E7',  `loudness',                         `OOC',  `loudness')dnl
-ID(`00E8',  `mpx',                              `OOC',  `MPX')dnl
+ID(`00E8',  `MPX',                              `OOC',  `MPX')dnl
 ID(`00E9',  `volume_inc',                       `RTC',  `volume increment')dnl
 ID(`00EA',  `volume_dec',                       `RTC',  `volume decrement')dnl
 ID(`00F0',  `speed_select',                     `OSC',  `speed select')dnl
@@ -180,214 +180,214 @@ ID(`0172',  `subchannel_dec',                   `OSC',  `sub-channel decrement')
 ID(`0173',  `alternate_audio_inc',              `OSC',  `alternate audio increment')dnl
 ID(`0174',  `alternate_audio_dec',              `OSC',  `alternate audio decrement')dnl
 ID(`0180',  `app_launch_buttons',               `NAry', `application launch buttons')dnl
-ID(`0181',  `al_launch_button_config_tool',     `Sel',  `AL launch button configuration tool')dnl
-ID(`0182',  `al_programmable_button_config',    `Sel',  `AL programmable button configuration')dnl
-ID(`0183',  `al_consumer_control_config',       `Sel',  `AL consumer control configuration')dnl
-ID(`0184',  `al_word_proc',                     `Sel',  `AL word processor')dnl
-ID(`0185',  `al_text_editor',                   `Sel',  `AL text editor')dnl
-ID(`0186',  `al_spreadsheet',                   `Sel',  `AL spreadsheet')dnl
-ID(`0187',  `al_graphics_editor',               `Sel',  `AL graphics editor')dnl
-ID(`0188',  `al_presentation_app',              `Sel',  `AL presentation app')dnl
-ID(`0189',  `al_database_app',                  `Sel',  `AL database app')dnl
-ID(`018A',  `al_email_reader',                  `Sel',  `AL email reader')dnl
-ID(`018B',  `al_newsreader',                    `Sel',  `AL newsreader')dnl
-ID(`018C',  `al_voicemail',                     `Sel',  `AL voicemail')dnl
-ID(`018D',  `al_contacts_or_address_book',      `Sel',  `AL contacts/address book')dnl
-ID(`018E',  `al_calendar_or_schedule',          `Sel',  `AL calendar/schedule')dnl
-ID(`018F',  `al_task_or_project_mngr',          `Sel',  `AL task/project manager')dnl
-ID(`0190',  `al_log_or_journal_or_timecard',    `Sel',  `AL log/journal/timecard')dnl
-ID(`0191',  `al_checkbook_or_finance',          `Sel',  `AL checkbook/finance')dnl
-ID(`0192',  `al_calculator',                    `Sel',  `AL calculator')dnl
-ID(`0193',  `al_av_capture_or_playback',        `Sel',  `AL A/V capture/playback')dnl
-ID(`0194',  `al_local_machine_brwsr',           `Sel',  `AL local machine browser')dnl
-ID(`0195',  `al_lan_or_wan_brwsr',              `Sel',  `AL LAN/WAN browser')dnl
-ID(`0196',  `al_internet_brwsr',                `Sel',  `AL Internet browser')dnl
-ID(`0197',  `al_remote_net_or_isp_connect',     `Sel',  `AL remote networking/ISP connect')dnl
-ID(`0198',  `al_network_conference',            `Sel',  `AL network conference')dnl
-ID(`0199',  `al_network_chat',                  `Sel',  `AL network chat')dnl
-ID(`019A',  `al_telephony_or_dialer',           `Sel',  `AL telephony/dialer')dnl
-ID(`019B',  `al_logon',                         `Sel',  `AL logon')dnl
-ID(`019C',  `al_logoff',                        `Sel',  `AL logoff')dnl
-ID(`019D',  `al_logon_or_logoff',               `Sel',  `AL logon/logoff')dnl
-ID(`019E',  `al_term_lock_or_screensaver',      `Sel',  `AL terminal lock/screensaver')dnl
-ID(`019F',  `al_control_panel',                 `Sel',  `AL control panel')dnl
-ID(`01A0',  `al_cmd_line_proc_or_run',          `Sel',  `AL command line processor/run')dnl
-ID(`01A1',  `al_proc_or_task_mngr',             `Sel',  `AL process/task manager')dnl
-ID(`01A2',  `al_select_task_or_app',            `Sel',  `AL select task/application')dnl
-ID(`01A3',  `al_next_task_or_app',              `Sel',  `AL next task/application')dnl
-ID(`01A4',  `al_previous_task_or_app',          `Sel',  `AL previous task/application')dnl
-ID(`01A5',  `al_preemptive_halt_task_or_app',   `Sel',  `AL preemptive halt task/application')dnl
-ID(`01A6',  `al_integrated_help_center',        `Sel',  `AL integrated help center')dnl
-ID(`01A7',  `al_documents',                     `Sel',  `AL documents')dnl
-ID(`01A8',  `al_thesaurus',                     `Sel',  `AL thesaurus')dnl
-ID(`01A9',  `al_dictionary',                    `Sel',  `AL dictionary')dnl
-ID(`01AA',  `al_desktop',                       `Sel',  `AL desktop')dnl
-ID(`01AB',  `al_spell_check',                   `Sel',  `AL spell check')dnl
-ID(`01AC',  `al_grammar_check',                 `Sel',  `AL grammar check')dnl
-ID(`01AD',  `al_wireless_status',               `Sel',  `AL wireless status')dnl
-ID(`01AE',  `al_keyboard_layout',               `Sel',  `AL keyboard layout')dnl
-ID(`01AF',  `al_virus_protection',              `Sel',  `AL virus protection')dnl
-ID(`01B0',  `al_encryption',                    `Sel',  `AL encryption')dnl
-ID(`01B1',  `al_screen_saver',                  `Sel',  `AL screen saver')dnl
-ID(`01B2',  `al_alarms',                        `Sel',  `AL alarms')dnl
-ID(`01B3',  `al_clock',                         `Sel',  `AL clock')dnl
-ID(`01B4',  `al_file_brwsr',                    `Sel',  `AL file browser')dnl
-ID(`01B5',  `al_power_status',                  `Sel',  `AL power status')dnl
-ID(`01B6',  `al_image_brwsr',                   `Sel',  `AL image browser')dnl
-ID(`01B7',  `al_audio_brwsr',                   `Sel',  `AL audio browser')dnl
-ID(`01B8',  `al_movie_brwsr',                   `Sel',  `AL movie browser')dnl
-ID(`01B9',  `al_digital_rights_mngr',           `Sel',  `AL digital rights manager')dnl
-ID(`01BA',  `al_digital_wallet',                `Sel',  `AL digital wallet')dnl
-ID(`01BC',  `al_instant_messaging',             `Sel',  `AL instant messaging')dnl
-ID(`01BD',  `al_oem_feats_brwsr',               `Sel',  `AL OEM features/tips/tutorial browser')dnl
-ID(`01BE',  `al_oem_help',                      `Sel',  `AL OEM help')dnl
-ID(`01BF',  `al_online_community',              `Sel',  `AL online community')dnl
-ID(`01C0',  `al_ent_content_brwsr',             `Sel',  `AL entertainment content browser')dnl
-ID(`01C1',  `al_online_shopping_brwsr',         `Sel',  `AL online shopping browser')dnl
-ID(`01C2',  `al_smartcard_info_or_help',        `Sel',  `AL smartcard information/help')dnl
-ID(`01C3',  `al_mrkt_mon_or_fin_brwsr',         `Sel',  `AL market monitor/finance browser')dnl
-ID(`01C4',  `al_custom_corp_news_brwsr',        `Sel',  `AL customized corporate news browser')dnl
-ID(`01C5',  `al_online_activity_brwsr',         `Sel',  `AL online activity browser')dnl
-ID(`01C6',  `al_research_or_search_brwsr',      `Sel',  `AL research/search browser')dnl
-ID(`01C7',  `al_audio_player',                  `Sel',  `AL audio player')dnl
-ID(`0200',  `generic_gui_app_controls',         `Nary', `generic GUI application controls')dnl
-ID(`0201',  `ac_new',                           `Sel',  `AC new')dnl
-ID(`0202',  `ac_open',                          `Sel',  `AC open')dnl
-ID(`0203',  `ac_close',                         `Sel',  `AC close')dnl
-ID(`0204',  `ac_exit',                          `Sel',  `AC exit')dnl
-ID(`0205',  `ac_maximize',                      `Sel',  `AC maximize')dnl
-ID(`0206',  `ac_minimize',                      `Sel',  `AC minimize')dnl
-ID(`0207',  `ac_save',                          `Sel',  `AC save')dnl
-ID(`0208',  `ac_print',                         `Sel',  `AC print')dnl
-ID(`0209',  `ac_properties',                    `Sel',  `AC properties')dnl
-ID(`021A',  `ac_undo',                          `Sel',  `AC undo')dnl
-ID(`021B',  `ac_copy',                          `Sel',  `AC copy')dnl
-ID(`021C',  `ac_cut',                           `Sel',  `AC cut')dnl
-ID(`021D',  `ac_paste',                         `Sel',  `AC paste')dnl
-ID(`021E',  `ac_select_all',                    `Sel',  `AC select all')dnl
-ID(`021F',  `ac_find',                          `Sel',  `AC find')dnl
-ID(`0220',  `ac_find_and_replace',              `Sel',  `AC find and replace')dnl
-ID(`0221',  `ac_search',                        `Sel',  `AC search')dnl
-ID(`0222',  `ac_go_to',                         `Sel',  `AC go to')dnl
-ID(`0223',  `ac_home',                          `Sel',  `AC home')dnl
-ID(`0224',  `ac_back',                          `Sel',  `AC back')dnl
-ID(`0225',  `ac_forward',                       `Sel',  `AC forward')dnl
-ID(`0226',  `ac_stop',                          `Sel',  `AC stop')dnl
-ID(`0227',  `ac_refresh',                       `Sel',  `AC refresh')dnl
-ID(`0228',  `ac_previous_link',                 `Sel',  `AC previous link')dnl
-ID(`0229',  `ac_next_link',                     `Sel',  `AC next link')dnl
-ID(`022A',  `ac_bookmarks',                     `Sel',  `AC bookmarks')dnl
-ID(`022B',  `ac_history',                       `Sel',  `AC history')dnl
-ID(`022C',  `ac_subscriptions',                 `Sel',  `AC subscriptions')dnl
-ID(`022D',  `ac_zoom_in',                       `Sel',  `AC zoom in')dnl
-ID(`022E',  `ac_zoom_out',                      `Sel',  `AC zoom out')dnl
-ID(`022F',  `ac_zoom',                          `LC',   `AC zoom')dnl
-ID(`0230',  `ac_full_screen_view',              `Sel',  `AC full screen view')dnl
-ID(`0231',  `ac_normal_view',                   `Sel',  `AC normal view')dnl
-ID(`0232',  `ac_view_toggle',                   `Sel',  `AC view toggle')dnl
-ID(`0233',  `ac_scroll_up',                     `Sel',  `AC scroll up')dnl
-ID(`0234',  `ac_scroll_down',                   `Sel',  `AC scroll down')dnl
-ID(`0235',  `ac_scroll',                        `LC',   `AC scroll')dnl
-ID(`0236',  `ac_pan_left',                      `Sel',  `AC pan left')dnl
-ID(`0237',  `ac_pan_right',                     `Sel',  `AC pan right')dnl
-ID(`0238',  `ac_pan',                           `LC',   `AC pan')dnl
-ID(`0239',  `ac_new_window',                    `Sel',  `AC new window')dnl
-ID(`023A',  `ac_tile_horiz',                    `Sel',  `AC tile horizontally')dnl
-ID(`023B',  `ac_tile_vert',                     `Sel',  `AC tile vertically')dnl
-ID(`023C',  `ac_format',                        `Sel',  `AC format')dnl
-ID(`023D',  `ac_edit',                          `Sel',  `AC edit')dnl
-ID(`023E',  `ac_bold',                          `Sel',  `AC bold')dnl
-ID(`023F',  `ac_italics',                       `Sel',  `AC italics')dnl
-ID(`0240',  `ac_underline',                     `Sel',  `AC underline')dnl
-ID(`0241',  `ac_strikethrough',                 `Sel',  `AC strikethrough')dnl
-ID(`0242',  `ac_subscript',                     `Sel',  `AC subscript')dnl
-ID(`0243',  `ac_superscript',                   `Sel',  `AC superscript')dnl
-ID(`0244',  `ac_all_caps',                      `Sel',  `AC all caps')dnl
-ID(`0245',  `ac_rotate',                        `Sel',  `AC rotate')dnl
-ID(`0246',  `ac_resize',                        `Sel',  `AC resize')dnl
-ID(`0247',  `ac_flip_horiz',                    `Sel',  `AC flip horizontal')dnl
-ID(`0248',  `ac_flip_vert',                     `Sel',  `AC flip vertical')dnl
-ID(`0249',  `ac_mirror_horiz',                  `Sel',  `AC mirror horizontal')dnl
-ID(`024A',  `ac_mirror_vert',                   `Sel',  `AC mirror vertical')dnl
-ID(`024B',  `ac_font_select',                   `Sel',  `AC font select')dnl
-ID(`024C',  `ac_font_color',                    `Sel',  `AC font color')dnl
-ID(`024D',  `ac_font_size',                     `Sel',  `AC font size')dnl
-ID(`024E',  `ac_justify_left',                  `Sel',  `AC justify left')dnl
-ID(`024F',  `ac_justify_center_h',              `Sel',  `AC justify center H')dnl
-ID(`0250',  `ac_justify_right',                 `Sel',  `AC justify right')dnl
-ID(`0251',  `ac_justify_block_h',               `Sel',  `AC justify block H')dnl
-ID(`0252',  `ac_justify_top',                   `Sel',  `AC justify top')dnl
-ID(`0253',  `ac_justify_center_v',              `Sel',  `AC justify center V')dnl
-ID(`0254',  `ac_justify_bottom',                `Sel',  `AC justify bottom')dnl
-ID(`0255',  `ac_justify_block_v',               `Sel',  `AC justify block V')dnl
-ID(`0256',  `ac_indent_dec',                    `Sel',  `AC indent decrease')dnl
-ID(`0257',  `ac_indent_inc',                    `Sel',  `AC indent increase')dnl
-ID(`0258',  `ac_numbered_list',                 `Sel',  `AC numbered list')dnl
-ID(`0259',  `ac_restart_numbering',             `Sel',  `AC restart numbering')dnl
-ID(`025A',  `ac_bulleted_list',                 `Sel',  `AC bulleted list')dnl
-ID(`025B',  `ac_promote',                       `Sel',  `AC promote')dnl
-ID(`025C',  `ac_demote',                        `Sel',  `AC demote')dnl
-ID(`025D',  `ac_yes',                           `Sel',  `AC yes')dnl
-ID(`025E',  `ac_no',                            `Sel',  `AC no')dnl
-ID(`025F',  `ac_cancel',                        `Sel',  `AC cancel')dnl
-ID(`0260',  `ac_catalog',                       `Sel',  `AC catalog')dnl
-ID(`0261',  `ac_buy_or_checkout',               `Sel',  `AC buy/checkout')dnl
-ID(`0262',  `ac_add_to_cart',                   `Sel',  `AC add to cart')dnl
-ID(`0263',  `ac_expand',                        `Sel',  `AC expand')dnl
-ID(`0264',  `ac_expand_all',                    `Sel',  `AC expand all')dnl
-ID(`0265',  `ac_collapse',                      `Sel',  `AC collapse')dnl
-ID(`0266',  `ac_collapse_all',                  `Sel',  `AC collapse all')dnl
-ID(`0267',  `ac_print_preview',                 `Sel',  `AC print preview')dnl
-ID(`0268',  `ac_paste_special',                 `Sel',  `AC paste special')dnl
-ID(`0269',  `ac_insert_mode',                   `Sel',  `AC insert mode')dnl
-ID(`026A',  `ac_delete',                        `Sel',  `AC delete')dnl
-ID(`026B',  `ac_lock',                          `Sel',  `AC lock')dnl
-ID(`026C',  `ac_unlock',                        `Sel',  `AC unlock')dnl
-ID(`026D',  `ac_protect',                       `Sel',  `AC protect')dnl
-ID(`026E',  `ac_unprotect',                     `Sel',  `AC unprotect')dnl
-ID(`026F',  `ac_attach_comment',                `Sel',  `AC attach comment')dnl
-ID(`0270',  `ac_delete_comment',                `Sel',  `AC delete comment')dnl
-ID(`0271',  `ac_view_comment',                  `Sel',  `AC view comment')dnl
-ID(`0272',  `ac_select_word',                   `Sel',  `AC select word')dnl
-ID(`0273',  `ac_select_sentence',               `Sel',  `AC select sentence')dnl
-ID(`0274',  `ac_select_paragraph',              `Sel',  `AC select paragraph')dnl
-ID(`0275',  `ac_select_column',                 `Sel',  `AC select column')dnl
-ID(`0276',  `ac_select_row',                    `Sel',  `AC select row')dnl
-ID(`0277',  `ac_select_table',                  `Sel',  `AC select table')dnl
-ID(`0278',  `ac_select_object',                 `Sel',  `AC select object')dnl
-ID(`0279',  `ac_redo_or_repeat',                `Sel',  `AC redo/repeat')dnl
-ID(`027A',  `ac_sort',                          `Sel',  `AC sort')dnl
-ID(`027B',  `ac_sort_ascending',                `Sel',  `AC sort ascending')dnl
-ID(`027C',  `ac_sort_descending',               `Sel',  `AC sort descending')dnl
-ID(`027D',  `ac_filter',                        `Sel',  `AC filter')dnl
-ID(`027E',  `ac_set_clock',                     `Sel',  `AC set clock')dnl
-ID(`027F',  `ac_view_clock',                    `Sel',  `AC view clock')dnl
-ID(`0280',  `ac_select_time_zone',              `Sel',  `AC select time zone')dnl
-ID(`0281',  `ac_edit_time_zones',               `Sel',  `AC edit time zones')dnl
-ID(`0282',  `ac_set_alarm',                     `Sel',  `AC set alarm')dnl
-ID(`0283',  `ac_clear_alarm',                   `Sel',  `AC clear alarm')dnl
-ID(`0284',  `ac_snooze_alarm',                  `Sel',  `AC snooze alarm')dnl
-ID(`0285',  `ac_reset_alarm',                   `Sel',  `AC reset alarm')dnl
-ID(`0286',  `ac_synchronize',                   `Sel',  `AC synchronize')dnl
-ID(`0287',  `ac_send_or_receive',               `Sel',  `AC send/receive')dnl
-ID(`0288',  `ac_send_to',                       `Sel',  `AC send to')dnl
-ID(`0289',  `ac_reply',                         `Sel',  `AC reply')dnl
-ID(`028A',  `ac_reply_all',                     `Sel',  `AC reply all')dnl
-ID(`028B',  `ac_forward_msg',                   `Sel',  `AC forward msg')dnl
-ID(`028C',  `ac_send',                          `Sel',  `AC send')dnl
-ID(`028D',  `ac_attach_file',                   `Sel',  `AC attach file')dnl
-ID(`028E',  `ac_upload',                        `Sel',  `AC upload')dnl
-ID(`028F',  `ac_download_and_save_as',          `Sel',  ``AC download (save target as)'')dnl
-ID(`0290',  `ac_set_borders',                   `Sel',  `AC set borders')dnl
-ID(`0291',  `ac_insert_row',                    `Sel',  `AC insert row')dnl
-ID(`0292',  `ac_insert_column',                 `Sel',  `AC insert column')dnl
-ID(`0293',  `ac_insert_file',                   `Sel',  `AC insert file')dnl
-ID(`0294',  `ac_insert_picture',                `Sel',  `AC insert picture')dnl
-ID(`0295',  `ac_insert_object',                 `Sel',  `AC insert object')dnl
-ID(`0296',  `ac_insert_symbol',                 `Sel',  `AC insert symbol')dnl
-ID(`0297',  `ac_save_and_close',                `Sel',  `AC save and close')dnl
-ID(`0298',  `ac_rename',                        `Sel',  `AC rename')dnl
-ID(`0299',  `ac_merge',                         `Sel',  `AC merge')dnl
-ID(`029A',  `ac_split',                         `Sel',  `AC split')dnl
-ID(`029B',  `ac_disribute_horiz',               `Sel',  `AC disribute horizontally')dnl
-ID(`029C',  `ac_distribute_vert',               `Sel',  `AC distribute vertically')dnl
+ID(`0181',  `AL_launch_button_config_tool',     `Sel',  `AL launch button configuration tool')dnl
+ID(`0182',  `AL_programmable_button_config',    `Sel',  `AL programmable button configuration')dnl
+ID(`0183',  `AL_consumer_control_config',       `Sel',  `AL consumer control configuration')dnl
+ID(`0184',  `AL_word_proc',                     `Sel',  `AL word processor')dnl
+ID(`0185',  `AL_text_editor',                   `Sel',  `AL text editor')dnl
+ID(`0186',  `AL_spreadsheet',                   `Sel',  `AL spreadsheet')dnl
+ID(`0187',  `AL_graphics_editor',               `Sel',  `AL graphics editor')dnl
+ID(`0188',  `AL_presentation_app',              `Sel',  `AL presentation app')dnl
+ID(`0189',  `AL_database_app',                  `Sel',  `AL database app')dnl
+ID(`018A',  `AL_email_reader',                  `Sel',  `AL email reader')dnl
+ID(`018B',  `AL_newsreader',                    `Sel',  `AL newsreader')dnl
+ID(`018C',  `AL_voicemail',                     `Sel',  `AL voicemail')dnl
+ID(`018D',  `AL_contacts_or_address_book',      `Sel',  `AL contacts/address book')dnl
+ID(`018E',  `AL_calendar_or_schedule',          `Sel',  `AL calendar/schedule')dnl
+ID(`018F',  `AL_task_or_project_mngr',          `Sel',  `AL task/project manager')dnl
+ID(`0190',  `AL_log_or_journal_or_timecard',    `Sel',  `AL log/journal/timecard')dnl
+ID(`0191',  `AL_checkbook_or_finance',          `Sel',  `AL checkbook/finance')dnl
+ID(`0192',  `AL_calculator',                    `Sel',  `AL calculator')dnl
+ID(`0193',  `AL_AV_capture_or_playback',        `Sel',  `AL A/V capture/playback')dnl
+ID(`0194',  `AL_local_machine_brwsr',           `Sel',  `AL local machine browser')dnl
+ID(`0195',  `AL_LAN_or_WAN_brwsr',              `Sel',  `AL LAN/WAN browser')dnl
+ID(`0196',  `AL_internet_brwsr',                `Sel',  `AL Internet browser')dnl
+ID(`0197',  `AL_remote_net_or_ISP_connect',     `Sel',  `AL remote networking/ISP connect')dnl
+ID(`0198',  `AL_network_conference',            `Sel',  `AL network conference')dnl
+ID(`0199',  `AL_network_chat',                  `Sel',  `AL network chat')dnl
+ID(`019A',  `AL_telephony_or_dialer',           `Sel',  `AL telephony/dialer')dnl
+ID(`019B',  `AL_logon',                         `Sel',  `AL logon')dnl
+ID(`019C',  `AL_logoff',                        `Sel',  `AL logoff')dnl
+ID(`019D',  `AL_logon_or_logoff',               `Sel',  `AL logon/logoff')dnl
+ID(`019E',  `AL_term_lock_or_screensaver',      `Sel',  `AL terminal lock/screensaver')dnl
+ID(`019F',  `AL_control_panel',                 `Sel',  `AL control panel')dnl
+ID(`01A0',  `AL_cmd_line_proc_or_run',          `Sel',  `AL command line processor/run')dnl
+ID(`01A1',  `AL_proc_or_task_mngr',             `Sel',  `AL process/task manager')dnl
+ID(`01A2',  `AL_select_task_or_app',            `Sel',  `AL select task/application')dnl
+ID(`01A3',  `AL_next_task_or_app',              `Sel',  `AL next task/application')dnl
+ID(`01A4',  `AL_previous_task_or_app',          `Sel',  `AL previous task/application')dnl
+ID(`01A5',  `AL_preemptive_halt_task_or_app',   `Sel',  `AL preemptive halt task/application')dnl
+ID(`01A6',  `AL_integrated_help_center',        `Sel',  `AL integrated help center')dnl
+ID(`01A7',  `AL_documents',                     `Sel',  `AL documents')dnl
+ID(`01A8',  `AL_thesaurus',                     `Sel',  `AL thesaurus')dnl
+ID(`01A9',  `AL_dictionary',                    `Sel',  `AL dictionary')dnl
+ID(`01AA',  `AL_desktop',                       `Sel',  `AL desktop')dnl
+ID(`01AB',  `AL_spell_check',                   `Sel',  `AL spell check')dnl
+ID(`01AC',  `AL_grammar_check',                 `Sel',  `AL grammar check')dnl
+ID(`01AD',  `AL_wireless_status',               `Sel',  `AL wireless status')dnl
+ID(`01AE',  `AL_keyboard_layout',               `Sel',  `AL keyboard layout')dnl
+ID(`01AF',  `AL_virus_protection',              `Sel',  `AL virus protection')dnl
+ID(`01B0',  `AL_encryption',                    `Sel',  `AL encryption')dnl
+ID(`01B1',  `AL_screen_saver',                  `Sel',  `AL screen saver')dnl
+ID(`01B2',  `AL_alarms',                        `Sel',  `AL alarms')dnl
+ID(`01B3',  `AL_clock',                         `Sel',  `AL clock')dnl
+ID(`01B4',  `AL_file_brwsr',                    `Sel',  `AL file browser')dnl
+ID(`01B5',  `AL_power_status',                  `Sel',  `AL power status')dnl
+ID(`01B6',  `AL_image_brwsr',                   `Sel',  `AL image browser')dnl
+ID(`01B7',  `AL_audio_brwsr',                   `Sel',  `AL audio browser')dnl
+ID(`01B8',  `AL_movie_brwsr',                   `Sel',  `AL movie browser')dnl
+ID(`01B9',  `AL_digital_rights_mngr',           `Sel',  `AL digital rights manager')dnl
+ID(`01BA',  `AL_digital_wallet',                `Sel',  `AL digital wallet')dnl
+ID(`01BC',  `AL_instant_messaging',             `Sel',  `AL instant messaging')dnl
+ID(`01BD',  `AL_OEM_feats_brwsr',               `Sel',  `AL OEM features/tips/tutorial browser')dnl
+ID(`01BE',  `AL_OEM_help',                      `Sel',  `AL OEM help')dnl
+ID(`01BF',  `AL_online_community',              `Sel',  `AL online community')dnl
+ID(`01C0',  `AL_ent_content_brwsr',             `Sel',  `AL entertainment content browser')dnl
+ID(`01C1',  `AL_online_shopping_brwsr',         `Sel',  `AL online shopping browser')dnl
+ID(`01C2',  `AL_smartcard_info_or_help',        `Sel',  `AL smartcard information/help')dnl
+ID(`01C3',  `AL_mrkt_mon_or_fin_brwsr',         `Sel',  `AL market monitor/finance browser')dnl
+ID(`01C4',  `AL_custom_corp_news_brwsr',        `Sel',  `AL customized corporate news browser')dnl
+ID(`01C5',  `AL_online_activity_brwsr',         `Sel',  `AL online activity browser')dnl
+ID(`01C6',  `AL_research_or_search_brwsr',      `Sel',  `AL research/search browser')dnl
+ID(`01C7',  `AL_audio_player',                  `Sel',  `AL audio player')dnl
+ID(`0200',  `generic_GUI_app_controls',         `Nary', `generic GUI application controls')dnl
+ID(`0201',  `AC_new',                           `Sel',  `AC new')dnl
+ID(`0202',  `AC_open',                          `Sel',  `AC open')dnl
+ID(`0203',  `AC_close',                         `Sel',  `AC close')dnl
+ID(`0204',  `AC_exit',                          `Sel',  `AC exit')dnl
+ID(`0205',  `AC_maximize',                      `Sel',  `AC maximize')dnl
+ID(`0206',  `AC_minimize',                      `Sel',  `AC minimize')dnl
+ID(`0207',  `AC_save',                          `Sel',  `AC save')dnl
+ID(`0208',  `AC_print',                         `Sel',  `AC print')dnl
+ID(`0209',  `AC_properties',                    `Sel',  `AC properties')dnl
+ID(`021A',  `AC_undo',                          `Sel',  `AC undo')dnl
+ID(`021B',  `AC_copy',                          `Sel',  `AC copy')dnl
+ID(`021C',  `AC_cut',                           `Sel',  `AC cut')dnl
+ID(`021D',  `AC_paste',                         `Sel',  `AC paste')dnl
+ID(`021E',  `AC_select_all',                    `Sel',  `AC select all')dnl
+ID(`021F',  `AC_find',                          `Sel',  `AC find')dnl
+ID(`0220',  `AC_find_and_replace',              `Sel',  `AC find and replace')dnl
+ID(`0221',  `AC_search',                        `Sel',  `AC search')dnl
+ID(`0222',  `AC_go_to',                         `Sel',  `AC go to')dnl
+ID(`0223',  `AC_home',                          `Sel',  `AC home')dnl
+ID(`0224',  `AC_back',                          `Sel',  `AC back')dnl
+ID(`0225',  `AC_forward',                       `Sel',  `AC forward')dnl
+ID(`0226',  `AC_stop',                          `Sel',  `AC stop')dnl
+ID(`0227',  `AC_refresh',                       `Sel',  `AC refresh')dnl
+ID(`0228',  `AC_previous_link',                 `Sel',  `AC previous link')dnl
+ID(`0229',  `AC_next_link',                     `Sel',  `AC next link')dnl
+ID(`022A',  `AC_bookmarks',                     `Sel',  `AC bookmarks')dnl
+ID(`022B',  `AC_history',                       `Sel',  `AC history')dnl
+ID(`022C',  `AC_subscriptions',                 `Sel',  `AC subscriptions')dnl
+ID(`022D',  `AC_zoom_in',                       `Sel',  `AC zoom in')dnl
+ID(`022E',  `AC_zoom_out',                      `Sel',  `AC zoom out')dnl
+ID(`022F',  `AC_zoom',                          `LC',   `AC zoom')dnl
+ID(`0230',  `AC_full_screen_view',              `Sel',  `AC full screen view')dnl
+ID(`0231',  `AC_normal_view',                   `Sel',  `AC normal view')dnl
+ID(`0232',  `AC_view_toggle',                   `Sel',  `AC view toggle')dnl
+ID(`0233',  `AC_scroll_up',                     `Sel',  `AC scroll up')dnl
+ID(`0234',  `AC_scroll_down',                   `Sel',  `AC scroll down')dnl
+ID(`0235',  `AC_scroll',                        `LC',   `AC scroll')dnl
+ID(`0236',  `AC_pan_left',                      `Sel',  `AC pan left')dnl
+ID(`0237',  `AC_pan_right',                     `Sel',  `AC pan right')dnl
+ID(`0238',  `AC_pan',                           `LC',   `AC pan')dnl
+ID(`0239',  `AC_new_window',                    `Sel',  `AC new window')dnl
+ID(`023A',  `AC_tile_horiz',                    `Sel',  `AC tile horizontally')dnl
+ID(`023B',  `AC_tile_vert',                     `Sel',  `AC tile vertically')dnl
+ID(`023C',  `AC_format',                        `Sel',  `AC format')dnl
+ID(`023D',  `AC_edit',                          `Sel',  `AC edit')dnl
+ID(`023E',  `AC_bold',                          `Sel',  `AC bold')dnl
+ID(`023F',  `AC_italics',                       `Sel',  `AC italics')dnl
+ID(`0240',  `AC_underline',                     `Sel',  `AC underline')dnl
+ID(`0241',  `AC_strikethrough',                 `Sel',  `AC strikethrough')dnl
+ID(`0242',  `AC_subscript',                     `Sel',  `AC subscript')dnl
+ID(`0243',  `AC_superscript',                   `Sel',  `AC superscript')dnl
+ID(`0244',  `AC_all_caps',                      `Sel',  `AC all caps')dnl
+ID(`0245',  `AC_rotate',                        `Sel',  `AC rotate')dnl
+ID(`0246',  `AC_resize',                        `Sel',  `AC resize')dnl
+ID(`0247',  `AC_flip_horiz',                    `Sel',  `AC flip horizontal')dnl
+ID(`0248',  `AC_flip_vert',                     `Sel',  `AC flip vertical')dnl
+ID(`0249',  `AC_mirror_horiz',                  `Sel',  `AC mirror horizontal')dnl
+ID(`024A',  `AC_mirror_vert',                   `Sel',  `AC mirror vertical')dnl
+ID(`024B',  `AC_font_select',                   `Sel',  `AC font select')dnl
+ID(`024C',  `AC_font_color',                    `Sel',  `AC font color')dnl
+ID(`024D',  `AC_font_size',                     `Sel',  `AC font size')dnl
+ID(`024E',  `AC_justify_left',                  `Sel',  `AC justify left')dnl
+ID(`024F',  `AC_justify_center_H',              `Sel',  `AC justify center H')dnl
+ID(`0250',  `AC_justify_right',                 `Sel',  `AC justify right')dnl
+ID(`0251',  `AC_justify_block_H',               `Sel',  `AC justify block H')dnl
+ID(`0252',  `AC_justify_top',                   `Sel',  `AC justify top')dnl
+ID(`0253',  `AC_justify_center_V',              `Sel',  `AC justify center V')dnl
+ID(`0254',  `AC_justify_bottom',                `Sel',  `AC justify bottom')dnl
+ID(`0255',  `AC_justify_block_V',               `Sel',  `AC justify block V')dnl
+ID(`0256',  `AC_indent_dec',                    `Sel',  `AC indent decrease')dnl
+ID(`0257',  `AC_indent_inc',                    `Sel',  `AC indent increase')dnl
+ID(`0258',  `AC_numbered_list',                 `Sel',  `AC numbered list')dnl
+ID(`0259',  `AC_restart_numbering',             `Sel',  `AC restart numbering')dnl
+ID(`025A',  `AC_bulleted_list',                 `Sel',  `AC bulleted list')dnl
+ID(`025B',  `AC_promote',                       `Sel',  `AC promote')dnl
+ID(`025C',  `AC_demote',                        `Sel',  `AC demote')dnl
+ID(`025D',  `AC_yes',                           `Sel',  `AC yes')dnl
+ID(`025E',  `AC_no',                            `Sel',  `AC no')dnl
+ID(`025F',  `AC_cancel',                        `Sel',  `AC cancel')dnl
+ID(`0260',  `AC_catalog',                       `Sel',  `AC catalog')dnl
+ID(`0261',  `AC_buy_or_checkout',               `Sel',  `AC buy/checkout')dnl
+ID(`0262',  `AC_add_to_cart',                   `Sel',  `AC add to cart')dnl
+ID(`0263',  `AC_expand',                        `Sel',  `AC expand')dnl
+ID(`0264',  `AC_expand_all',                    `Sel',  `AC expand all')dnl
+ID(`0265',  `AC_collapse',                      `Sel',  `AC collapse')dnl
+ID(`0266',  `AC_collapse_all',                  `Sel',  `AC collapse all')dnl
+ID(`0267',  `AC_print_preview',                 `Sel',  `AC print preview')dnl
+ID(`0268',  `AC_paste_special',                 `Sel',  `AC paste special')dnl
+ID(`0269',  `AC_insert_mode',                   `Sel',  `AC insert mode')dnl
+ID(`026A',  `AC_delete',                        `Sel',  `AC delete')dnl
+ID(`026B',  `AC_lock',                          `Sel',  `AC lock')dnl
+ID(`026C',  `AC_unlock',                        `Sel',  `AC unlock')dnl
+ID(`026D',  `AC_protect',                       `Sel',  `AC protect')dnl
+ID(`026E',  `AC_unprotect',                     `Sel',  `AC unprotect')dnl
+ID(`026F',  `AC_attach_comment',                `Sel',  `AC attach comment')dnl
+ID(`0270',  `AC_delete_comment',                `Sel',  `AC delete comment')dnl
+ID(`0271',  `AC_view_comment',                  `Sel',  `AC view comment')dnl
+ID(`0272',  `AC_select_word',                   `Sel',  `AC select word')dnl
+ID(`0273',  `AC_select_sentence',               `Sel',  `AC select sentence')dnl
+ID(`0274',  `AC_select_paragraph',              `Sel',  `AC select paragraph')dnl
+ID(`0275',  `AC_select_column',                 `Sel',  `AC select column')dnl
+ID(`0276',  `AC_select_row',                    `Sel',  `AC select row')dnl
+ID(`0277',  `AC_select_table',                  `Sel',  `AC select table')dnl
+ID(`0278',  `AC_select_object',                 `Sel',  `AC select object')dnl
+ID(`0279',  `AC_redo_or_repeat',                `Sel',  `AC redo/repeat')dnl
+ID(`027A',  `AC_sort',                          `Sel',  `AC sort')dnl
+ID(`027B',  `AC_sort_ascending',                `Sel',  `AC sort ascending')dnl
+ID(`027C',  `AC_sort_descending',               `Sel',  `AC sort descending')dnl
+ID(`027D',  `AC_filter',                        `Sel',  `AC filter')dnl
+ID(`027E',  `AC_set_clock',                     `Sel',  `AC set clock')dnl
+ID(`027F',  `AC_view_clock',                    `Sel',  `AC view clock')dnl
+ID(`0280',  `AC_select_time_zone',              `Sel',  `AC select time zone')dnl
+ID(`0281',  `AC_edit_time_zones',               `Sel',  `AC edit time zones')dnl
+ID(`0282',  `AC_set_alarm',                     `Sel',  `AC set alarm')dnl
+ID(`0283',  `AC_clear_alarm',                   `Sel',  `AC clear alarm')dnl
+ID(`0284',  `AC_snooze_alarm',                  `Sel',  `AC snooze alarm')dnl
+ID(`0285',  `AC_reset_alarm',                   `Sel',  `AC reset alarm')dnl
+ID(`0286',  `AC_synchronize',                   `Sel',  `AC synchronize')dnl
+ID(`0287',  `AC_send_or_receive',               `Sel',  `AC send/receive')dnl
+ID(`0288',  `AC_send_to',                       `Sel',  `AC send to')dnl
+ID(`0289',  `AC_reply',                         `Sel',  `AC reply')dnl
+ID(`028A',  `AC_reply_all',                     `Sel',  `AC reply all')dnl
+ID(`028B',  `AC_forward_msg',                   `Sel',  `AC forward msg')dnl
+ID(`028C',  `AC_send',                          `Sel',  `AC send')dnl
+ID(`028D',  `AC_attach_file',                   `Sel',  `AC attach file')dnl
+ID(`028E',  `AC_upload',                        `Sel',  `AC upload')dnl
+ID(`028F',  `AC_download_and_save_as',          `Sel',  ``AC download (save target as)'')dnl
+ID(`0290',  `AC_set_borders',                   `Sel',  `AC set borders')dnl
+ID(`0291',  `AC_insert_row',                    `Sel',  `AC insert row')dnl
+ID(`0292',  `AC_insert_column',                 `Sel',  `AC insert column')dnl
+ID(`0293',  `AC_insert_file',                   `Sel',  `AC insert file')dnl
+ID(`0294',  `AC_insert_picture',                `Sel',  `AC insert picture')dnl
+ID(`0295',  `AC_insert_object',                 `Sel',  `AC insert object')dnl
+ID(`0296',  `AC_insert_symbol',                 `Sel',  `AC insert symbol')dnl
+ID(`0297',  `AC_save_and_close',                `Sel',  `AC save and close')dnl
+ID(`0298',  `AC_rename',                        `Sel',  `AC rename')dnl
+ID(`0299',  `AC_merge',                         `Sel',  `AC merge')dnl
+ID(`029A',  `AC_split',                         `Sel',  `AC split')dnl
+ID(`029B',  `AC_disribute_horiz',               `Sel',  `AC disribute horizontally')dnl
+ID(`029C',  `AC_distribute_vert',               `Sel',  `AC distribute vertically')dnl

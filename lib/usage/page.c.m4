@@ -92,7 +92,6 @@ hidrd_usage_page_valid(hidrd_usage_page page)
 HIDRD_NUM_CONV_DEFS(usage_page, u16)
 
 #ifdef HIDRD_WITH_TOKENS
-
 const char *
 hidrd_usage_page_to_token(hidrd_usage_page page)
 {
@@ -122,8 +121,11 @@ hidrd_usage_page_from_token(hidrd_usage_page *ppage, const char *token)
     return true;
 }
 
-#ifdef HIDRD_WITH_NAMES
+/* Declare case-changing token conversion functions */
+HIDRD_TKN_CONV_CASE_DEFS(usage_page);
+#endif /* HIDRD_WITH_TOKENS */
 
+#ifdef HIDRD_WITH_NAMES
 const char *
 hidrd_usage_page_name(hidrd_usage_page page)
 {
@@ -136,6 +138,7 @@ hidrd_usage_page_name(hidrd_usage_page page)
     return (desc != NULL) ? desc->name : NULL;
 }
 
+#ifdef HIDRD_WITH_TOKENS
 char *
 hidrd_usage_page_fmt_desc(hidrd_usage_page page)
 {
@@ -167,7 +170,7 @@ hidrd_usage_page_fmt_desc(hidrd_usage_page page)
 ]changequote(`,')`
 
 'pushdef(`PAGE_SET',
-`    MAP($1, "$2");
+`    MAP(lowercase($1), "$2");
 ')dnl
 include(`db/usage/page_set.m4')dnl
 popdef(`PAGE_SET')`
@@ -181,8 +184,6 @@ cleanup:
 
     return result;
 }
-
-#endif /* HIDRD_WITH_NAMES */
-
 #endif /* HIDRD_WITH_TOKENS */
+#endif /* HIDRD_WITH_NAMES */
 'dnl

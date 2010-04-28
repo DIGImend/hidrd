@@ -80,16 +80,17 @@ popdef(`page_num')dnl
 #define _P_NAME(_name)
 #endif
 
-#define _P(_TOKEN, _token, _name) \
+#define _P(_TOKEN, _Token, _token, _name) \
     {.value = HIDRD_USAGE_PAGE_##_TOKEN,                    \
-     _P_TOKEN(#_token) _P_NAME(_name)                       \
+     _P_TOKEN(#_Token) _P_NAME(_name)                       \
      .id_list = hidrd_usage_id_desc_list_##_token,          \
      .id_num = sizeof(hidrd_usage_id_desc_list_##_token) /  \
               sizeof(*hidrd_usage_id_desc_list_##_token)}
 
 'dnl
 pushdef(`PAGE',
-`    _P(uppercase($2), $2, "$3"),
+`    _P(uppercase($2), $2, lowercase($2),
+       "$3"),
 ')dnl
 include(`db/usage/page.m4')dnl
 popdef(`PAGE')dnl
