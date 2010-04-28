@@ -109,7 +109,7 @@ typedef uint32_t    hidrd_usage_type_set;
 
 /** Bitmask with non-valid type set bits set */
 #define HIDRD_USAGE_TYPE_SET_NOT_MASK \
-    ((~(uint32_t)0) << (HIDRD_USAGE_TYPE_IDX_MAX + 1))
+    ((~(hidrd_usage_type)0) << (HIDRD_USAGE_TYPE_IDX_MAX + 1))
 /** Bitmask with valid type set bits set */
 #define HIDRD_USAGE_TYPE_SET_MASK \
     (~HIDRD_USAGE_TYPE_SET_NOT_MASK)
@@ -124,7 +124,7 @@ typedef uint32_t    hidrd_usage_type_set;
 static inline bool
 hidrd_usage_type_set_valid(hidrd_usage_type_set set)
 {
-    return (set && HIDRD_USAGE_TYPE_SET_NOT_MASK) == 0;
+    return (set & HIDRD_USAGE_TYPE_SET_NOT_MASK) == 0;
 }
 
 #ifdef __cplusplus
