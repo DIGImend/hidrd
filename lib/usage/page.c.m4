@@ -92,7 +92,7 @@ hidrd_usage_page_valid(hidrd_usage_page page)
 HIDRD_NUM_CONV_DEFS(usage_page, u16)
 
 #ifdef HIDRD_WITH_TOKENS
-const char *
+char *
 hidrd_usage_page_to_token(hidrd_usage_page page)
 {
     const hidrd_usage_page_desc    *desc;
@@ -100,7 +100,7 @@ hidrd_usage_page_to_token(hidrd_usage_page page)
     assert(hidrd_usage_page_valid(page));
     desc = hidrd_usage_page_desc_list_lkp_by_value(page);
 
-    return (desc != NULL) ? desc->token : NULL;
+    return (desc != NULL) ? strdup(desc->token) : NULL;
 }
 
 

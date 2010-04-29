@@ -461,16 +461,15 @@ hidrd_num_from_alt_str(void *pnum, const char *str, ...)
 
 
 char *
-hidrd_num_to_alt_str(size_t bits, size_t cnum, ...)
+hidrd_num_to_alt_str(size_t bits, ...)
 {
     va_list     ap;
     char       *result  = NULL;
-    size_t      i       = 0;
-    const char *str;
+    char       *str;
 
     assert(bits == 8 || bits == 16 || bits == 32);
 
-    va_start(ap, cnum);
+    va_start(ap, bits);
     errno = 0;
 
     switch (bits)
@@ -485,12 +484,9 @@ hidrd_num_to_alt_str(size_t bits, size_t cnum, ...)
             {                                                           \
                 str = (*fn)(n);                                         \
                 if (str != NULL)                                        \
-                    result = (i < cnum) ? strdup(str) : (char *)str;    \
+                    result = str;                                       \
                 else if (errno == 0)                                    \
-                {                                                       \
-                    i++;                                                \
                     continue;                                           \
-                }                                                       \
                 break;                                                  \
             }                                                           \
         }                                                               \

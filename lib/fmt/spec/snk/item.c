@@ -92,6 +92,7 @@ spec_snk_item_main_bitmap(hidrd_spec_snk_inst  *spec_snk,
     hidrd_buf   buf             = HIDRD_BUF_EMPTY;
     char        name_buf[32];
     uint8_t     bit;
+    char       *token           = NULL;
 
     assert(hidrd_item_input_valid(item) ||
            hidrd_item_output_valid(item) ||
@@ -149,15 +150,17 @@ spec_snk_item_main_bitmap(hidrd_spec_snk_inst  *spec_snk,
     hidrd_buf_add_span(&buf, '\0', 1);
     hidrd_buf_retension(&buf);
 
-    result = spec_snk_item_entf(spec_snk,
-                                hidrd_item_main_tag_to_token(
-                                    hidrd_item_main_get_tag(item)),
+    token = hidrd_item_main_tag_to_token(hidrd_item_main_get_tag(item));
+    if (token == NULL)
+        goto cleanup;
+    result = spec_snk_item_entf(spec_snk, token,
                                 VALUE(STROWN, buf.ptr),
                                 SPEC_SNK_ITEM_ENT_NT_NONE);
     hidrd_buf_init(&buf);
 
 cleanup:
 
+    free(token);
     hidrd_buf_clnp(&buf);
 
     return result;
@@ -176,7 +179,7 @@ spec_snk_item_main(hidrd_spec_snk_inst *spec_snk,
             if (!ITEM(collection,
                       VALUE(STROWN,
                            hidrd_tkn_hmnz(
-                            HIDRD_NUM_TO_ALT_STRCD(
+                            HIDRD_NUM_TO_ALT_STR2(
                                 item_collection_type,
                                 hidrd_item_collection_get_type(item),
                                 token, dec),
@@ -225,7 +228,7 @@ spec_snk_item_global(hidrd_spec_snk_inst *spec_snk,
                 ITEM(usage_page,
                      VALUE(STROWN,
                            hidrd_tkn_hmnz(
-                            HIDRD_NUM_TO_ALT_STRCD(
+                            HIDRD_NUM_TO_ALT_STR2(
                                 usage_page,
                                 hidrd_item_usage_page_get_value(item),
                                 token, shex),
@@ -317,8 +320,7 @@ spec_snk_item_usage(hidrd_spec_snk_inst    *spec_snk,
 
     if (hidrd_usage_get_page(usage) == spec_snk->state->usage_page)
     {
-        token_or_bhex = HIDRD_NUM_TO_ALT_STR2D(usage, usage,
-                                               token, shex_id);
+        token_or_bhex = HIDRD_NUM_TO_ALT_STR2(usage, usage, token, shex_id);
         if (token_or_bhex == NULL)
             goto cleanup;
         desc = hidrd_usage_fmt_desc_id(usage);
@@ -327,7 +329,7 @@ spec_snk_item_usage(hidrd_spec_snk_inst    *spec_snk,
     }
     else
     {
-        token_or_bhex = HIDRD_NUM_TO_ALT_STR2D(usage, usage, token, shex);
+        token_or_bhex = HIDRD_NUM_TO_ALT_STR2(usage, usage, token, shex);
         if (token_or_bhex == NULL)
             goto cleanup;
         desc = hidrd_usage_fmt_desc(usage);

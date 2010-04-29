@@ -130,7 +130,7 @@ xml_snk_item_main(hidrd_xml_snk_inst   *xml_snk,
             return GROUP_START(
                     COLLECTION,
                     ATTR(type, STROWN,
-                         HIDRD_NUM_TO_ALT_STR2D(
+                         HIDRD_NUM_TO_ALT_STR2(
                              item_collection_type,
                              hidrd_item_collection_get_type(item),
                              token_lc, dec)));
@@ -167,7 +167,7 @@ xml_snk_item_main(hidrd_xml_snk_inst   *xml_snk,
             return ADD_SIMPLE(
                     main,
                     ATTR(tag, STROWN,
-                         HIDRD_NUM_TO_ALT_STR2D(
+                         HIDRD_NUM_TO_ALT_STR2(
                              item_main_tag, tag, token_lc, dec)),
                     CONTENT(
                         HEX,
@@ -188,7 +188,7 @@ xml_snk_item_unit_generic(hidrd_xml_snk_inst   *xml_snk,
 
     if (!xml_snk_element_add(xml_snk, true, "generic",
                      ATTR(system, STROWN,
-                          HIDRD_NUM_TO_ALT_STR2D(
+                          HIDRD_NUM_TO_ALT_STR2(
                               unit_system,
                               hidrd_unit_get_system(unit),
                               token_lc, dec)),
@@ -406,7 +406,7 @@ xml_snk_item_global(hidrd_xml_snk_inst *xml_snk,
             return ADD_SIMPLE(
                     usage_page,
                     CONTENT(STROWN,
-                            HIDRD_NUM_TO_ALT_STR2D(
+                            HIDRD_NUM_TO_ALT_STR2(
                                 usage_page,
                                 hidrd_item_usage_page_get_value(item),
                                 token_lc, hex)),
@@ -448,7 +448,7 @@ xml_snk_item_global(hidrd_xml_snk_inst *xml_snk,
             return ADD_SIMPLE(
                     global,
                     ATTR(tag, STROWN,
-                         HIDRD_NUM_TO_ALT_STR2D(
+                         HIDRD_NUM_TO_ALT_STR2(
                              item_global_tag, tag, token_lc, dec)),
                     CONTENT(HEX,
                             /* We promise we won't change it */
@@ -479,7 +479,7 @@ xml_snk_item_usage(hidrd_xml_snk_inst  *xml_snk,
 
     if (hidrd_usage_get_page(usage) == xml_snk->state->usage_page)
     {
-        token_or_hex = HIDRD_NUM_TO_ALT_STR2D(usage, usage,
+        token_or_hex = HIDRD_NUM_TO_ALT_STR2(usage, usage,
                                               token_lc, hex_id);
         if (token_or_hex == NULL)
             goto cleanup;
@@ -489,7 +489,7 @@ xml_snk_item_usage(hidrd_xml_snk_inst  *xml_snk,
     }
     else
     {
-        token_or_hex = HIDRD_NUM_TO_ALT_STR2D(usage, usage, token_lc, hex);
+        token_or_hex = HIDRD_NUM_TO_ALT_STR2(usage, usage, token_lc, hex);
         if (token_or_hex == NULL)
             goto cleanup;
         desc = hidrd_usage_fmt_desc(usage);
@@ -566,7 +566,7 @@ xml_snk_item_local(hidrd_xml_snk_inst  *xml_snk,
             return ADD_SIMPLE(
                     local,
                     ATTR(tag, STROWN,
-                         HIDRD_NUM_TO_ALT_STR2D(
+                         HIDRD_NUM_TO_ALT_STR2(
                              item_local_tag, tag, token_lc, dec)),
                     CONTENT(HEX,
                             /* We promise we won't change it */
@@ -593,7 +593,7 @@ xml_snk_item_short(hidrd_xml_snk_inst  *xml_snk,
         default:
             return ADD_SIMPLE(short,
                     ATTR(type, STROWN,
-                         HIDRD_NUM_TO_ALT_STR2D(
+                         HIDRD_NUM_TO_ALT_STR2(
                              item_short_type,
                              hidrd_item_short_get_type(item),
                              token_lc, dec)),
@@ -629,7 +629,7 @@ xml_snk_item_basic(hidrd_xml_snk_inst  *xml_snk,
         default:
             return ADD_SIMPLE(basic,
                     ATTR(type, STROWN,
-                         HIDRD_NUM_TO_ALT_STR2D(
+                         HIDRD_NUM_TO_ALT_STR2(
                              item_basic_type,
                              hidrd_item_basic_get_type(item),
                              token_lc, dec)),

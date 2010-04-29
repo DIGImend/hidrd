@@ -101,7 +101,7 @@ hidrd_tkn_to_num(uint32_t *pnum, const char *str, const hidrd_tkn_link *map)
 }
 
 
-const char *
+char *
 hidrd_tkn_from_num(uint32_t num, const hidrd_tkn_link *map)
 {
     const hidrd_tkn_link   *link;
@@ -110,7 +110,7 @@ hidrd_tkn_from_num(uint32_t num, const hidrd_tkn_link *map)
 
     for (link = map; link->str != NULL; link++)
         if (link->num == num)
-            return link->str;
+            return strdup(link->str);
 
     return NULL;
 }

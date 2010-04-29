@@ -150,9 +150,10 @@ HIDRD_NUM_CONV_DECLS(usage_page);
  *
  * @param page  Usage page code.
  *
- * @return Constant token string or NULL if the page has no token.
+ * @return Dynamically allocated token string, or NULL if the page has no
+ *         token or failed to allocate memory; check errno for the latter.
  */
-extern const char *hidrd_usage_page_to_token(hidrd_usage_page page);
+extern char *hidrd_usage_page_to_token(hidrd_usage_page page);
 
 /**
  * Convert a usage page string token to a code.

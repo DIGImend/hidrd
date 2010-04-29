@@ -177,7 +177,7 @@ changequote([,])['_']changequote(`,')` &&
 
 
 /* Define case-changing token conversion functions */
-HIDRD_TKN_CONV_CASE_DEFSA(usage);
+HIDRD_TKN_CONV_CASE_DEFS(usage);
 #endif /* HIDRD_WITH_TOKENS */
 
 

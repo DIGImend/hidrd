@@ -579,11 +579,10 @@ extern bool hidrd_num_from_alt_str(void *pnum, const char *str, ...);
  *
  * @param num   The number to convert.
  *
- * @return Depending on the usage: either a constant string, or NULL if the
- *         number cannot be converted; or a dynamically allocated string, or
- *         NULL if failed to allocate memory.
+ * @return Dynamically allocated string, or NULL if the match is not found
+ *         or an error occurred; check errno for the latter.
  */
-typedef const char *hidrd_num_fmt8_fn(uint8_t num);
+typedef char *hidrd_num_fmt8_fn(uint8_t num);
 
 /**
  * Prototype for a function used to format an 16-bit number string (either
@@ -594,11 +593,10 @@ typedef const char *hidrd_num_fmt8_fn(uint8_t num);
  *
  * @param num   The number to convert.
  *
- * @return Depending on the usage: either a constant string, or NULL if the
- *         number cannot be converted; or a dynamically allocated string, or
- *         NULL if failed to allocate memory.
+ * @return Dynamically allocated string, or NULL if the match is not found
+ *         or an error occurred; check errno for the latter.
  */
-typedef const char *hidrd_num_fmt16_fn(uint16_t num);
+typedef char *hidrd_num_fmt16_fn(uint16_t num);
 
 /**
  * Prototype for a function used to format an 32-bit number string (either
@@ -609,70 +607,40 @@ typedef const char *hidrd_num_fmt16_fn(uint16_t num);
  *
  * @param num   The number to convert.
  *
- * @return Depending on the usage: either a constant string, or NULL if the
- *         number cannot be converted; or a dynamically allocated string, or
- *         NULL; errno should be set if an error occurred, the conversion
- *         attempts will stop in this case.
+ * @return Dynamically allocated string, or NULL if the match is not found
+ *         or an error occurred; check errno for the latter.
  */
 typedef char *hidrd_num_fmt32_fn(uint32_t num);
 
 /**
- * Convert a number to a string of alternate formats, first using
- * constant converters, then dynamic.
+ * Convert a number to a string of alternate formats.
  *
  * @param bits  Size of the number in bits; only 8, 16 and 32 accepted.
- * @param cnum  Number of constant converters.
  * @param ...   A succession of arguments:
  *              - the number to convert;
  *              - conversion functions (hidrd_num_fmtX_fn),
  *                terminated by NULL;
- *                first @e cnum functions are "constant" converters, which
- *                return either a constant string or NULL if it failed to
- *                find a match or an error occurred;
- *                the rest are "dynamic" converters, which return either a
- *                dynamically allocated string or NULL if it failed to find
- *                a match or an error occurred.
- *              In case of error errno should be set appropriately by the
- *              converter.
  *
  * @return Dynamically allocated string, or NULL if failed to find a match,
- *         or an error occurred; in the latter case errno will be set to
- *         indicate the error.
+ *         or an error occurred; check errno for the latter.
+ *
+ * @note Always resets errno.
  */
-char *hidrd_num_to_alt_str(size_t bits, size_t cnum, ...);
+char *hidrd_num_to_alt_str(size_t bits, ...);
 
 /**
- * Convert a number to a string of two alternate formats, first trying a
- * constant converter, then a dynamic converter.
- *
- * @param _t    The number type name token.
- * @param _n    The number to convert.
- * @param _c    Constant converter representation token.
- * @param _d    Dynamic converter representation token.
- *
- * @return Dynamically allocated string, or NULL if failed to allocate
- *         memory.
- */
-#define HIDRD_NUM_TO_ALT_STRCD(_t, _n, _c, _d) \
-    hidrd_num_to_alt_str(sizeof(hidrd_##_t) * 8, 1, _n, \
-                         hidrd_##_t##_to_##_c,          \
-                         hidrd_##_t##_to_##_d,          \
-                         NULL)
-
-/**
- * Convert a number to a string of two alternate formats, trying two dynamic
- * converters.
+ * Convert a number to a string of two alternate formats.
  *
  * @param _t    The number type name token.
  * @param _n    The number to convert.
  * @param _r1   First converter representation token.
  * @param _r2   Second converter representation token.
  *
- * @return Dynamically allocated string, or NULL if failed to allocate
- *         memory.
+ * @return Dynamically allocated string, or NULL if failed to find a match
+ *         or an error occurred; check errno for the latter.
  */
-#define HIDRD_NUM_TO_ALT_STR2D(_t, _n, _r1, _r2) \
-    hidrd_num_to_alt_str(sizeof(hidrd_##_t) * 8, 0, _n, \
+#define HIDRD_NUM_TO_ALT_STR2(_t, _n, _r1, _r2) \
+    hidrd_num_to_alt_str(sizeof(hidrd_##_t) * 8, _n,    \
                          hidrd_##_t##_to_##_r1,         \
                          hidrd_##_t##_to_##_r2,         \
                          NULL)
