@@ -166,8 +166,6 @@ extern char *hidrd_usage_page_to_token(hidrd_usage_page page);
 extern bool hidrd_usage_page_from_token(hidrd_usage_page   *ppage,
                                         const char         *token);
 
-/* Declare case-changing token conversion functions */
-HIDRD_TKN_CONV_CASE_DECLS(usage_page);
 #endif /* HIDRD_WITH_TOKENS */
 
 #ifdef HIDRD_WITH_NAMES

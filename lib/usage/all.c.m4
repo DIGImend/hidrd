@@ -174,10 +174,6 @@ changequote([,])['_']changequote(`,')` &&
 
     return false;
 }
-
-
-/* Define case-changing token conversion functions */
-HIDRD_TKN_CONV_CASE_DEFS(usage);
 #endif /* HIDRD_WITH_TOKENS */
 
 

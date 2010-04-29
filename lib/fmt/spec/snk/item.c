@@ -179,7 +179,7 @@ spec_snk_item_main(hidrd_spec_snk_inst *spec_snk,
             if (!ITEM(collection,
                       VALUE(STROWN,
                            hidrd_tkn_hmnz(
-                            HIDRD_NUM_TO_ALT_STR2(
+                            HIDRD_NUM_TO_ALT_STR1_1(
                                 item_collection_type,
                                 hidrd_item_collection_get_type(item),
                                 token, dec),
@@ -228,7 +228,7 @@ spec_snk_item_global(hidrd_spec_snk_inst *spec_snk,
                 ITEM(usage_page,
                      VALUE(STROWN,
                            hidrd_tkn_hmnz(
-                            HIDRD_NUM_TO_ALT_STR2(
+                            HIDRD_NUM_TO_ALT_STR1_1(
                                 usage_page,
                                 hidrd_item_usage_page_get_value(item),
                                 token, shex),
@@ -320,7 +320,8 @@ spec_snk_item_usage(hidrd_spec_snk_inst    *spec_snk,
 
     if (hidrd_usage_get_page(usage) == spec_snk->state->usage_page)
     {
-        token_or_bhex = HIDRD_NUM_TO_ALT_STR2(usage, usage, token, shex_id);
+        token_or_bhex = HIDRD_NUM_TO_ALT_STR1_1(usage, usage,
+                                                token, shex_id);
         if (token_or_bhex == NULL)
             goto cleanup;
         desc = hidrd_usage_fmt_desc_id(usage);
@@ -329,7 +330,8 @@ spec_snk_item_usage(hidrd_spec_snk_inst    *spec_snk,
     }
     else
     {
-        token_or_bhex = HIDRD_NUM_TO_ALT_STR2(usage, usage, token, shex);
+        token_or_bhex = HIDRD_NUM_TO_ALT_STR1_1(usage, usage,
+                                                token, shex);
         if (token_or_bhex == NULL)
             goto cleanup;
         desc = hidrd_usage_fmt_desc(usage);

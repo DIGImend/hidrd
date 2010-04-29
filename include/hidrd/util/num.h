@@ -618,8 +618,9 @@ typedef char *hidrd_num_fmt32_fn(uint32_t num);
  * @param bits  Size of the number in bits; only 8, 16 and 32 accepted.
  * @param ...   A succession of arguments:
  *              - the number to convert;
- *              - conversion functions (hidrd_num_fmtX_fn),
- *                terminated by NULL;
+ *              - conversion function chains (hidrd_num_fmtX_fn,
+ *                hidrd_str_proc_fn..., NULL), terminated by an empty chain
+ *                (NULL).
  *
  * @return Dynamically allocated string, or NULL if failed to find a match,
  *         or an error occurred; check errno for the latter.
@@ -629,7 +630,8 @@ typedef char *hidrd_num_fmt32_fn(uint32_t num);
 char *hidrd_num_to_alt_str(size_t bits, ...);
 
 /**
- * Convert a number to a string of two alternate formats.
+ * Convert a number to a string of two alternate formats, without additional
+ * conversion.
  *
  * @param _t    The number type name token.
  * @param _n    The number to convert.
@@ -639,10 +641,29 @@ char *hidrd_num_to_alt_str(size_t bits, ...);
  * @return Dynamically allocated string, or NULL if failed to find a match
  *         or an error occurred; check errno for the latter.
  */
-#define HIDRD_NUM_TO_ALT_STR2(_t, _n, _r1, _r2) \
+#define HIDRD_NUM_TO_ALT_STR1_1(_t, _n, _r1, _r2) \
     hidrd_num_to_alt_str(sizeof(hidrd_##_t) * 8, _n,    \
-                         hidrd_##_t##_to_##_r1,         \
-                         hidrd_##_t##_to_##_r2,         \
+                         hidrd_##_t##_to_##_r1, NULL,   \
+                         hidrd_##_t##_to_##_r2, NULL,   \
+                         NULL)
+
+/**
+ * Convert a number to a string of two alternate formats, with first format
+ * string having additional processing.
+ *
+ * @param _t    The number type name token.
+ * @param _n    The number to convert.
+ * @param _r1   First converter representation token (hex, token, etc.).
+ * @param _p1   First converter processing function name (uc, lc, etc.).
+ * @param _r2   Second converter representation token (hex, token, etc.).
+ *
+ * @return Dynamically allocated string, or NULL if failed to find a match
+ *         or an error occurred; check errno for the latter.
+ */
+#define HIDRD_NUM_TO_ALT_STR2_1(_t, _n, _r1, _p1, _r2) \
+    hidrd_num_to_alt_str(sizeof(hidrd_##_t) * 8, _n,                    \
+                         hidrd_##_t##_to_##_r1, hidrd_str_##_p1, NULL,  \
+                         hidrd_##_t##_to_##_r2, NULL,                   \
                          NULL)
 
 /**

@@ -107,11 +107,11 @@ TEST_TYPE(u16);
 TEST_TYPE(s32);
 TEST_TYPE(u32);
 
-#define PASS_TO_ALT_STR2(_res, _t, _n, _c, _d) \
+#define PASS_TO_ALT_STR1_1(_res, _t, _n, _c, _d) \
     do {                                                        \
         char   *str;                                            \
                                                                 \
-        str = HIDRD_NUM_TO_ALT_STR2(_t, _n, _c, _d);           \
+        str = HIDRD_NUM_TO_ALT_STR1_1(_t, _n, _c, _d);          \
         if (str == NULL)                                        \
             ERROR("Formatting result is NULL unexpectedly");    \
         if (strcmp(str, _res) != 0)                             \
@@ -312,19 +312,19 @@ main(int argc, char **argv)
     FAIL_FROM_STR(u32,  "0x a",         PFX,    HEX);
     PASS_FROM_STR(u32,  0xA,    "0xa",  PFX,    HEX);
 
-    PASS_TO_ALT_STR2("0",          test_u8,    0,          null, dec);
-    PASS_TO_ALT_STR2("255",        test_u8,    UINT8_MAX,  null, dec);
-    PASS_TO_ALT_STR2("0",          test_u16,   0,          null, dec);
-    PASS_TO_ALT_STR2("65535",      test_u16,   UINT16_MAX, null, dec);
-    PASS_TO_ALT_STR2("0",          test_u32,   0,          null, dec);
-    PASS_TO_ALT_STR2("4294967295", test_u32,   UINT32_MAX, null, dec);
+    PASS_TO_ALT_STR1_1("0",          test_u8,    0,          null, dec);
+    PASS_TO_ALT_STR1_1("255",        test_u8,    UINT8_MAX,  null, dec);
+    PASS_TO_ALT_STR1_1("0",          test_u16,   0,          null, dec);
+    PASS_TO_ALT_STR1_1("65535",      test_u16,   UINT16_MAX, null, dec);
+    PASS_TO_ALT_STR1_1("0",          test_u32,   0,          null, dec);
+    PASS_TO_ALT_STR1_1("4294967295", test_u32,   UINT32_MAX, null, dec);
 
-    PASS_TO_ALT_STR2("-128",           test_s8,    INT8_MIN,   null, dec);
-    PASS_TO_ALT_STR2("127",            test_s8,    INT8_MAX,   null, dec);
-    PASS_TO_ALT_STR2("-32768",         test_s32,   INT16_MIN,  null, dec);
-    PASS_TO_ALT_STR2("32767",          test_s32,   INT16_MAX,  null, dec);
-    PASS_TO_ALT_STR2("-2147483648",    test_s32,   INT32_MIN,  null, dec);
-    PASS_TO_ALT_STR2("2147483647",     test_s32,   INT32_MAX,  null, dec);
+    PASS_TO_ALT_STR1_1("-128",           test_s8,    INT8_MIN,   null, dec);
+    PASS_TO_ALT_STR1_1("127",            test_s8,    INT8_MAX,   null, dec);
+    PASS_TO_ALT_STR1_1("-32768",         test_s32,   INT16_MIN,  null, dec);
+    PASS_TO_ALT_STR1_1("32767",          test_s32,   INT16_MAX,  null, dec);
+    PASS_TO_ALT_STR1_1("-2147483648",    test_s32,   INT32_MIN,  null, dec);
+    PASS_TO_ALT_STR1_1("2147483647",     test_s32,   INT32_MAX,  null, dec);
 
     return 0;
 }

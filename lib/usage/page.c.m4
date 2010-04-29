@@ -121,8 +121,6 @@ hidrd_usage_page_from_token(hidrd_usage_page *ppage, const char *token)
     return true;
 }
 
-/* Declare case-changing token conversion functions */
-HIDRD_TKN_CONV_CASE_DEFS(usage_page);
 #endif /* HIDRD_WITH_TOKENS */
 
 #ifdef HIDRD_WITH_NAMES

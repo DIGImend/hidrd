@@ -31,7 +31,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <strings.h>
-#include "hidrd/util/dec.h"
+#include "hidrd/util/str.h"
+#include "hidrd/util/num.h"
 
 
 bool
@@ -463,42 +464,71 @@ hidrd_num_from_alt_str(void *pnum, const char *str, ...)
 char *
 hidrd_num_to_alt_str(size_t bits, ...)
 {
-    va_list     ap;
-    char       *result  = NULL;
-    char       *str;
+    va_list             ap;
+    char               *result      = NULL;
+    unsigned int        n;
+    char               *str         = NULL;
+    void               *fmt_fn;
+    hidrd_str_proc_fn  *proc_fn;
+    char               *proc_str;
 
     assert(bits == 8 || bits == 16 || bits == 32);
 
     va_start(ap, bits);
-    errno = 0;
 
-    switch (bits)
+    /*
+     * This should handle smaller types since they are all promoted to int
+     */
+    n = va_arg(ap, unsigned int);
+
+    while ((fmt_fn = va_arg(ap, void *)) != NULL)
     {
-#define BITS_CASE(_b, _a) \
-    case _b:                                                            \
-        {                                                               \
-            uint##_b##_t            n   = (uint##_b##_t)va_arg(ap, _a); \
-            hidrd_num_fmt##_b##_fn *fn;                                 \
-                                                                        \
-            while ((fn = va_arg(ap, hidrd_num_fmt##_b##_fn *)) != NULL) \
-            {                                                           \
-                str = (*fn)(n);                                         \
-                if (str != NULL)                                        \
-                    result = str;                                       \
-                else if (errno == 0)                                    \
-                    continue;                                           \
-                break;                                                  \
-            }                                                           \
-        }                                                               \
-        break
+        errno = 0;
 
-        BITS_CASE(8, int);
-        BITS_CASE(16, int);
-        BITS_CASE(32, uint32_t);
+        switch (bits)
+        {
+            case 8:
+                str = (*(hidrd_num_fmt8_fn *)fmt_fn)(n);
+                break;
+            case 16:
+                str = (*(hidrd_num_fmt16_fn *)fmt_fn)(n);
+                break;
+            case 32:
+                str = (*(hidrd_num_fmt32_fn *)fmt_fn)(n);
+                break;
+            default:
+                errno = EINVAL;
+                goto cleanup;
+        }
 
-#undef BITS_CASE
+        if (str == NULL)
+        {
+            if (errno != 0)
+                goto cleanup;
+            while ((proc_fn = va_arg(ap, hidrd_str_proc_fn *)) != NULL);
+        }
+        else
+        {
+            while ((proc_fn = va_arg(ap, hidrd_str_proc_fn *)) != NULL)
+            {
+                proc_str = (*proc_fn)(str);
+                if (proc_str == NULL)
+                {
+                    errno = EINVAL;
+                    goto cleanup;
+                }
+                str = proc_str;
+            }
+            break;
+        }
     }
 
+    result = str;
+    str = NULL;
+
+cleanup:
+
+    free(str);
     va_end(ap);
 
     return result;

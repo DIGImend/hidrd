@@ -244,9 +244,6 @@ extern char *hidrd_usage_to_token(hidrd_usage usage);
 extern bool hidrd_usage_from_token(hidrd_usage *pusage,
                                    const char  *token);
 
-/* Declare case-changing token conversion functions */
-HIDRD_TKN_CONV_CASE_DECLS(usage);
-
 #endif /* HIDRD_WITH_TOKENS */
 
 #ifdef HIDRD_WITH_NAMES

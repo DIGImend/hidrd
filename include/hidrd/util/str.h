@@ -48,6 +48,15 @@ extern "C" {
 extern bool hidrd_str_isblank(const char *str);
 
 /**
+ * Prototype for a simple string processing function.
+ *
+ * @param str   The string.
+ *
+ * @return The string, or NULL if the conversion failed.
+ */
+typedef char *hidrd_str_proc_fn(char *str);
+
+/**
  * Lowercase a string.
  *
  * @param str   String to modify.
