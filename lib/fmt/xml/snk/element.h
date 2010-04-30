@@ -117,6 +117,15 @@ typedef enum xml_snk_element_nt {
 } xml_snk_element_nt;
 
 /**
+ * Check if an element sub-node type is valid.
+ *
+ * @param nt    Node type to check.
+ *
+ * @return True if the node type is valid, false otherwise.
+ */
+extern bool xml_snk_element_nt_valid(xml_snk_element_nt nt);
+
+/**
  * Add element with a contents.
  *
  * @param xml_snk   XML sink.

@@ -27,6 +27,21 @@
 #include "element.h"
 
 bool
+xml_snk_element_nt_valid(xml_snk_element_nt nt)
+{
+    switch (nt)
+    {
+        case XML_SNK_ELEMENT_NT_NONE:
+        case XML_SNK_ELEMENT_NT_CONTENT:
+        case XML_SNK_ELEMENT_NT_COMMENT:
+        case XML_SNK_ELEMENT_NT_ATTR:
+            return true;
+        default:
+            return false;
+    }
+}
+
+bool
 xml_snk_element_new(hidrd_xml_snk_inst        *xml_snk,
                     const char                 *name)
 {
@@ -133,6 +148,8 @@ xml_snk_element_addpv(hidrd_xml_snk_inst   *xml_snk,
     {
         xml_snk_element_nt  nt  = va_arg(*pap, xml_snk_element_nt);
 
+        assert(xml_snk_element_nt_valid(nt));
+
         switch (nt)
         {
             case XML_SNK_ELEMENT_NT_ATTR:
@@ -192,27 +209,27 @@ xml_snk_element_addpv(hidrd_xml_snk_inst   *xml_snk,
         xml_snk_element_nt  nt  = va_arg(*pap, xml_snk_element_nt);
         hidrd_fmt_type      fmt;
 
+        assert(xml_snk_element_nt_valid(nt));
+
         switch (nt)
         {
             case XML_SNK_ELEMENT_NT_ATTR:
                 /* Retrieve name */
                 (void)va_arg(*pap, const char *);
-                break;
-
             case XML_SNK_ELEMENT_NT_COMMENT:
             case XML_SNK_ELEMENT_NT_CONTENT:
+                fmt =  va_arg(*pap, hidrd_fmt_type);
+                hidrd_fmtfreepv(fmt, pap);
+                break;
+
             case XML_SNK_ELEMENT_NT_NONE:
+                end = true;
                 break;
 
             default:
                 assert(!"Unknown node type");
                 return false;
-                break;
         }
-
-        fmt =  va_arg(*pap, hidrd_fmt_type);
-
-        hidrd_fmtfreepv(fmt, pap);
     }
 
     return false;
