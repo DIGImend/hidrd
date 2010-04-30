@@ -211,8 +211,8 @@ xml_snk_item_unit_generic(hidrd_xml_snk_inst   *xml_snk,
             else                                                        \
             {                                                           \
                 if (!ADD_SIMPLE(_name,                                  \
-                                CONTENT(S32,                            \
-                                        hidrd_unit_exp_to_int(exp))))   \
+                        CONTENT(S32,                                    \
+                                (int32_t)hidrd_unit_exp_to_int(exp))))  \
                     goto cleanup;                                       \
             }                                                           \
         }                                                               \
@@ -284,10 +284,10 @@ xml_snk_item_unit_specific(hidrd_xml_snk_inst  *xml_snk,
             else                                                        \
             {                                                           \
                 if (!xml_snk_element_add(                               \
-                                xml_snk, false, _spec_name,             \
-                                CONTENT(S32,                            \
-                                        hidrd_unit_exp_to_int(exp)),    \
-                                XML_SNK_ELEMENT_NT_NONE))               \
+                        xml_snk, false, _spec_name,                     \
+                        CONTENT(S32,                                    \
+                                (int32_t)hidrd_unit_exp_to_int(exp)),   \
+                        XML_SNK_ELEMENT_NT_NONE))                       \
                     goto cleanup;                                       \
             }                                                           \
         }                                                               \
@@ -641,7 +641,7 @@ xml_snk_item_basic(hidrd_xml_snk_inst  *xml_snk,
                          hidrd_item_basic_tag_to_dec(
                              hidrd_item_basic_get_tag(item))),
                     ATTR(tag, U32,
-                         hidrd_item_basic_get_data_bytes(item)));
+                         (uint32_t)hidrd_item_basic_get_data_bytes(item)));
     }
 }
 

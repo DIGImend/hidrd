@@ -86,7 +86,7 @@ hidrd_fmtpva(char             **pstr,
                     return false;
             }
             break;
-        case HIDRD_FMT_TYPE_BHEX:
+        case HIDRD_FMT_TYPE_SHEX:
             {
                 void   *buf     = va_arg(*pap, void *);
                 size_t  size    = va_arg(*pap, size_t);

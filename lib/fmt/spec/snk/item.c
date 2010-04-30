@@ -262,7 +262,7 @@ spec_snk_item_global(hidrd_spec_snk_inst *spec_snk,
 
                 return
                     ITEM(unit,
-                        VALUE(BHEX,
+                        VALUE(SHEX,
                               hidrd_item_short_get_data((hidrd_item *)item),
                               hidrd_item_short_get_data_bytes(item)));
             }
