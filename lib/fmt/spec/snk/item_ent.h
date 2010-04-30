@@ -66,18 +66,19 @@ extern bool spec_snk_item_entf(hidrd_spec_snk_inst *spec_snk,
                                ...);
 
 /**
- * Output an item entry to a specification example sink; va_list version.
+ * Output an item entry to a specification example sink; va_list pointer
+ * version.
  *
  * @param spec_snk  Specification example sink.
  * @param name_tkn  Item name token.
- * @param ap        List of node type, format type & arguments sequences;
- *                  terminated with SPEC_SNK_ITEM_ENT_NT_NONE.
+ * @param pap       Pointer to list of node type, format type & arguments
+ *                  sequences; terminated with SPEC_SNK_ITEM_ENT_NT_NONE.
  *
  * @return True if output successfully, false if failed to allocate memory.
  */
-extern bool spec_snk_item_entvf(hidrd_spec_snk_inst    *spec_snk,
-                                const char             *name_tkn,
-                                va_list                 ap);
+extern bool spec_snk_item_entpvf(hidrd_spec_snk_inst   *spec_snk,
+                                 const char            *name_tkn,
+                                 va_list               *pap);
 
 #ifdef __cplusplus
 } /* extern "C" */

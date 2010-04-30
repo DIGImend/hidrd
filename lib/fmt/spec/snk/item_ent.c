@@ -42,9 +42,9 @@ spec_snk_item_ent_nt_valid(spec_snk_item_ent_nt nt)
 
 
 bool
-spec_snk_item_entvf(hidrd_spec_snk_inst    *spec_snk,
-                    const char             *name_tkn,
-                    va_list                 ap)
+spec_snk_item_entpvf(hidrd_spec_snk_inst    *spec_snk,
+                     const char             *name_tkn,
+                     va_list                *pap)
 {
     bool    result  = false;
     bool    end     = false;
@@ -56,7 +56,7 @@ spec_snk_item_entvf(hidrd_spec_snk_inst    *spec_snk,
 
     while (!end)
     {
-        spec_snk_item_ent_nt    nt  = va_arg(ap, spec_snk_item_ent_nt);
+        spec_snk_item_ent_nt    nt  = va_arg(*pap, spec_snk_item_ent_nt);
 
         assert(spec_snk_item_ent_nt_valid(nt));
 
@@ -64,10 +64,10 @@ spec_snk_item_entvf(hidrd_spec_snk_inst    *spec_snk,
             end = true;
         else
         {
-            hidrd_fmt_type  fmt = va_arg(ap, hidrd_fmt_type);
+            hidrd_fmt_type  fmt = va_arg(*pap, hidrd_fmt_type);
             char           *str;
 
-            if (!hidrd_fmtpva(&str, fmt, &ap))
+            if (!hidrd_fmtpva(&str, fmt, pap))
                 goto cleanup;
 
             free(nl[nt]);
@@ -90,7 +90,7 @@ cleanup:
 
     while (!end)
     {
-        spec_snk_item_ent_nt    nt  = va_arg(ap, spec_snk_item_ent_nt);
+        spec_snk_item_ent_nt    nt  = va_arg(*pap, spec_snk_item_ent_nt);
 
         assert(spec_snk_item_ent_nt_valid(nt));
 
@@ -98,9 +98,9 @@ cleanup:
             end = true;
         else
         {
-            hidrd_fmt_type  fmt = va_arg(ap, hidrd_fmt_type);
+            hidrd_fmt_type  fmt = va_arg(*pap, hidrd_fmt_type);
 
-            hidrd_fmtfreepv(fmt, &ap);
+            hidrd_fmtfreepv(fmt, pap);
         }
     }
 
@@ -120,7 +120,7 @@ spec_snk_item_entf(hidrd_spec_snk_inst *spec_snk,
     bool    result;
 
     va_start(ap, name_tkn);
-    result = spec_snk_item_entvf(spec_snk, name_tkn, ap);
+    result = spec_snk_item_entpvf(spec_snk, name_tkn, &ap);
     va_end(ap);
 
     return result;
