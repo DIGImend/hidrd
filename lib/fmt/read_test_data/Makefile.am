@@ -37,7 +37,9 @@ check_DATA = \
     short.bin       \
     short.xml       \
     unit.bin        \
-    unit.xml
+    unit.xml        \
+    usage_push.bin  \
+    usage_push.xml
 
 if ENABLE_TESTS_INSTALL
 read_test_datadir = $(pkgdatadir)/read_test_data

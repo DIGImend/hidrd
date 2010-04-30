@@ -198,6 +198,8 @@ ELEMENT(unit)
 {
     hidrd_unit          unit;
 
+    (void)xml_src;
+
     /* Lookup first element */
     for (e = e->children;
          e != NULL && e->type != XML_ELEMENT_NODE;

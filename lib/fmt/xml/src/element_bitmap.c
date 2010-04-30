@@ -123,6 +123,8 @@ cleanup:
     {                                                       \
         uint32_t    bitmap;                                 \
                                                             \
+        (void)xml_src;                                      \
+                                                            \
         if (!parse_bitmap_element(&bitmap, e, _name##_bmd)) \
             return XML_SRC_ELEMENT_RC_ERROR;                \
                                                             \

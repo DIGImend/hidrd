@@ -50,8 +50,9 @@ typedef enum xml_src_element_rc {
  * 
  * @return Element processing result code.
  */
-typedef xml_src_element_rc xml_src_element_fn(hidrd_item   *item,
-                                              xmlNodePtr    e);
+typedef xml_src_element_rc xml_src_element_fn(hidrd_xml_src_inst   *xml_src,
+                                              hidrd_item           *item,
+                                              xmlNodePtr            e);
 
 /**
  * Generate element handling function prototype.
@@ -62,7 +63,9 @@ typedef xml_src_element_rc xml_src_element_fn(hidrd_item   *item,
  */
 #define ELEMENT(_name) \
     xml_src_element_rc                                      \
-    xml_src_element_##_name(hidrd_item *item, xmlNodePtr e)
+    xml_src_element_##_name(hidrd_xml_src_inst *xml_src,    \
+                            hidrd_item         *item,       \
+                            xmlNodePtr          e)
 
 /**
  * Generate element exit handling function prototype.
@@ -73,7 +76,9 @@ typedef xml_src_element_rc xml_src_element_fn(hidrd_item   *item,
  */
 #define ELEMENT_EXIT(_name) \
     xml_src_element_rc                                              \
-    xml_src_element_##_name##_exit(hidrd_item *item, xmlNodePtr e)
+    xml_src_element_##_name##_exit(hidrd_xml_src_inst  *xml_src,    \
+                                   hidrd_item          *item,       \
+                                   xmlNodePtr           e)
 
 /**
  * Generate element property variable declarations.

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<descriptor xmlns="http://digimend.sourceforge.net" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://digimend.sourceforge.net hidrd.xsd">
+  <usage>digitizer_tip_pressure<!-- Tip pressure (30h, dynamic value) --></usage>
+  <usage_page>digitizer<!-- Digitizer (0Dh) --></usage_page>
+  <usage>digitizer_tip_switch<!-- Tip switch (42h, momentary control) --></usage>
+  <PUSH>
+    <usage>digitizer_barrel_switch<!-- Barrel switch (44h, momentary control) --></usage>
+    <usage>desktop_x<!-- X (30h, dynamic value) --></usage>
+    <usage_page>desktop<!-- Generic desktop controls (01h) --></usage_page>
+    <usage>desktop_y<!-- Y (31h, dynamic value) --></usage>
+  </PUSH>
+  <usage>digitizer_eraser<!-- Eraser (45h, momentary control) --></usage>
+  <usage>desktop_wheel<!-- Wheel (38h, dynamic value) --></usage>
+</descriptor>
