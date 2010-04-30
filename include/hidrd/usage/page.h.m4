@@ -89,6 +89,16 @@ popdef(`PAGE')dnl
 extern bool hidrd_usage_page_valid(hidrd_usage_page page);
 
 /**
+ * Check if a usage page is known, in effect,
+ * if there is a description for it.
+ *
+ * @param page  Usage page to check.
+ *
+ * @return True if the usage page is known, false otherwise.
+ */
+extern bool hidrd_usage_page_known(hidrd_usage_page page);
+
+/**
  * Validate a usage page ID.
  *
  * @param page  Page ID to validate.
@@ -178,7 +188,18 @@ extern bool hidrd_usage_page_from_token(hidrd_usage_page   *ppage,
  */
 extern const char *hidrd_usage_page_name(hidrd_usage_page page);
 
-#ifdef HIDRD_WITH_TOKENS
+/**
+ * Format usage page set membership description text.
+ *
+ * @param page  Usage page code to generate description for.
+ *
+ * @return Dynamically allocated page set membership description, or NULL if
+ *         failed to allocate memory; could be an empty string, if there is
+ *         nothing to tell about the page.
+ */
+extern char *hidrd_usage_page_set_membership_desc_str(
+                                            hidrd_usage_page page);
+
 /**
  * Format page description text from page name and set membership.
  *
@@ -188,9 +209,7 @@ extern const char *hidrd_usage_page_name(hidrd_usage_page page);
  *         allocate memory; could be an empty string, if there is nothing to
  *         tell about the page.
  */
-extern char *hidrd_usage_page_fmt_desc(hidrd_usage_page page);
-#endif /* HIDRD_WITH_TOKENS */
-
+extern char *hidrd_usage_page_desc_str(hidrd_usage_page page);
 #endif /* HIDRD_WITH_NAMES */
 
 #ifdef __cplusplus

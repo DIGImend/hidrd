@@ -22,23 +22,31 @@ check_DATA = \
     SET.spec        \
     SET.xml         \
     basic.bin       \
+    basic.spec      \
     basic.xml       \
     bitmap.bin      \
     bitmap.spec     \
     bitmap.xml      \
     collection.bin  \
+    collection.spec \
     collection.xml  \
     empty.bin       \
+    empty.spec      \
     empty.xml       \
     global.bin      \
+    global.spec     \
     global.xml      \
     local.bin       \
+    local.spec      \
     local.xml       \
     long.bin        \
+    long.spec       \
     long.xml        \
     main.bin        \
+    main.spec       \
     main.xml        \
     short.bin       \
+    short.spec      \
     short.xml       \
     unit.bin        \
     unit.spec       \

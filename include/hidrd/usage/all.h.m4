@@ -105,6 +105,14 @@ popdef(`PAGE')dnl
  */
 extern bool hidrd_usage_valid(hidrd_usage usage);
 
+/**
+ * Check if a usage is known, in effect, if there is a description for it.
+ *
+ * @param usage Usage to check.
+ *
+ * @return True if the usage is known, false otherwise.
+ */
+extern bool hidrd_usage_known(hidrd_usage usage);
 
 /* Declare usage to string conversion functions */
 HIDRD_NUM_CONV_DECLS(usage);
@@ -233,6 +241,17 @@ extern char *hidrd_usage_to_token(hidrd_usage usage);
 
 
 /**
+ * Convert a usage to a ID token string.
+ *
+ * @param usage Usage.
+ *
+ * @return Dynamically allocated usage ID token, or NULL if no token was
+ *         found or failed to allocate memory (check errno for the latter).
+ */
+extern char *hidrd_usage_to_id_token(hidrd_usage usage);
+
+
+/**
  * Convert a string token to a usage.
  *
  * @param pusage    Location for usage; will not be modified in case of
@@ -268,7 +287,7 @@ extern const char *hidrd_usage_id_name(hidrd_usage usage);
  *         allocate memory; could be an empty string, if there is nothing to
  *         tell about the usage ID.
  */
-extern char *hidrd_usage_fmt_desc_id(hidrd_usage usage);
+extern char *hidrd_usage_desc_id_str(hidrd_usage usage);
 
 /**
  * Format usage description.
@@ -279,7 +298,7 @@ extern char *hidrd_usage_fmt_desc_id(hidrd_usage usage);
  *         allocate memory; could be an empty string, if there is nothing to
  *         tell about the usage.
  */
-extern char *hidrd_usage_fmt_desc(hidrd_usage usage);
+extern char *hidrd_usage_desc_str(hidrd_usage usage);
 
 #endif /* HIDRD_WITH_TOKENS */
 

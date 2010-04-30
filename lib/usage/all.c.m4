@@ -103,6 +103,13 @@ hidrd_usage_valid(hidrd_usage usage)
 }
 
 
+bool
+hidrd_usage_known(hidrd_usage usage)
+{
+    return lookup_id_desc(usage) != NULL;
+}
+
+
 #ifdef HIDRD_WITH_TOKENS
 char *
 hidrd_usage_to_token(hidrd_usage usage)
@@ -128,6 +135,21 @@ hidrd_usage_to_token(hidrd_usage usage)
         return NULL;
 
     return token;
+}
+
+
+char *
+hidrd_usage_to_id_token(hidrd_usage usage)
+{
+    const hidrd_usage_id_desc  *desc;
+
+    assert(hidrd_usage_valid(usage));
+
+    desc = lookup_id_desc(usage);
+    if (desc == NULL)
+        return NULL;
+
+    return strdup(desc->token);
 }
 
 
@@ -190,78 +212,49 @@ hidrd_usage_id_name(hidrd_usage usage)
     return (desc != NULL) ? desc->name : NULL;
 }
 
-#ifdef HIDRD_WITH_TOKENS
 char *
-hidrd_usage_fmt_desc_id(hidrd_usage usage)
+hidrd_usage_desc_id_str(hidrd_usage usage)
 {
-    char                       *result      = NULL;
+    char                       *result          = NULL;
     const hidrd_usage_id_desc  *desc;
-    const char                 *token;
-    const char                 *name;
-    char                       *str         = NULL;
-    char                       *new_str     = NULL;
+    char                       *shex            = NULL;
+    char                       *type_set_desc   = NULL;
 
     assert(hidrd_usage_valid(usage));
 
     desc = lookup_id_desc(usage);
     if (desc == NULL)
-    {
-        token = NULL;
-        name = NULL;
-    }
-    else
-    {
-        token = desc->token;
-        name = desc->name;
-    }
+        return strdup("");
 
-    /* Use ID hex if there is no token */
-    if (token != NULL)
-        str = hidrd_usage_id_to_hex(hidrd_usage_get_id(usage));
-    else
-        str = strdup("");
-
-'changequote([,])[
-    /* Attach classification */
-#define MAP(_token, _name) \
-    do {                                                    \
-        if (!hidrd_usage_##_token(usage))                   \
-            break;                                          \
-                                                            \
-        if (asprintf(&new_str,                              \
-                     ((*str == '\0') ? "%s%s" : "%s, %s"),  \
-                     str, _name) < 0)                       \
-            goto cleanup;                                   \
-                                                            \
-        free(str);                                          \
-        str = new_str;                                      \
-        new_str = NULL;                                     \
-    } while (0)
-
-    MAP(top_level, "top-level");
-
-    /* Attach name */
-    if (name == NULL)
-    {
-        result = str;
-        str = NULL;
-    }
-    else if (*str == '\0')
-        result = strdup(name);
-    else if (asprintf(&result, "%s (%s)", name, str) < 0)
+    shex = hidrd_usage_id_to_shex(hidrd_usage_get_id(usage));
+    if (shex == NULL)
         goto cleanup;
+
+    type_set_desc = hidrd_usage_type_set_desc_str(desc->type_set);
+    if (type_set_desc == NULL)
+        goto cleanup;
+
+    if (asprintf(&result,
+'changequote([,])[
+                 (*type_set_desc == '\0') ? "%s (%s)" : "%s (%s, %s)",
 ]changequote(`,')`
+                 desc->name, shex, type_set_desc) < 0)
+    {
+        result = NULL;
+        goto cleanup;
+    }
 
 cleanup:
 
-    free(new_str);
-    free(str);
+    free(type_set_desc);
+    free(shex);
 
     return result;
 }
 
+
 char *
-hidrd_usage_fmt_desc(hidrd_usage usage)
+hidrd_usage_desc_str(hidrd_usage usage)
 {
     char    *result      = NULL;
     char    *usage_desc  = NULL;
@@ -269,10 +262,10 @@ hidrd_usage_fmt_desc(hidrd_usage usage)
 
     assert(hidrd_usage_valid(usage));
 
-    usage_desc = hidrd_usage_fmt_desc_id(usage);
+    usage_desc = hidrd_usage_desc_id_str(usage);
     if (usage_desc == NULL)
         goto cleanup;
-    page_desc = hidrd_usage_page_fmt_desc(hidrd_usage_get_page(usage));
+    page_desc = hidrd_usage_page_desc_str(hidrd_usage_get_page(usage));
     if (page_desc == NULL)
         goto cleanup;
 
@@ -290,7 +283,10 @@ hidrd_usage_fmt_desc(hidrd_usage usage)
     else
     {
         if (asprintf(&result, "%s - %s", usage_desc, page_desc) < 0)
+        {
+            result = NULL;
             goto cleanup;
+        }
     }
 ]changequote(`,')`
 
@@ -301,8 +297,6 @@ cleanup:
 
     return result;
 }
-#endif /* HIDRD_WITH_TOKENS */
-
 #endif /* HIDRD_WITH_NAMES */
 
 'dnl

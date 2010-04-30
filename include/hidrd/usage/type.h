@@ -29,6 +29,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include "hidrd/util/tkn.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -59,12 +60,31 @@ typedef enum hidrd_usage_type_idx {
 
 #define HIDRD_USAGE_TYPE_IDX_MIN    HIDRD_USAGE_TYPE_IDX_LC
 #define HIDRD_USAGE_TYPE_IDX_MAX    HIDRD_USAGE_TYPE_IDX_UM
+#define HIDRD_USAGE_TYPE_IDX_NUM    (HIDRD_USAGE_TYPE_IDX_MAX - \
+                                     HIDRD_USAGE_TYPE_IDX_MIN + 1)
 
 static inline bool
 hidrd_usage_type_idx_valid(hidrd_usage_type_idx idx)
 {
     return (idx <= HIDRD_USAGE_TYPE_IDX_MAX);
 }
+
+#ifdef HIDRD_WITH_TOKENS
+/* Declare type bit index <-> token conversion functions */
+HIDRD_TKN_CONV_DECLS(usage_type_idx);
+#endif /* HIDRD_WITH_TOKENS */
+
+#ifdef HIDRD_WITH_NAMES
+/**
+ * Retrieve a usage type bit index name.
+ *
+ * @param idx   Usage type bit index.
+ *
+ * @return Constant usage type bit index string.
+ */
+extern const char *
+hidrd_usage_type_idx_name(hidrd_usage_type_idx idx);
+#endif
 
 /** Usage type bits */
 typedef enum hidrd_usage_type {
@@ -126,6 +146,18 @@ hidrd_usage_type_set_valid(hidrd_usage_type_set set)
 {
     return (set & HIDRD_USAGE_TYPE_SET_NOT_MASK) == 0;
 }
+
+#ifdef HIDRD_WITH_NAMES
+/**
+ * Format a string description of a usage type set (bitmask).
+ *
+ * @param set   Usage type set.
+ *
+ * @return Dynamically allocated description string, or NULL if failed to
+ *         allocate memory; will be an empty string if the set is empty.
+ */
+extern char *hidrd_usage_type_set_desc_str(hidrd_usage_type_set set);
+#endif /* HIDRD_WITH_NAMES */
 
 #ifdef __cplusplus
 } /* extern "C" */

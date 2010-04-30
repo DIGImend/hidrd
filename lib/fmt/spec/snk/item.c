@@ -235,7 +235,7 @@ spec_snk_item_global(hidrd_spec_snk_inst *spec_snk,
                             HIDRD_TKN_HMNZ_CAP_WF)),
                      COMMENT(STROWN,
                              hidrd_str_uc_first(
-                                hidrd_usage_page_fmt_desc(
+                                hidrd_usage_page_desc_str(
                                     hidrd_item_usage_page_get_value(
                                         item)))));
 
@@ -300,7 +300,7 @@ spec_snk_item_global(hidrd_spec_snk_inst *spec_snk,
 
 
 static char *
-hidrd_usage_to_shex_id(hidrd_usage usage)
+hidrd_usage_to_id_shex(hidrd_usage usage)
 {
     return hidrd_usage_id_to_shex(hidrd_usage_get_id(usage));
 }
@@ -321,10 +321,10 @@ spec_snk_item_usage(hidrd_spec_snk_inst    *spec_snk,
     if (hidrd_usage_get_page(usage) == spec_snk->state->usage_page)
     {
         token_or_bhex = HIDRD_NUM_TO_ALT_STR1_1(usage, usage,
-                                                token, shex_id);
+                                                id_token, id_shex);
         if (token_or_bhex == NULL)
             goto cleanup;
-        desc = hidrd_usage_fmt_desc_id(usage);
+        desc = hidrd_usage_desc_id_str(usage);
         if (desc == NULL)
             goto cleanup;
     }
@@ -334,7 +334,7 @@ spec_snk_item_usage(hidrd_spec_snk_inst    *spec_snk,
                                                 token, shex);
         if (token_or_bhex == NULL)
             goto cleanup;
-        desc = hidrd_usage_fmt_desc(usage);
+        desc = hidrd_usage_desc_str(usage);
         if (desc == NULL)
             goto cleanup;
     }
@@ -344,7 +344,7 @@ spec_snk_item_usage(hidrd_spec_snk_inst    *spec_snk,
     result = spec_snk_item_entf(spec_snk,
                                 name_tkn,
                                 VALUE(STROWN, token_or_bhex),
-                                COMMENT(STROWN, desc),
+                                COMMENT(STROWN, hidrd_str_uc_first(desc)),
                                 SPEC_SNK_ITEM_ENT_NT_NONE);
     token_or_bhex = NULL;
     desc = NULL;

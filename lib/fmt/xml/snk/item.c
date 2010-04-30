@@ -415,7 +415,7 @@ xml_snk_item_global(hidrd_xml_snk_inst *xml_snk,
                     COMMENT(STROWN,
                             hidrd_str_apada(
                                 hidrd_str_uc_first(
-                                    hidrd_usage_page_fmt_desc(
+                                    hidrd_usage_page_desc_str(
                                         hidrd_item_usage_page_get_value(
                                             item))))));
 
@@ -461,7 +461,7 @@ xml_snk_item_global(hidrd_xml_snk_inst *xml_snk,
 
 
 static char *
-hidrd_usage_to_hex_id(hidrd_usage usage)
+hidrd_usage_to_id_hex(hidrd_usage usage)
 {
     return hidrd_usage_id_to_hex(hidrd_usage_get_id(usage));
 }
@@ -482,10 +482,10 @@ xml_snk_item_usage(hidrd_xml_snk_inst  *xml_snk,
     if (hidrd_usage_get_page(usage) == xml_snk->state->usage_page)
     {
         token_or_hex = HIDRD_NUM_TO_ALT_STR2_1(usage, usage,
-                                               token, lc, hex_id);
+                                               token, lc, id_hex);
         if (token_or_hex == NULL)
             goto cleanup;
-        desc = hidrd_usage_fmt_desc_id(usage);
+        desc = hidrd_usage_desc_id_str(usage);
         if (desc == NULL)
             goto cleanup;
     }
@@ -495,7 +495,7 @@ xml_snk_item_usage(hidrd_xml_snk_inst  *xml_snk,
                                                token, lc, hex);
         if (token_or_hex == NULL)
             goto cleanup;
-        desc = hidrd_usage_fmt_desc(usage);
+        desc = hidrd_usage_desc_str(usage);
         if (desc == NULL)
             goto cleanup;
     }

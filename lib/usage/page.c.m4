@@ -88,6 +88,13 @@ hidrd_usage_page_valid(hidrd_usage_page page)
 }
 
 
+bool
+hidrd_usage_page_known(hidrd_usage_page page)
+{
+    return hidrd_usage_page_desc_list_lkp_by_value(page) != NULL;
+}
+
+
 /* Define usage page to numeric string conversion functions */
 HIDRD_NUM_CONV_DEFS(usage_page, u16)
 
@@ -136,20 +143,16 @@ hidrd_usage_page_name(hidrd_usage_page page)
     return (desc != NULL) ? desc->name : NULL;
 }
 
-#ifdef HIDRD_WITH_TOKENS
 char *
-hidrd_usage_page_fmt_desc(hidrd_usage_page page)
+hidrd_usage_page_set_membership_desc_str(hidrd_usage_page page)
 {
     char       *result      = NULL;
     char       *str         = NULL;
     char       *new_str     = NULL;
-    const char *name;
 
-    assert(hidrd_usage_page_valid(page));
-
-    name = hidrd_usage_page_name(page);
-    str = (name == NULL) ? strdup("") : strdup(name);
-
+    str = strdup("");
+    if (str == NULL)
+        goto cleanup;
 'changequote([,])[
 #define MAP(_token, _name) \
     do {                                                    \
@@ -166,7 +169,6 @@ hidrd_usage_page_fmt_desc(hidrd_usage_page page)
         new_str = NULL;                                     \
     } while (0)
 ]changequote(`,')`
-
 'pushdef(`PAGE_SET',
 `    MAP(lowercase($1), "$2");
 ')dnl
@@ -182,6 +184,60 @@ cleanup:
 
     return result;
 }
-#endif /* HIDRD_WITH_TOKENS */
+
+
+char *
+hidrd_usage_page_desc_str(hidrd_usage_page page)
+{
+    char       *result          = NULL;
+    const char *name;
+    char       *set_membership  = NULL;
+    char       *str             = NULL;
+    char       *new_str;
+
+    assert(hidrd_usage_page_valid(page));
+
+    name = hidrd_usage_page_name(page);
+    set_membership = hidrd_usage_page_set_membership_desc_str(page);
+    if (set_membership == NULL)
+        goto cleanup;
+
+'changequote([,])[
+    if (name == NULL && *set_membership == '\0')
+        str = strdup("");
+    else
+    {
+        str = hidrd_usage_page_to_shex(page);
+        if (str == NULL)
+            goto cleanup;
+
+        if (*set_membership != '\0')
+        {
+            if (asprintf(&new_str, "%s, %s", str, set_membership) < 0)
+                goto cleanup;
+            free(str);
+            str = new_str;
+        }
+
+        if (name != NULL)
+        {
+            if (asprintf(&new_str, "%s (%s)", name, str) < 0)
+                goto cleanup;
+            free(str);
+            str = new_str;
+        }
+    }
+]changequote(`,')`
+
+    result = str;
+    str = NULL;
+
+cleanup:
+
+    free(str);
+    free(set_membership);
+
+    return result;
+}
 #endif /* HIDRD_WITH_NAMES */
 'dnl
