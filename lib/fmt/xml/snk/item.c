@@ -620,12 +620,13 @@ xml_snk_item_basic(hidrd_xml_snk_inst  *xml_snk,
         case HIDRD_ITEM_BASIC_FORMAT_LONG:
             return ADD_SIMPLE(
                         long,
-                        ATTR(tag, U32, hidrd_item_long_get_tag(item)),
+                        ATTR(tag, U32,
+                             (uint32_t)hidrd_item_long_get_tag(item)),
                         CONTENT(
                             HEX,
                             /* We promise we won't change it */
                             hidrd_item_long_get_data((hidrd_item *)item)),
-                            hidrd_item_long_get_data_size(item));
+                            (size_t)hidrd_item_long_get_data_size(item));
 
         case HIDRD_ITEM_BASIC_FORMAT_SHORT:
             return xml_snk_item_short(xml_snk, item);
