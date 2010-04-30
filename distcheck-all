@@ -1,0 +1,55 @@
+#!/bin/bash
+#
+# Copyright (c) 2010 Nikolai Kondrashov
+#
+# This file is part of hidrd.
+#
+# Hidrd is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# Hidrd is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with hidrd; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+set -e -u -o pipefail
+
+declare -a OPTION_LIST=(
+enable-debug
+enable-tests-install
+disable-opt
+disable-streams
+disable-formats
+disable-hidrd-convert
+disable-tokens
+disable-names
+disable-xml-format
+disable-spec-format
+)
+
+function combine ()
+{
+    local list="$1";    shift
+    local start="$1";   shift
+    local left="$1";    shift
+    local i
+
+    if [ $left == 0 ]; then
+        make "DISTCHECK_CONFIGURE_FLAGS=$list" distcheck
+    else
+        for ((i = start; i <= (${#OPTION_LIST[@]} - left); i++)); do
+            combine "$list --${OPTION_LIST[$i]}" $((i + 1)) $((left - 1))
+        done
+    fi
+}
+
+# For number of allowed options from none to all
+for ((N = ${#OPTION_LIST[@]}; N >= 0; N--)); do
+    combine "" 0 $N
+done
