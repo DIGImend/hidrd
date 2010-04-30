@@ -119,6 +119,7 @@ hidrd_usage_page_desc_list_lkp_by_value(hidrd_usage_page value)
 }
 
 
+#ifdef HIDRD_WITH_TOKENS
 const hidrd_usage_page_desc *
 hidrd_usage_page_desc_list_lkp_by_token(const char *token)
 {
@@ -134,6 +135,7 @@ hidrd_usage_page_desc_list_lkp_by_token(const char *token)
 
     return NULL;
 }
+#endif /* HIDRD_WITH_TOKENS */
 
 
 'dnl

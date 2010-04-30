@@ -92,7 +92,7 @@ const hidrd_usage_page_desc *hidrd_usage_page_desc_list_lkp_by_value(
  */
 const hidrd_usage_page_desc *hidrd_usage_page_desc_list_lkp_by_token(
                                                 const char         *token);
-#endif
+#endif /* HIDRD_WITH_TOKENS */
 
 #ifdef __cplusplus
 } /* extern "C" */
