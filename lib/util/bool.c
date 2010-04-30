@@ -39,7 +39,7 @@ hidrd_bool_from_str(bool *pvalue, const char *str)
     const char *tkn;
     size_t      len;
 
-    if (!hidrd_tkn_strip(&tkn, &len, str))
+    if (!hidrd_str_find_tkn(&tkn, &len, str))
         return false;
 
     do {

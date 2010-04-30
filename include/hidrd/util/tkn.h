@@ -44,21 +44,6 @@ extern "C" {
  */
 extern bool hidrd_tkn_valid(const char *tkn);
 
-/**
- * Find a token in a constant string; a token is considered to contain only
- * alphanumeric characters or underscores.
- *
- * @param ptkn  Location for the token start pointer; could be NULL.
- * @param plen  Location for the token length; could be NULL.
- * @param str   String to look through.
- *
- * @return True if the token was found and there was nothing else except
- *         whitespace in the string.
- */
-extern bool hidrd_tkn_strip(const char    **ptkn,
-                            size_t         *plen,
-                            const char     *str);
-
 /** Token number-string 1ink */
 typedef struct hidrd_tkn_link {
     uint32_t    num;    /**< Token numer */

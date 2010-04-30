@@ -257,6 +257,21 @@ hidrd_str_cp_uc(char *str, hidrd_str_cp_match_fn *match, void *data)
  */
 extern char *hidrd_str_crplc(char *str, char match, char rplc);
 
+/**
+ * Find a token in a constant string; a token is considered to contain only
+ * alphanumeric characters or underscores.
+ *
+ * @param ptkn  Location for the token start pointer; could be NULL.
+ * @param plen  Location for the token length; could be NULL.
+ * @param str   String to look through.
+ *
+ * @return True if the token was found and there was nothing else except
+ *         whitespace in the string.
+ */
+extern bool hidrd_str_find_tkn(const char    **ptkn,
+                               size_t         *plen,
+                               const char     *str);
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif

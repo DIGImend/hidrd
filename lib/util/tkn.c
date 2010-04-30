@@ -48,34 +48,6 @@ hidrd_tkn_valid(const char *tkn)
 
 
 bool
-hidrd_tkn_strip(const char **ptkn, size_t *plen, const char *str)
-{
-    const char *start;
-    const char *end;
-    const char *zero;
-    size_t      len;
-
-    assert(str != NULL);
-
-    for (start = str; isspace(*start); start++);
-    for (end = start; hidrd_char_istkn(*end); end++);
-    len = end - start;
-    if (len == 0)
-        return false;
-    for (zero = end; isspace(*zero); zero++);
-    if (*zero != '\0')
-        return false;
-
-    if (ptkn != NULL)
-        *ptkn = start;
-    if (plen != NULL)
-        *plen = len;
-
-    return true;
-}
-
-
-bool
 hidrd_tkn_to_num(uint32_t *pnum, const char *str, const hidrd_tkn_link *map)
 {
     const char             *tkn;

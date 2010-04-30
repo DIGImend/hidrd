@@ -230,3 +230,31 @@ hidrd_str_crplc(char *str, char match, char rplc)
 }
 
 
+bool
+hidrd_str_find_tkn(const char **ptkn, size_t *plen, const char *str)
+{
+    const char *start;
+    const char *end;
+    const char *zero;
+    size_t      len;
+
+    assert(str != NULL);
+
+    for (start = str; isspace(*start); start++);
+    for (end = start; hidrd_char_istkn(*end); end++);
+    len = end - start;
+    if (len == 0)
+        return false;
+    for (zero = end; isspace(*zero); zero++);
+    if (*zero != '\0')
+        return false;
+
+    if (ptkn != NULL)
+        *ptkn = start;
+    if (plen != NULL)
+        *plen = len;
+
+    return true;
+}
+
+
