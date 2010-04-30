@@ -60,7 +60,7 @@ extern bool hidrd_hex_buf_from_str(void        *buf,
  * @return Dynamically allocated hexadecimal string, or NULL if failed to
  *         allocate memory.
  */
-extern char *hidrd_hex_buf_to_str(void *buf, size_t size);
+extern char *hidrd_hex_buf_to_str(const void *buf, size_t size);
 
 /**
  * Convert a buffer to a base-suffixed hexadecimal string.
@@ -71,7 +71,7 @@ extern char *hidrd_hex_buf_to_str(void *buf, size_t size);
  * @return Dynamically allocated base-suffixed hexadecimal string, or NULL
  *         if failed to allocate memory.
  */
-extern char *hidrd_hex_buf_to_sstr(void *buf, size_t size);
+extern char *hidrd_hex_buf_to_sstr(const void *buf, size_t size);
 
 #ifdef __cplusplus
 } /* extern "C" */

@@ -84,10 +84,10 @@ hidrd_hex_buf_from_str(void        *buf,
 
 
 char *
-hidrd_hex_buf_to_str(void *buf, size_t size)
+hidrd_hex_buf_to_str(const void *buf, size_t size)
 {
     static const char   map[16] = "0123456789ABCDEF";
-    uint8_t            *bbuf    = (uint8_t *)buf;
+    const uint8_t      *bbuf    = (const uint8_t *)buf;
     char               *str;
     char               *p;
     uint8_t             b;
@@ -112,7 +112,7 @@ hidrd_hex_buf_to_str(void *buf, size_t size)
 
 
 char *
-hidrd_hex_buf_to_sstr(void *buf, size_t size)
+hidrd_hex_buf_to_sstr(const void *buf, size_t size)
 {
     char   *str;
     char   *sstr;
