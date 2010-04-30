@@ -50,19 +50,13 @@ hidrd_tkn_valid(const char *tkn)
 bool
 hidrd_tkn_to_num(uint32_t *pnum, const char *str, const hidrd_tkn_link *map)
 {
-    const char             *tkn;
-    size_t                  len;
     const hidrd_tkn_link   *link;
 
     assert(str != NULL);
     assert(map != NULL);
 
-    if (!hidrd_tkn_strip(&tkn, &len, str))
-        return false;
-
     for (link = map; link->str != NULL; link++)
-        if (strlen(link->str) == len &&
-            hidrd_str_ncasecmpn(link->str, tkn, len) == 0)
+        if (strcasecmp(link->str, str) == 0)
         {
             if (pnum != NULL)
                 *pnum = link->num;
