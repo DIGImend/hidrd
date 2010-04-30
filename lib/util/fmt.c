@@ -76,8 +76,8 @@ hidrd_fmtpva(char             **pstr,
             break;
         case HIDRD_FMT_TYPE_HEX:
             {
-                void   *buf     = va_arg(*pap, void *);
-                size_t  size    = va_arg(*pap, size_t);
+                const void *buf     = va_arg(*pap, const void *);
+                size_t      size    = va_arg(*pap, size_t);
 
                 assert(buf != NULL || size == 0);
 
