@@ -41,46 +41,52 @@
 #define COMMENT(_fmt, _args...) \
     SPEC_SNK_ITEM_ENT_NT_COMMENT, HIDRD_FMT_TYPE_##_fmt, ##_args
 
-#define CASE_ITEM_S32(_TYPE, _NAME, _name) \
+#define CASE_ITEM_S32_CUSTOM(_TYPE, _NAME, _Name, _name) \
     case HIDRD_ITEM_##_TYPE##_TAG_##_NAME:                              \
         return                                                          \
-            ITEM(_name,                                                 \
+            ITEM(_Name,                                                 \
                  VALUE(S32,                                             \
                        (int32_t)hidrd_item_##_name##_get_value(item)))
 
-#define CASE_ITEM_U32(_TYPE, _NAME, _name) \
+#define CASE_ITEM_S32(_TYPE, _NAME, _name) \
+    CASE_ITEM_S32_CUSTOM(_TYPE, _NAME, _name, _name)
+
+#define CASE_ITEM_U32_CUSTOM(_TYPE, _NAME, _Name, _name) \
     case HIDRD_ITEM_##_TYPE##_TAG_##_NAME:                              \
         return                                                          \
-            ITEM(_name,                                                 \
+            ITEM(_Name,                                                 \
                  VALUE(U32,                                             \
                        (uint32_t)hidrd_item_##_name##_get_value(item)))
 
+#define CASE_ITEM_U32(_TYPE, _NAME, _name) \
+    CASE_ITEM_U32_CUSTOM(_TYPE, _NAME, _name, _name)
+
 #define RETURN_ITEM_SHORT_GENERIC(_type) \
-    do {                                                                \
-        char   *data_str;                                               \
-        char   *value;                                                  \
-                                                                        \
-        data_str = hidrd_hex_buf_to_str(                                \
-                    /* We won't change it, we promise */                \
-                    hidrd_item_short_get_data((hidrd_item *)item),      \
-                    hidrd_item_short_get_data_bytes(item));             \
-        if (data_str == NULL)                                           \
-            return false;                                               \
-                                                                        \
-        if (asprintf(&value,                                            \
-                     ((hidrd_item_short_get_data_size(item) ==          \
-                        HIDRD_ITEM_SHORT_DATA_SIZE_0B)                  \
-                            ? "tag:%u"                                  \
-                            : "tag:%u data:%sh"),                       \
-                     (unsigned int)hidrd_item_##_type##_get_tag(item),  \
-                     data_str) < 0)                                     \
-        {                                                               \
-            free(data_str);                                             \
-            return false;                                               \
-        }                                                               \
-        free(data_str);                                                 \
-                                                                        \
-        return ITEM(_type, VALUE(STROWN, value));                       \
+    do {                                                            \
+        char   *data_str;                                           \
+        char   *value;                                              \
+                                                                    \
+        data_str = hidrd_hex_buf_to_str(                            \
+                    /* We won't change it, we promise */            \
+                    hidrd_item_short_get_data((hidrd_item *)item),  \
+                    hidrd_item_short_get_data_bytes(item));         \
+        if (data_str == NULL)                                       \
+            return false;                                           \
+                                                                    \
+        if (asprintf(&value,                                        \
+                     ((hidrd_item_short_get_data_size(item) ==      \
+                        HIDRD_ITEM_SHORT_DATA_SIZE_0B)              \
+                            ? "tag:%Xh"                             \
+                            : "tag:%Xh data:%sh"),                  \
+                     hidrd_item_##_type##_get_tag(item),            \
+                     data_str) < 0)                                 \
+        {                                                           \
+            free(data_str);                                         \
+            return false;                                           \
+        }                                                           \
+        free(data_str);                                             \
+                                                                    \
+        return ITEM(_type, VALUE(STROWN, value));                   \
     } while (0)
 
 static bool
@@ -218,7 +224,7 @@ spec_snk_item_global(hidrd_spec_snk_inst *spec_snk,
         CASE_ITEM_S32(GLOBAL, PHYSICAL_MAXIMUM, physical_maximum);
         CASE_ITEM_S32(GLOBAL, UNIT_EXPONENT, unit_exponent);
         CASE_ITEM_U32(GLOBAL, REPORT_SIZE, report_size);
-        CASE_ITEM_U32(GLOBAL, REPORT_ID, report_id);
+        CASE_ITEM_U32_CUSTOM(GLOBAL, REPORT_ID, report_ID, report_id);
         CASE_ITEM_U32(GLOBAL, REPORT_COUNT, report_count);
 
         case HIDRD_ITEM_GLOBAL_TAG_USAGE_PAGE:
@@ -440,10 +446,10 @@ spec_snk_item_short(hidrd_spec_snk_inst    *spec_snk,
                 if (asprintf(&value,
                              ((hidrd_item_short_get_data_size(item) == 
                                 HIDRD_ITEM_SHORT_DATA_SIZE_0B)
-                                    ? "type:%u tag:%u"
-                                    : "type:%u tag:%u data:%sh"),
-                             (unsigned int)hidrd_item_short_get_type(item),
-                             (unsigned int)hidrd_item_short_get_tag(item),
+                                    ? "type:%Xh tag:%Xh"
+                                    : "type:%Xh tag:%Xh data:%sh"),
+                             hidrd_item_short_get_type(item),
+                             hidrd_item_short_get_tag(item),
                              data_str) < 0)
                 {
                     free(data_str);
@@ -475,9 +481,9 @@ spec_snk_item_long(hidrd_spec_snk_inst *spec_snk,
 
     if (asprintf(&value,
                  ((hidrd_item_long_get_data_size(item) == 0)
-                    ? "tag:%u"
-                    : "tag:%u data:%sh"),
-                 (unsigned int)hidrd_item_long_get_tag(item),
+                    ? "tag:%.2hhXh"
+                    : "tag:%.2hhXh data:%sh"),
+                 hidrd_item_long_get_tag(item),
                  data_str) < 0)
     {
         free(data_str);
