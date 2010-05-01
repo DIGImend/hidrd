@@ -506,7 +506,7 @@ spec_snk_item_basic(hidrd_spec_snk_inst    *spec_snk,
         case HIDRD_ITEM_BASIC_FORMAT_LONG:
             return spec_snk_item_long(spec_snk, item);
         default:
-            /* Unknown basic format */
+            assert(!"Unknown basic format");
             return false;
     }
 }
