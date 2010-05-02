@@ -63,7 +63,8 @@ typedef xml_src_element_rc xml_src_element_fn(hidrd_xml_src_inst   *xml_src,
  */
 #define ELEMENT(_name) \
     xml_src_element_rc                                      \
-    xml_src_element_##_name(hidrd_xml_src_inst *xml_src,    \
+    xml_src_element_##_name(hidrd_xml_src_inst *xml_src     \
+                            __attribute__((unused)),        \
                             hidrd_item         *item,       \
                             xmlNodePtr          e)
 
@@ -75,9 +76,10 @@ typedef xml_src_element_rc xml_src_element_fn(hidrd_xml_src_inst   *xml_src,
  * @return Element processing result code.
  */
 #define ELEMENT_EXIT(_name) \
-    xml_src_element_rc                                              \
-    xml_src_element_##_name##_exit(hidrd_xml_src_inst  *xml_src,    \
-                                   hidrd_item          *item,       \
+    xml_src_element_rc                                          \
+    xml_src_element_##_name##_exit(hidrd_xml_src_inst  *xml_src \
+                                   __attribute__((unused)),     \
+                                   hidrd_item          *item,   \
                                    xmlNodePtr           e)
 
 /**

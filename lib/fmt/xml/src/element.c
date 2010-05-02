@@ -70,8 +70,6 @@ static ELEMENT(basic)
     ELEMENT_PROP_DECL(item_basic_type,          type);
     ELEMENT_PROP_DECL(item_basic_tag,           tag);
 
-    (void)xml_src;
-
     ELEMENT_PROP_RETR(item_basic_data_bytes,    size,   dec);
     ELEMENT_PROP_RETR_ALT2(item_basic_type,     type,   token, dec);
     ELEMENT_PROP_RETR(item_basic_tag,           tag,    dec);
@@ -114,8 +112,6 @@ static ELEMENT(short)
     ELEMENT_PROP_DECL(item_short_type,  type);
     ELEMENT_PROP_DECL(item_short_tag,   tag);
 
-    (void)xml_src;
-
     ELEMENT_PROP_RETR_ALT2(item_short_type, type, token, dec);
     ELEMENT_PROP_RETR(item_short_tag, tag, dec);
 
@@ -156,8 +152,6 @@ static ELEMENT(main)
 
     ELEMENT_PROP_DECL(item_main_tag, tag);
 
-    (void)xml_src;
-
     ELEMENT_PROP_RETR_ALT2(item_main_tag, tag, token, dec);
 
     hidrd_item_main_init(item, tag);
@@ -195,8 +189,6 @@ static ELEMENT(global)
     size_t              data_len;
 
     ELEMENT_PROP_DECL(item_global_tag, tag);
-
-    (void)xml_src;
 
     ELEMENT_PROP_RETR_ALT2(item_global_tag, tag, token, dec);
 
@@ -286,7 +278,6 @@ static ELEMENT(PUSH)
 
 static ELEMENT_EXIT(PUSH)
 {
-    (void)xml_src;
     (void)e;
     xml_src_element_pop_state(xml_src);
     hidrd_item_pop_init(item);
@@ -300,8 +291,6 @@ static ELEMENT(local)
     size_t              data_len;
 
     ELEMENT_PROP_DECL(item_local_tag,    tag);
-
-    (void)xml_src;
 
     ELEMENT_PROP_RETR_ALT2(item_local_tag, tag, token, dec);
 
@@ -339,8 +328,6 @@ static ELEMENT(collection)
 
     ELEMENT_PROP_DECL(item_collection_type, type);
 
-    (void)xml_src;
-
     ELEMENT_PROP_RETR_ALT2(item_collection_type, type, token, dec);
 
     hidrd_item_collection_init(item, type);
@@ -355,7 +342,6 @@ cleanup:
 
 static ELEMENT(end_collection)
 {
-    (void)xml_src;
     (void)e;
     hidrd_item_end_collection_init(item);
     return XML_SRC_ELEMENT_RC_ITEM;
@@ -366,8 +352,6 @@ static ELEMENT(COLLECTION)
     xml_src_element_rc  result_rc   = XML_SRC_ELEMENT_RC_ERROR;
 
     ELEMENT_PROP_DECL(item_collection_type, type);
-
-    (void)xml_src;
 
     ELEMENT_PROP_RETR_ALT2(item_collection_type, type, token, dec);
 
@@ -383,7 +367,6 @@ cleanup:
 
 static ELEMENT_EXIT(COLLECTION)
 {
-    (void)xml_src;
     (void)e;
     hidrd_item_end_collection_init(item);
     return XML_SRC_ELEMENT_RC_ITEM;
@@ -395,8 +378,6 @@ static ELEMENT_EXIT(COLLECTION)
         xml_src_element_rc      result_rc   = XML_SRC_ELEMENT_RC_ERROR; \
         char                   *value_str   = NULL;                     \
         HIDRD_NUM_##_t##_TYPE   value;                                  \
-                                                                        \
-        (void)xml_src;                                                  \
                                                                         \
         value_str = (char *)xmlNodeGetContent(e);                       \
         if (value_str == NULL)                                          \
@@ -469,8 +450,6 @@ static ELEMENT(delimiter)
 {
     xml_src_element_rc  result_rc   = XML_SRC_ELEMENT_RC_ERROR;
 
-    (void)xml_src;
-
     ELEMENT_PROP_DECL(item_delimiter_set, open);
 
     ELEMENT_PROP_RETR(item_delimiter_set, open,   bool_str);
@@ -487,7 +466,6 @@ cleanup:
 
 static ELEMENT(SET)
 {
-    (void)xml_src;
     (void)e;
     hidrd_item_delimiter_init(item,
                               HIDRD_ITEM_DELIMITER_SET_OPEN);
@@ -496,7 +474,6 @@ static ELEMENT(SET)
 
 static ELEMENT_EXIT(SET)
 {
-    (void)xml_src;
     (void)e;
     hidrd_item_delimiter_init(item,
                               HIDRD_ITEM_DELIMITER_SET_CLOSE);
@@ -510,8 +487,6 @@ static ELEMENT(long)
     size_t              data_len;
 
     ELEMENT_PROP_DECL(item_long_tag,    tag);
-
-    (void)xml_src;
 
     ELEMENT_PROP_RETR(item_long_tag,    tag,    dec);
 
@@ -544,7 +519,6 @@ cleanup:
 
 static ELEMENT(descriptor)
 {
-    (void)xml_src;
     (void)item;
     (void)e;
     /* No item yet */
@@ -553,7 +527,6 @@ static ELEMENT(descriptor)
 
 static ELEMENT_EXIT(descriptor)
 {
-    (void)xml_src;
     (void)item;
     (void)e;
     /* No more items */
