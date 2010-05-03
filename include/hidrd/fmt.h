@@ -31,6 +31,9 @@
 #ifdef HIDRD_FMT_WITH_XML
 #include "hidrd/fmt/xml.h"
 #endif
+#ifdef HIDRD_FMT_WITH_SPEC
+#include "hidrd/fmt/spec.h"
+#endif
 #include "hidrd/fmt/list.h"
 
 #endif /* __HIDRD_FMT_H__ */
