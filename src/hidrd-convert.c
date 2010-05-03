@@ -36,11 +36,14 @@
 #include "hidrd/util/fd.h"
 #include "hidrd/fmt.h"
 
-static int
+static bool
 usage(FILE *stream, const char *progname)
 {
-    return 
-        fprintf(
+    const hidrd_fmt   **pfmt;
+    size_t              max_len;
+    size_t              len;
+
+    if (fprintf(
             stream, 
             "Usage: %s [OPTION]... [INPUT [OUTPUT]]\n"
             "Convert a HID report descriptor.\n"
@@ -58,8 +61,30 @@ usage(FILE *stream, const char *progname)
                                         "use LIST output format options\n"
             "\n"
             "Default options are \"-i natv -o natv\".\n"
+            "\n"
+            "Formats:\n"
             "\n",
-            progname);
+            progname) < 0)
+        return false;
+
+    for (max_len = 0, pfmt = hidrd_fmt_list; *pfmt != NULL; pfmt++)
+    {
+        len = strlen((*pfmt)->name);
+        if (len > max_len)
+            max_len = len;
+    }
+
+    for (pfmt = hidrd_fmt_list; *pfmt != NULL; pfmt++)
+    {
+        if (fprintf(stream, "  %*s - %s\n",
+                    max_len, (*pfmt)->name, (*pfmt)->desc) < 0)
+            return false;
+    }
+
+    if (fprintf(stream, "\n") < 0)
+        return false;
+
+    return true;
 }
 
 
