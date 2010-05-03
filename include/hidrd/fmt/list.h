@@ -33,6 +33,9 @@
 extern "C" {
 #endif
 
+/** Supported format list, terminated by a NULL pointer. */
+extern const hidrd_fmt *hidrd_fmt_list[];
+
 /**
  * Lookup a format by name (case-insensitive).
  *
