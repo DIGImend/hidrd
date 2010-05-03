@@ -1,5 +1,5 @@
 /** @file
- * @brief HID report descriptor - XML format - root document properties
+ * @brief HID report descriptor - XML format - root element properties
  *
  * Copyright (C) 2010 Nikolai Kondrashov
  *
