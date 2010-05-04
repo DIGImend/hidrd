@@ -112,7 +112,7 @@ static const hidrd_opt_spec hidrd_xml_snk_opts_spec[] = {
      .dflt  = {
          .boolean = true
      },
-     .desc  = "Format XML output"},
+     .desc  = "format XML output"},
     {.name  = NULL}
 };
 
