@@ -41,33 +41,89 @@
 static bool
 usage_formats(FILE *stream, const char *progname)
 {
-    const hidrd_fmt   **pfmt;
+    const hidrd_fmt       **pfmt;
+    size_t                  max_len;
+    size_t                  len;
+    const hidrd_opt_spec   *opt_spec;
+    char                    buf[1]      = {'\0'};
+    hidrd_opt              *opt_list;
+    char                   *dflt_opts;
 
     if (fprintf(stream, "Formats supported by %s:\n\n", progname) < 0)
         return false;
 
+    for (max_len = 0, pfmt = hidrd_fmt_list; *pfmt != NULL; pfmt++)
+    {
+        len = strlen((*pfmt)->name);
+        if (len > max_len)
+            max_len = len;
+    }
+
     for (pfmt = hidrd_fmt_list; *pfmt != NULL; pfmt++)
     {
-        char   *desc;
-
-        desc = strdup((*pfmt)->desc);
-        if (desc == NULL)
+        if (fprintf(stream, "%s%*s [%s%s] - %s format\n\n",
+                    (*pfmt)->name,
+                    max_len - strlen((*pfmt)->name), "",
+                    hidrd_fmt_readable(*pfmt) ? "I" : " ",
+                    hidrd_fmt_writable(*pfmt) ? "O" : " ",
+                    (*pfmt)->desc) < 0)
             return false;
-        hidrd_str_uc_first(desc);
 
-        if (fprintf(stream, "%s format [%s]\n - %s\n\n",
-                    desc, (*pfmt)->name,
-                    (hidrd_fmt_writable(*pfmt) &&
-                     hidrd_fmt_readable(*pfmt))
-                        ? "input and output"
-                        : hidrd_fmt_writable(*pfmt)
-                            ? "output only"
-                            : "input only") < 0)
-        {
-            free(desc);
-            return false;
-        }
-        free(desc);
+#define FPRINTF_OPTS(_pnt, _dir) \
+    do {                                                                \
+        if ((*pfmt)->_pnt == NULL ||                                    \
+            (*pfmt)->_pnt->opts_spec == NULL ||                         \
+            hidrd_opt_spec_list_len((*pfmt)->_pnt->opts_spec) == 0)     \
+            break;                                                      \
+        if (fprintf(stream, "  %s options:\n", _dir) < 0)               \
+            return false;                                               \
+        for (opt_spec = (*pfmt)->_pnt->opts_spec;                       \
+             opt_spec->name != NULL; opt_spec++)                        \
+        {                                                               \
+            char   *name;                                               \
+                                                                        \
+            name = strdup(hidrd_opt_type_name(opt_spec->type));         \
+            if (name == NULL)                                           \
+                return false;                                           \
+                                                                        \
+            hidrd_str_uc(name);                                         \
+                                                                        \
+            if (fprintf(stream, "  %s [%s] - %s\n",                     \
+                        opt_spec->name, name,                           \
+                        opt_spec->desc) < 0)                            \
+            {                                                           \
+                free(name);                                             \
+                return false;                                           \
+            }                                                           \
+            free(name);                                                 \
+        }                                                               \
+                                                                        \
+        if (fprintf(stream, "  Defaults:\n") < 0)                       \
+            return false;                                               \
+                                                                        \
+        opt_list = hidrd_opt_list_parse((*pfmt)->_pnt->opts_spec, buf); \
+        if (opt_list == NULL)                                           \
+            return false;                                               \
+                                                                        \
+        dflt_opts = hidrd_opt_list_format(opt_list);                    \
+        if (dflt_opts == NULL)                                          \
+        {                                                               \
+            free(opt_list);                                             \
+            return false;                                               \
+        }                                                               \
+        free(opt_list);                                                 \
+                                                                        \
+        if (fprintf(stream, "  %s\n\n", dflt_opts) < 0)                 \
+        {                                                               \
+            free(dflt_opts);                                            \
+            return false;                                               \
+        }                                                               \
+        free(dflt_opts);                                                \
+    } while (0)
+
+        FPRINTF_OPTS(src, "Input");
+        FPRINTF_OPTS(snk, "Output");
+
     }
 
     return true;
@@ -91,7 +147,7 @@ usage(FILE *stream, const char *progname)
             "\n"
             "Options:\n"
             "  -h, --help                       this help message\n"
-            "  --hf, --help-formats             descriptions of formats\n"
+            "  --hf, --help-formats             description of formats\n"
             "                                   and their options\n"
             "  -i, --input-format=FORMAT        use FORMAT for input\n"
             "  --io=LIST, --input-options=LIST  "
@@ -113,15 +169,16 @@ usage(FILE *stream, const char *progname)
     }
 
     for (pfmt = hidrd_fmt_list; *pfmt != NULL; pfmt++)
-        if (fprintf(stream, "  %*s - %s [%s%s]\n",
-                    max_len, (*pfmt)->name, (*pfmt)->desc,
-                    hidrd_fmt_readable(*pfmt) ? "I" : "",
-                    hidrd_fmt_writable(*pfmt) ? "O" : "") < 0)
+        if (fprintf(stream, "  %*s [%s%s] - %s\n",
+                    max_len, (*pfmt)->name,
+                    hidrd_fmt_readable(*pfmt) ? "I" : " ",
+                    hidrd_fmt_writable(*pfmt) ? "O" : " ",
+                    (*pfmt)->desc) < 0)
             return false;
 
     if (fprintf(stream,
                 "\n" 
-                "Default options are \"-i natv -o natv\".\n"
+                "Default options are -i natv -o natv.\n"
                 "\n") < 0)
         return false;
 
