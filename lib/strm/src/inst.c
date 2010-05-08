@@ -54,7 +54,8 @@ hidrd_src_error(const hidrd_src *src)
  *
  * @param type  Source type to create instance of.
  *
- * @return Uninitialized instance of the specified source type.
+ * @return Uninitialized instance of the specified source type, or NULL if
+ *         failed to allocate memory.
  */
 static hidrd_src *
 hidrd_src_alloc(const hidrd_src_type *type)

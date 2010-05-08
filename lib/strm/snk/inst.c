@@ -44,7 +44,8 @@ hidrd_snk_valid(const hidrd_snk *snk)
  *
  * @param type  Sink type to create instance of.
  *
- * @return Uninitialized instance of the specified sink type.
+ * @return Uninitialized instance of the specified sink type, or NULL if
+ *         failed to allocate memory.
  */
 static hidrd_snk *
 hidrd_snk_alloc(const hidrd_snk_type *type)
