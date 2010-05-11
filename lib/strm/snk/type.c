@@ -40,7 +40,8 @@ hidrd_snk_type_valid(const hidrd_snk_type *type)
            (type->init_opts == NULL ||
             hidrd_opt_spec_list_valid(type->opts_spec)) &&
 #endif
-           type->put != NULL;
+           type->put != NULL &&
+           type->errmsg != NULL;
 }
 
 

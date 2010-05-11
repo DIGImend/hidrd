@@ -149,7 +149,10 @@ xml_snk_item_main(hidrd_xml_snk_inst   *xml_snk,
                 token = hidrd_item_main_tag_to_token(tag);
                 assert(token != NULL || errno != 0);
                 if (token == NULL)
+                {
+                    XML_ERR("failed to allocate a main tag token");
                     return false;
+                }
                 token = hidrd_str_lc(token);
                 result = xml_snk_element_add(xml_snk, true, token,
                                              XML_SNK_ELEMENT_NT_NONE);
@@ -255,7 +258,7 @@ xml_snk_item_unit_specific(hidrd_xml_snk_inst  *xml_snk,
     token = hidrd_unit_system_to_token(system);
     assert(token != NULL || errno != 0);
     if (token == NULL)
-        goto cleanup;
+        XML_ERR_CLNP("failed to allocate unit system token");
     token = hidrd_str_lc(token);
 
     if (!xml_snk_element_add(xml_snk, true,
@@ -426,7 +429,10 @@ xml_snk_item_global(hidrd_xml_snk_inst *xml_snk,
                 /* Push state */
                 new_state = malloc(sizeof(*new_state));
                 if (new_state == NULL)
+                {
+                    XML_ERR("failed to allocate a state table");
                     return false;
+                }
                 memcpy(new_state, xml_snk->state, sizeof(*new_state));
                 new_state->prev = xml_snk->state;
                 xml_snk->state = new_state;
@@ -484,20 +490,20 @@ xml_snk_item_usage(hidrd_xml_snk_inst  *xml_snk,
         token_or_hex = HIDRD_NUM_TO_ALT_STR2_1(usage, usage,
                                                token, lc, id_hex);
         if (token_or_hex == NULL)
-            goto cleanup;
+            XML_ERR_CLNP("failed to convert usage to string");
         desc = hidrd_usage_desc_id_str(usage);
         if (desc == NULL)
-            goto cleanup;
+            XML_ERR_CLNP("failed to format usage description");
     }
     else
     {
         token_or_hex = HIDRD_NUM_TO_ALT_STR2_1(usage, usage,
                                                token, lc, hex);
         if (token_or_hex == NULL)
-            goto cleanup;
+            XML_ERR_CLNP("failed to convert usage to string");
         desc = hidrd_usage_desc_str(usage);
         if (desc == NULL)
-            goto cleanup;
+            XML_ERR_CLNP("failed to format usage description");
     }
 
     if (*desc == '\0')

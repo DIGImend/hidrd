@@ -21,6 +21,8 @@ SUBDIRS = natv read_test_data write_test_data
 
 lib_LTLIBRARIES = libhidrd_fmt.la
 
+noinst_HEADERS =
+
 libhidrd_fmt_la_SOURCES = \
     inst.c                  \
     list.c                  \
@@ -64,6 +66,8 @@ hidrd_write_LDADD = \
 if ENABLE_FMT_XML
 
 SUBDIRS += xml
+
+noinst_HEADERS += xml.h
 
 libhidrd_fmt_la_SOURCES += xml.c
 libhidrd_fmt_la_CFLAGS = @LIBXML2_CFLAGS@

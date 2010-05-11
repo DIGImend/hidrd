@@ -145,7 +145,10 @@ group_break_cb(const char                  *name,
     assert(g != NULL);
 
     if (g == NULL)
+    {
+        XML_ERR("unknown group element \"%s\"", name);
         return false;
+    }
 
     if (pcreate_start != NULL)
         *pcreate_start = g->create_start;

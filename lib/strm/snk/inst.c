@@ -38,11 +38,19 @@ hidrd_snk_valid(const hidrd_snk *snk)
 }
 
 
+char *
+hidrd_snk_errmsg(const hidrd_snk *snk)
+{
+    assert(hidrd_snk_valid(snk));
+    return (*snk->type->errmsg)(snk);
+}
+
+
 /**
  * Allocate (an uninitialized, but zeroed) sink instance of specified type
  * (set the type field).
  *
- * @param type  Sink type to create instance of.
+ * @param type  Sink type to allocate instance of.
  *
  * @return Uninitialized instance of the specified sink type, or NULL if
  *         failed to allocate memory.
@@ -66,6 +74,9 @@ hidrd_snk_alloc(const hidrd_snk_type *type)
  * Initialize sink instance (va_list version).
  *
  * @param snk   Sink instance to initialize.
+ * @param perr  Location for a dynamically allocated error message pointer,
+ *              in case the initialization failed, or for a dynamically
+ *              allocated empty string otherwise; could be NULL.
  * @param pbuf  Location of sink buffer pointer.
  * @param psize Location of sink buffer size.
  * @param ap    Sink type-specific arguments.
@@ -73,7 +84,11 @@ hidrd_snk_alloc(const hidrd_snk_type *type)
  * @return True if initialization succeeded, false otherwise.
  */
 static bool
-hidrd_snk_initv(hidrd_snk *snk, void **pbuf, size_t *psize, va_list ap)
+hidrd_snk_initv(hidrd_snk  *snk,
+                char      **perr,
+                void      **pbuf,
+                size_t     *psize,
+                va_list     ap)
 {
     assert(snk != NULL);
     assert(hidrd_snk_type_valid(snk->type));
@@ -92,8 +107,12 @@ hidrd_snk_initv(hidrd_snk *snk, void **pbuf, size_t *psize, va_list ap)
     snk->psize = psize;
 
     if (snk->type->init != NULL)
-        if (!(*snk->type->init)(snk, ap))
+    {
+        if (!(*snk->type->init)(snk, perr, ap))
             return false;
+    }
+    else if (perr != NULL)
+        *perr = strdup("");
 
     assert(hidrd_snk_valid(snk));
 
@@ -105,6 +124,9 @@ hidrd_snk_initv(hidrd_snk *snk, void **pbuf, size_t *psize, va_list ap)
  * Initialize sink instance.
  *
  * @param snk   Sink instance to initialize.
+ * @param perr  Location for a dynamically allocated error message pointer,
+ *              in case the initialization failed, or for a dynamically
+ *              allocated empty string otherwise; could be NULL.
  * @param pbuf  Location of sink buffer pointer.
  * @param psize Location of sink buffer size.
  * @param ...   Sink type-specific arguments.
@@ -112,13 +134,17 @@ hidrd_snk_initv(hidrd_snk *snk, void **pbuf, size_t *psize, va_list ap)
  * @return True if initialization succeeded, false otherwise.
  */
 static bool
-hidrd_snk_init(hidrd_snk *snk, void **pbuf, size_t *psize, ...)
+hidrd_snk_init(hidrd_snk   *snk,
+               char       **perr,
+               void       **pbuf,
+               size_t      *psize,
+               ...)
 {
     bool    result;
     va_list ap;
 
     va_start(ap, psize);
-    result = hidrd_snk_initv(snk, pbuf, psize, ap);
+    result = hidrd_snk_initv(snk, perr, pbuf, psize, ap);
     va_end(ap);
 
     return result;
@@ -131,6 +157,10 @@ hidrd_snk_init(hidrd_snk *snk, void **pbuf, size_t *psize, ...)
  * sprintf.
  *
  * @param snk       Sink instance to initialize.
+ * @param perr      Location for a dynamically allocated error message
+ *                  pointer, in case the initialization failed, or for a
+ *                  dynamically allocated empty string otherwise; could be
+ *                  NULL.
  * @param pbuf      Location of sink buffer pointer.
  * @param psize     Location of sink buffer size.
  * @param opts_fmt  Option format string: each option is a name/value pair
@@ -141,14 +171,20 @@ hidrd_snk_init(hidrd_snk *snk, void **pbuf, size_t *psize, ...)
  * @return True if initialization succeeded, false otherwise.
  */
 static bool
-hidrd_snk_init_optsf(hidrd_snk *snk,
-                     void **pbuf, size_t *psize,
-                     const char *opts_fmt, ...)
-                     __attribute__((format(printf, 4, 5)));
+hidrd_snk_init_optsf(hidrd_snk     *snk,
+                     char         **perr,
+                     void         **pbuf,
+                     size_t        *psize,
+                     const char    *opts_fmt,
+                     ...)
+                     __attribute__((format(printf, 5, 6)));
 static bool
-hidrd_snk_init_optsf(hidrd_snk *snk,
-                     void **pbuf, size_t *psize,
-                     const char *opts_fmt, ...)
+hidrd_snk_init_optsf(hidrd_snk     *snk,
+                     char         **perr,
+                     void         **pbuf,
+                     size_t        *psize,
+                     const char    *opts_fmt,
+                     ...)
 {
     static const hidrd_opt_spec empty_spec_list[] = {{.name = NULL}};
 
@@ -180,12 +216,20 @@ hidrd_snk_init_optsf(hidrd_snk *snk,
 
     /* Format option string */
     if (vasprintf(&opts_buf, opts_fmt, ap) < 0)
+    {
+        if (perr != NULL)
+            *perr = strdup("failed to format options string");
         goto cleanup;
+    }
 
     /* Parse option list */
     opt_list = hidrd_opt_list_parse(spec_list, opts_buf);
     if (opt_list == NULL)
+    {
+        if (perr != NULL)
+            *perr = strdup("failed to parse options string");
         goto cleanup;
+    }
 
     /* If there is init_opts member */
     if (snk->type->init_opts != NULL)
@@ -194,13 +238,13 @@ hidrd_snk_init_optsf(hidrd_snk *snk,
         snk->pbuf  = pbuf;
         snk->psize = psize;
 
-        if (!(*snk->type->init_opts)(snk, opt_list))
+        if (!(*snk->type->init_opts)(snk, perr, opt_list))
             goto cleanup;
     }
     else
     {
         /* Do the regular initialization */
-        if (!hidrd_snk_init(snk, pbuf, psize))
+        if (!hidrd_snk_init(snk, perr, pbuf, psize))
             goto cleanup;
     }
 
@@ -222,6 +266,9 @@ cleanup:
  * Initialize sink instance with an option string.
  *
  * @param snk   Sink instance to initialize.
+ * @param perr  Location for a dynamically allocated error message pointer,
+ *              in case the initialization failed, or for a dynamically
+ *              allocated empty string otherwise; could be NULL.
  * @param pbuf  Location of sink buffer pointer.
  * @param psize Location of sink buffer size.
  * @param opts  Option string: each option is a name/value pair separated by
@@ -231,17 +278,22 @@ cleanup:
  * @return True if initialization succeeded, false otherwise.
  */
 static bool
-hidrd_snk_init_opts(hidrd_snk *snk,
-                    void **pbuf, size_t *psize, const char *opts)
+hidrd_snk_init_opts(hidrd_snk      *snk,
+                    char          **perr,
+                    void          **pbuf,
+                    size_t         *psize,
+                    const char     *opts)
 {
-    return hidrd_snk_init_optsf(snk, pbuf, psize, "%s", opts);
+    return hidrd_snk_init_optsf(snk, perr, pbuf, psize, "%s", opts);
 }
 
 
 hidrd_snk *
-hidrd_snk_new_opts(const hidrd_snk_type *type,
-                   void **pbuf, size_t *psize,
-                   const char *opts)
+hidrd_snk_new_opts(const hidrd_snk_type    *type,
+                   char                   **perr,
+                   void                   **pbuf,
+                   size_t                  *psize,
+                   const char              *opts)
 {
     hidrd_snk *snk;
 
@@ -250,10 +302,14 @@ hidrd_snk_new_opts(const hidrd_snk_type *type,
     /* Allocate */
     snk = hidrd_snk_alloc(type);
     if (snk == NULL)
+    {
+        if (perr != NULL)
+            *perr = strdup("instance allocation failed");
         return NULL;
+    }
 
     /* Initialize */
-    if (!hidrd_snk_init_opts(snk, pbuf, psize, opts))
+    if (!hidrd_snk_init_opts(snk, perr, pbuf, psize, opts))
         return NULL;
 
     return snk;
@@ -262,9 +318,10 @@ hidrd_snk_new_opts(const hidrd_snk_type *type,
 
 
 hidrd_snk *
-hidrd_snk_new(const hidrd_snk_type  *type,
-              void                  **pbuf,
-              size_t                 *psize,
+hidrd_snk_new(const hidrd_snk_type     *type,
+              char                    **perr,
+              void                    **pbuf,
+              size_t                   *psize,
               ...)
 {
     hidrd_snk *snk;
@@ -274,11 +331,15 @@ hidrd_snk_new(const hidrd_snk_type  *type,
     /* Allocate */
     snk = hidrd_snk_alloc(type);
     if (snk == NULL)
+    {
+        if (perr != NULL)
+            *perr = strdup("instance allocation failed");
         return NULL;
+    }
 
     /* Initialize */
     va_start(ap, psize);
-    result = hidrd_snk_initv(snk, pbuf, psize, ap);
+    result = hidrd_snk_initv(snk, perr, pbuf, psize, ap);
     va_end(ap);
     if (!result)
         return NULL;

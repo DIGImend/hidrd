@@ -44,6 +44,12 @@ struct hidrd_spec_snk_state {
     hidrd_usage_page        usage_page; /**< Usage page in effect */
 };
 
+/** Specification example sink error code */
+typedef enum hidrd_spec_snk_err {
+    HIDRD_SPEC_SNK_ERR_NONE,    /**< No error */
+    HIDRD_SPEC_SNK_ERR_ALLOC    /**< Memory allocation failure */
+} hidrd_spec_snk_err;
+
 /** Specification example sink instance */
 typedef struct hidrd_spec_snk_inst {
     hidrd_snk                   snk;    /**< Parent structure */
@@ -53,6 +59,7 @@ typedef struct hidrd_spec_snk_inst {
     hidrd_spec_snk_state       *state;  /**< Item state table stack */
 
     hidrd_spec_snk_ent_list     list;   /**< Entry list */
+    hidrd_spec_snk_err          err;    /**< Last error code */
 } hidrd_spec_snk_inst;
 
 #ifdef __cplusplus

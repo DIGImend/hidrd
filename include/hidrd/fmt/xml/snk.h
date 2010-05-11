@@ -52,6 +52,7 @@ typedef struct hidrd_xml_snk_inst {
     xmlNodePtr              prnt;   /**< Current parent element */
     xmlNodePtr              cur;    /**< Current element */
     hidrd_xml_snk_state    *state;  /**< Item state table stack */
+    char                   *err;    /**< Last error message */
 } hidrd_xml_snk_inst;
 
 #ifdef __cplusplus

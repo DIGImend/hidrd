@@ -36,10 +36,18 @@ extern "C" {
 /** Native source type */
 extern const hidrd_src_type hidrd_natv_src;
 
+/** Native source error code */
+typedef enum hidrd_natv_src_err {
+    HIDRD_NATV_SRC_ERR_NONE,    /**< No error */
+    HIDRD_NATV_SRC_ERR_SHORT,   /**< Item buffer ended prematurely */
+    HIDRD_NATV_SRC_ERR_INVALID  /**< Invalid item encountered */
+} hidrd_natv_src_err;
+
 /** Native source instance */
 typedef struct hidrd_natv_src_inst {
-    hidrd_src       src;    /**< Parent structure */
-    size_t          pos;    /**< Stream position in bytes */
+    hidrd_src           src;    /**< Parent structure */
+    size_t              pos;    /**< Stream position in bytes */
+    hidrd_natv_src_err  err;    /**< Last error code */
 } hidrd_natv_src_inst;
 
 #ifdef __cplusplus

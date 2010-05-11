@@ -36,13 +36,20 @@ extern "C" {
 /** Native sink type */
 const hidrd_snk_type    hidrd_natv_snk;
 
+/** Native sink error code */
+typedef enum hidrd_natv_snk_err {
+    HIDRD_NATV_SNK_ERR_NONE,    /**< No error */
+    HIDRD_NATV_SNK_ERR_ALLOC    /**< Memory allocation failure */
+} hidrd_natv_snk_err;
+
 /** Native sink instance */
 typedef struct hidrd_natv_snk_inst {
-    hidrd_snk   snk;    /**< Parent structure */
-    void       *buf;    /**< Buffer pointer */
-    size_t      size;   /**< Stream size in bytes */
-    size_t      alloc;  /**< Buffer size in bytes */
-    size_t      pos;    /**< Stream position in bytes */
+    hidrd_snk           snk;    /**< Parent structure */
+    void               *buf;    /**< Buffer pointer */
+    size_t              size;   /**< Stream size in bytes */
+    size_t              alloc;  /**< Buffer size in bytes */
+    size_t              pos;    /**< Stream position in bytes */
+    hidrd_natv_snk_err  err;    /**< Last error code */
 } hidrd_natv_snk_inst;
 
 #ifdef __cplusplus

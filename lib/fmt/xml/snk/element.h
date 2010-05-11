@@ -29,6 +29,7 @@
 
 #include "hidrd/util/fmt.h"
 #include "hidrd/fmt/xml/snk.h"
+#include "../../xml.h"
 
 #ifdef __cplusplus
 extern "C" {

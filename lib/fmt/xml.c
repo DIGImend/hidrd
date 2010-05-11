@@ -24,8 +24,51 @@
  * @(#) $Id$
  */
 
+#include <errno.h>
 #include <libxml/parser.h>
 #include "hidrd/fmt/xml.h"
+#include "xml.h"
+
+
+void
+xml_error(void *ctx, const char *fmt, ...)
+{
+    char      **perr    = (char **)ctx;
+    va_list     ap;
+    char       *chunk;
+    char       *new_err;
+
+    if (perr == NULL)
+        return;
+
+    va_start(ap, fmt);
+
+    if (vasprintf(&chunk, fmt, ap) < 0)
+    {
+        if (asprintf(&chunk, "failed to format error message chunk: %s",
+                     strerror(errno)) < 0)
+        {
+            assert(!"Failed to format formatting error message");
+            chunk = NULL;
+            goto cleanup;
+        }
+    }
+
+    if (asprintf(&new_err, "%s%s", *perr,  chunk) < 0)
+    {
+        assert(!"Failed to format new error message");
+        goto cleanup;
+    }
+
+    free(*perr);
+    *perr = new_err;
+
+cleanup:
+
+    free(chunk);
+    va_end(ap);
+}
+
 
 static bool
 hidrd_xml_init(void)

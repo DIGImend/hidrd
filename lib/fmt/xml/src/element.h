@@ -28,10 +28,43 @@
 #define __XML_SRC_ELEMENT_H__
 
 #include "hidrd/fmt/xml/src.h"
+#include "../../xml.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#define ELEMENT_ERR(_fmt, _args...) XML_ERR(_fmt, ##_args)
+
+#define ELEMENT_UNKNOWN_ERR(_name) \
+    ELEMENT_ERR("unknown element \"%s\"", _name)
+
+#define ELEMENT_ERR_CLNP(_fmt, _args...) \
+    do {                                    \
+        ELEMENT_ERR(_fmt, ##_args);         \
+        goto cleanup;                       \
+    } while (0)
+
+#define ELEMENT_UNKNOWN_ERR_CLNP(_name) \
+    do {                                \
+        ELEMENT_UNKNOWN_ERR(_name);     \
+        goto cleanup;                   \
+    } while (0)
+
+#define ELEMENT_PROP_RETR_ERR_CLNP(_name) \
+    ELEMENT_ERR_CLNP("failed to retrieve attribute \"%s\" value", _name)
+
+#define ELEMENT_PROP_PRSE_ERR_CLNP(_name) \
+    ELEMENT_ERR_CLNP("failed to parse attribute \"%s\" value", _name)
+
+#define ELEMENT_CONTENT_RETR_ERR_CLNP(_name) \
+    ELEMENT_ERR_CLNP("failed to retrieve \"%s\" element content", _name)
+
+#define ELEMENT_CONTENT_PRSE_ERR_CLNP(_name) \
+    ELEMENT_ERR_CLNP("failed to parse \"%s\" element content", _name)
+
+#define ELEMENT_ITEM_INVALID_ERR_CLNP(_name) \
+    ELEMENT_ERR_CLNP("element \"%s\" represents an invalid item", _name)
 
 /** Element processing result code */
 typedef enum xml_src_element_rc {
@@ -103,9 +136,9 @@ typedef xml_src_element_rc xml_src_element_fn(hidrd_xml_src_inst   *xml_src,
     do {                                                        \
         _name##_str = (char *)xmlGetProp(e, BAD_CAST #_name);   \
         if (_name##_str == NULL)                                \
-            goto cleanup;                                       \
+            ELEMENT_PROP_RETR_ERR_CLNP(#_name);                 \
         if (!hidrd_##_type##_from_##_repr(&_name, _name##_str)) \
-            goto cleanup;                                       \
+            ELEMENT_PROP_PRSE_ERR_CLNP(#_name);                 \
     } while (0)
 
 /**
@@ -122,10 +155,10 @@ typedef xml_src_element_rc xml_src_element_fn(hidrd_xml_src_inst   *xml_src,
     do {                                                            \
         _name##_str = (char *)xmlGetProp(e, BAD_CAST #_name);       \
         if (_name##_str == NULL)                                    \
-            goto cleanup;                                           \
+            ELEMENT_PROP_RETR_ERR_CLNP(#_name);                     \
         if (!HIDRD_NUM_FROM_ALT_STR2(_type, &_name, _name##_str,    \
                                      _repr1, _repr2))               \
-            goto cleanup;                                           \
+            ELEMENT_PROP_PRSE_ERR_CLNP(#_name);                     \
     } while (0)
 
 /**

@@ -75,19 +75,18 @@ static bool parse_bitmap_element(uint32_t                  *pbitmap,
 
         data_str = (char *)xmlNodeGetContent(e);
         if (data_str == NULL)
-            goto cleanup;
+            ELEMENT_CONTENT_RETR_ERR_CLNP((const char *)e->name);
         if (hidrd_str_isblank(data_str))
             data = true;
         else if (!hidrd_bool_from_str(&data, data_str))
-            goto cleanup;
+            ELEMENT_CONTENT_PRSE_ERR_CLNP((const char *)e->name);
         xmlFree(data_str);
         data_str = NULL;
 
         for (matched = false; !matched; i++)
         {
             if (i > 31)
-                /* Unkown element name */
-                goto cleanup;
+                ELEMENT_UNKNOWN_ERR_CLNP(e->name);
             if (bmd[i] != NULL &&
                 strcmp(bmd[i]->off, (const char *)e->name) == 0)
                 bitmap = HIDRD_BIT_SET(bitmap, i, !data);

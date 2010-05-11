@@ -26,63 +26,76 @@
 
 #include "src/element.h"
 #include "hidrd/fmt/xml/src.h"
+#include "../xml.h"
 
 
 static bool
-init(hidrd_src *src)
+init(hidrd_src *src, char **perr)
 {
+    bool                    result  = false;
     hidrd_xml_src_inst     *xml_src = (hidrd_xml_src_inst *)src;
     hidrd_xml_src_state    *state   = NULL;
     xmlDocPtr               doc     = NULL;
     xmlNodePtr              root;
 
+    XML_ERR_FUNC_BACKUP_DECL;
+
+    if (perr != NULL)
+        *perr = strdup("");
+
+    XML_ERR_FUNC_SET(perr);
+
     /* Create item state table stack */
     state = malloc(sizeof(*state));
     if (state == NULL)
-        goto failure;
+        XML_ERR_CLNP("failed to allocate memory for the state table");
     state->prev         = NULL;
     state->usage_page   = HIDRD_USAGE_PAGE_UNDEFINED;
 
     /* Parse the document */
     doc = xmlParseMemory(src->buf, src->size);
     if (doc == NULL)
-        goto failure;
+        goto cleanup;
 
     /* TODO XML schema validation with xmlSchemaValidateDoc */
 
     /* Retrieve the root element */
     root = xmlDocGetRootElement(doc);
     if (root == NULL)
-        goto failure;
+        XML_ERR_CLNP("root element not found");
 
     /* Initialize the source */
     xml_src->doc    = doc;
     xml_src->prnt   = NULL;
     xml_src->cur    = root;
     xml_src->state  = state;
+    xml_src->err    = strdup("");
 
     /* Own the resources */
     doc = NULL;
     state = NULL;
 
-    return true;
+    /* Success */
+    result = true;
 
-failure:
+cleanup:
 
     if (doc != NULL)
         xmlFreeDoc(doc);
 
     free(state);
 
-    return false;
+    XML_ERR_FUNC_RESTORE;
+
+    return result;
 }
 
 
 static bool
-hidrd_xml_src_init(hidrd_src *src, va_list ap)
+hidrd_xml_src_init(hidrd_src *src, char **perr, va_list ap)
 {
     (void)ap;
-    return init(src);
+    return init(src, perr);
 }
 
 
@@ -97,12 +110,31 @@ hidrd_xml_src_valid(const hidrd_src *src)
            (xml_src->prnt != NULL || xml_src->cur != NULL);
 }
 
+
+static char *
+hidrd_xml_src_errmsg(const hidrd_src *src)
+{
+    const hidrd_xml_src_inst   *xml_src    =
+                                    (const hidrd_xml_src_inst *)src;
+
+    return strdup(xml_src->err);
+}
+
+
 static const hidrd_item *
 hidrd_xml_src_get(hidrd_src *src)
 {
+    const hidrd_item   *result      = NULL;
     hidrd_xml_src_inst *xml_src     = (hidrd_xml_src_inst *)src;
     xml_src_element_rc  rc;
     bool                enter;
+
+    XML_ERR_FUNC_BACKUP_DECL;
+
+    free(xml_src->err);
+    xml_src->err = strdup("");
+
+    XML_ERR_FUNC_SET(&xml_src->err);
 
     do {
         /*
@@ -135,9 +167,11 @@ hidrd_xml_src_get(hidrd_src *src)
                 }
                 /* If we have something to return */
                 if (rc != XML_SRC_ELEMENT_RC_NONE)
-                    return (rc == XML_SRC_ELEMENT_RC_ITEM)
-                        ? hidrd_item_validate(xml_src->item)
-                        : NULL;
+                {
+                    if (rc == XML_SRC_ELEMENT_RC_ITEM)
+                        result = hidrd_item_validate(xml_src->item);
+                    goto cleanup;
+                }
             }
 
             /* If this node is an element */
@@ -169,9 +203,14 @@ hidrd_xml_src_get(hidrd_src *src)
         }
     } while (rc == XML_SRC_ELEMENT_RC_NONE); /* While nothing to return */
 
-    return (rc == XML_SRC_ELEMENT_RC_ITEM)
-                ? hidrd_item_validate(xml_src->item)
-                : NULL;
+    if (rc == XML_SRC_ELEMENT_RC_ITEM)
+        result = hidrd_item_validate(xml_src->item);
+
+cleanup:
+
+    XML_ERR_FUNC_RESTORE;
+
+    return result;
 }
 
 
@@ -181,6 +220,10 @@ hidrd_xml_src_clnp(hidrd_src *src)
     hidrd_xml_src_inst    *xml_src    = (hidrd_xml_src_inst *)src;
     hidrd_xml_src_state   *state;
     hidrd_xml_src_state   *prev_state;
+
+    /* Free the error message */
+    free(xml_src->err);
+    xml_src->err = NULL;
 
     /* Free the document, if there is any */
     if (xml_src->doc != NULL)
@@ -203,6 +246,7 @@ const hidrd_src_type hidrd_xml_src = {
     .size       = sizeof(hidrd_xml_src_inst),
     .init       = hidrd_xml_src_init,
     .valid      = hidrd_xml_src_valid,
+    .errmsg     = hidrd_xml_src_errmsg,
     .get        = hidrd_xml_src_get,
     .clnp       = hidrd_xml_src_clnp,
 };

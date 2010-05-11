@@ -148,44 +148,64 @@ const item_desc item_list[] = {
 };
 
 
+#define ERR(_fmt, _args...) fprintf(stderr, _fmt "\n", ##_args)
+
+#define ERR_CLNP(_fmt, _args...) \
+    do {                            \
+        ERR(_fmt, ##_args);         \
+        goto cleanup;               \
+    } while (0)
+
 int
 main(int argc, char **argv)
 {
+    bool                result          = 1;
     const item_desc    *orig_item;
 
-    hidrd_snk          *snk            = NULL;
+    hidrd_snk          *snk             = NULL;
     char               *test_xml_buf    = NULL;
     size_t              test_xml_len    = 0;
+    char               *err             = NULL;
 
     (void)argc;
     (void)argv;
 
     if (!hidrd_fmt_init(&hidrd_xml))
-        error(1, 0, "Failed to initialize XML format support");
+        ERR_CLNP("Failed to initialize XML format support");
 
     /*
      * Write report descriptor to an XML sink
      */
-    snk = hidrd_snk_new(hidrd_xml.snk,
+    snk = hidrd_snk_new(hidrd_xml.snk, &err,
                         (void **)&test_xml_buf, &test_xml_len, true);
     if (snk == NULL)
-        error(1, errno, "Failed to create XML sink");
+        ERR_CLNP("Failed to create XML sink:\n%s\n", err);
+    free(err);
+    err = NULL;
 
     for (orig_item = item_list; orig_item->len != 0; orig_item++)
         if (!hidrd_snk_put(snk, orig_item->buf))
-            error(1, errno, "Failed to put item #%zu",
-                  (orig_item - item_list));
+            ERR_CLNP("Failed to put item #%zu:\n%s\n",
+                     (orig_item - item_list),
+                     (err = hidrd_snk_errmsg(snk)));
 
     if (!hidrd_snk_close(snk))
-        error(1, 0, "Failed to close the test sink");
+        ERR_CLNP("Failed to close the test sink:\n%s\n",
+                 (err = hidrd_snk_errmsg(snk)));
+    snk = NULL;
 
     fprintf(stderr, "%.*s", (int)test_xml_len, test_xml_buf);
 
-    free(test_xml_buf);
+    result = 0;
 
+cleanup:
+
+    free(err); 
+    free(test_xml_buf);
+    hidrd_snk_delete(snk);
     hidrd_fmt_clnp(&hidrd_xml);
 
-    return 0;
+    return result;
 }
 
 

@@ -37,7 +37,10 @@ xml_src_element_push_state(hidrd_xml_src_inst *xml_src)
 
     new_state = malloc(sizeof(*new_state));
     if (new_state == NULL)
+    {
+        ELEMENT_ERR("failed to allocate a state table");
         return false;
+    }
 
     memcpy(new_state, xml_src->state, sizeof(*new_state));
     new_state->prev = xml_src->state;
@@ -79,17 +82,17 @@ static ELEMENT(basic)
 
     data_str = (char *)xmlNodeGetContent(e);
     if (data_str == NULL)
-        goto cleanup;
+        ELEMENT_CONTENT_RETR_ERR_CLNP("basic");
     memset(item + HIDRD_ITEM_BASIC_MIN_SIZE, 0,
            (HIDRD_ITEM_BASIC_MAX_SIZE - HIDRD_ITEM_BASIC_MIN_SIZE));
     if (!hidrd_hex_buf_from_str(item + HIDRD_ITEM_BASIC_MIN_SIZE,
                                 (HIDRD_ITEM_BASIC_MAX_SIZE -
                                  HIDRD_ITEM_BASIC_MIN_SIZE),
                                 NULL, data_str))
-        goto cleanup;
+        ELEMENT_CONTENT_PRSE_ERR_CLNP("basic");
 
     if (!hidrd_item_valid(item))
-        goto cleanup;
+        ELEMENT_ITEM_INVALID_ERR_CLNP("basic");
 
     result_rc = XML_SRC_ELEMENT_RC_ITEM;
 
@@ -119,19 +122,19 @@ static ELEMENT(short)
 
     data_str = (char *)xmlNodeGetContent(e);
     if (data_str == NULL)
-        goto cleanup;
+        ELEMENT_CONTENT_RETR_ERR_CLNP("short");
     memset(hidrd_item_short_get_data(item), 0,
            HIDRD_ITEM_SHORT_DATA_BYTES_MAX);
     if (!hidrd_hex_buf_from_str(hidrd_item_short_get_data(item),
                                 HIDRD_ITEM_SHORT_DATA_BYTES_MAX,
                                 &data_len, data_str))
-        goto cleanup;
+        ELEMENT_CONTENT_PRSE_ERR_CLNP("short");
 
     hidrd_item_short_set_data_size(
             item, hidrd_item_short_data_size_from_bytes(data_len));
 
     if (!hidrd_item_valid(item))
-        goto cleanup;
+        ELEMENT_ITEM_INVALID_ERR_CLNP("short");
 
     result_rc = XML_SRC_ELEMENT_RC_ITEM;
 
@@ -158,19 +161,19 @@ static ELEMENT(main)
 
     data_str = (char *)xmlNodeGetContent(e);
     if (data_str == NULL)
-        goto cleanup;
+        ELEMENT_CONTENT_RETR_ERR_CLNP("main");
     memset(hidrd_item_short_get_data(item), 0,
            HIDRD_ITEM_SHORT_DATA_BYTES_MAX);
     if (!hidrd_hex_buf_from_str(hidrd_item_short_get_data(item),
                                 HIDRD_ITEM_SHORT_DATA_BYTES_MAX,
                                 &data_len, data_str))
-        goto cleanup;
+        ELEMENT_CONTENT_PRSE_ERR_CLNP("main");
 
     hidrd_item_short_set_data_size(
             item, hidrd_item_short_data_size_from_bytes(data_len));
 
     if (!hidrd_item_valid(item))
-        goto cleanup;
+        ELEMENT_ITEM_INVALID_ERR_CLNP("main");
 
     result_rc = XML_SRC_ELEMENT_RC_ITEM;
 
@@ -196,19 +199,19 @@ static ELEMENT(global)
 
     data_str = (char *)xmlNodeGetContent(e);
     if (data_str == NULL)
-        goto cleanup;
+        ELEMENT_CONTENT_RETR_ERR_CLNP("global");
     memset(hidrd_item_short_get_data(item), 0,
            HIDRD_ITEM_SHORT_DATA_BYTES_MAX);
     if (!hidrd_hex_buf_from_str(hidrd_item_short_get_data(item),
                                 HIDRD_ITEM_SHORT_DATA_BYTES_MAX,
                                 &data_len, data_str))
-        goto cleanup;
+        ELEMENT_CONTENT_PRSE_ERR_CLNP("global");
 
     hidrd_item_short_set_data_size(
             item, hidrd_item_short_data_size_from_bytes(data_len));
 
     if (!hidrd_item_valid(item))
-        goto cleanup;
+        ELEMENT_ITEM_INVALID_ERR_CLNP("global");
 
     result_rc = XML_SRC_ELEMENT_RC_ITEM;
 
@@ -228,9 +231,9 @@ static ELEMENT(usage_page)
 
     value_str = (char *)xmlNodeGetContent(e);
     if (value_str == NULL)
-        goto cleanup;
+        ELEMENT_CONTENT_RETR_ERR_CLNP("usage_page");
     if (!HIDRD_NUM_FROM_ALT_STR2(usage_page, &value, value_str, token, hex))
-        goto cleanup;
+        ELEMENT_CONTENT_PRSE_ERR_CLNP("usage_page");
 
     xml_src->state->usage_page = value;
 
@@ -298,19 +301,19 @@ static ELEMENT(local)
 
     data_str = (char *)xmlNodeGetContent(e);
     if (data_str == NULL)
-        goto cleanup;
+        ELEMENT_CONTENT_RETR_ERR_CLNP("local");
     memset(hidrd_item_short_get_data(item), 0,
            HIDRD_ITEM_SHORT_DATA_BYTES_MAX);
     if (!hidrd_hex_buf_from_str(hidrd_item_short_get_data(item),
                                 HIDRD_ITEM_SHORT_DATA_BYTES_MAX,
                                 &data_len, data_str))
-        goto cleanup;
+        ELEMENT_CONTENT_PRSE_ERR_CLNP("local");
 
     hidrd_item_short_set_data_size(
             item, hidrd_item_short_data_size_from_bytes(data_len));
 
     if (!hidrd_item_valid(item))
-        goto cleanup;
+        ELEMENT_ITEM_INVALID_ERR_CLNP("local");
 
     result_rc = XML_SRC_ELEMENT_RC_ITEM;
 
@@ -381,9 +384,9 @@ static ELEMENT_EXIT(COLLECTION)
                                                                         \
         value_str = (char *)xmlNodeGetContent(e);                       \
         if (value_str == NULL)                                          \
-            goto cleanup;                                               \
+            ELEMENT_CONTENT_RETR_ERR_CLNP(#_name);                      \
         if (!HIDRD_DEC_FROM_STR(_t, &value, value_str))                 \
-            goto cleanup;                                               \
+            ELEMENT_CONTENT_PRSE_ERR_CLNP(#_name);                      \
                                                                         \
         hidrd_item_##_name##_init(item, value);                         \
                                                                         \
@@ -414,10 +417,10 @@ static NUM_ELEMENT(report_id,          u8)
                                                                         \
         value_str = (char *)xmlNodeGetContent(e);                       \
         if (value_str == NULL)                                          \
-            goto cleanup;                                               \
+            ELEMENT_CONTENT_RETR_ERR_CLNP(#_name);                      \
         if (!HIDRD_NUM_FROM_ALT_STR2(usage, &value, value_str,          \
                                      token, hex))                       \
-            goto cleanup;                                               \
+            ELEMENT_CONTENT_PRSE_ERR_CLNP(#_name);                      \
                                                                         \
         if (xml_src->state->usage_page != HIDRD_USAGE_PAGE_UNDEFINED && \
             hidrd_usage_get_page(value) == xml_src->state->usage_page)  \
@@ -494,18 +497,18 @@ static ELEMENT(long)
 
     data_str = (char *)xmlNodeGetContent(e);
     if (data_str == NULL)
-        goto cleanup;
+        ELEMENT_CONTENT_RETR_ERR_CLNP("long");
     memset(hidrd_item_long_get_data(item), 0,
            HIDRD_ITEM_LONG_DATA_SIZE_MAX);
     if (!hidrd_hex_buf_from_str(hidrd_item_long_get_data(item),
                                 HIDRD_ITEM_LONG_DATA_SIZE_MAX,
                                 &data_len, data_str))
-        goto cleanup;
+        ELEMENT_CONTENT_PRSE_ERR_CLNP("long");
 
     hidrd_item_long_set_data_size(item, data_len);
 
     if (!hidrd_item_valid(item))
-        goto cleanup;
+        ELEMENT_ITEM_INVALID_ERR_CLNP("long");
 
     result_rc = XML_SRC_ELEMENT_RC_ITEM;
 
@@ -625,6 +628,8 @@ xml_src_element(hidrd_xml_src_inst *xml_src, bool *penter)
         }
     }
 
+    ELEMENT_UNKNOWN_ERR(name);
+
     return XML_SRC_ELEMENT_RC_ERROR;
 }
 
@@ -656,6 +661,10 @@ xml_src_element_exit(hidrd_xml_src_inst *xml_src)
                                            xml_src->item, xml_src->prnt);
         }
     }
+
+    assert(!"Exiting an element without an exit handler");
+
+    ELEMENT_UNKNOWN_ERR(name);
 
     return XML_SRC_ELEMENT_RC_ERROR;
 }

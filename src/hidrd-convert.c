@@ -211,6 +211,8 @@ process(const char *input_name,
 
     const hidrd_item   *item;
 
+    char               *err             = NULL;
+
     assert(input_name != NULL);
     assert(*input_name != '\0');
     assert(input_fmt_name != NULL);
@@ -313,20 +315,25 @@ process(const char *input_name,
     /*
      * Open input and output streams
      */
-    input = hidrd_src_new_opts(input_fmt->src,
+    input = hidrd_src_new_opts(input_fmt->src, &err,
                                input_buf, input_size, input_options);
     if (input == NULL)
     {
-        fprintf(stderr, "Failed to open input stream\n");
+        fprintf(stderr, "Failed to open input stream:\n%s\n", err);
         goto cleanup;
     }
-    output = hidrd_snk_new_opts(output_fmt->snk,
+    free(err);
+    err = NULL;
+
+    output = hidrd_snk_new_opts(output_fmt->snk, &err,
                                 &output_buf, &output_size, output_options);
     if (output == NULL)
     {
-        fprintf(stderr, "Failed to open output stream\n");
+        fprintf(stderr, "Failed to open output stream:\n%s\n", err);
         goto cleanup;
     }
+    free(err);
+    err = NULL;
 
     /*
      * Transfer the stream
@@ -334,12 +341,14 @@ process(const char *input_name,
     while ((item = hidrd_src_get(input)) != NULL)
         if (!hidrd_snk_put(output, item))
         {
-            fprintf(stderr, "Failed to write output stream\n");
+            fprintf(stderr, "Failed to write output stream:\n%s\n",
+                    (err = hidrd_snk_errmsg(output)));
             goto cleanup;
         }
     if (hidrd_src_error(input))
     {
-        fprintf(stderr, "Failed to read input stream\n");
+        fprintf(stderr, "Failed to read input stream:\n%s\n",
+                (err = hidrd_src_errmsg(input)));
         goto cleanup;
     }
 
@@ -350,7 +359,8 @@ process(const char *input_name,
     input = NULL;
     if (!hidrd_snk_close(output))
     {
-        fprintf(stderr, "Failed to close output stream\n");
+        fprintf(stderr, "Failed to close output stream:\n%s\n",
+                (err = hidrd_snk_errmsg(output)));
         goto cleanup;
     }
     output = NULL;
@@ -369,6 +379,8 @@ process(const char *input_name,
     result = 0;
 
 cleanup:
+
+    free(err);
 
     hidrd_src_delete(input);
     hidrd_snk_delete(output);

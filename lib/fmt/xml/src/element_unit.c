@@ -66,19 +66,18 @@ parse_unit_system_element(hidrd_unit               *punit,
         for (matched = false; !matched; i++)
         {
             if (i > sizeof(unit_system_desc) / sizeof(*usd))
-                /* Unknown element name */
-                goto cleanup;
+                ELEMENT_UNKNOWN_ERR_CLNP((const char *)e->name);
 
             if (strcmp(usd[i], (const char *)e->name) != 0)
                 continue;
 
             exp_str = (char *)xmlNodeGetContent(e);
             if (exp_str == NULL)
-                goto cleanup;
+                ELEMENT_CONTENT_RETR_ERR_CLNP((const char *)e->name);
             if (hidrd_str_isblank(exp_str))
                 exp = HIDRD_UNIT_EXP_1;
             else if (!hidrd_unit_exp_from_dec(&exp, exp_str))
-                goto cleanup;
+                ELEMENT_CONTENT_PRSE_ERR_CLNP((const char *)e->name);
             xmlFree(exp_str);
             exp_str = NULL;
 
@@ -176,10 +175,10 @@ parse_unit_value_element(hidrd_unit *punit, xmlNodePtr e)
 
     data_str = (char *)xmlNodeGetContent(e);
     if (data_str == NULL)
-        goto cleanup;
+        ELEMENT_CONTENT_RETR_ERR_CLNP((const char *)e->name);
     if (!hidrd_hex_buf_from_str(&unit, sizeof(unit),
                                 NULL, data_str))
-        goto cleanup;
+        ELEMENT_CONTENT_PRSE_ERR_CLNP((const char *)e->name);
 
     if (punit != NULL)
         *punit = hidrd_num_u32_from_le(&unit);
@@ -206,7 +205,10 @@ ELEMENT(unit)
          e = e->next);
     /* If none */
     if (e == NULL)
+    {
+        ELEMENT_ERR("\"unit\" element has no children");
         return XML_SRC_ELEMENT_RC_ERROR;
+    }
 
 #define MATCH(_name) (strcmp((const char *)e->name, #_name) == 0)
     if (MATCH(none))
@@ -239,6 +241,8 @@ ELEMENT(unit)
 #undef MAP
 #undef MATCH
 
+    ELEMENT_ERR("unknown \"unit\" element child \"%s\"",
+                (const char *)e->name);
     return XML_SRC_ELEMENT_RC_ERROR;
 
 finish:
@@ -249,7 +253,11 @@ finish:
          e = e->next);
     /* If any */
     if (e != NULL)
+    {
+        ELEMENT_ERR("extra \"unit\" element child: \"%s\"",
+                    (const char *)e->name);
         return XML_SRC_ELEMENT_RC_ERROR;
+    }
 
     hidrd_item_unit_init(item, unit);
 

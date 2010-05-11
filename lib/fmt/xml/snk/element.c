@@ -55,9 +55,9 @@ xml_snk_element_new(hidrd_xml_snk_inst        *xml_snk,
 
 bool
 xml_snk_element_set_attrpv(hidrd_xml_snk_inst  *xml_snk,
-                           const char           *name,
-                           hidrd_fmt_type        fmt,
-                           va_list              *pap)
+                           const char          *name,
+                           hidrd_fmt_type       fmt,
+                           va_list             *pap)
 {
     char       *value;
     xmlAttrPtr  attr;
@@ -65,7 +65,11 @@ xml_snk_element_set_attrpv(hidrd_xml_snk_inst  *xml_snk,
     assert(xml_snk->cur != NULL);
 
     if (!hidrd_fmtpva(&value, fmt, pap))
+    {
+        XML_ERR("failed to format \"%s\" element \"%s\" attribute value",
+                (const char *)xml_snk->cur->name, name);
         return false;
+    }
 
     attr = xmlSetProp(xml_snk->cur, BAD_CAST name, BAD_CAST value);
 
@@ -85,7 +89,11 @@ xml_snk_element_add_contentpv(hidrd_xml_snk_inst   *xml_snk,
     assert(xml_snk->cur != NULL);
 
     if (!hidrd_fmtpva(&content, fmt, pap))
+    {
+        XML_ERR("failed to format \"%s\" element content",
+                (const char *)xml_snk->cur->name);
         return false;
+    }
 
     xmlNodeAddContent(xml_snk->cur, BAD_CAST content);
 
@@ -106,7 +114,11 @@ xml_snk_element_add_commentpv(hidrd_xml_snk_inst   *xml_snk,
     assert(xml_snk->cur != NULL);
 
     if (!hidrd_fmtpva(&content, fmt, pap))
+    {
+        XML_ERR("failed to format \"%s\" element comment",
+                (const char *)xml_snk->cur->name);
         return false;
+    }
 
     comment = xmlNewDocComment(xml_snk->doc, BAD_CAST content);
     free(content);
@@ -132,9 +144,9 @@ xml_snk_element_commit(hidrd_xml_snk_inst *xml_snk,
 
 bool
 xml_snk_element_addpv(hidrd_xml_snk_inst   *xml_snk,
-                      bool                   container,
-                      const char            *name,
-                      va_list               *pap)
+                      bool                  container,
+                      const char           *name,
+                      va_list              *pap)
 {
     bool    success = true;
     bool    end     = false;
@@ -190,6 +202,7 @@ xml_snk_element_addpv(hidrd_xml_snk_inst   *xml_snk,
 
             default:
                 assert(!"Unknown node type");
+                XML_ERR("unknown element node type %u", nt);
                 success = false;
                 break;
         }
@@ -228,6 +241,7 @@ xml_snk_element_addpv(hidrd_xml_snk_inst   *xml_snk,
 
             default:
                 assert(!"Unknown node type");
+                XML_ERR("\nunknown element node type %u", nt);
                 return false;
         }
     }

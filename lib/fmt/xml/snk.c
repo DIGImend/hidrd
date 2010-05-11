@@ -28,47 +28,56 @@
 #include "hidrd/fmt/xml/snk.h"
 #include "snk/group.h"
 #include "snk/item.h"
+#include "../xml.h"
 
 
 static bool
-init(hidrd_snk *snk, bool format)
+init(hidrd_snk *snk, char **perr, bool format)
 {
+    bool                    result  = false;
     hidrd_xml_snk_inst     *xml_snk = (hidrd_xml_snk_inst *)snk;
     hidrd_xml_snk_state    *state   = NULL;
     xmlDocPtr               doc     = NULL;
     xmlNodePtr              root    = NULL;
 
+    XML_ERR_FUNC_BACKUP_DECL;
+
+    if (perr != NULL)
+        *perr = strdup("");
+
+    XML_ERR_FUNC_SET(perr);
+
     /* Create item state table stack */
     state = malloc(sizeof(*state));
     if (state == NULL)
-        goto failure;
+        XML_ERR_CLNP("failed to allocate memory for the state table");
     state->prev         = NULL;
     state->usage_page   = HIDRD_USAGE_PAGE_UNDEFINED;
 
     /* Create the document */
     doc = xmlNewDoc(BAD_CAST "1.0");
     if (doc == NULL)
-        goto failure;
+        goto cleanup;
 
     /* Create root node */
     root = xmlNewNode(NULL, BAD_CAST "descriptor");
     if (root == NULL)
-        goto failure;
+        goto cleanup;
 
     /*
      * Set root node properties
      */
     if (xmlSetProp(root, BAD_CAST "xmlns",
                    BAD_CAST HIDRD_XML_PROP_NS) == NULL)
-        goto failure;
+        goto cleanup;
 
     if (xmlSetProp(root, BAD_CAST "xmlns:xsi",
                    BAD_CAST HIDRD_XML_PROP_NS_XSI) == NULL)
-        goto failure;
+        goto cleanup;
 
     if (xmlSetProp(root, BAD_CAST "xsi:schemaLocation",
                    BAD_CAST HIDRD_XML_PROP_XSI_SCHEMA_LOCATION) == NULL)
-        goto failure;
+        goto cleanup;
 
     /* Set root element */
     xmlDocSetRootElement(doc, root);
@@ -78,10 +87,15 @@ init(hidrd_snk *snk, bool format)
     xml_snk->state  = state;
     xml_snk->doc    = doc;
     xml_snk->prnt   = root;
+    xml_snk->err    = strdup("");
 
-    return true;
+    state   = NULL;
+    doc     = NULL;
+    root    = NULL;
 
-failure:
+    result = true;
+
+cleanup:
 
     xmlFreeNode(root);
 
@@ -91,16 +105,18 @@ failure:
     if (state != NULL)
         free(state);
 
-    return false;
+    XML_ERR_FUNC_RESTORE;
+
+    return result;
 }
 
 
 static bool
-hidrd_xml_snk_init(hidrd_snk *snk, va_list ap)
+hidrd_xml_snk_init(hidrd_snk *snk, char **perr, va_list ap)
 {
     bool    format  = (va_arg(ap, int) != 0);
 
-    return init(snk, format);
+    return init(snk, perr, format);
 }
 
 
@@ -117,9 +133,9 @@ static const hidrd_opt_spec hidrd_xml_snk_opts_spec[] = {
 };
 
 static bool
-hidrd_xml_snk_init_opts(hidrd_snk *snk, const hidrd_opt *list)
+hidrd_xml_snk_init_opts(hidrd_snk *snk, char **perr, const hidrd_opt *list)
 {
-    return init(snk, hidrd_opt_list_get_boolean(list, "format"));
+    return init(snk, perr, hidrd_opt_list_get_boolean(list, "format"));
 }
 #endif /* HIDRD_WITH_OPT */
 
@@ -136,6 +152,16 @@ hidrd_xml_snk_valid(const hidrd_snk *snk)
 }
 
 
+static char *
+hidrd_xml_snk_errmsg(const hidrd_snk *snk)
+{
+    const hidrd_xml_snk_inst   *xml_snk    =
+                                    (const hidrd_xml_snk_inst *)snk;
+
+    return strdup(xml_snk->err);
+}
+
+
 static bool
 hidrd_xml_snk_flush(hidrd_snk *snk)
 {
@@ -146,24 +172,31 @@ hidrd_xml_snk_flush(hidrd_snk *snk)
     void               *new_buf;
     size_t              new_size;
 
+    XML_ERR_FUNC_BACKUP_DECL;
+
+    free(xml_snk->err);
+    xml_snk->err = strdup("");
+
+    XML_ERR_FUNC_SET(&xml_snk->err);
+
     /* Break any unfinished groups */
     if (!xml_snk_group_break_branch(snk))
-        goto finish;
+        goto cleanup;
 
     /* Create an XML buffer */
     xml_buf = xmlBufferCreate();
     if (xml_buf == NULL)
-        goto finish;
+        goto cleanup;
 
     /* Create an XML output buffer from the generic buffer */
     xml_out_buf = xmlOutputBufferCreateBuffer(xml_buf, NULL);
     if (xml_out_buf == NULL)
-        goto finish;
+        goto cleanup;
 
     /* Format XML from the document */
     if (xmlSaveFormatFileTo(xml_out_buf, xml_snk->doc,
                             NULL, xml_snk->format) < 0)
-        goto finish;
+        goto cleanup;
     /* xml_out_buf is closed by xmlSaveFormatFileTo */
     xml_out_buf = NULL;
 
@@ -176,7 +209,7 @@ hidrd_xml_snk_flush(hidrd_snk *snk)
         /* Retension and update the buffer */
         new_buf = realloc(*snk->pbuf, new_size);
         if (new_size > 0 && new_buf == NULL)
-            goto finish;
+            XML_ERR_CLNP("failed to retension the output buffer");
         memcpy(new_buf, xmlBufferContent(xml_buf), new_size);
         /* Update the buffer pointer */
         *snk->pbuf = new_buf;
@@ -188,13 +221,15 @@ hidrd_xml_snk_flush(hidrd_snk *snk)
 
     result = true;
 
-finish:
+cleanup:
 
     if (xml_out_buf != NULL)
         xmlOutputBufferClose(xml_out_buf);
 
     if (xml_buf != NULL)
         xmlBufferFree(xml_buf);
+
+    XML_ERR_FUNC_RESTORE;
 
     return result;
 }
@@ -206,6 +241,10 @@ hidrd_xml_snk_clnp(hidrd_snk *snk)
     hidrd_xml_snk_inst    *xml_snk    = (hidrd_xml_snk_inst *)snk;
     hidrd_xml_snk_state   *state;
     hidrd_xml_snk_state   *prev_state;
+
+    /* Free the error message */
+    free(xml_snk->err);
+    xml_snk->err = NULL;
 
     /* Free the document, if there is any */
     if (xml_snk->doc != NULL)
@@ -227,9 +266,21 @@ hidrd_xml_snk_clnp(hidrd_snk *snk)
 static bool
 hidrd_xml_snk_put(hidrd_snk *snk, const hidrd_item *item)
 {
+    bool                result;
     hidrd_xml_snk_inst *xml_snk = (hidrd_xml_snk_inst *)snk;
 
-    return xml_snk_item_basic(xml_snk, item);
+    XML_ERR_FUNC_BACKUP_DECL;
+
+    free(xml_snk->err);
+    xml_snk->err = strdup("");
+
+    XML_ERR_FUNC_SET(&xml_snk->err);
+
+    result = xml_snk_item_basic(xml_snk, item);
+
+    XML_ERR_FUNC_RESTORE;
+
+    return result;
 }
 
 
@@ -241,6 +292,7 @@ const hidrd_snk_type hidrd_xml_snk = {
     .opts_spec  = hidrd_xml_snk_opts_spec,
 #endif
     .valid      = hidrd_xml_snk_valid,
+    .errmsg     = hidrd_xml_snk_errmsg,
     .put        = hidrd_xml_snk_put,
     .flush      = hidrd_xml_snk_flush,
     .clnp       = hidrd_xml_snk_clnp,
