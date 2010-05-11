@@ -24,6 +24,8 @@
 set -e -u -o pipefail
 shopt -s nullglob
 
+WRAPPER=${HIDRD_READ_TEST_WRAPPER:-}
+
 function hexdump_col ()
 {
     hexdump -v -e '1/1 "%.2X\n"' "$@"
@@ -53,7 +55,7 @@ function run ()
         local test_output_size
         local max_size
 
-        "$cmd" "$format" "$options" "$input" "$test_output"
+        $WRAPPER "$cmd" "$format" "$options" "$input" "$test_output"
 
         output_size=`stat -c %s "$output"`
         test_output_size=`stat -c %s "$test_output"`

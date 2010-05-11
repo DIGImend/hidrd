@@ -24,6 +24,8 @@
 set -e -u -o pipefail
 shopt -s nullglob
 
+WRAPPER=${HIDRD_READ_TEST_WRAPPER:-}
+
 function run ()
 {
     local cmd="$1"; shift
@@ -46,7 +48,7 @@ function run ()
         local test_output_lines
         local max_lines
 
-        "$cmd" "$format" "$options" "$input" "$test_output"
+        $WRAPPER "$cmd" "$format" "$options" "$input" "$test_output"
 
         output_lines=`wc -l < "$output"`
         test_output_lines=`wc -l < "$test_output"`
