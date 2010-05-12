@@ -28,6 +28,7 @@
 #define __XML_H__
 
 #include <libxml/globals.h>
+#include "config.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -35,16 +36,32 @@ extern "C" {
 
 extern void xml_error(void *ctx, const char *fmt, ...);
 
+#if HAVE_DECL_XMLSTRUCTUREDERRORCONTEXT
 #define XML_ERR_FUNC_BACKUP_DECL \
     xmlGenericErrorFunc     xmlGEBackup  = xmlGenericError;             \
     void                   *xmlGECBackup = xmlGenericErrorContext;      \
     xmlStructuredErrorFunc  xmlSEBackup  = xmlStructuredError;          \
     void                   *xmlSECBackup = xmlStructuredErrorContext
+#else /* HAVE_DECL_XMLSTRUCTUREDERRORCONTEXT */
+/*
+ * Older versions of libxml2 use and set generic error context for
+ * structured errors.
+ */
+#define XML_ERR_FUNC_BACKUP_DECL \
+    xmlGenericErrorFunc     xmlGEBackup  = xmlGenericError;             \
+    void                   *xmlGECBackup = xmlGenericErrorContext;      \
+    xmlStructuredErrorFunc  xmlSEBackup  = xmlStructuredError;          \
+    void                   *xmlSECBackup = xmlGenericError
+#endif /* ! HAVE_DECL_XMLSTRUCTUREDERRORCONTEXT */
 
 #define XML_ERR_FUNC_SET(_ctx) \
-    do {                                            \
-        xmlSetStructuredErrorFunc(NULL, NULL);      \
-        xmlSetGenericErrorFunc(_ctx, xml_error);    \
+    do {                                                                \
+        /*                                                              \
+         * NOTE: the order of calls is important for the older libxml2, \
+         * which doesn't have separate structured error context.        \
+         */                                                             \
+        xmlSetStructuredErrorFunc(NULL, NULL);                          \
+        xmlSetGenericErrorFunc(_ctx, xml_error);                        \
     } while (0)
 
 #define XML_ERR_FUNC_RESTORE \

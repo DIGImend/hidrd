@@ -31,7 +31,7 @@ CFLAGS=$CFLAGS
 CFLAGS="-Os -Wall -Wextra -Werror $CFLAGS"
 ABS_SRCDIR=`cd ${srcdir} ; pwd`
 ABS_BUILDDIR=`pwd`
-CPPFLAGS="-I${ABS_BUILDDIR}/include -D_GNU_SOURCE -DNDEBUG $CPPFLAGS"
+CPPFLAGS="-I${ABS_BUILDDIR} -I${ABS_BUILDDIR}/include -D_GNU_SOURCE -DNDEBUG $CPPFLAGS"
 if test "$ABS_SRCDIR" != "$ABS_BUILDDIR"; then
     CPPFLAGS="-I${ABS_SRCDIR}/include $CPPFLAGS"
 fi
@@ -200,45 +200,24 @@ AM_CONDITIONAL([ENABLE_FMT_XML], [test "$enable_xml_format" = "yes"])
 AM_CONDITIONAL([ENABLE_FMT_SPEC], [test "$enable_spec_format" = "yes"])
 
 # Output features to preprocessor and compiler
-if test "$enable_debug" == "yes"; then
+if test "$enable_debug" = "yes"; then
     CPPFLAGS="$CPPFLAGS -UNDEBUG"
     CFLAGS="$CFLAGS -g -O0"
 fi
 
-if test "$enable_opt" == "yes"; then
-#    CPPFLAGS="$CPPFLAGS -DHIDRD_WITH_OPT"
-    AC_SUBST([ENABLE_OPT], 1)
-else
-    AC_SUBST([ENABLE_OPT], 0)
-fi
-
-if test "$enable_tokens" == "yes"; then
-#    CPPFLAGS="$CPPFLAGS -DHIDRD_WITH_TOKENS"
-    AC_SUBST([ENABLE_TOKENS], 1)
-else
-    AC_SUBST([ENABLE_TOKENS], 0)
-fi
-
-if test "$enable_names" == "yes"; then
-#    CPPFLAGS="$CPPFLAGS -DHIDRD_WITH_NAMES"
-    AC_SUBST([ENABLE_NAMES], 1)
-else
-    AC_SUBST([ENABLE_NAMES], 0)
-fi
-
-if test "$enable_xml_format" == "yes"; then
-#    CPPFLAGS="$CPPFLAGS -DHIDRD_FMT_WITH_XML"
-    AC_SUBST([ENABLE_XML_FORMAT], 1)
-else
-    AC_SUBST([ENABLE_XML_FORMAT], 0)
-fi
-
-if test "$enable_spec_format" == "yes"; then
-#    CPPFLAGS="$CPPFLAGS -DHIDRD_FMT_WITH_SPEC"
-    AC_SUBST([ENABLE_SPEC_FORMAT], 1)
-else
-    AC_SUBST([ENABLE_SPEC_FORMAT], 0)
-fi
+#
+# Output features to installed configuration headers
+#
+AC_SUBST([ENABLE_OPT],
+         `! test "$enable_opt" = "yes"; echo $?`)
+AC_SUBST([ENABLE_TOKENS],
+         `! test "$enable_tokens" = "yes"; echo $?`)
+AC_SUBST([ENABLE_NAMES],
+         `! test "$enable_names" = "yes"; echo $?`)
+AC_SUBST([ENABLE_XML_FORMAT],
+         `! test "$enable_xml_format" = "yes"; echo $?`)
+AC_SUBST([ENABLE_SPEC_FORMAT],
+         `! test "$enable_spec_format" = "yes"; echo $?`)
 
 #
 # Checks for header files.
@@ -247,6 +226,18 @@ fi
 #
 # Checks for typedefs, structures, and compiler characteristics.
 #
+
+#
+# Checks for declarations
+#
+if test -n "$XML2_CONFIG"; then
+    CFLAGS_BACKUP="$CFLAGS"
+    CFLAGS="$CFLAGS $LIBXML2_CFLAGS"
+    AC_CHECK_DECLS([xmlStructuredErrorContext], [], [],
+                   [[#include <libxml/globals.h>]])
+    CFLAGS="$CFLAGS_BACKUP"
+fi
+
 
 #
 # Checks for library functions.
