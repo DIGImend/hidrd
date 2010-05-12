@@ -57,6 +57,7 @@ dnl
 #ifndef __HIDRD_USAGE_ALL_H__
 #define __HIDRD_USAGE_ALL_H__
 
+#include "hidrd/cfg.h"
 #include "hidrd/util/num.h"
 #include "hidrd/usage/page.h"
 #include "hidrd/usage/id.h"

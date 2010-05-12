@@ -59,6 +59,7 @@ dnl
 
 #include <assert.h>
 #include <stdbool.h>
+#include "hidrd/cfg.h"
 
 #ifdef __cplusplus
 extern "C" {

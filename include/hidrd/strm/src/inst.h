@@ -27,6 +27,7 @@
 #ifndef __HIDRD_STRM_SRC_INST_H__
 #define __HIDRD_STRM_SRC_INST_H__
 
+#include "hidrd/cfg.h"
 #include "hidrd/strm/src/type.h"
 
 #ifdef __cplusplus

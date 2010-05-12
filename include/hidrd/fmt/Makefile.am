@@ -26,6 +26,9 @@ hidrd_fmt_HEADERS = \
     list.h          \
     natv.h
 
+nodist_hidrd_fmt_HEADERS = \
+    cfg.h
+
 if ENABLE_FMT_XML
 SUBDIRS += xml
 hidrd_fmt_HEADERS += xml.h

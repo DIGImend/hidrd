@@ -58,6 +58,7 @@ dnl
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include "hidrd/cfg.h"
 #include "hidrd/util/hex.h"
 #include "hidrd/util/str.h"
 #include "hidrd/util/tkn.h"

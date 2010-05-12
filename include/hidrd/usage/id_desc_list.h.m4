@@ -58,6 +58,7 @@ dnl
 #define __HIDRD_USAGE_ID_DESC_LIST_H__
 
 #include <stddef.h>
+#include "hidrd/cfg.h"
 #include "hidrd/usage/id_desc.h"
 
 #ifdef __cplusplus

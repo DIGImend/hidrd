@@ -24,6 +24,7 @@
  * @(#) $Id$
  */
 
+#include "hidrd/cfg.h"
 #include "hidrd/fmt/spec/snk.h"
 #include "snk/item.h"
 

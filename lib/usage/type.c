@@ -28,6 +28,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "hidrd/cfg.h"
 #include "hidrd/util/bit.h"
 #include "hidrd/usage/type.h"
 

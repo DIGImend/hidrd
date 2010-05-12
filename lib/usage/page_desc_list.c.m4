@@ -55,6 +55,7 @@ dnl
  */
 
 #include <strings.h>
+#include "hidrd/cfg.h"
 #include "hidrd/util/str.h"
 #include "hidrd/util/tkn.h"
 #include "hidrd/usage/id_desc_list.h"

@@ -29,6 +29,7 @@
 
 #include <assert.h>
 #include <stdarg.h>
+#include "hidrd/cfg.h"
 #include "hidrd/item.h"
 
 #ifdef HIDRD_WITH_OPT

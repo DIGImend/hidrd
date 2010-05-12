@@ -25,6 +25,7 @@
  */
 
 #include <stdio.h>
+#include "hidrd/cfg.h"
 #include "hidrd/opt/spec_list.h"
 #include "hidrd/strm/snk/inst.h"
 

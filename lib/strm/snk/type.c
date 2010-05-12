@@ -24,6 +24,7 @@
  * @(#) $Id$
  */
 
+#include "hidrd/cfg.h"
 #ifdef HIDRD_WITH_OPT
 #include "hidrd/opt/spec_list.h"
 #endif

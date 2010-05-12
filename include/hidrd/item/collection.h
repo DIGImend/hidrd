@@ -27,6 +27,7 @@
 #ifndef __HIDRD_ITEM_COLLECTION_H__
 #define __HIDRD_ITEM_COLLECTION_H__
 
+#include "hidrd/cfg.h"
 #include "hidrd/item/main.h"
 
 #ifdef __cplusplus

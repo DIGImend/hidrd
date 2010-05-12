@@ -57,6 +57,7 @@ dnl
 #ifndef __HIDRD_USAGE_PAGE_DESC_LIST_H__
 #define __HIDRD_USAGE_PAGE_DESC_LIST_H__
 
+#include "hidrd/cfg.h"
 #include "hidrd/usage/page_desc.h"
 
 #ifdef __cplusplus

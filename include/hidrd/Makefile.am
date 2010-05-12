@@ -24,6 +24,9 @@ hidrddir = $(includedir)/hidrd
 hidrd_HEADERS = \
     item.h
 
+nodist_hidrd_HEADERS = \
+    cfg.h
+
 if ENABLE_OPT
 SUBDIRS += opt
 hidrd_HEADERS += opt.h

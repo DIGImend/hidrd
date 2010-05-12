@@ -28,7 +28,7 @@
 #define __HIDRD_USAGE_PAGE_DESC_H__
 
 #include <stddef.h>
-
+#include "hidrd/cfg.h"
 #include "hidrd/usage/id_desc.h"
 #include "hidrd/usage/page.h"
 

@@ -206,23 +206,38 @@ if test "$enable_debug" == "yes"; then
 fi
 
 if test "$enable_opt" == "yes"; then
-    CPPFLAGS="$CPPFLAGS -DHIDRD_WITH_OPT"
+#    CPPFLAGS="$CPPFLAGS -DHIDRD_WITH_OPT"
+    AC_SUBST([ENABLE_OPT], 1)
+else
+    AC_SUBST([ENABLE_OPT], 0)
 fi
 
 if test "$enable_tokens" == "yes"; then
-    CPPFLAGS="$CPPFLAGS -DHIDRD_WITH_TOKENS"
+#    CPPFLAGS="$CPPFLAGS -DHIDRD_WITH_TOKENS"
+    AC_SUBST([ENABLE_TOKENS], 1)
+else
+    AC_SUBST([ENABLE_TOKENS], 0)
 fi
 
 if test "$enable_names" == "yes"; then
-    CPPFLAGS="$CPPFLAGS -DHIDRD_WITH_NAMES"
+#    CPPFLAGS="$CPPFLAGS -DHIDRD_WITH_NAMES"
+    AC_SUBST([ENABLE_NAMES], 1)
+else
+    AC_SUBST([ENABLE_NAMES], 0)
 fi
 
 if test "$enable_xml_format" == "yes"; then
-    CPPFLAGS="$CPPFLAGS -DHIDRD_FMT_WITH_XML"
+#    CPPFLAGS="$CPPFLAGS -DHIDRD_FMT_WITH_XML"
+    AC_SUBST([ENABLE_XML_FORMAT], 1)
+else
+    AC_SUBST([ENABLE_XML_FORMAT], 0)
 fi
 
 if test "$enable_spec_format" == "yes"; then
-    CPPFLAGS="$CPPFLAGS -DHIDRD_FMT_WITH_SPEC"
+#    CPPFLAGS="$CPPFLAGS -DHIDRD_FMT_WITH_SPEC"
+    AC_SUBST([ENABLE_SPEC_FORMAT], 1)
+else
+    AC_SUBST([ENABLE_SPEC_FORMAT], 0)
 fi
 
 #
@@ -250,6 +265,7 @@ AC_CONFIG_FILES([Makefile
 
                  include/Makefile
                  include/hidrd/Makefile
+                 include/hidrd/cfg.h
                  include/hidrd/util/Makefile
                  include/hidrd/item/Makefile
                  include/hidrd/item/pfx/Makefile
@@ -258,6 +274,7 @@ AC_CONFIG_FILES([Makefile
                  include/hidrd/strm/src/Makefile
                  include/hidrd/strm/snk/Makefile
                  include/hidrd/fmt/Makefile
+                 include/hidrd/fmt/cfg.h
                  include/hidrd/fmt/natv/Makefile
                  include/hidrd/fmt/xml/Makefile
                  include/hidrd/fmt/spec/Makefile

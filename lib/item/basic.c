@@ -26,6 +26,7 @@
 
 #include <string.h>
 #include <stdio.h>
+#include "hidrd/cfg.h"
 #include "hidrd/util/str.h"
 #include "hidrd/item/basic.h"
 
