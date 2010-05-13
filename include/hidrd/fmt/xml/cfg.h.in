@@ -1,7 +1,7 @@
 /*
  * @GENERATED_VIM_OPTS@
  *
- * *** DO NOT EDIT ********************
+ * ********** DO NOT EDIT *************
  * This file is generated from cfg.h.in
  * ************************************
  */
@@ -28,7 +28,7 @@
  *
  * @author Nikolai Kondrashov <spbnick@gmail.com>
  *
- * @(#) $Id: fmt.h 405 2010-05-03 20:53:36Z spb_nick $
+ * @(#) $Id$
  */
 
 #ifndef __HIDRD_FMT_XML_CFG_H__
