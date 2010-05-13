@@ -66,6 +66,29 @@ hidrd_natv_src_errmsg(const hidrd_src *src)
 }
 
 
+static size_t
+hidrd_natv_src_getpos(const hidrd_src *src)
+{
+    const hidrd_natv_src_inst  *natv_src    = (hidrd_natv_src_inst *)src;
+
+    return natv_src->pos;
+}
+
+
+static char *
+hidrd_natv_src_fmtpos(const hidrd_src *src, size_t pos)
+{
+    char   *str;
+
+    (void)src;
+
+    if (asprintf(&str, "offset %zu", pos) < 0)
+        return NULL;
+
+    return str;
+}
+
+
 static const hidrd_item *
 hidrd_natv_src_get(hidrd_src *src)
 {
@@ -102,6 +125,8 @@ hidrd_natv_src_get(hidrd_src *src)
 const hidrd_src_type hidrd_natv_src = {
     .size   = sizeof(hidrd_natv_src_inst),
     .valid  = hidrd_natv_src_valid,
+    .getpos = hidrd_natv_src_getpos,
+    .fmtpos = hidrd_natv_src_fmtpos,
     .errmsg = hidrd_natv_src_errmsg,
     .get    = hidrd_natv_src_get,
 };

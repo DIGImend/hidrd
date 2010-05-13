@@ -111,6 +111,31 @@ hidrd_xml_src_valid(const hidrd_src *src)
 }
 
 
+static size_t
+hidrd_xml_src_getpos(const hidrd_src *src)
+{
+    const hidrd_xml_src_inst   *xml_src = (hidrd_xml_src_inst *)src;
+
+    return xml_src->cur == NULL
+            ? xml_src->prnt->line
+            : xml_src->cur->line;
+}
+
+
+static char *
+hidrd_xml_src_fmtpos(const hidrd_src *src, size_t pos)
+{
+    char   *str;
+
+    (void)src;
+
+    if (asprintf(&str, "line %zu", pos) < 0)
+        return NULL;
+
+    return str;
+}
+
+
 static char *
 hidrd_xml_src_errmsg(const hidrd_src *src)
 {
@@ -246,6 +271,8 @@ const hidrd_src_type hidrd_xml_src = {
     .size       = sizeof(hidrd_xml_src_inst),
     .init       = hidrd_xml_src_init,
     .valid      = hidrd_xml_src_valid,
+    .getpos     = hidrd_xml_src_getpos,
+    .fmtpos     = hidrd_xml_src_fmtpos,
     .errmsg     = hidrd_xml_src_errmsg,
     .get        = hidrd_xml_src_get,
     .clnp       = hidrd_xml_src_clnp,

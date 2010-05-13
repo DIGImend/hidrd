@@ -212,6 +212,8 @@ process(const char *input_name,
     const hidrd_item   *item;
 
     char               *err             = NULL;
+    size_t              pos;
+    char               *posstr          = NULL;
 
     assert(input_name != NULL);
     assert(*input_name != '\0');
@@ -338,16 +340,19 @@ process(const char *input_name,
     /*
      * Transfer the stream
      */
-    while ((item = hidrd_src_get(input)) != NULL)
+    while (pos = hidrd_src_getpos(input),
+           ((item = hidrd_src_get(input)) != NULL))
         if (!hidrd_snk_put(output, item))
         {
             fprintf(stderr, "Failed to write output stream:\n%s\n",
                     (err = hidrd_snk_errmsg(output)));
             goto cleanup;
         }
+
     if (hidrd_src_error(input))
     {
-        fprintf(stderr, "Failed to read input stream:\n%s\n",
+        fprintf(stderr, "Failed to read input item at %s:\n%s\n",
+                (posstr = hidrd_src_fmtpos(input, pos)),
                 (err = hidrd_src_errmsg(input)));
         goto cleanup;
     }
@@ -380,6 +385,7 @@ process(const char *input_name,
 
 cleanup:
 
+    free(posstr);
     free(err);
 
     hidrd_src_delete(input);

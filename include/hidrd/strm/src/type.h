@@ -95,7 +95,7 @@ typedef bool hidrd_src_type_valid_fn(const hidrd_src  *src);
  *
  * @return Abstract position in the source instance stream.
  */
-typedef uint64_t hidrd_src_type_getpos_fn(const hidrd_src *src);
+typedef size_t hidrd_src_type_getpos_fn(const hidrd_src *src);
 
 /**
  * Prototype for a function used to format a human-readable description of
@@ -106,7 +106,7 @@ typedef uint64_t hidrd_src_type_getpos_fn(const hidrd_src *src);
  *
  * @return Dynamically allocated position description string.
  */
-typedef char *hidrd_src_type_fmtpos_fn(const hidrd_src *src, uint64_t pos);
+typedef char *hidrd_src_type_fmtpos_fn(const hidrd_src *src, size_t pos);
 
 /**
  * Prototype for a source instance error message retrieval function.

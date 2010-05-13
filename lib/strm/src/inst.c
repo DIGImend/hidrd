@@ -344,7 +344,7 @@ hidrd_src_new(const hidrd_src_type     *type,
 }
 
 
-uint64_t
+size_t
 hidrd_src_getpos(const hidrd_src *src)
 {
     assert(hidrd_src_valid(src));
@@ -356,7 +356,7 @@ hidrd_src_getpos(const hidrd_src *src)
 
 
 char *
-hidrd_src_fmtpos(const hidrd_src *src, uint64_t pos)
+hidrd_src_fmtpos(const hidrd_src *src, size_t pos)
 {
     assert(hidrd_src_valid(src));
 
