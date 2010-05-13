@@ -344,6 +344,28 @@ hidrd_src_new(const hidrd_src_type     *type,
 }
 
 
+uint64_t
+hidrd_src_getpos(const hidrd_src *src)
+{
+    assert(hidrd_src_valid(src));
+
+    return (src->type->getpos == NULL)
+            ? 0
+            : (*src->type->getpos)(src);
+}
+
+
+char *
+hidrd_src_fmtpos(const hidrd_src *src, uint64_t pos)
+{
+    assert(hidrd_src_valid(src));
+
+    return (src->type->fmtpos == NULL)
+            ? strdup("UNKNOWN POSITION")
+            : (*src->type->fmtpos)(src, pos);
+}
+
+
 const hidrd_item *
 hidrd_src_get(hidrd_src *src)
 {

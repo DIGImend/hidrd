@@ -88,6 +88,27 @@ typedef bool hidrd_src_type_init_opts_fn(hidrd_src         *src,
 typedef bool hidrd_src_type_valid_fn(const hidrd_src  *src);
 
 /**
+ * Prototype for a function used to retrieve (abstract) current position in
+ * a source stream.
+ *
+ * @param src   Source instance to retrieve position from.
+ *
+ * @return Abstract position in the source instance stream.
+ */
+typedef uint64_t hidrd_src_type_getpos_fn(const hidrd_src *src);
+
+/**
+ * Prototype for a function used to format a human-readable description of
+ * an abstract position in a source stream.
+ *
+ * @param src   Source instance to format position description for.
+ * @param pos   Abstract position in the source instance.
+ *
+ * @return Dynamically allocated position description string.
+ */
+typedef char *hidrd_src_type_fmtpos_fn(const hidrd_src *src, uint64_t pos);
+
+/**
  * Prototype for a source instance error message retrieval function.
  *
  * @param src   Source instance to retrieve the error message from.
@@ -122,6 +143,8 @@ typedef struct hidrd_src_type {
     const hidrd_opt_spec           *opts_spec;
 #endif
     hidrd_src_type_valid_fn        *valid;
+    hidrd_src_type_getpos_fn       *getpos;
+    hidrd_src_type_fmtpos_fn       *fmtpos;
     hidrd_src_type_errmsg_fn       *errmsg;
     hidrd_src_type_get_fn          *get;
     hidrd_src_type_clnp_fn         *clnp;

@@ -41,6 +41,8 @@ hidrd_src_type_valid(const hidrd_src_type *type)
            (type->init_opts == NULL ||
             hidrd_opt_spec_list_valid(type->opts_spec)) &&
 #endif
+           ((type->getpos == NULL && type->fmtpos == NULL) ||
+            (type->getpos != NULL && type->fmtpos != NULL)) &&
            type->get != NULL &&
            type->errmsg != NULL;
 }

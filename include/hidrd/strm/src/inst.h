@@ -98,6 +98,26 @@ extern hidrd_src *hidrd_src_new_opts(const hidrd_src_type  *type,
 #endif /* HIDRD_WITH_OPT */
 
 /**
+ * Retrieve (abstract) current position in a source stream.
+ *
+ * @param src   Source instance to retrieve position from.
+ *
+ * @return Abstract position in the source instance stream.
+ */
+extern uint64_t hidrd_src_getpos(const hidrd_src *src);
+
+/**
+ * Format a human-readable description of an abstract position in a source
+ * stream.
+ *
+ * @param src   Source instance to format position description for.
+ * @param pos   Abstract position in the source instance.
+ *
+ * @return Dynamically allocated position description string.
+ */
+extern char *hidrd_src_fmtpos(const hidrd_src *src, uint64_t pos);
+
+/**
  * Retrieve an item from a source instance.
  *
  * @param src   The source instance to retrieve the item from.
