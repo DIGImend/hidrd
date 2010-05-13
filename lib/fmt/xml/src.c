@@ -38,6 +38,7 @@ init(hidrd_src *src, char **perr, const char *schema)
     hidrd_xml_src_inst     *xml_src = (hidrd_xml_src_inst *)src;
     hidrd_xml_src_state    *state   = NULL;
     xmlDocPtr               doc     = NULL;
+    bool                    valid;
     xmlNodePtr              root;
 
     XML_ERR_FUNC_BACKUP_DECL;
@@ -59,8 +60,9 @@ init(hidrd_src *src, char **perr, const char *schema)
     if (doc == NULL)
         goto cleanup;
 
-    /* TODO XML schema validation with xmlSchemaValidateDoc */
-    (void)schema;
+    /* Validate the document, if the schema is specified */
+    if (*schema != '\0' && (!xml_validate(&valid, doc, schema) || !valid))
+        goto cleanup;
 
     /* Retrieve the root element */
     root = xmlDocGetRootElement(doc);

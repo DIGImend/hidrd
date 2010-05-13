@@ -79,6 +79,18 @@ extern void xml_error(void *ctx, const char *fmt, ...);
         goto cleanup;                   \
     } while (0)
 
+/**
+ * Validate a parsed document against a schema file.
+ *
+ * @param pvalid        Location for the "valid" flag; could be NULL.
+ * @param doc           Parsed document.
+ * @param schema_path   Schema file path.
+ *
+ * @return True if validated successfully, false otherwise.
+ */
+extern bool xml_validate(bool          *pvalid,
+                         xmlDocPtr      doc,
+                         const char    *schema_path);
 
 #ifdef __cplusplus
 } /* extern "C" */

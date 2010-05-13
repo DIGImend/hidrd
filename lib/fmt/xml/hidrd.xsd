@@ -764,7 +764,8 @@
 
     <xsd:complexType name="basic_sequence">
         <xsd:sequence>
-            <xsd:group ref="basic_choice" maxOccurs="unbounded" />
+            <xsd:group ref="basic_choice"
+                       minOccurs="0" maxOccurs="unbounded" />
         </xsd:sequence>
     </xsd:complexType>
 

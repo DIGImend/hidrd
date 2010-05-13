@@ -23,6 +23,10 @@
 
 set -e -u -o pipefail
 
-hidrd_read_test xml xml "$@"
+if [ -n "${HIDRD_XML_READ_TEST_SCHEMA:-}" ]; then
+    SCHEMA="`readlink -f \"$HIDRD_XML_READ_TEST_SCHEMA\"`"
+fi
 
+OPTS="${SCHEMA:+schema=$SCHEMA}"
 
+hidrd_read_test xml "$OPTS" xml "$@"

@@ -26,6 +26,7 @@
 
 #include <errno.h>
 #include <libxml/parser.h>
+#include <libxml/xmlschemas.h>
 #include "hidrd/fmt/xml.h"
 #include "xml.h"
 
@@ -67,6 +68,55 @@ cleanup:
 
     free(chunk);
     va_end(ap);
+}
+
+
+bool
+xml_validate(bool          *pvalid,
+             xmlDocPtr      doc,
+             const char    *schema_path)
+{
+    bool                    result              = false;
+    xmlDocPtr               schema_doc          = NULL;
+    xmlSchemaParserCtxtPtr  schema_parser_ctxt  = NULL;
+    xmlSchemaPtr            schema              = NULL;
+    xmlSchemaValidCtxtPtr   schema_valid_ctxt   = NULL;
+    int                     valid_rc;
+
+    schema_doc = xmlReadFile(schema_path, NULL, XML_PARSE_NONET);
+    if (schema_doc == NULL)
+        goto cleanup;
+
+    schema_parser_ctxt = xmlSchemaNewDocParserCtxt(schema_doc);
+    if (schema_parser_ctxt == NULL)
+        goto cleanup;
+
+    schema = xmlSchemaParse(schema_parser_ctxt);
+    if (schema == NULL)
+        goto cleanup;
+
+    schema_valid_ctxt = xmlSchemaNewValidCtxt(schema);
+    if (schema_valid_ctxt == NULL)
+        goto cleanup;
+
+    valid_rc = xmlSchemaValidateDoc(schema_valid_ctxt, doc);
+    if (valid_rc < 0)
+        goto cleanup;
+
+    if (pvalid != NULL)
+        *pvalid = (valid_rc == 0);
+
+    result = true;
+
+cleanup:
+
+    xmlSchemaFreeValidCtxt(schema_valid_ctxt);
+    xmlSchemaFree(schema);
+    xmlSchemaFreeParserCtxt(schema_parser_ctxt);
+    if (schema_doc != NULL)
+        xmlFreeDoc(schema_doc);
+
+    return result;
 }
 
 
