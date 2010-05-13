@@ -177,7 +177,8 @@ main(int argc, char **argv)
      * Write report descriptor to an XML sink
      */
     snk = hidrd_snk_new(hidrd_xml.snk, &err,
-                        (void **)&test_xml_buf, &test_xml_len, true);
+                        (void **)&test_xml_buf, &test_xml_len,
+                        true, HIDRD_XML_SCHEMA_PATH);
     if (snk == NULL)
         ERR_CLNP("Failed to create XML sink:\n%s\n", err);
     free(err);

@@ -32,7 +32,5 @@ libhidrd_xml_la_LIBADD = \
 libhidrd_xml_la_CFLAGS = @LIBXML2_CFLAGS@
 libhidrd_xml_la_LDFLAGS = @LIBXML2_LIBS@
 
-schemadir = $(datadir)/xml/schema
-
+schemadir = @XML_SCHEMA_DIR@
 dist_schema_DATA = hidrd.xsd
-

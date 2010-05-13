@@ -24,3 +24,6 @@ hidrd_fmt_xml_HEADERS = \
     snk.h               \
     src.h
 
+nodist_hidrd_fmt_xml_HEADERS = \
+    cfg.h
+

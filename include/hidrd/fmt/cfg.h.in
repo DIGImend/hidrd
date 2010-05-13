@@ -1,3 +1,10 @@
+/*
+ * @GENERATED_VIM_OPTS@
+ *
+ * *** DO NOT EDIT ********************
+ * This file is generated from cfg.h.in
+ * ************************************
+ */
 /** @file
  * @brief HID report descriptor - formats - configuration
  *

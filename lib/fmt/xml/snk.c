@@ -25,6 +25,7 @@
  */
 
 #include "hidrd/cfg.h"
+#include "hidrd/fmt/xml/cfg.h"
 #include "hidrd/fmt/xml/prop.h"
 #include "hidrd/fmt/xml/snk.h"
 #include "snk/group.h"
@@ -33,13 +34,14 @@
 
 
 static bool
-init(hidrd_snk *snk, char **perr, bool format)
+init(hidrd_snk *snk, char **perr, bool format, const char *schema)
 {
-    bool                    result  = false;
-    hidrd_xml_snk_inst     *xml_snk = (hidrd_xml_snk_inst *)snk;
-    hidrd_xml_snk_state    *state   = NULL;
-    xmlDocPtr               doc     = NULL;
-    xmlNodePtr              root    = NULL;
+    bool                    result      = false;
+    hidrd_xml_snk_inst     *xml_snk     = (hidrd_xml_snk_inst *)snk;
+    char                   *own_schema  = NULL;
+    hidrd_xml_snk_state    *state       = NULL;
+    xmlDocPtr               doc         = NULL;
+    xmlNodePtr              root        = NULL;
 
     XML_ERR_FUNC_BACKUP_DECL;
 
@@ -48,6 +50,11 @@ init(hidrd_snk *snk, char **perr, bool format)
 
     XML_ERR_FUNC_SET(perr);
 
+    /* Copy schema file path */
+    own_schema = strdup(schema);
+    if (own_schema == NULL)
+        XML_ERR_CLNP("failed to allocate memory for the schema file path");
+        
     /* Create item state table stack */
     state = malloc(sizeof(*state));
     if (state == NULL)
@@ -84,15 +91,17 @@ init(hidrd_snk *snk, char **perr, bool format)
     xmlDocSetRootElement(doc, root);
 
     /* Initialize the sink */
+    xml_snk->schema = own_schema;
     xml_snk->format = format;
     xml_snk->state  = state;
     xml_snk->doc    = doc;
     xml_snk->prnt   = root;
     xml_snk->err    = strdup("");
 
-    state   = NULL;
-    doc     = NULL;
-    root    = NULL;
+    own_schema  = NULL;
+    state       = NULL;
+    doc         = NULL;
+    root        = NULL;
 
     result = true;
 
@@ -103,8 +112,8 @@ cleanup:
     if (doc != NULL)
         xmlFreeDoc(doc);
 
-    if (state != NULL)
-        free(state);
+    free(state);
+    free(own_schema);
 
     XML_ERR_FUNC_RESTORE;
 
@@ -115,9 +124,10 @@ cleanup:
 static bool
 hidrd_xml_snk_init(hidrd_snk *snk, char **perr, va_list ap)
 {
-    bool    format  = (va_arg(ap, int) != 0);
+    bool        format  = (va_arg(ap, int) != 0);
+    const char *schema  = va_arg(ap, const char *);
 
-    return init(snk, perr, format);
+    return init(snk, perr, format, schema);
 }
 
 
@@ -130,13 +140,26 @@ static const hidrd_opt_spec hidrd_xml_snk_opts_spec[] = {
          .boolean = true
      },
      .desc  = "format XML output"},
+    {.name  = "schema",
+     .type  = HIDRD_OPT_TYPE_STRING,
+     .req   = false,
+     .dflt  = {
+#ifdef NDEBUG
+         .string = ""
+#else
+         .string = HIDRD_XML_SCHEMA_PATH
+#endif
+     },
+     .desc  = "path to a schema file for output validation"},
     {.name  = NULL}
 };
 
 static bool
 hidrd_xml_snk_init_opts(hidrd_snk *snk, char **perr, const hidrd_opt *list)
 {
-    return init(snk, perr, hidrd_opt_list_get_boolean(list, "format"));
+    return init(snk, perr,
+                hidrd_opt_list_get_boolean(list, "format"),
+                hidrd_opt_list_get_string(list, "schema"));
 }
 #endif /* HIDRD_WITH_OPT */
 
@@ -183,6 +206,8 @@ hidrd_xml_snk_flush(hidrd_snk *snk)
     /* Break any unfinished groups */
     if (!xml_snk_group_break_branch(snk))
         goto cleanup;
+
+    /* TODO XML schema validation with xmlSchemaValidateDoc */
 
     /* Create an XML buffer */
     xml_buf = xmlBufferCreate();
@@ -261,6 +286,10 @@ hidrd_xml_snk_clnp(hidrd_snk *snk)
         free(state);
     }
     xml_snk->state = NULL;
+
+    /* Free the schema file path */
+    free(xml_snk->schema);
+    xml_snk->schema = NULL;
 }
 
 

@@ -1,5 +1,12 @@
+/*
+ * @GENERATED_VIM_OPTS@
+ *
+ * *** DO NOT EDIT ********************
+ * This file is generated from cfg.h.in
+ * ************************************
+ */
 /** @file
- * @brief HID report descriptor - XML format
+ * @brief HID report descriptor - XML stream - configuration
  *
  * Copyright (C) 2010 Nikolai Kondrashov
  *
@@ -21,27 +28,13 @@
  *
  * @author Nikolai Kondrashov <spbnick@gmail.com>
  *
- * @(#) $Id$
+ * @(#) $Id: fmt.h 405 2010-05-03 20:53:36Z spb_nick $
  */
 
-#ifndef __HIDRD_FMT_XML_H__
-#define __HIDRD_FMT_XML_H__
+#ifndef __HIDRD_FMT_XML_CFG_H__
+#define __HIDRD_FMT_XML_CFG_H__
 
-#include "hidrd/fmt/inst.h"
-#include "hidrd/fmt/xml/cfg.h"
-#include "hidrd/fmt/xml/prop.h"
-#include "hidrd/fmt/xml/src.h"
-#include "hidrd/fmt/xml/snk.h"
+/** XML schema file path */
+#define HIDRD_XML_SCHEMA_PATH   "@XML_SCHEMA_DIR@/hidrd.xsd"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-/** XML format */
-extern const hidrd_fmt  hidrd_xml;
-
-#ifdef __cplusplus
-} /* extern "C" */
-#endif
-
-#endif /* __HIDRD_FMT_XML_H__ */
+#endif /* __HIDRD_FMT_XML_CFG_H__ */

@@ -24,13 +24,15 @@
  * @(#) $Id$
  */
 
+#include "hidrd/cfg.h"
+#include "hidrd/fmt/xml/cfg.h"
 #include "src/element.h"
 #include "hidrd/fmt/xml/src.h"
 #include "../xml.h"
 
 
 static bool
-init(hidrd_src *src, char **perr)
+init(hidrd_src *src, char **perr, const char *schema)
 {
     bool                    result  = false;
     hidrd_xml_src_inst     *xml_src = (hidrd_xml_src_inst *)src;
@@ -58,6 +60,7 @@ init(hidrd_src *src, char **perr)
         goto cleanup;
 
     /* TODO XML schema validation with xmlSchemaValidateDoc */
+    (void)schema;
 
     /* Retrieve the root element */
     root = xmlDocGetRootElement(doc);
@@ -94,9 +97,30 @@ cleanup:
 static bool
 hidrd_xml_src_init(hidrd_src *src, char **perr, va_list ap)
 {
-    (void)ap;
-    return init(src, perr);
+    const char *schema  = va_arg(ap, const char *);
+
+    return init(src, perr, schema);
 }
+
+
+#ifdef HIDRD_WITH_OPT
+static const hidrd_opt_spec hidrd_xml_src_opts_spec[] = {
+    {.name  = "schema",
+     .type  = HIDRD_OPT_TYPE_STRING,
+     .req   = false,
+     .dflt  = {
+         .string = HIDRD_XML_SCHEMA_PATH
+     },
+     .desc  = "path to a schema file for input validation"},
+    {.name  = NULL}
+};
+
+static bool
+hidrd_xml_src_init_opts(hidrd_src *src, char **perr, const hidrd_opt *list)
+{
+    return init(src, perr, hidrd_opt_list_get_string(list, "schema"));
+}
+#endif /* HIDRD_WITH_OPT */
 
 
 static bool
@@ -270,6 +294,10 @@ hidrd_xml_src_clnp(hidrd_src *src)
 const hidrd_src_type hidrd_xml_src = {
     .size       = sizeof(hidrd_xml_src_inst),
     .init       = hidrd_xml_src_init,
+#ifdef HIDRD_WITH_OPT
+    .init_opts  = hidrd_xml_src_init_opts,
+    .opts_spec  = hidrd_xml_src_opts_spec,
+#endif
     .valid      = hidrd_xml_src_valid,
     .getpos     = hidrd_xml_src_getpos,
     .fmtpos     = hidrd_xml_src_fmtpos,
