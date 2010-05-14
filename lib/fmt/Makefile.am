@@ -37,7 +37,7 @@ TESTS = hidrd_natv_test
 TESTS_ENVIRONMENT = PATH="$$PATH:$(builddir):$(srcdir)" \
 					HIDRD_READ_TEST_DATA="$(srcdir)/read_test_data" \
 					HIDRD_WRITE_TEST_DATA="$(srcdir)/write_test_data" \
-					HIDRD_XML_READ_TEST_SCHEMA="$(srcdir)/xml/hidrd.xsd"
+					HIDRD_XML_SCHEMA="$(srcdir)/xml/hidrd.xsd"
 
 bin_PROGRAMS =
 bin_SCRIPTS =

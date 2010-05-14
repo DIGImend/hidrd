@@ -166,9 +166,14 @@ main(int argc, char **argv)
     char               *test_xml_buf    = NULL;
     size_t              test_xml_len    = 0;
     char               *err             = NULL;
+    const char         *schema;
 
     (void)argc;
     (void)argv;
+
+    schema = getenv("HIDRD_XML_SCHEMA");
+    if (schema == NULL)
+        schema = HIDRD_XML_SCHEMA_PATH;
 
     if (!hidrd_fmt_init(&hidrd_xml))
         ERR_CLNP("Failed to initialize XML format support");
@@ -178,7 +183,7 @@ main(int argc, char **argv)
      */
     snk = hidrd_snk_new(hidrd_xml.snk, &err,
                         (void **)&test_xml_buf, &test_xml_len,
-                        true, HIDRD_XML_SCHEMA_PATH);
+                        true, schema);
     if (snk == NULL)
         ERR_CLNP("Failed to create XML sink:\n%s\n", err);
     free(err);

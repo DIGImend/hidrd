@@ -224,7 +224,7 @@ AC_SUBST([ENABLE_SPEC_FORMAT],
 # 
 # FIXME this is not the best way to do it, maybe use automake instead
 AC_SUBST([GENERATED_VIM_OPTS], [vim:nomodifiable])
-AC_SUBST([XML_SCHEMA_DIR], [${prefix}/usr/share/xml/schema])
+AC_SUBST([XML_SCHEMA_DIR], [${prefix}/share/xml/schema])
 
 #
 # Checks for header files.

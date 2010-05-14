@@ -42,6 +42,7 @@ init(hidrd_snk *snk, char **perr, bool format, const char *schema)
     hidrd_xml_snk_state    *state       = NULL;
     xmlDocPtr               doc         = NULL;
     xmlNodePtr              root        = NULL;
+    xmlNsPtr                ns;
 
     XML_ERR_FUNC_BACKUP_DECL;
 
@@ -72,19 +73,21 @@ init(hidrd_snk *snk, char **perr, bool format, const char *schema)
     if (root == NULL)
         goto cleanup;
 
-    /*
-     * Set root node properties
-     */
-    if (xmlSetProp(root, BAD_CAST "xmlns",
-                   BAD_CAST HIDRD_XML_PROP_NS) == NULL)
+    /* Add and assign our namespace */
+    ns = xmlNewNs(root, BAD_CAST HIDRD_XML_PROP_NS, NULL);
+    if (ns == NULL)
+        goto cleanup;
+    xmlSetNs(root, ns);
+
+    /* Add XML schema instance namespace */
+    ns = xmlNewNs(root, BAD_CAST HIDRD_XML_PROP_NS_XSI, BAD_CAST "xsi");
+    if (ns == NULL)
         goto cleanup;
 
-    if (xmlSetProp(root, BAD_CAST "xmlns:xsi",
-                   BAD_CAST HIDRD_XML_PROP_NS_XSI) == NULL)
-        goto cleanup;
-
-    if (xmlSetProp(root, BAD_CAST "xsi:schemaLocation",
-                   BAD_CAST HIDRD_XML_PROP_XSI_SCHEMA_LOCATION) == NULL)
+    /* Add xsi:schemaLocation attribute */
+    if (xmlSetNsProp(root, ns,
+                     BAD_CAST "schemaLocation",
+                     BAD_CAST HIDRD_XML_PROP_XSI_SCHEMA_LOCATION) == NULL)
         goto cleanup;
 
     /* Set root element */
@@ -191,6 +194,7 @@ hidrd_xml_snk_flush(hidrd_snk *snk)
 {
     bool                result      = false;
     hidrd_xml_snk_inst *xml_snk     = (hidrd_xml_snk_inst *)snk;
+    bool                valid;
     xmlBufferPtr        xml_buf     = NULL;
     xmlOutputBufferPtr  xml_out_buf = NULL;
     void               *new_buf;
@@ -207,7 +211,10 @@ hidrd_xml_snk_flush(hidrd_snk *snk)
     if (!xml_snk_group_break_branch(snk))
         goto cleanup;
 
-    /* TODO XML schema validation with xmlSchemaValidateDoc */
+    /* Validate the document, if the schema is specified */
+    if (*xml_snk->schema != '\0' &&
+        (!xml_validate(&valid, xml_snk->doc, xml_snk->schema) || !valid))
+        goto cleanup;
 
     /* Create an XML buffer */
     xml_buf = xmlBufferCreate();
