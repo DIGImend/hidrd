@@ -206,25 +206,6 @@ if test "$enable_debug" = "yes"; then
 fi
 
 #
-# Output features to installed configuration headers
-#
-AC_SUBST([ENABLE_OPT],
-         `! test "$enable_opt" = "yes"; echo $?`)
-AC_SUBST([ENABLE_TOKENS],
-         `! test "$enable_tokens" = "yes"; echo $?`)
-AC_SUBST([ENABLE_NAMES],
-         `! test "$enable_names" = "yes"; echo $?`)
-AC_SUBST([ENABLE_XML_FORMAT],
-         `! test "$enable_xml_format" = "yes"; echo $?`)
-AC_SUBST([ENABLE_SPEC_FORMAT],
-         `! test "$enable_spec_format" = "yes"; echo $?`)
-
-#
-# Output various variables
-# 
-AC_SUBST([GENERATED_VIM_OPTS], [vim:nomodifiable])
-
-#
 # Checks for header files.
 #
 
@@ -261,7 +242,6 @@ AC_CONFIG_FILES([Makefile
 
                  include/Makefile
                  include/hidrd/Makefile
-                 include/hidrd/cfg.h
                  include/hidrd/util/Makefile
                  include/hidrd/item/Makefile
                  include/hidrd/item/pfx/Makefile
@@ -270,7 +250,6 @@ AC_CONFIG_FILES([Makefile
                  include/hidrd/strm/src/Makefile
                  include/hidrd/strm/snk/Makefile
                  include/hidrd/fmt/Makefile
-                 include/hidrd/fmt/cfg.h
                  include/hidrd/fmt/natv/Makefile
                  include/hidrd/fmt/xml/Makefile
                  include/hidrd/fmt/spec/Makefile

@@ -50,8 +50,6 @@ dnl
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @author Nikolai Kondrashov <spbnick@gmail.com>
- *
- * @(#) $Id$
  */
 
 #ifndef __HIDRD_FMT_XML_CFG_H__
