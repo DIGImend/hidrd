@@ -222,9 +222,7 @@ AC_SUBST([ENABLE_SPEC_FORMAT],
 #
 # Output various variables
 # 
-# FIXME this is not the best way to do it, maybe use automake instead
 AC_SUBST([GENERATED_VIM_OPTS], [vim:nomodifiable])
-AC_SUBST([XML_SCHEMA_DIR], [${prefix}/share/xml/schema])
 
 #
 # Checks for header files.
@@ -274,7 +272,6 @@ AC_CONFIG_FILES([Makefile
                  include/hidrd/fmt/Makefile
                  include/hidrd/fmt/cfg.h
                  include/hidrd/fmt/natv/Makefile
-                 include/hidrd/fmt/xml/cfg.h
                  include/hidrd/fmt/xml/Makefile
                  include/hidrd/fmt/spec/Makefile
                  include/hidrd/fmt/spec/snk/Makefile

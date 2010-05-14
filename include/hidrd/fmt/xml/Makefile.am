@@ -24,6 +24,16 @@ hidrd_fmt_xml_HEADERS = \
     snk.h               \
     src.h
 
-nodist_hidrd_fmt_xml_HEADERS = \
+%.h: %.h.m4
+	m4 -DXML_SCHEMA_PATH="$(datadir)/xml/schema/hidrd.xsd" $< > $@
+
+dist_noinst_DATA = \
+	cfg.h.m4
+
+BUILT_SOURCES = \
     cfg.h
+
+CLEANFILES = $(BUILT_SOURCES)
+
+nodist_hidrd_fmt_xml_HEADERS = $(BUILT_SOURCES)
 
