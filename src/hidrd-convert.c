@@ -63,7 +63,7 @@ usage_formats(FILE *stream, const char *progname)
     {
         if (fprintf(stream, "%s%*s [%s%s] - %s format\n\n",
                     (*pfmt)->name,
-                    max_len - strlen((*pfmt)->name), "",
+                    (int)(max_len - strlen((*pfmt)->name)), "",
                     hidrd_fmt_readable(*pfmt) ? "I" : " ",
                     hidrd_fmt_writable(*pfmt) ? "O" : " ",
                     (*pfmt)->desc) < 0)
@@ -170,7 +170,7 @@ usage(FILE *stream, const char *progname)
 
     for (pfmt = hidrd_fmt_list; *pfmt != NULL; pfmt++)
         if (fprintf(stream, "  %*s [%s%s] - %s\n",
-                    max_len, (*pfmt)->name,
+                    (int)max_len, (*pfmt)->name,
                     hidrd_fmt_readable(*pfmt) ? "I" : " ",
                     hidrd_fmt_writable(*pfmt) ? "O" : " ",
                     (*pfmt)->desc) < 0)
