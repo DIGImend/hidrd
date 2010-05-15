@@ -42,15 +42,17 @@ spec_snk_item_ent_nt_valid(spec_snk_item_ent_nt nt)
 
 
 bool
-spec_snk_item_entpvf(hidrd_spec_snk_inst    *spec_snk,
-                     const char             *name_tkn,
-                     va_list                *pap)
+spec_snk_item_entpvf(hidrd_spec_snk_inst   *spec_snk,
+                     const hidrd_item      *item,
+                     const char            *name_tkn,
+                     va_list               *pap)
 {
     bool    result  = false;
     bool    end     = false;
     char   *nl[2]   = {[SPEC_SNK_ITEM_ENT_NT_VALUE] = NULL,
                        [SPEC_SNK_ITEM_ENT_NT_COMMENT] = NULL};
 
+    assert(hidrd_item_valid(item));
     assert(hidrd_tkn_valid(name_tkn));
     assert(hidrd_tkn_hmnzbl(name_tkn));
 
@@ -79,6 +81,7 @@ spec_snk_item_entpvf(hidrd_spec_snk_inst    *spec_snk,
                 &spec_snk->list,
                 hidrd_spec_snk_ent_newa(
                     spec_snk->depth,
+                    hidrd_item_dup(item),
                     hidrd_tkn_ahmnz(name_tkn, HIDRD_TKN_HMNZ_CAP_WF),
                     nl[SPEC_SNK_ITEM_ENT_NT_VALUE],
                     nl[SPEC_SNK_ITEM_ENT_NT_COMMENT]));
@@ -113,14 +116,19 @@ cleanup:
 
 bool
 spec_snk_item_entf(hidrd_spec_snk_inst *spec_snk,
+                   const hidrd_item    *item,
                    const char          *name_tkn,
                    ...)
 {
     va_list ap;
     bool    result;
 
+    assert(hidrd_item_valid(item));
+    assert(hidrd_tkn_valid(name_tkn));
+    assert(hidrd_tkn_hmnzbl(name_tkn));
+
     va_start(ap, name_tkn);
-    result = spec_snk_item_entpvf(spec_snk, name_tkn, &ap);
+    result = spec_snk_item_entpvf(spec_snk, item, name_tkn, &ap);
     va_end(ap);
 
     return result;

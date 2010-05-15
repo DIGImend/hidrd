@@ -32,7 +32,7 @@
 #include "item.h"
 
 #define ITEM(_name_tkn, _args...) \
-    spec_snk_item_entf(spec_snk, #_name_tkn,                \
+    spec_snk_item_entf(spec_snk, item, #_name_tkn,          \
                        ##_args, SPEC_SNK_ITEM_ENT_NT_NONE)
 
 #define VALUE(_fmt, _args...) \
@@ -159,7 +159,7 @@ spec_snk_item_main_bitmap(hidrd_spec_snk_inst  *spec_snk,
     token = hidrd_item_main_tag_to_token(hidrd_item_main_get_tag(item));
     if (token == NULL)
         goto cleanup;
-    result = spec_snk_item_entf(spec_snk, token,
+    result = spec_snk_item_entf(spec_snk, item, token,
                                 VALUE(STROWN, buf.ptr),
                                 SPEC_SNK_ITEM_ENT_NT_NONE);
     hidrd_buf_init(&buf);
@@ -314,6 +314,7 @@ hidrd_usage_to_id_shex(hidrd_usage usage)
 
 static bool
 spec_snk_item_usage(hidrd_spec_snk_inst    *spec_snk,
+                    const hidrd_item       *item,
                     const char             *name_tkn,
                     hidrd_usage             usage)
 {
@@ -347,8 +348,7 @@ spec_snk_item_usage(hidrd_spec_snk_inst    *spec_snk,
 
     hidrd_tkn_hmnz(token_or_bhex, HIDRD_TKN_HMNZ_CAP_WF);
 
-    result = spec_snk_item_entf(spec_snk,
-                                name_tkn,
+    result = spec_snk_item_entf(spec_snk, item, name_tkn,
                                 VALUE(STROWN, token_or_bhex),
                                 COMMENT(STROWN, hidrd_str_uc_first(desc)),
                                 SPEC_SNK_ITEM_ENT_NT_NONE);
@@ -380,17 +380,17 @@ spec_snk_item_local(hidrd_spec_snk_inst *spec_snk,
         CASE_ITEM_U32(LOCAL, STRING_MAXIMUM, string_maximum);
 
         case HIDRD_ITEM_LOCAL_TAG_USAGE:
-            return spec_snk_item_usage(spec_snk, "usage",
+            return spec_snk_item_usage(spec_snk, item, "usage",
                                        hidrd_item_usage_get_value(item));
 
         case HIDRD_ITEM_LOCAL_TAG_USAGE_MINIMUM:
             return spec_snk_item_usage(
-                        spec_snk, "usage_minimum",
+                        spec_snk, item, "usage_minimum",
                         hidrd_item_usage_minimum_get_value(item));
 
         case HIDRD_ITEM_LOCAL_TAG_USAGE_MAXIMUM:
             return spec_snk_item_usage(
-                        spec_snk, "usage_maximum",
+                        spec_snk, item, "usage_maximum",
                         hidrd_item_usage_maximum_get_value(item));
 
         case HIDRD_ITEM_LOCAL_TAG_DELIMITER:

@@ -98,10 +98,11 @@ hidrd_spec_snk_ent_list_adda(hidrd_spec_snk_ent_list   *list,
 
     hidrd_spec_snk_ent_inita(&(list->ptr[list->len]),
                              ent->depth,
+                             ent->item,
                              ent->name,
                              ent->value,
                              ent->comment);
-    hidrd_spec_snk_ent_init(ent, 0, NULL, NULL, NULL);
+    hidrd_spec_snk_ent_init(ent, 0, NULL, NULL, NULL, NULL);
     hidrd_spec_snk_ent_delete(ent);
 
     list->len++;
@@ -122,6 +123,7 @@ hidrd_spec_snk_ent_list_add(hidrd_spec_snk_ent_list    *list,
 
     hidrd_spec_snk_ent_init(&(list->ptr[list->len]),
                             ent->depth,
+                            ent->item,
                             ent->name,
                             ent->value,
                             ent->comment);

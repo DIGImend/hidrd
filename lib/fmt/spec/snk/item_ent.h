@@ -55,6 +55,7 @@ extern bool spec_snk_item_ent_nt_valid(spec_snk_item_ent_nt nt);
  * Output an item entry to a specification example sink.
  *
  * @param spec_snk  Specification example sink.
+ * @param item      Native item.
  * @param name_tkn  Item name token.
  * @param ...       List of node type, format type & arguments sequences;
  *                  terminated with SPEC_SNK_ITEM_ENT_NT_NONE.
@@ -62,6 +63,7 @@ extern bool spec_snk_item_ent_nt_valid(spec_snk_item_ent_nt nt);
  * @return True if output successfully, false if failed to allocate memory.
  */
 extern bool spec_snk_item_entf(hidrd_spec_snk_inst *spec_snk,
+                               const hidrd_item    *item,
                                const char          *name_tkn,
                                ...);
 
@@ -70,6 +72,7 @@ extern bool spec_snk_item_entf(hidrd_spec_snk_inst *spec_snk,
  * version.
  *
  * @param spec_snk  Specification example sink.
+ * @param item      Native item.
  * @param name_tkn  Item name token.
  * @param pap       Pointer to list of node type, format type & arguments
  *                  sequences; terminated with SPEC_SNK_ITEM_ENT_NT_NONE.
@@ -77,6 +80,7 @@ extern bool spec_snk_item_entf(hidrd_spec_snk_inst *spec_snk,
  * @return True if output successfully, false if failed to allocate memory.
  */
 extern bool spec_snk_item_entpvf(hidrd_spec_snk_inst   *spec_snk,
+                                 const hidrd_item      *item,
                                  const char            *name_tkn,
                                  va_list               *pap);
 

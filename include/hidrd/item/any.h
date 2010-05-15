@@ -72,6 +72,13 @@ hidrd_item_validate(const hidrd_item *item)
     return item;
 }
 
+/**
+ * Calculate item size.
+ *
+ * @param item  Item to calculate size of.
+ *
+ * @return Item size in bytes.
+ */
 extern size_t hidrd_item_get_size(const hidrd_item *item);
 
 /**
@@ -87,6 +94,15 @@ extern size_t hidrd_item_get_size(const hidrd_item *item);
 extern bool hidrd_item_fits(const hidrd_item   *item,
                             size_t              buf_size,
                             size_t             *pitem_size);
+
+/**
+ * Duplicate an item.
+ *
+ * @param item  Item to duplicate.
+ *
+ * @return Dynamically allocated copy of the item.
+ */
+extern hidrd_item *hidrd_item_dup(const hidrd_item *item);
 
 #ifdef __cplusplus
 } /* extern "C" */
