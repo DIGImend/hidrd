@@ -30,6 +30,7 @@ hidrd_util_HEADERS = \
     hex.h               \
     num.h               \
     str.h               \
+    ttbl.h              \
     unit.h
 
 if ENABLE_TOKENS
