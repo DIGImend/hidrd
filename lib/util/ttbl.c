@@ -389,7 +389,6 @@ hidrd_ttbl_render(char **pbuf, size_t *psize,
 }
 
 
-#if 0
 void
 hidrd_ttbl_ins_cols(hidrd_ttbl *tbl, size_t col, size_t span)
 {
@@ -397,44 +396,92 @@ hidrd_ttbl_ins_cols(hidrd_ttbl *tbl, size_t col, size_t span)
     hidrd_ttbl_cell    *prev_cell;
     hidrd_ttbl_cell    *cell;
     size_t              cell_col;
-    
+
+    /* Handle reduced case */
+    if (span == 0)
+        return;
+
+    /* For every row */
     for (row = tbl->row; row != NULL; row = row->next)
     {
         /* Lookup cell */
         for (prev_cell = NULL, cell_col = 0, cell = row->cell;
-             col < cell_col || col >= cell_col + cell->span;
-             cell_col += cell->span, prev_cell = cell, cell = cell->next);
+             cell->next != NULL && col > cell_col + cell->skip;
+             cell_col += 1 + cell->skip,
+             prev_cell = cell, cell = cell->next);
 
-        /* If it is last cell */
+        /* If it is the last cell */
         if (cell->next == NULL)
             /* Nothing to shift */
             continue;
 
         /* If it is not the exact cell */
         if (col > cell_col)
-            /* Increase matching cell span */
-            cell->span += span;
+            /* Increase the cell skip */
+            cell->skip += span;
         /* Else, if it is not the first cell */
         else if (prev_cell != NULL)
-            /* Increase previous cell span */
-            prev_cell->span += span;
+            /* Increase previous cell skip */
+            prev_cell->skip += span;
         else
         {
             /* Insert a new first cell */
             cell = obstack_alloc(&tbl->obstack, sizeof(*cell));
             cell->next = row->cell;
             row->cell = cell;
-            cell->span = span;
+            cell->skip = span - 1;
             cell->text = NULL;
         }
     }
 }
 
 
-void hidrd_ttbl_ins_rows(hidrd_ttbl *tbl, size_t line, size_t num)
+void
+hidrd_ttbl_ins_rows(hidrd_ttbl *tbl, size_t line, size_t span)
 {
-    (void)tbl;
-    (void)line;
-    (void)num;
+    hidrd_ttbl_row     *prev_row;
+    hidrd_ttbl_row     *row;
+    size_t              row_line;
+    hidrd_ttbl_cell    *cell;
+
+    /* Handle reduced case */
+    if (span == 0)
+        return;
+
+    /* Lookup row */
+    for (prev_row = NULL, row_line = 0, row = tbl->row;
+         row->next != NULL && line > row_line + row->skip;
+         row_line += 1 + row->skip,
+         prev_row = row, row = row->next);
+
+    /* If it is the last row */
+    if (row->next == NULL)
+        /* Nothing to shift */
+        return;
+
+    /* If it is not the exact row */
+    if (line > row_line)
+        /* Increase the row skip */
+        row->skip += span;
+    /* Else, if it is not the first row */
+    else if (prev_row != NULL)
+        /* Increase previous row skip */
+        prev_row->skip += span;
+    else
+    {
+        /* Insert a new first row */
+        row = obstack_alloc(&tbl->obstack, sizeof(*row));
+        row->next = tbl->row;
+        tbl->row = row;
+        row->skip = span - 1;
+
+        /* Create the cell */
+        cell = obstack_alloc(&tbl->obstack, sizeof(*cell));
+        cell->next = NULL;
+        cell->skip = 0;
+        cell->text = NULL;
+        row->cell = cell;
+    }
 }
-#endif
+
+

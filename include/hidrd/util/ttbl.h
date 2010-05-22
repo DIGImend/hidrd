@@ -152,18 +152,18 @@ extern bool hidrd_ttbl_render(char **pbuf, size_t *psize,
  *
  * @param tbl   Table to insert columns into.
  * @param col   Column number to insert columns at.
- * @param num   Number of columns to insert.
+ * @param span  Number of columns to insert.
  */
-extern void hidrd_ttbl_ins_cols(hidrd_ttbl *tbl, size_t col, size_t num);
+extern void hidrd_ttbl_ins_cols(hidrd_ttbl *tbl, size_t col, size_t span);
 
 /**
  * Insert empty rows into a table.
  *
  * @param tbl   Table to insert rows into.
  * @param line  Line number to insert rows at.
- * @param num   Number of rows to insert.
+ * @param span  Number of rows to insert.
  */
-extern void hidrd_ttbl_ins_rows(hidrd_ttbl *tbl, size_t line, size_t num);
+extern void hidrd_ttbl_ins_rows(hidrd_ttbl *tbl, size_t line, size_t span);
 
 #ifdef __cplusplus
 } /* extern "C" */
