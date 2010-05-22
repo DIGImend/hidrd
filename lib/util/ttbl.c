@@ -48,16 +48,15 @@ hidrd_ttbl_new(void)
     obstack_init(&tbl->obstack);
 
     row = obstack_alloc(&tbl->obstack, sizeof(*row));
-    row->next  = NULL;
-    row->span  = SIZE_MAX;
-
+    row->skip = 0;
+    row->next = NULL;
+    
     cell = obstack_alloc(&tbl->obstack, sizeof(*cell));
+    cell->skip = 0;
     cell->next = NULL;
-    cell->span = SIZE_MAX;
     cell->text = NULL;
 
     row->cell = cell;
-
     tbl->row = row;
 
     return tbl;
@@ -89,10 +88,9 @@ hidrd_ttbl_seta(hidrd_ttbl  *tbl,
 
     /* Lookup row */
     for (row_line = 0, row = tbl->row;
-         line < row_line || line >= row_line + row->span;
-         row_line += row->span, row = row->next);
+         row->next != NULL && line > row_line + row->skip;
+         row_line += 1 + row->skip, row = row->next);
 
-    /* If it is not the exact row */
     if (line > row_line)
     {
         /* Insert a new row after the found one */
@@ -100,16 +98,17 @@ hidrd_ttbl_seta(hidrd_ttbl  *tbl,
         new_row->next = row->next;
         row->next = new_row;
 
-        /* Split the original span */
-        new_row->span = row->span - (line - row_line);
-        row->span -= new_row->span;
+        /* Split/increase the skip */
+        new_row->skip = new_row->next == NULL
+                            ? 0 : row->skip - (line - row_line);
+        row->skip = line - row_line - 1;
 
-        /* Add the cell */
-        cell = obstack_alloc(&tbl->obstack, sizeof(*cell));
-        cell->next = NULL;
-        cell->span = SIZE_MAX;
-        cell->text = NULL;
-        new_row->cell = cell;
+        /* Create the cell */
+        new_cell = obstack_alloc(&tbl->obstack, sizeof(*new_cell));
+        new_cell->next = NULL;
+        new_cell->skip = 0;
+        new_cell->text = NULL;
+        new_row->cell = new_cell;
 
         /* Use the new row */
         row = new_row;
@@ -117,10 +116,9 @@ hidrd_ttbl_seta(hidrd_ttbl  *tbl,
 
     /* Lookup cell */
     for (cell_col = 0, cell = row->cell;
-         col < cell_col || col >= cell_col + cell->span;
-         cell_col += cell->span, cell = cell->next);
+         cell->next != NULL && col > cell_col + cell->skip;
+         cell_col += 1 + cell->skip, cell = cell->next);
 
-    /* If it is not the exact cell */
     if (col > cell_col)
     {
         /* Insert a new cell after the found one */
@@ -128,13 +126,15 @@ hidrd_ttbl_seta(hidrd_ttbl  *tbl,
         new_cell->next = cell->next;
         cell->next = new_cell;
 
-        /* Split the original span */
-        new_cell->span = cell->span - (col - cell_col);
-        cell->span -= new_cell->span;
+        /* Split/increase the skip */
+        new_cell->skip = new_cell->next == NULL
+                            ? 0 : cell->skip - (col - cell_col);
+        cell->skip = col - cell_col - 1;
 
         /* Use the new cell */
         cell = new_cell;
     }
+
 
     /* Set the cell text */
     cell->text = text;
@@ -199,6 +199,7 @@ hidrd_ttbl_setf(hidrd_ttbl  *tbl,
     return result;
 }
 
+
 const char *
 hidrd_ttbl_get(const hidrd_ttbl *tbl,
                size_t            col,
@@ -213,21 +214,18 @@ hidrd_ttbl_get(const hidrd_ttbl *tbl,
 
     /* Lookup the row */
     for (row_line = 0, row = tbl->row;
-         line > row_line + row->span;
-         row_line += row->span, row = row->next);
+         row->next != NULL && line > row_line + row->skip;
+         row_line += 1 + row->skip, row = row->next);
 
     if (line != row_line)
         return NULL;
 
     /* Lookup the cell */
     for (cell_col = 0, cell = row->cell;
-         col > cell_col + cell->span;
-         cell_col += cell->span, cell = cell->next);
+         cell->next != NULL && col > cell_col + cell->skip;
+         cell_col += 1 + cell->skip, cell = cell->next);
 
-    if (col != cell_col)
-        return NULL;
-
-    return cell->text;
+    return (col == cell_col) ? cell->text : NULL;
 }
 
 
@@ -253,6 +251,7 @@ struct hidrd_ttbl_strip {
     size_t              width;      /**< Strip width, characters */
 };
 
+
 static hidrd_ttbl_strip *
 hidrd_ttbl_measure(struct obstack *obstack, const hidrd_ttbl *tbl)
 {
@@ -270,7 +269,7 @@ hidrd_ttbl_measure(struct obstack *obstack, const hidrd_ttbl *tbl)
         strip = markup;
         for (col = 0, cell = row->cell;
              cell != NULL;
-             col += cell->span, cell = cell->next)
+             col += 1 + cell->skip, cell = cell->next)
         {
             if (cell->text == NULL)
                 continue;
@@ -330,7 +329,7 @@ hidrd_ttbl_print(char **pbuf, size_t *psize,
         got_text = false;
         for (pad = 0, strip = markup, col = 0, cell = row->cell;
              cell != NULL;
-             col += cell->span, cell = cell->next)
+             col += 1 + cell->skip, cell = cell->next)
         {
             /* Lookup cell strip, adding to the field padding */
             for (; strip != NULL && strip->col < col;
@@ -388,3 +387,54 @@ hidrd_ttbl_render(char **pbuf, size_t *psize,
     obstack_free(&obstack, markup);
     return result;
 }
+
+
+#if 0
+void
+hidrd_ttbl_ins_cols(hidrd_ttbl *tbl, size_t col, size_t span)
+{
+    hidrd_ttbl_row     *row;
+    hidrd_ttbl_cell    *prev_cell;
+    hidrd_ttbl_cell    *cell;
+    size_t              cell_col;
+    
+    for (row = tbl->row; row != NULL; row = row->next)
+    {
+        /* Lookup cell */
+        for (prev_cell = NULL, cell_col = 0, cell = row->cell;
+             col < cell_col || col >= cell_col + cell->span;
+             cell_col += cell->span, prev_cell = cell, cell = cell->next);
+
+        /* If it is last cell */
+        if (cell->next == NULL)
+            /* Nothing to shift */
+            continue;
+
+        /* If it is not the exact cell */
+        if (col > cell_col)
+            /* Increase matching cell span */
+            cell->span += span;
+        /* Else, if it is not the first cell */
+        else if (prev_cell != NULL)
+            /* Increase previous cell span */
+            prev_cell->span += span;
+        else
+        {
+            /* Insert a new first cell */
+            cell = obstack_alloc(&tbl->obstack, sizeof(*cell));
+            cell->next = row->cell;
+            row->cell = cell;
+            cell->span = span;
+            cell->text = NULL;
+        }
+    }
+}
+
+
+void hidrd_ttbl_ins_rows(hidrd_ttbl *tbl, size_t line, size_t num)
+{
+    (void)tbl;
+    (void)line;
+    (void)num;
+}
+#endif

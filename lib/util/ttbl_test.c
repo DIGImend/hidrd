@@ -40,9 +40,15 @@ main(void)
 {
     hidrd_ttbl *tbl;
     size_t      i;
+    size_t      x;
+    size_t      y;
+    const char *str;
+    size_t      val;
     char       *buf;
     size_t      size;
     const char *expected;
+
+    hidrd_ttbl_delete(hidrd_ttbl_new());
 
     tbl = hidrd_ttbl_new();
     if (tbl == NULL)
@@ -62,6 +68,36 @@ main(void)
             ERROR(errno, "Failed formatting cell value");
     }
 
+    for (y = 0; y < 5 * 2 + 1; y++)
+        for (x = 0; x < 5 * 2 + 1; x++)
+        {
+            if (x == y && (x - 1) % 2 == 0)
+            {
+                str = hidrd_ttbl_get(tbl, x, y);
+                if (str == NULL)
+                    ERROR(0, "Unexpected NULL at (%zu, %zu)", x, y);
+                val = strtoul(str, NULL, 10);
+                if (val != ((x - 1) * (x - 1) / 4))
+                    ERROR(0, "Unexpected value at (%zu, %zu): %zu", x, y, val);
+            }
+            else if ((10 - x) == y && (x - 1) % 2 == 0)
+            {
+                str = hidrd_ttbl_get(tbl, x, y);
+                if (str == NULL)
+                    ERROR(0, "Unexpected NULL at (%zu, %zu)", x, y);
+                val = strtoul(str, NULL, 10);
+                if (val != ((x - 1) * (y - 1) / 4))
+                    ERROR(0, "Unexpected value at (%zu, %zu): %zu", x, y, val);
+            }
+            else
+            {
+                str = hidrd_ttbl_get(tbl, x, y);
+                if (str != NULL)
+                    ERROR(0, "Unexpected non-NULL value at (%zu, %zu): %s",
+                          x, y, str);
+            }
+        }
+
     if (!hidrd_ttbl_render(&buf, &size, tbl, 4))
         ERROR(errno, "Failed rendering the table");
 
@@ -79,6 +115,8 @@ main(void)
     if (memcmp(buf, expected, size) != 0)
         ERROR(0, "Unexpected output:\n%.*s\ninstead of:\n%s",
               size, buf, expected);
+
+    fprintf(stderr, "%.*s", size, buf);
 
     return 0;
 }

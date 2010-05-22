@@ -39,7 +39,8 @@ extern "C" {
 typedef struct hidrd_ttbl_cell hidrd_ttbl_cell;
 struct hidrd_ttbl_cell {
     hidrd_ttbl_cell    *next;   /**< Next cell in the row */
-    size_t              span;   /**< Number of columns this cell occupies */
+    size_t              skip;   /**< Number of columns to skip after this
+                                     cell */
     char               *text;   /**< Cell text; could be NULL */
 };
 
@@ -47,7 +48,8 @@ struct hidrd_ttbl_cell {
 typedef struct hidrd_ttbl_row hidrd_ttbl_row;
 struct hidrd_ttbl_row {
     hidrd_ttbl_row     *next;   /**< Next row in the table */
-    size_t              span;   /**< Number of lines this row occupies */
+    size_t              skip;   /**< Number of lines to skip after this
+                                     row */
     hidrd_ttbl_cell    *cell;   /**< First cell; could be NULL */
 };
 
