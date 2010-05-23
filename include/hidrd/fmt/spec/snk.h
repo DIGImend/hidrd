@@ -52,14 +52,14 @@ typedef enum hidrd_spec_snk_err {
 
 /** Specification example sink instance */
 typedef struct hidrd_spec_snk_inst {
-    hidrd_snk                   snk;    /**< Parent structure */
-    size_t                      indent; /**< Number of indent columns */
+    hidrd_snk                   snk;        /**< Parent structure */
+    size_t                      tabstop;    /**< Number of spaces per tab */
 
-    int                         depth;  /**< Current nesting depth */
-    hidrd_spec_snk_state       *state;  /**< Item state table stack */
+    int                         depth;      /**< Current nesting depth */
+    hidrd_spec_snk_state       *state;      /**< Item state table stack */
 
-    hidrd_spec_snk_ent_list     list;   /**< Entry list */
-    hidrd_spec_snk_err          err;    /**< Last error code */
+    hidrd_spec_snk_ent_list     list;       /**< Entry list */
+    hidrd_spec_snk_err          err;        /**< Last error code */
 } hidrd_spec_snk_inst;
 
 #ifdef __cplusplus

@@ -28,6 +28,7 @@
 #define __HIDRD_FMT_SPEC_SNK_ENT_LIST_H__
 
 #include <stddef.h>
+#include "hidrd/util/ttbl.h"
 #include "hidrd/fmt/spec/snk/ent.h"
 
 #ifdef __cplusplus
@@ -96,21 +97,36 @@ extern int hidrd_spec_snk_ent_list_min_depth(
                                     const hidrd_spec_snk_ent_list *list);
 
 /**
+ * Render entry list as a text table.
+ *
+ * @param psize     Location for output text table.
+ * @param list      Entry list to render.
+ * @param tabstop   Number of spaces per tab.
+ *
+ * @return True if rendered successfully, false otherwise (on memory
+ *         allocation failure).
+ */
+extern bool hidrd_spec_snk_ent_list_to_tbl(
+                                hidrd_ttbl                    **ptbl,
+                                const hidrd_spec_snk_ent_list  *list,
+                                size_t                          tabstop);
+
+/**
  * Render entry list text.
  *
  * @param pbuf      Location for output text buffer pointer.
  * @param psize     Location for output text buffer size.
  * @param list      Entry list to render.
- * @param indent    Number of indentation columns per nesting level.
+ * @param tabstop   Number of spaces per tab.
  *
  * @return True if rendered successfully, false otherwise (on memory
  *         allocation failure).
  */
 extern bool hidrd_spec_snk_ent_list_render(
-                                    void                          **pbuf,
-                                    size_t                         *psize,
-                                    const hidrd_spec_snk_ent_list  *list,
-                                    size_t                          indent);
+                                void                          **pbuf,
+                                size_t                         *psize,
+                                const hidrd_spec_snk_ent_list  *list,
+                                size_t                          tabstop);
 
 /**
  * Cleanup an entry list.

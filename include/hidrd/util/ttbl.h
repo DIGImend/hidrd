@@ -114,6 +114,106 @@ extern bool hidrd_ttbl_setvf(hidrd_ttbl    *tbl,
                              va_list        ap);
 
 /**
+ * Prepend a string to a table cell text; a missing cell is assumed to
+ * contain an empty string.
+ *
+ * @param tbl   Cell table to set the text into.
+ * @param col   Cell column to set the text into.
+ * @param line  Cell line to set the text into.
+ * @param str   String to prepend; NULL is considered an empty string.
+ */
+extern void hidrd_ttbl_prepend(hidrd_ttbl  *tbl,
+                               size_t       col,
+                               size_t       line,
+                               const char  *str);
+
+/**
+ * Prepend a string to a table cell text, with printf formatting; a missing
+ * cell is assumed to contain an empty string.
+ *
+ * @param tbl   Cell table to set the text into.
+ * @param col   Cell column to set the text into.
+ * @param line  Cell line to set the text into.
+ * @param fmt   Format string for the string to prepend.
+ * @param ...   Format arguments for the string to prepend.
+ *
+ * @return True if formatted successfully, false otherwise.
+ */
+extern bool hidrd_ttbl_prependf(hidrd_ttbl *tbl,
+                                size_t      col,
+                                size_t      line,
+                                const char *fmt,
+                                ...);
+
+/**
+ * Prepend a string to a table cell text, with printf formatting, va_list
+ * version; a missing cell is assumed to contain an empty string.
+ *
+ * @param tbl   Cell table to set the text into.
+ * @param col   Cell column to set the text into.
+ * @param line  Cell line to set the text into.
+ * @param fmt   Format string for the string to prepend.
+ * @param ap    Format arguments for the string to prepend.
+ *
+ * @return True if formatted successfully, false otherwise.
+ */
+extern bool hidrd_ttbl_prependvf(hidrd_ttbl    *tbl,
+                                 size_t         col,
+                                 size_t         line,
+                                 const char    *fmt,
+                                 va_list        ap);
+
+/**
+ * Append a string to a table cell text; a missing cell is assumed to
+ * contain an empty string.
+ *
+ * @param tbl   Cell table to set the text into.
+ * @param col   Cell column to set the text into.
+ * @param line  Cell line to set the text into.
+ * @param str   String to append; NULL is considered an empty string.
+ */
+extern void hidrd_ttbl_append(hidrd_ttbl   *tbl,
+                              size_t        col,
+                              size_t        line,
+                              const char   *str);
+
+/**
+ * Append a string to a table cell text, with printf formatting; a missing
+ * cell is assumed to contain an empty string.
+ *
+ * @param tbl   Cell table to set the text into.
+ * @param col   Cell column to set the text into.
+ * @param line  Cell line to set the text into.
+ * @param fmt   Format string for the string to append.
+ * @param ...   Format arguments for the string to append.
+ *
+ * @return True if formatted successfully, false otherwise.
+ */
+extern bool hidrd_ttbl_appendf(hidrd_ttbl  *tbl,
+                               size_t       col,
+                               size_t       line,
+                               const char  *fmt,
+                               ...);
+
+/**
+ * Append a string to a table cell text, with printf formatting, va_list
+ * version; a missing cell is assumed to contain an empty string.
+ *
+ * @param tbl   Cell table to set the text into.
+ * @param col   Cell column to set the text into.
+ * @param line  Cell line to set the text into.
+ * @param fmt   Format string for the string to append.
+ * @param ap    Format arguments for the string to append.
+ *
+ * @return True if formatted successfully, false otherwise.
+ */
+extern bool hidrd_ttbl_appendvf(hidrd_ttbl *tbl,
+                                size_t      col,
+                                size_t      line,
+                                const char *fmt,
+                                va_list     ap);
+
+/**
  * Get a table cell text.
  *
  * @param tbl   Cell table to set the text from.
