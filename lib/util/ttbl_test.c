@@ -35,18 +35,38 @@
 #define ERROR(_errno, _fmt, _args...) \
     error_at_line(1, _errno, __FILE__, __LINE__, _fmt, ##_args)
 
+#define CHECK_RENDER(_expected) \
+    do {                                                                \
+        const char *expected = _expected;                               \
+        char       *buf;                                                \
+        size_t      size;                                               \
+                                                                        \
+        if (!hidrd_ttbl_render(&buf, &size, tbl, 4))                    \
+            ERROR(errno, "Failed rendering the table");                 \
+                                                                        \
+        if (size != strlen(expected))                                   \
+            ERROR(0, "Unexpected output length: %zu instead of %zu",    \
+                  size, strlen(expected));                              \
+                                                                        \
+        if (memcmp(buf, expected, size) != 0)                           \
+            ERROR(0, "Unexpected output:\n%.*s\ninstead of:\n%s",       \
+                  size, buf, expected);                                 \
+                                                                        \
+        fprintf(stderr, "%.*s", size, buf);                             \
+                                                                        \
+        free(buf);                                                      \
+    } while (0)
+
 int
 main(void)
 {
     hidrd_ttbl *tbl;
     size_t      i;
+    size_t      j;
     size_t      x;
     size_t      y;
     const char *str;
     size_t      val;
-    char       *buf;
-    size_t      size;
-    const char *expected;
 
     hidrd_ttbl_delete(hidrd_ttbl_new());
 
@@ -98,25 +118,76 @@ main(void)
             }
         }
 
-    if (!hidrd_ttbl_render(&buf, &size, tbl, 4))
-        ERROR(errno, "Failed rendering the table");
+    CHECK_RENDER("0               0\n"
+                 "    1       3\n"
+                 "        4\n"
+                 "    3       9\n"
+                 "0               16\n");
 
-    expected =
-        "0               0\n"
-        "    1       3\n"
-        "        4\n"
-        "    3       9\n"
-        "0               16\n";
+    hidrd_ttbl_delete(tbl);
 
-    if (size != strlen(expected))
-        ERROR(0, "Unexpected output length: %zu instead of %zu",
-              size, strlen(expected));
+    tbl = hidrd_ttbl_new();
 
-    if (memcmp(buf, expected, size) != 0)
-        ERROR(0, "Unexpected output:\n%.*s\ninstead of:\n%s",
-              size, buf, expected);
+    for (y = 1; y <= 4; y++)
+        for (x = 1; x <= 4; x++)
+            hidrd_ttbl_setf(tbl, x, y, "%zu", x * y);
 
-    fprintf(stderr, "%.*s", size, buf);
+    CHECK_RENDER("1   2   3   4\n"
+                 "2   4   6   8\n"
+                 "3   6   9   12\n"
+                 "4   8   12  16\n");
+
+    for (i = 4; i >= 1; i--)
+    {
+        hidrd_ttbl_ins_cols(tbl, i, 1);
+        hidrd_ttbl_ins_rows(tbl, i, 1);
+    }
+
+    for (y = 1; y <= 8; y++)
+        for (x = 1; x <= 8; x++)
+        {
+            if ((y % 2 == 1) || (x % 2 == 1))
+            {
+                str = hidrd_ttbl_get(tbl, x, y);
+                if (str != NULL)
+                    ERROR(0, "Unexpected non-NULL value at (%zu, %zu): %s",
+                          x, y, str);
+            }
+            else
+            {
+                str = hidrd_ttbl_get(tbl, x, y);
+                if (str == NULL)
+                    ERROR(0, "Unexpected NULL value at (%zu, %zu)", x, y);
+                if (strtoul(str, NULL, 10) != (x * y / 4))
+                    ERROR(0, "Unexpected value at (%zu, %zu): %s",
+                          x, y, str);
+            }
+        }
+
+    CHECK_RENDER("1   2   3   4\n"
+                 "2   4   6   8\n"
+                 "3   6   9   12\n"
+                 "4   8   12  16\n");
+
+    for (i = 1; i <= 9; i += 2)
+    {
+        for (j = 1; j <= 9; j++)
+            hidrd_ttbl_set(tbl, i, j, (j % 2 == 1) ? "+" : "|");
+        for (j = 1; j <= 9; j++)
+            hidrd_ttbl_set(tbl, j, i, (j % 2 == 1) ? "+" : "-");
+    }
+
+    CHECK_RENDER("+   -   +   -   +   -   +   -   +\n"
+                 "|   1   |   2   |   3   |   4   |\n"
+                 "+   -   +   -   +   -   +   -   +\n"
+                 "|   2   |   4   |   6   |   8   |\n"
+                 "+   -   +   -   +   -   +   -   +\n"
+                 "|   3   |   6   |   9   |   12  |\n"
+                 "+   -   +   -   +   -   +   -   +\n"
+                 "|   4   |   8   |   12  |   16  |\n"
+                 "+   -   +   -   +   -   +   -   +\n");
+
+    hidrd_ttbl_delete(tbl);
 
     return 0;
 }

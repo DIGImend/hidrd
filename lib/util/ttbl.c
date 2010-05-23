@@ -146,10 +146,11 @@ hidrd_ttbl_set(hidrd_ttbl  *tbl,
                size_t       line,
                const char  *text)
 {
-    hidrd_ttbl_set(tbl, col, line, 
-                   (text == NULL)
-                    ? NULL
-                    : obstack_copy(&tbl->obstack, text, strlen(text) + 1));
+    hidrd_ttbl_seta(tbl, col, line, 
+                    (text == NULL)
+                        ? NULL
+                        : obstack_copy(&tbl->obstack, text,
+                                       strlen(text) + 1));
 }
 
 
@@ -235,7 +236,7 @@ hidrd_ttbl_delete(hidrd_ttbl *tbl)
     if (tbl == NULL)
         return;
 
-    obstack_free(&tbl->obstack, tbl->row);
+    obstack_free(&tbl->obstack, NULL);
     tbl->row = NULL;
 
     free(tbl);
@@ -384,7 +385,7 @@ hidrd_ttbl_render(char **pbuf, size_t *psize,
     markup = hidrd_ttbl_measure(&obstack, tbl);
     hidrd_ttbl_distribute(markup, tabstop);
     result = hidrd_ttbl_print(pbuf, psize, tbl, markup);
-    obstack_free(&obstack, markup);
+    obstack_free(&obstack, NULL);
     return result;
 }
 
@@ -410,15 +411,14 @@ hidrd_ttbl_ins_cols(hidrd_ttbl *tbl, size_t col, size_t span)
              cell_col += 1 + cell->skip,
              prev_cell = cell, cell = cell->next);
 
-        /* If it is the last cell */
-        if (cell->next == NULL)
-            /* Nothing to shift */
-            continue;
-
         /* If it is not the exact cell */
         if (col > cell_col)
-            /* Increase the cell skip */
-            cell->skip += span;
+        {
+            /* If it is not the last cell */
+            if (cell->next != NULL)
+                /* Increase the cell skip */
+                cell->skip += span;
+        }
         /* Else, if it is not the first cell */
         else if (prev_cell != NULL)
             /* Increase previous cell skip */
@@ -454,15 +454,14 @@ hidrd_ttbl_ins_rows(hidrd_ttbl *tbl, size_t line, size_t span)
          row_line += 1 + row->skip,
          prev_row = row, row = row->next);
 
-    /* If it is the last row */
-    if (row->next == NULL)
-        /* Nothing to shift */
-        return;
-
     /* If it is not the exact row */
     if (line > row_line)
-        /* Increase the row skip */
-        row->skip += span;
+    {
+        /* If it is not the last row */
+        if (row->next != NULL)
+            /* Increase the row skip */
+            row->skip += span;
+    }
     /* Else, if it is not the first row */
     else if (prev_row != NULL)
         /* Increase previous row skip */
