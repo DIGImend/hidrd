@@ -96,6 +96,11 @@ extern bool hidrd_spec_snk_ent_list_valid(
 extern int hidrd_spec_snk_ent_list_min_depth(
                                     const hidrd_spec_snk_ent_list *list);
 
+/** Code column number in table output */
+#define HIDRD_SPEC_SNK_ENT_LIST_CODE_COL    0
+/** Comment column number in table output */
+#define HIDRD_SPEC_SNK_ENT_LIST_CMNT_COL    1
+
 /**
  * Render entry list as a text table.
  *

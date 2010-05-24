@@ -206,8 +206,8 @@ hidrd_spec_snk_ent_list_to_tbl(hidrd_ttbl                     **ptbl,
             goto cleanup;
 
         /* Set the code cell contents */
-        if (!hidrd_ttbl_setf(tbl, 0, l, "%.*s",
-                             buf.len, (const char *)buf.ptr))
+        if (!hidrd_ttbl_setf(tbl, HIDRD_SPEC_SNK_ENT_LIST_CODE_COL, l,
+                             "%.*s", buf.len, (const char *)buf.ptr))
             goto cleanup;
 
         /* Reset the buffer contents */
@@ -218,7 +218,8 @@ hidrd_spec_snk_ent_list_to_tbl(hidrd_ttbl                     **ptbl,
          */
         /* Set the comment cell contents */
         if (p->comment != NULL && *p->comment != '\0' &&
-            !hidrd_ttbl_setf(tbl, 1, l, "; %s", p->comment))
+            !hidrd_ttbl_setf(tbl, HIDRD_SPEC_SNK_ENT_LIST_CMNT_COL, l,
+                             "; %s", p->comment))
                 goto cleanup;
     }
 
