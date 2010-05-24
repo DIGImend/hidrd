@@ -134,7 +134,7 @@ hidrd_code_snk_flush(hidrd_snk *snk)
         /* Insert comment start column before the leftmost column */
         hidrd_ttbl_ins_cols(tbl, 0, 1);
         for (l = 0; l < list->len; l++)
-            hidrd_ttbl_prepend(tbl, 0, l, "/*");
+            hidrd_ttbl_set(tbl, 0, l, "/*");
 
         /* Make room for our output */
         hidrd_ttbl_ins_cols(tbl, 0, 1);
