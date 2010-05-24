@@ -51,7 +51,8 @@ hidrd_spec_snk_err_to_str(hidrd_spec_snk_err err)
 
 
 bool
-hidrd_spec_snk_init(hidrd_snk *snk, char **perr, size_t tabstop)
+hidrd_spec_snk_init(hidrd_snk *snk, char **perr,
+                    size_t tabstop, bool dumps, bool comments)
 {
     hidrd_spec_snk_inst    *spec_snk    = (hidrd_spec_snk_inst *)snk;
     hidrd_spec_snk_state   *state       = NULL;
@@ -64,6 +65,8 @@ hidrd_spec_snk_init(hidrd_snk *snk, char **perr, size_t tabstop)
     state->usage_page   = HIDRD_USAGE_PAGE_UNDEFINED;
 
     spec_snk->tabstop   = tabstop;
+    spec_snk->dumps     = dumps;
+    spec_snk->comments  = comments;
 
     spec_snk->depth     = 0;
     spec_snk->state     = state;
@@ -89,9 +92,11 @@ failure:
 bool
 hidrd_spec_snk_initv(hidrd_snk *snk, char **perr, va_list ap)
 {
-    size_t  tabstop = va_arg(ap, size_t);
+    size_t  tabstop     = va_arg(ap, size_t);
+    bool    dumps       = (va_arg(ap, int) != 0);
+    bool    comments    = (va_arg(ap, int) != 0);
 
-    return hidrd_spec_snk_init(snk, perr, tabstop);
+    return hidrd_spec_snk_init(snk, perr, tabstop, dumps, comments);
 }
 
 
@@ -102,14 +107,27 @@ const hidrd_opt_spec hidrd_spec_snk_opts_spec[] = {
      .req   = false,
      .dflt  = {.u32 = 4},
      .desc  = "number of spaces per tab"},
+    {.name  = "dumps",
+     .type  = HIDRD_OPT_TYPE_BOOLEAN,
+     .req   = false,
+     .dflt  = {.boolean = false},
+     .desc  = "output item dumps"},
+    {.name  = "comments",
+     .type  = HIDRD_OPT_TYPE_BOOLEAN,
+     .req   = false,
+     .dflt  = {.boolean = true},
+     .desc  = "output comments"},
     {.name  = NULL}
 };
 
 bool
 hidrd_spec_snk_init_opts(hidrd_snk *snk, char **perr, const hidrd_opt *list)
 {
-    return hidrd_spec_snk_init(snk, perr,
-                               hidrd_opt_list_get_u32(list, "tabstop"));
+    return hidrd_spec_snk_init(
+                snk, perr,
+                hidrd_opt_list_get_u32(list, "tabstop"),
+                hidrd_opt_list_get_boolean(list, "dumps"),
+                hidrd_opt_list_get_boolean(list, "comments"));
 }
 #endif /* HIDRD_WITH_OPT */
 
@@ -170,7 +188,9 @@ hidrd_spec_snk_flush(hidrd_snk *snk)
 
     result = hidrd_spec_snk_ent_list_render(snk->pbuf, snk->psize,
                                             &spec_snk->list,
-                                            spec_snk->tabstop);
+                                            spec_snk->tabstop,
+                                            spec_snk->dumps,
+                                            spec_snk->comments);
 
     spec_snk->err = result ? HIDRD_SPEC_SNK_ERR_NONE
                            : HIDRD_SPEC_SNK_ERR_ALLOC;

@@ -98,8 +98,10 @@ extern int hidrd_spec_snk_ent_list_min_depth(
 
 /** Code column number in table output */
 #define HIDRD_SPEC_SNK_ENT_LIST_CODE_COL    0
+/** Item dump column number in table output */
+#define HIDRD_SPEC_SNK_ENT_LIST_DUMP_COL    1
 /** Comment column number in table output */
-#define HIDRD_SPEC_SNK_ENT_LIST_CMNT_COL    1
+#define HIDRD_SPEC_SNK_ENT_LIST_CMNT_COL    2
 
 /**
  * Render entry list as a text table.
@@ -107,6 +109,8 @@ extern int hidrd_spec_snk_ent_list_min_depth(
  * @param psize     Location for output text table.
  * @param list      Entry list to render.
  * @param tabstop   Number of spaces per tab.
+ * @param dumps     "Output item dumps" flag.
+ * @param comments  "Output item comments" flag.
  *
  * @return True if rendered successfully, false otherwise (on memory
  *         allocation failure).
@@ -114,7 +118,9 @@ extern int hidrd_spec_snk_ent_list_min_depth(
 extern bool hidrd_spec_snk_ent_list_to_tbl(
                                 hidrd_ttbl                    **ptbl,
                                 const hidrd_spec_snk_ent_list  *list,
-                                size_t                          tabstop);
+                                size_t                          tabstop,
+                                bool                            dumps,
+                                bool                            comments);
 
 /**
  * Render entry list text.
@@ -123,6 +129,8 @@ extern bool hidrd_spec_snk_ent_list_to_tbl(
  * @param psize     Location for output text buffer size.
  * @param list      Entry list to render.
  * @param tabstop   Number of spaces per tab.
+ * @param dumps     "Output item dumps" flag.
+ * @param comments  "Output item comments" flag.
  *
  * @return True if rendered successfully, false otherwise (on memory
  *         allocation failure).
@@ -131,7 +139,9 @@ extern bool hidrd_spec_snk_ent_list_render(
                                 void                          **pbuf,
                                 size_t                         *psize,
                                 const hidrd_spec_snk_ent_list  *list,
-                                size_t                          tabstop);
+                                size_t                          tabstop,
+                                bool                            dumps,
+                                bool                            comments);
 
 /**
  * Cleanup an entry list.

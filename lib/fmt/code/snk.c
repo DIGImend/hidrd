@@ -30,11 +30,11 @@
 
 static bool
 hidrd_code_snk_init(hidrd_snk *snk, char **perr,
-                    size_t tabstop, bool comments)
+                    size_t tabstop, bool comments, bool comments_comments)
 {
     hidrd_code_snk_inst    *code_snk    = (hidrd_code_snk_inst *)snk;
 
-    if (!hidrd_spec_snk_init(snk, perr, tabstop))
+    if (!hidrd_spec_snk_init(snk, perr, tabstop, false, comments_comments))
         return false;
 
     code_snk->comments = comments;
@@ -46,10 +46,12 @@ hidrd_code_snk_init(hidrd_snk *snk, char **perr,
 static bool
 hidrd_code_snk_initv(hidrd_snk *snk, char **perr, va_list ap)
 {
-    size_t  tabstop     = va_arg(ap, size_t);
-    bool    comments    = (va_arg(ap, int) != 0);
+    size_t  tabstop             = va_arg(ap, size_t);
+    bool    comments            = (va_arg(ap, int) != 0);
+    bool    comments_comments   = (va_arg(ap, int) != 0);
 
-    return hidrd_code_snk_init(snk, perr, tabstop, comments);
+    return hidrd_code_snk_init(snk, perr,
+                               tabstop, comments, comments_comments);
 }
 
 
@@ -65,6 +67,11 @@ static const hidrd_opt_spec hidrd_code_snk_opts_spec[] = {
      .req   = false,
      .dflt  = {.boolean = true},
      .desc  = "enable comments in specification example format"},
+    {.name  = "comments_comments",
+     .type  = HIDRD_OPT_TYPE_BOOLEAN,
+     .req   = false,
+     .dflt  = {.boolean = false},
+     .desc  = "enable comments in specification example format comments"},
     {.name  = NULL}
 };
 
@@ -74,7 +81,8 @@ hidrd_code_snk_init_opts(hidrd_snk *snk, char **perr, const hidrd_opt *list)
     return hidrd_code_snk_init(
                 snk, perr,
                 hidrd_opt_list_get_u32(list, "tabstop"),
-                hidrd_opt_list_get_boolean(list, "comments"));
+                hidrd_opt_list_get_boolean(list, "comments"),
+                hidrd_opt_list_get_boolean(list, "comments_comments"));
 }
 #endif /* HIDRD_WITH_OPT */
 
@@ -126,7 +134,10 @@ hidrd_code_snk_flush(hidrd_snk *snk)
     }
     else
     {
-        if (!hidrd_spec_snk_ent_list_to_tbl(&tbl, list, spec_snk->tabstop))
+        if (!hidrd_spec_snk_ent_list_to_tbl(&tbl, list,
+                                            spec_snk->tabstop,
+                                            spec_snk->dumps,
+                                            spec_snk->comments))
             goto cleanup;
 
         /* Add comment end string column right after the spec comments */
@@ -159,7 +170,8 @@ hidrd_code_snk_flush(hidrd_snk *snk)
                                       *item_p))
                 goto cleanup;
 
-        hidrd_buf_add_span(&buf, '\0', 1);
+        if (!hidrd_buf_add_span(&buf, '\0', 1))
+            goto cleanup;
         hidrd_ttbl_set(tbl, 0, l, (const char *)buf.ptr);
         hidrd_buf_reset(&buf);
     }

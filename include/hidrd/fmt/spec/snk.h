@@ -38,7 +38,7 @@ extern "C" {
  * Declarations of the specification example sink type methods and constants
  */
 extern bool hidrd_spec_snk_init(hidrd_snk *snk, char **perr,
-                                size_t tabstop);
+                                size_t tabstop, bool dumps, bool comments);
 extern bool hidrd_spec_snk_initv(hidrd_snk *snk, char **perr, va_list ap);
 extern const hidrd_opt_spec hidrd_spec_snk_opts_spec[];
 extern bool hidrd_spec_snk_init_opts(hidrd_snk         *snk,
@@ -70,6 +70,8 @@ typedef enum hidrd_spec_snk_err {
 typedef struct hidrd_spec_snk_inst {
     hidrd_snk                   snk;        /**< Parent structure */
     size_t                      tabstop;    /**< Number of spaces per tab */
+    bool                        dumps;      /**< "Output item dumps" flag */
+    bool                        comments;   /**< "Output comments" flag */
 
     int                         depth;      /**< Current nesting depth */
     hidrd_spec_snk_state       *state;      /**< Item state table stack */
