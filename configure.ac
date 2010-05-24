@@ -133,6 +133,13 @@ AC_ARG_ENABLE(
         [disable building specification example format support (requires tokens and names)]),
     [], [enable_spec_format="yes"])
 
+AC_ARG_ENABLE(
+    code-format,
+    AS_HELP_STRING(
+        [--disable-code-format],
+        [disable building source code format support (requires specification example format)]),
+    [], [enable_code_format="yes"])
+
 # Check for stream library dependencies
 if test "$enable_streams" = "yes"; then
     if test "$enable_opt" != "yes"; then
@@ -180,6 +187,14 @@ if test "$enable_spec_format" = "yes"; then
     fi
 fi
 
+# Check for code format dependencies
+if test "$enable_code_format" = "yes"; then
+    if test "$enable_spec_format" != "yes"; then
+        AC_MSG_WARN([specification example format is disabled, so disabling source code format])
+        enable_code_format="no"
+    fi
+fi
+
 # Check hidrd-convert tool dependencies
 if test "$enable_hidrd_convert" = "yes"; then
     if test "$enable_formats" != "yes"; then
@@ -198,6 +213,7 @@ AM_CONDITIONAL([ENABLE_TOKENS], [test "$enable_tokens" = "yes"])
 AM_CONDITIONAL([ENABLE_NAMES], [test "$enable_names" = "yes"])
 AM_CONDITIONAL([ENABLE_FMT_XML], [test "$enable_xml_format" = "yes"])
 AM_CONDITIONAL([ENABLE_FMT_SPEC], [test "$enable_spec_format" = "yes"])
+AM_CONDITIONAL([ENABLE_FMT_CODE], [test "$enable_code_format" = "yes"])
 
 # Output features to preprocessor and compiler
 if test "$enable_debug" = "yes"; then
@@ -254,6 +270,7 @@ AC_CONFIG_FILES([Makefile
                  include/hidrd/fmt/xml/Makefile
                  include/hidrd/fmt/spec/Makefile
                  include/hidrd/fmt/spec/snk/Makefile
+                 include/hidrd/fmt/code/Makefile
                  include/hidrd/usage/Makefile
 
                  lib/Makefile
@@ -272,6 +289,7 @@ AC_CONFIG_FILES([Makefile
                  lib/fmt/write_test_data/Makefile
                  lib/fmt/spec/Makefile
                  lib/fmt/spec/snk/Makefile
+                 lib/fmt/code/Makefile
                  lib/usage/Makefile
 
                  src/Makefile])

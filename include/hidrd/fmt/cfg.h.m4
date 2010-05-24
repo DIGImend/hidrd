@@ -61,4 +61,7 @@ dnl
 /** Defined if specification example format is supported */
 #'WITH_SPEC_DIRECTIVE()` HIDRD_FMT_WITH_SPEC
 
+/** Defined if source code format is supported */
+#'WITH_CODE_DIRECTIVE()` HIDRD_FMT_WITH_CODE
+
 #endif /* __HIDRD_FMT_CFG_H__ */'

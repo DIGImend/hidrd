@@ -1,5 +1,5 @@
 /** @file
- * @brief HID report descriptor - supported format list
+ * @brief HID report descriptor - source code sink
  *
  * Copyright (C) 2010 Nikolai Kondrashov
  *
@@ -24,44 +24,26 @@
  * @(#) $Id$
  */
 
-#include <strings.h>
-#include "hidrd/fmt/cfg.h"
-#include "hidrd/fmt/natv.h"
-#ifdef HIDRD_FMT_WITH_XML
-#include "hidrd/fmt/xml.h"
-#endif
-#ifdef HIDRD_FMT_WITH_SPEC
-#include "hidrd/fmt/spec.h"
-#endif
-#ifdef HIDRD_FMT_WITH_CODE
-#include "hidrd/fmt/code.h"
-#endif
-#include "hidrd/fmt/list.h"
+#ifndef __HIDRD_FMT_CODE_SNK_H__
+#define __HIDRD_FMT_CODE_SNK_H__
 
-/** Supported format list, terminated by NULL */
-const hidrd_fmt *hidrd_fmt_list[]  = {
-    &hidrd_natv,
-#ifdef HIDRD_FMT_WITH_XML
-    &hidrd_xml,
+#include "hidrd/fmt/spec/snk.h"
+
+#ifdef __cplusplus
+extern "C" {
 #endif
-#ifdef HIDRD_FMT_WITH_SPEC
-    &hidrd_spec,
+
+/** Source code sink type */
+const hidrd_snk_type    hidrd_code_snk;
+
+/** Source code sink instance */
+typedef struct hidrd_code_snk_inst {
+    hidrd_spec_snk_inst     spec_snk;   /**< Parent structure */
+    bool                    comments;   /**< "Comments enabled" flag */
+} hidrd_code_snk_inst;
+
+#ifdef __cplusplus
+} /* extern "C" */
 #endif
-#ifdef HIDRD_FMT_WITH_CODE
-    &hidrd_code,
-#endif
-    NULL
-};
 
-
-const hidrd_fmt *
-hidrd_fmt_list_lkp(const char *name)
-{
-    const hidrd_fmt   **pfmt;
-
-    for (pfmt = hidrd_fmt_list; *pfmt != NULL; pfmt++)
-        if (strcasecmp((*pfmt)->name, name) == 0)
-            return *pfmt;
-
-    return NULL;
-}
+#endif /* __HIDRD_FMT_CODE_SNK_H__ */

@@ -50,8 +50,8 @@ hidrd_spec_snk_err_to_str(hidrd_spec_snk_err err)
 }
 
 
-static bool
-init(hidrd_snk *snk, char **perr, size_t tabstop)
+bool
+hidrd_spec_snk_init(hidrd_snk *snk, char **perr, size_t tabstop)
 {
     hidrd_spec_snk_inst    *spec_snk    = (hidrd_spec_snk_inst *)snk;
     hidrd_spec_snk_state   *state       = NULL;
@@ -86,17 +86,17 @@ failure:
 }
 
 
-static bool
-hidrd_spec_snk_init(hidrd_snk *snk, char **perr, va_list ap)
+bool
+hidrd_spec_snk_initv(hidrd_snk *snk, char **perr, va_list ap)
 {
     size_t  tabstop = va_arg(ap, size_t);
 
-    return init(snk, perr, tabstop);
+    return hidrd_spec_snk_init(snk, perr, tabstop);
 }
 
 
 #ifdef HIDRD_WITH_OPT
-static const hidrd_opt_spec hidrd_spec_snk_opts_spec[] = {
+const hidrd_opt_spec hidrd_spec_snk_opts_spec[] = {
     {.name  = "tabstop",
      .type  = HIDRD_OPT_TYPE_U32,
      .req   = false,
@@ -105,16 +105,16 @@ static const hidrd_opt_spec hidrd_spec_snk_opts_spec[] = {
     {.name  = NULL}
 };
 
-static bool
+bool
 hidrd_spec_snk_init_opts(hidrd_snk *snk, char **perr, const hidrd_opt *list)
 {
-    return init(snk, perr,
-                hidrd_opt_list_get_u32(list, "tabstop"));
+    return hidrd_spec_snk_init(snk, perr,
+                               hidrd_opt_list_get_u32(list, "tabstop"));
 }
 #endif /* HIDRD_WITH_OPT */
 
 
-static bool
+bool
 hidrd_spec_snk_valid(const hidrd_snk *snk)
 {
     const hidrd_spec_snk_inst  *spec_snk    =
@@ -126,7 +126,7 @@ hidrd_spec_snk_valid(const hidrd_snk *snk)
 }
 
 
-static char *
+char *
 hidrd_spec_snk_errmsg(const hidrd_snk *snk)
 {
     const hidrd_spec_snk_inst  *spec_snk    =
@@ -136,7 +136,7 @@ hidrd_spec_snk_errmsg(const hidrd_snk *snk)
 }
 
 
-static bool
+bool
 hidrd_spec_snk_put(hidrd_snk *snk, const hidrd_item *item)
 {
     bool                    result;
@@ -153,7 +153,7 @@ hidrd_spec_snk_put(hidrd_snk *snk, const hidrd_item *item)
 }
 
 
-static bool
+bool
 hidrd_spec_snk_flush(hidrd_snk *snk)
 {
     bool                    result;
@@ -179,7 +179,7 @@ hidrd_spec_snk_flush(hidrd_snk *snk)
 }
 
 
-static void
+void
 hidrd_spec_snk_clnp(hidrd_snk *snk)
 {
     hidrd_spec_snk_inst   *spec_snk   = (hidrd_spec_snk_inst *)snk;
@@ -201,7 +201,7 @@ hidrd_spec_snk_clnp(hidrd_snk *snk)
 
 const hidrd_snk_type hidrd_spec_snk = {
     .size       = sizeof(hidrd_spec_snk_inst),
-    .init       = hidrd_spec_snk_init,
+    .init       = hidrd_spec_snk_initv,
 #ifdef HIDRD_WITH_OPT
     .init_opts  = hidrd_spec_snk_init_opts,
     .opts_spec  = hidrd_spec_snk_opts_spec,

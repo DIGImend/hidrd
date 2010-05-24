@@ -42,9 +42,18 @@ else
 WITH_SPEC_DIRECTIVE = undef
 endif
 
+if ENABLE_FMT_CODE
+WITH_CODE_DIRECTIVE = define
+SUBDIRS += code
+hidrd_fmt_HEADERS += code.h
+else
+WITH_CODE_DIRECTIVE = undef
+endif
+
 cfg.h: cfg.h.m4
 	m4 -DWITH_XML_DIRECTIVE=$(WITH_XML_DIRECTIVE) \
        -DWITH_SPEC_DIRECTIVE=$(WITH_SPEC_DIRECTIVE) \
+       -DWITH_CODE_DIRECTIVE=$(WITH_CODE_DIRECTIVE) \
         $< > $@
 
 dist_noinst_DATA = cfg.h.m4

@@ -65,7 +65,6 @@ hidrd_write_LDADD = \
     ../util/libhidrd_util.la
 
 if ENABLE_FMT_XML
-
 SUBDIRS += xml
 
 noinst_HEADERS += xml.h
@@ -85,19 +84,21 @@ hidrd_xml_test_LDADD = $(lib_LTLIBRARIES) ../strm/libhidrd_strm.la
 
 hidrd_read_CFLAGS += @LIBXML2_CFLAGS@
 hidrd_write_CFLAGS += @LIBXML2_CFLAGS@
-
 endif	# ENABLE_FMT_XML
 
 if ENABLE_FMT_SPEC
-
 SUBDIRS += spec
 check_SCRIPTS += hidrd_spec_read_test hidrd_spec_write_test
 TESTS += hidrd_spec_read_test hidrd_spec_write_test
 libhidrd_fmt_la_SOURCES += spec.c
 libhidrd_fmt_la_LIBADD += spec/libhidrd_spec.la
-
 endif	# ENABLE_FMT_SPEC
 
+if ENABLE_FMT_CODE
+SUBDIRS += code
+libhidrd_fmt_la_SOURCES += code.c
+libhidrd_fmt_la_LIBADD += code/libhidrd_code.la
+endif	# ENABLE_FMT_CODE
 
 if ENABLE_TESTS_INSTALL
 bin_PROGRAMS += $(check_PROGRAMS)

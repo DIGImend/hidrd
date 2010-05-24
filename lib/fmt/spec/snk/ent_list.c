@@ -205,10 +205,12 @@ hidrd_spec_snk_ent_list_to_tbl(hidrd_ttbl                     **ptbl,
         if (p->name != NULL && l != last_l && !hidrd_buf_add_str(&buf, ","))
             goto cleanup;
 
+        /* Terminate the buffer */
+        hidrd_buf_add_span(&buf, '\0', 1);
+
         /* Set the code cell contents */
-        if (!hidrd_ttbl_setf(tbl, HIDRD_SPEC_SNK_ENT_LIST_CODE_COL, l,
-                             "%.*s", buf.len, (const char *)buf.ptr))
-            goto cleanup;
+        hidrd_ttbl_set(tbl, HIDRD_SPEC_SNK_ENT_LIST_CODE_COL, l,
+                       (const char *)buf.ptr);
 
         /* Reset the buffer contents */
         hidrd_buf_reset(&buf);
