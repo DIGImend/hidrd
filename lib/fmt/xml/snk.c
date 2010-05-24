@@ -34,7 +34,7 @@
 
 
 static bool
-init(hidrd_snk *snk, char **perr, bool format, const char *schema)
+hidrd_xml_snk_init(hidrd_snk *snk, char **perr, bool format, const char *schema)
 {
     bool                    result      = false;
     hidrd_xml_snk_inst     *xml_snk     = (hidrd_xml_snk_inst *)snk;
@@ -130,7 +130,7 @@ hidrd_xml_snk_initv(hidrd_snk *snk, char **perr, va_list ap)
     bool        format  = (va_arg(ap, int) != 0);
     const char *schema  = va_arg(ap, const char *);
 
-    return init(snk, perr, format, schema);
+    return hidrd_xml_snk_init(snk, perr, format, schema);
 }
 
 
@@ -160,7 +160,8 @@ static const hidrd_opt_spec hidrd_xml_snk_opts_spec[] = {
 static bool
 hidrd_xml_snk_init_opts(hidrd_snk *snk, char **perr, const hidrd_opt *list)
 {
-    return init(snk, perr,
+    return hidrd_xml_snk_init(
+                snk, perr,
                 hidrd_opt_list_get_boolean(list, "format"),
                 hidrd_opt_list_get_string(list, "schema"));
 }

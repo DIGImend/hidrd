@@ -32,7 +32,7 @@
 
 
 static bool
-init(hidrd_src *src, char **perr, const char *schema)
+hidrd_xml_src_init(hidrd_src *src, char **perr, const char *schema)
 {
     bool                    result  = false;
     hidrd_xml_src_inst     *xml_src = (hidrd_xml_src_inst *)src;
@@ -101,7 +101,7 @@ hidrd_xml_src_initv(hidrd_src *src, char **perr, va_list ap)
 {
     const char *schema  = va_arg(ap, const char *);
 
-    return init(src, perr, schema);
+    return hidrd_xml_src_init(src, perr, schema);
 }
 
 
@@ -120,7 +120,8 @@ static const hidrd_opt_spec hidrd_xml_src_opts_spec[] = {
 static bool
 hidrd_xml_src_init_opts(hidrd_src *src, char **perr, const hidrd_opt *list)
 {
-    return init(src, perr, hidrd_opt_list_get_string(list, "schema"));
+    return hidrd_xml_src_init(src, perr,
+                              hidrd_opt_list_get_string(list, "schema"));
 }
 #endif /* HIDRD_WITH_OPT */
 

@@ -27,7 +27,7 @@
 #include "hidrd/fmt/natv/snk.h"
 
 static bool
-init(hidrd_snk *snk, char **perr)
+hidrd_natv_snk_init(hidrd_snk *snk, char **perr)
 {
     hidrd_natv_snk_inst    *natv_snk    = (hidrd_natv_snk_inst *)snk;
 
@@ -51,7 +51,7 @@ static bool
 hidrd_natv_snk_initv(hidrd_snk *snk, char **perr, va_list ap)
 {
     (void)ap;
-    return init(snk, perr);
+    return hidrd_natv_snk_init(snk, perr);
 }
 
 

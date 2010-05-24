@@ -29,7 +29,8 @@
 #include "hidrd/fmt/code/snk.h"
 
 static bool
-init(hidrd_snk *snk, char **perr, size_t tabstop, bool comments)
+hidrd_code_snk_init(hidrd_snk *snk, char **perr,
+                    size_t tabstop, bool comments)
 {
     hidrd_code_snk_inst    *code_snk    = (hidrd_code_snk_inst *)snk;
 
@@ -48,7 +49,7 @@ hidrd_code_snk_initv(hidrd_snk *snk, char **perr, va_list ap)
     size_t  tabstop     = va_arg(ap, size_t);
     bool    comments    = (va_arg(ap, int) != 0);
 
-    return init(snk, perr, tabstop, comments);
+    return hidrd_code_snk_init(snk, perr, tabstop, comments);
 }
 
 
@@ -70,7 +71,8 @@ static const hidrd_opt_spec hidrd_code_snk_opts_spec[] = {
 static bool
 hidrd_code_snk_init_opts(hidrd_snk *snk, char **perr, const hidrd_opt *list)
 {
-    return init(snk, perr,
+    return hidrd_code_snk_init(
+                snk, perr,
                 hidrd_opt_list_get_u32(list, "tabstop"),
                 hidrd_opt_list_get_boolean(list, "comments"));
 }
