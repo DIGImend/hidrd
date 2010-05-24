@@ -303,6 +303,8 @@ hidrd_ttbl_measure(struct obstack *obstack, const hidrd_ttbl *tbl)
 static hidrd_ttbl_strip *
 hidrd_ttbl_distribute(hidrd_ttbl_strip *markup, size_t tabstop)
 {
+    assert(tabstop > 0);
+
     for (; markup != NULL; markup = markup->next)
         markup->width =
             markup->max_len + (tabstop - markup->max_len % tabstop);
@@ -380,6 +382,9 @@ hidrd_ttbl_render(char **pbuf, size_t *psize,
     struct obstack      obstack;
     hidrd_ttbl_strip   *markup;
     bool                result;
+
+    assert(tbl != NULL);
+    assert(tabstop > 0);
 
     obstack_init(&obstack);
     markup = hidrd_ttbl_measure(&obstack, tbl);
@@ -481,146 +486,6 @@ hidrd_ttbl_ins_rows(hidrd_ttbl *tbl, size_t line, size_t span)
         cell->text = NULL;
         row->cell = cell;
     }
-}
-
-
-bool
-hidrd_ttbl_appendvf(hidrd_ttbl *tbl,
-                    size_t      col,
-                    size_t      line,
-                    const char *fmt,
-                    va_list     ap)
-{
-    va_list     ap_copy;
-    int         rc;
-    size_t      sfx_len;
-    const char *orig_text;
-    size_t      orig_len;
-    size_t      size;
-    char       *text;
-
-    va_copy(ap_copy, ap);
-    rc = vsnprintf(NULL, 0, fmt, ap_copy);
-    va_end(ap_copy);
-    if (rc < 0)
-        return false;
-
-    sfx_len = (size_t)rc;
-
-    orig_text = hidrd_ttbl_get(tbl, col, line);
-    if (orig_text != NULL)
-        orig_len = strlen(orig_text);
-    else
-    {
-        orig_text = "";
-        orig_len = 0;
-    }
-
-    size = orig_len + sfx_len + 1;
-    text = obstack_alloc(&tbl->obstack, size);
-    memcpy(text, orig_text, orig_len);
-    vsnprintf(text + orig_len, size - orig_len, fmt, ap);
-    hidrd_ttbl_seta(tbl, col, line, text);
-
-    return true;
-}
-
-
-bool
-hidrd_ttbl_appendf(hidrd_ttbl  *tbl,
-                   size_t       col,
-                   size_t       line,
-                   const char  *fmt,
-                   ...)
-{
-    bool    result;
-    va_list ap;
-
-    va_start(ap, fmt);
-    result = hidrd_ttbl_appendvf(tbl, col, line, fmt, ap);
-    va_end(ap);
-
-    return result;
-}
-
-
-void
-hidrd_ttbl_append(hidrd_ttbl   *tbl,
-                  size_t        col,
-                  size_t        line,
-                  const char   *str)
-{
-    (void)hidrd_ttbl_appendf(tbl, col, line, "%s", str);
-}
-
-
-bool
-hidrd_ttbl_prependvf(hidrd_ttbl    *tbl,
-                     size_t         col,
-                     size_t         line,
-                     const char    *fmt,
-                     va_list        ap)
-{
-    va_list     ap_copy;
-    int         rc;
-    size_t      pfx_len;
-    const char *orig_text;
-    size_t      orig_len;
-    size_t      size;
-    char       *text;
-
-    va_copy(ap_copy, ap);
-    rc = vsnprintf(NULL, 0, fmt, ap_copy);
-    va_end(ap_copy);
-    if (rc < 0)
-        return false;
-
-    pfx_len = (size_t)rc;
-
-    orig_text = hidrd_ttbl_get(tbl, col, line);
-    if (orig_text != NULL)
-        orig_len = strlen(orig_text);
-    else
-    {
-        orig_text = "";
-        orig_len = 0;
-    }
-
-    size = pfx_len + orig_len + 1;
-    text = obstack_alloc(&tbl->obstack, size);
-    vsnprintf(text, pfx_len + 1, fmt, ap);
-    memcpy(text + pfx_len, orig_text, orig_len + 1);
-    hidrd_ttbl_seta(tbl, col, line, text);
-
-    return true;
-}
-
-
-bool
-hidrd_ttbl_prependf(hidrd_ttbl *tbl,
-                    size_t      col,
-                    size_t      line,
-                    const char *fmt,
-                    ...)
-{
-    bool    result;
-    va_list ap;
-
-    va_start(ap, fmt);
-    result = hidrd_ttbl_prependvf(tbl, col, line, fmt, ap);
-    va_end(ap);
-
-    return result;
-}
-
-
-void
-hidrd_ttbl_prepend(hidrd_ttbl  *tbl,
-                   size_t       col,
-                   size_t       line,
-                   const char  *str)
-{
-    (void)hidrd_ttbl_prependf(tbl, col, line, "%s", str);
 }
 
 
