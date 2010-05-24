@@ -32,5 +32,15 @@ libhidrd_xml_la_LIBADD = \
 libhidrd_xml_la_CFLAGS = @LIBXML2_CFLAGS@
 libhidrd_xml_la_LDFLAGS = @LIBXML2_LIBS@
 
+dist_noinst_DATA = hidrd.xsd.m4
+
+hidrd.xsd: hidrd.xsd.m4 \
+           @top_srcdir@/m4/hidrd/*.m4 @top_srcdir@/db/usage/*.m4
+	m4 -I "@top_srcdir@" $< > $@
+
+BUILT_SOURCES = hidrd.xsd
+CLEANFILES = $(BUILT_SOURCES)
+
 schemadir = $(datadir)/xml/schema
-dist_schema_DATA = hidrd.xsd
+schema_DATA = hidrd.xsd
+
