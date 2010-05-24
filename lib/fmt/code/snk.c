@@ -43,7 +43,7 @@ init(hidrd_snk *snk, char **perr, size_t tabstop, bool comments)
 
 
 static bool
-hidrd_code_snk_init(hidrd_snk *snk, char **perr, va_list ap)
+hidrd_code_snk_initv(hidrd_snk *snk, char **perr, va_list ap)
 {
     size_t  tabstop     = va_arg(ap, size_t);
     bool    comments    = (va_arg(ap, int) != 0);
@@ -180,7 +180,7 @@ cleanup:
 
 const hidrd_snk_type hidrd_code_snk = {
     .size       = sizeof(hidrd_code_snk_inst),
-    .init       = hidrd_code_snk_init,
+    .initv      = hidrd_code_snk_initv,
 #ifdef HIDRD_WITH_OPT
     .init_opts  = hidrd_code_snk_init_opts,
     .opts_spec  = hidrd_code_snk_opts_spec,

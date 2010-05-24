@@ -97,7 +97,7 @@ cleanup:
 
 
 static bool
-hidrd_xml_src_init(hidrd_src *src, char **perr, va_list ap)
+hidrd_xml_src_initv(hidrd_src *src, char **perr, va_list ap)
 {
     const char *schema  = va_arg(ap, const char *);
 
@@ -295,7 +295,7 @@ hidrd_xml_src_clnp(hidrd_src *src)
 
 const hidrd_src_type hidrd_xml_src = {
     .size       = sizeof(hidrd_xml_src_inst),
-    .init       = hidrd_xml_src_init,
+    .initv      = hidrd_xml_src_initv,
 #ifdef HIDRD_WITH_OPT
     .init_opts  = hidrd_xml_src_init_opts,
     .opts_spec  = hidrd_xml_src_opts_spec,

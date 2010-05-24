@@ -54,9 +54,9 @@ typedef struct hidrd_src hidrd_src;
  *
  * @return True if the initialization succeeded, false otherwise.
  */
-typedef bool hidrd_src_type_init_fn(hidrd_src  *src,
-                                    char      **perr,
-                                    va_list     ap);
+typedef bool hidrd_src_type_initv_fn(hidrd_src     *src,
+                                     char         **perr,
+                                     va_list        ap);
 
 #ifdef HIDRD_WITH_OPT
 /**
@@ -137,7 +137,7 @@ typedef void hidrd_src_type_clnp_fn(hidrd_src    *src);
 /** Source type */
 typedef struct hidrd_src_type {
     size_t                          size;       /**< Instance size */
-    hidrd_src_type_init_fn         *init;
+    hidrd_src_type_initv_fn        *initv;
 #ifdef HIDRD_WITH_OPT
     hidrd_src_type_init_opts_fn    *init_opts;
     const hidrd_opt_spec           *opts_spec;

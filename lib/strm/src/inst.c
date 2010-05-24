@@ -109,9 +109,9 @@ hidrd_src_initv(hidrd_src      *src,
     src->size   = size;
     src->error  = false;
 
-    if (src->type->init != NULL)
+    if (src->type->initv != NULL)
     {
-        if (!(*src->type->init)(src, perr, ap))
+        if (!(*src->type->initv)(src, perr, ap))
             return false;
     }
     else if (perr != NULL)

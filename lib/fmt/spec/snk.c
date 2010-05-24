@@ -201,7 +201,7 @@ hidrd_spec_snk_clnp(hidrd_snk *snk)
 
 const hidrd_snk_type hidrd_spec_snk = {
     .size       = sizeof(hidrd_spec_snk_inst),
-    .init       = hidrd_spec_snk_initv,
+    .initv      = hidrd_spec_snk_initv,
 #ifdef HIDRD_WITH_OPT
     .init_opts  = hidrd_spec_snk_init_opts,
     .opts_spec  = hidrd_spec_snk_opts_spec,

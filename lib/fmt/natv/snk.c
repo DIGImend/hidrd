@@ -48,7 +48,7 @@ init(hidrd_snk *snk, char **perr)
 
 
 static bool
-hidrd_natv_snk_init(hidrd_snk *snk, char **perr, va_list ap)
+hidrd_natv_snk_initv(hidrd_snk *snk, char **perr, va_list ap)
 {
     (void)ap;
     return init(snk, perr);
@@ -181,7 +181,7 @@ hidrd_natv_snk_clnp(hidrd_snk *snk)
 
 const hidrd_snk_type hidrd_natv_snk = {
     .size   = sizeof(hidrd_natv_snk_inst),
-    .init   = hidrd_natv_snk_init,
+    .initv  = hidrd_natv_snk_initv,
     .valid  = hidrd_natv_snk_valid,
     .errmsg = hidrd_natv_snk_errmsg,
     .put    = hidrd_natv_snk_put,

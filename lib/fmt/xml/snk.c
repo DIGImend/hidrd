@@ -125,7 +125,7 @@ cleanup:
 
 
 static bool
-hidrd_xml_snk_init(hidrd_snk *snk, char **perr, va_list ap)
+hidrd_xml_snk_initv(hidrd_snk *snk, char **perr, va_list ap)
 {
     bool        format  = (va_arg(ap, int) != 0);
     const char *schema  = va_arg(ap, const char *);
@@ -323,7 +323,7 @@ hidrd_xml_snk_put(hidrd_snk *snk, const hidrd_item *item)
 
 const hidrd_snk_type hidrd_xml_snk = {
     .size       = sizeof(hidrd_xml_snk_inst),
-    .init       = hidrd_xml_snk_init,
+    .initv      = hidrd_xml_snk_initv,
 #ifdef HIDRD_WITH_OPT
     .init_opts  = hidrd_xml_snk_init_opts,
     .opts_spec  = hidrd_xml_snk_opts_spec,

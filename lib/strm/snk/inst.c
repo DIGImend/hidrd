@@ -107,9 +107,9 @@ hidrd_snk_initv(hidrd_snk  *snk,
     snk->pbuf  = pbuf;
     snk->psize = psize;
 
-    if (snk->type->init != NULL)
+    if (snk->type->initv != NULL)
     {
-        if (!(*snk->type->init)(snk, perr, ap))
+        if (!(*snk->type->initv)(snk, perr, ap))
             return false;
     }
     else if (perr != NULL)

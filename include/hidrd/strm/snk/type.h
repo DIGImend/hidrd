@@ -54,9 +54,9 @@ typedef struct hidrd_snk hidrd_snk;
  *
  * @return True if the initialization succeeded, false otherwise.
  */
-typedef bool hidrd_snk_type_init_fn(hidrd_snk  *snk,
-                                    char      **perr,
-                                    va_list     ap);
+typedef bool hidrd_snk_type_initv_fn(hidrd_snk     *snk,
+                                     char         **perr,
+                                     va_list        ap);
 
 #ifdef HIDRD_WITH_OPT
 /**
@@ -126,7 +126,7 @@ typedef void hidrd_snk_type_clnp_fn(hidrd_snk  *snk);
 /** Sink type */
 typedef struct hidrd_snk_type {
     size_t                          size;       /**< Instance size */
-    hidrd_snk_type_init_fn         *init;
+    hidrd_snk_type_initv_fn        *initv;
 #ifdef HIDRD_WITH_OPT
     hidrd_snk_type_init_opts_fn    *init_opts;
     const hidrd_opt_spec           *opts_spec;
