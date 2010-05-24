@@ -125,6 +125,9 @@ hidrd_usage_id_desc_list_lkp_by_token(const hidrd_usage_id_desc    *list,
      .type_set  = _type_set,                        \
      _U_TOKEN(#_token) _U_NAME(_name)}
 
+const hidrd_usage_id_desc   hidrd_usage_id_desc_list_undefined[1] = {
+    _U(UNDEFINED, undefined, "undefined", HIDRD_USAGE_TYPE_SET_EMPTY)
+};
 'dnl
 pushdef(`TYPE_SET_ITER',
 `ifelse(len(`$1'), 0, `',

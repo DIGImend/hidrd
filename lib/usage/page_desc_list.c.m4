@@ -62,7 +62,7 @@ dnl
 #include "hidrd/usage/page_desc_list.h"
 
 const hidrd_usage_page_desc hidrd_usage_page_desc_list['dnl
-pushdef(`page_num', `0')dnl
+pushdef(`page_num', `1')dnl
 pushdef(`PAGE', `define(`page_num', incr(page_num))')dnl
 include(`db/usage/page.m4')dnl
 popdef(`PAGE')dnl
@@ -87,6 +87,8 @@ popdef(`page_num')dnl
      .id_list = hidrd_usage_id_desc_list_##_token,          \
      .id_num = sizeof(hidrd_usage_id_desc_list_##_token) /  \
               sizeof(*hidrd_usage_id_desc_list_##_token)}
+
+    _P(UNDEFINED, undefined, undefined, "undefined"),
 
 'dnl
 pushdef(`PAGE',

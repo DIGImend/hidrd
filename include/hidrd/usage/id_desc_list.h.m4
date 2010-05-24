@@ -80,6 +80,8 @@ const hidrd_usage_id_desc *hidrd_usage_id_desc_list_lkp_by_token(
                                         const char                 *token);
 #endif
 
+/** Undefined page ID list */
+extern const hidrd_usage_id_desc    hidrd_usage_id_desc_list_undefined[1];
 'dnl
 pushdef(`PAGE',
 `/** capitalize_first($3) page ID list */

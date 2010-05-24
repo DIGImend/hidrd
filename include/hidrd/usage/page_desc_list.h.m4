@@ -65,7 +65,7 @@ extern "C" {
 #endif
 
 extern const hidrd_usage_page_desc hidrd_usage_page_desc_list['dnl
-pushdef(`page_num', `0')dnl
+pushdef(`page_num', `1')dnl
 pushdef(`PAGE', `define(`page_num', incr(page_num))')dnl
 include(`db/usage/page.m4')dnl
 popdef(`PAGE')dnl
