@@ -44,14 +44,16 @@ hidrd_bool_from_str(bool *pvalue, const char *str)
 
     do {
         if (hidrd_str_ncasecmpn("true", tkn, len) == 0 ||
-            hidrd_str_ncasecmpn("yes", tkn, len) == 0)
+            hidrd_str_ncasecmpn("yes", tkn, len) == 0 ||
+            hidrd_str_ncasecmpn("on", tkn, len) == 0)
         {
             value = true;
             break;
         }
 
         if (hidrd_str_ncasecmpn("false", tkn, len) == 0 ||
-            hidrd_str_ncasecmpn("no", tkn, len) == 0)
+            hidrd_str_ncasecmpn("no", tkn, len) == 0 ||
+            hidrd_str_ncasecmpn("off", tkn, len) == 0)
         {
             value = false;
             break;
