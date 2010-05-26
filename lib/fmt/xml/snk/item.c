@@ -647,7 +647,11 @@ xml_snk_item_basic(hidrd_xml_snk_inst  *xml_snk,
                          hidrd_item_basic_tag_to_dec(
                              hidrd_item_basic_get_tag(item))),
                     ATTR(tag, U32,
-                         (uint32_t)hidrd_item_basic_get_data_bytes(item)));
+                         (uint32_t)hidrd_item_basic_get_data_bytes(item)),
+                    CONTENT(HEX,
+                            /* We promise we won't change it */
+                            hidrd_item_basic_get_data((hidrd_item *)item)),
+                            hidrd_item_basic_get_data_bytes(item));
     }
 }
 
