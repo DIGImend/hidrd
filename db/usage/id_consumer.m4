@@ -377,7 +377,7 @@ ID(`028B',  `AC_forward_msg',                   `Sel',  `AC forward msg')dnl
 ID(`028C',  `AC_send',                          `Sel',  `AC send')dnl
 ID(`028D',  `AC_attach_file',                   `Sel',  `AC attach file')dnl
 ID(`028E',  `AC_upload',                        `Sel',  `AC upload')dnl
-ID(`028F',  `AC_download_and_save_as',          `Sel',  ``AC download (save target as)'')dnl
+ID(`028F',  `AC_download_and_save_as',          `Sel',  `AC download (save target as)')dnl
 ID(`0290',  `AC_set_borders',                   `Sel',  `AC set borders')dnl
 ID(`0291',  `AC_insert_row',                    `Sel',  `AC insert row')dnl
 ID(`0292',  `AC_insert_column',                 `Sel',  `AC insert column')dnl
