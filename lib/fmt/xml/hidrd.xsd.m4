@@ -471,9 +471,9 @@ dnl
                 </xsd:annotation>
             </xsd:enumeration>'
 pushdef(PAGE,dnl
-`            <xsd:enumeration value="lowercase($2)">
+`            <xsd:enumeration value="xml_attvalue(lowercase(`$2'))">
                 <xsd:annotation>
-                    <xsd:documentation>capitalize_first($3)</xsd:documentation>
+                    <xsd:documentation>xml_cdata(capitalize_first(`$3'))</xsd:documentation>
                 </xsd:annotation>
             </xsd:enumeration>
 ')dnl
@@ -729,10 +729,46 @@ popdef(`PAGE')dnl
             <xsd:maxLength value="4" />
         </xsd:restriction>
     </xsd:simpleType>
-    <!-- FIXME provide symbolic usage reference -->
-    <xsd:simpleType name="usage_token">
+    <xsd:simpleType name="undefined_usage_token">
+        <xsd:annotation>
+            <xsd:documentation>Undefined page</xsd:documentation>
+        </xsd:annotation>
         <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="undefined_undefined">
+                <xsd:annotation>
+                    <xsd:documentation>Undefined</xsd:documentation>
+                </xsd:annotation>
+            </xsd:enumeration>
         </xsd:restriction>
+    </xsd:simpleType>
+'pushdef(`PAGE',
+`ifelse(eval(PAGE_ID_NUM(`$2') > 0), 1,
+`pushdef(`ID',
+`'            <xsd:enumeration value="`xml_attvalue'(lowercase($2)_``'lowercase'(`$'2))">
+                <xsd:annotation>
+                    <xsd:documentation>`xml_cdata'(`capitalize_first'(`$'4) (`$'3))</xsd:documentation>
+                </xsd:annotation>
+            </xsd:enumeration>
+)dnl
+    <xsd:simpleType name="xml_attvalue(lowercase($2)_usage_token)">
+        <xsd:annotation>
+            <xsd:documentation>xml_cdata(capitalize_first($3) page)</xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string">
+sinclude(`db/usage/id_'lowercase($2)`.m4')dnl
+        </xsd:restriction>
+    </xsd:simpleType>
+popdef(`ID')dnl
+')')dnl
+include(`db/usage/page.m4')dnl
+popdef(`PAGE')dnl
+`    <xsd:simpleType name="usage_token">
+        <xsd:union memberTypes="undefined_usage_token'dnl
+pushdef(`PAGE', `ifelse(eval(PAGE_ID_NUM(`$2') > 0), 1,
+                        ` 'xml_attvalue( lowercase(`$2')_usage_token))`'')dnl
+include(`db/usage/page.m4')dnl
+popdef(`PAGE')dnl
+`" />
     </xsd:simpleType>
     <xsd:simpleType name="usage">
         <xsd:union memberTypes="usage_hex usage_token" />
