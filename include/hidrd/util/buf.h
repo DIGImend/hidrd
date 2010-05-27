@@ -57,6 +57,13 @@ typedef struct hidrd_buf {
 extern void hidrd_buf_init(hidrd_buf *buf);
 
 /**
+ * Reset buffer contents
+ *
+ * @param buf   Buffer to reset.
+ */
+extern void hidrd_buf_reset(hidrd_buf *buf);
+
+/**
  * Cleanup a buffer.
  *
  * @param buf   Buffer to cleanup.

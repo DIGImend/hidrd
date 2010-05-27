@@ -24,11 +24,35 @@
  * @(#) $Id$
  */
 
+#include "hidrd/cfg.h"
 #include "hidrd/fmt/spec/snk.h"
 #include "snk/item.h"
 
-static bool
-init(hidrd_snk *snk, size_t indent)
+static char *
+hidrd_spec_snk_err_to_str(hidrd_spec_snk_err err)
+{
+    const char *msg;
+
+    switch (err)
+    {
+        case HIDRD_SPEC_SNK_ERR_NONE:
+            msg = "";
+            break;
+        case HIDRD_SPEC_SNK_ERR_ALLOC:
+            msg = "memory allocation failure";
+            break;
+        default:
+            assert(!"Unknown error code");
+            return NULL;
+    }
+
+    return strdup(msg);
+}
+
+
+bool
+hidrd_spec_snk_init(hidrd_snk *snk, char **perr,
+                    size_t tabstop, bool dumps, bool comments)
 {
     hidrd_spec_snk_inst    *spec_snk    = (hidrd_spec_snk_inst *)snk;
     hidrd_spec_snk_state   *state       = NULL;
@@ -40,12 +64,17 @@ init(hidrd_snk *snk, size_t indent)
     state->prev         = NULL;
     state->usage_page   = HIDRD_USAGE_PAGE_UNDEFINED;
 
-    spec_snk->indent    = indent;
+    spec_snk->tabstop   = tabstop;
+    spec_snk->dumps     = dumps;
+    spec_snk->comments  = comments;
 
     spec_snk->depth     = 0;
     spec_snk->state     = state;
 
     hidrd_spec_snk_ent_list_init(&spec_snk->list);
+
+    if (perr != NULL)
+        *perr = hidrd_spec_snk_err_to_str(HIDRD_SPEC_SNK_ERR_NONE);
 
     return true;
 
@@ -53,39 +82,57 @@ failure:
 
     free(state);
 
+    if (perr != NULL)
+        *perr = hidrd_spec_snk_err_to_str(HIDRD_SPEC_SNK_ERR_ALLOC);
+
     return false;
 }
 
 
-static bool
-hidrd_spec_snk_init(hidrd_snk *snk, va_list ap)
+bool
+hidrd_spec_snk_initv(hidrd_snk *snk, char **perr, va_list ap)
 {
-    size_t  indent  = va_arg(ap, size_t);
+    size_t  tabstop     = va_arg(ap, size_t);
+    bool    dumps       = (va_arg(ap, int) != 0);
+    bool    comments    = (va_arg(ap, int) != 0);
 
-    return init(snk, indent);
+    return hidrd_spec_snk_init(snk, perr, tabstop, dumps, comments);
 }
 
 
 #ifdef HIDRD_WITH_OPT
-static const hidrd_opt_spec hidrd_spec_snk_opts_spec[] = {
-    {.name  = "indent",
+const hidrd_opt_spec hidrd_spec_snk_opts_spec[] = {
+    {.name  = "tabstop",
      .type  = HIDRD_OPT_TYPE_U32,
      .req   = false,
      .dflt  = {.u32 = 4},
-     .desc  = "Number of indentation columns per nesting level"},
+     .desc  = "number of spaces per tab"},
+    {.name  = "dumps",
+     .type  = HIDRD_OPT_TYPE_BOOLEAN,
+     .req   = false,
+     .dflt  = {.boolean = false},
+     .desc  = "output item dumps"},
+    {.name  = "comments",
+     .type  = HIDRD_OPT_TYPE_BOOLEAN,
+     .req   = false,
+     .dflt  = {.boolean = true},
+     .desc  = "output comments"},
     {.name  = NULL}
 };
 
-static bool
-hidrd_spec_snk_init_opts(hidrd_snk *snk, const hidrd_opt *list)
+bool
+hidrd_spec_snk_init_opts(hidrd_snk *snk, char **perr, const hidrd_opt *list)
 {
-    return init(snk,
-                hidrd_opt_list_get_u32(list, "indent"));
+    return hidrd_spec_snk_init(
+                snk, perr,
+                hidrd_opt_list_get_u32(list, "tabstop"),
+                hidrd_opt_list_get_boolean(list, "dumps"),
+                hidrd_opt_list_get_boolean(list, "comments"));
 }
 #endif /* HIDRD_WITH_OPT */
 
 
-static bool
+bool
 hidrd_spec_snk_valid(const hidrd_snk *snk)
 {
     const hidrd_spec_snk_inst  *spec_snk    =
@@ -97,20 +144,37 @@ hidrd_spec_snk_valid(const hidrd_snk *snk)
 }
 
 
-static bool
+char *
+hidrd_spec_snk_errmsg(const hidrd_snk *snk)
+{
+    const hidrd_spec_snk_inst  *spec_snk    =
+                                    (const hidrd_spec_snk_inst *)snk;
+
+    return hidrd_spec_snk_err_to_str(spec_snk->err);
+}
+
+
+bool
 hidrd_spec_snk_put(hidrd_snk *snk, const hidrd_item *item)
 {
+    bool                    result;
     hidrd_spec_snk_inst    *spec_snk   = (hidrd_spec_snk_inst *)snk;
 
     assert(hidrd_item_valid(item));
 
-    return spec_snk_item_basic(spec_snk, item);
+    result = spec_snk_item_basic(spec_snk, item);
+
+    spec_snk->err = result ? HIDRD_SPEC_SNK_ERR_NONE
+                           : HIDRD_SPEC_SNK_ERR_ALLOC;
+
+    return result;
 }
 
 
-static bool
+bool
 hidrd_spec_snk_flush(hidrd_snk *snk)
 {
+    bool                    result;
     hidrd_spec_snk_inst    *spec_snk   = (hidrd_spec_snk_inst *)snk;
 
     if (snk->pbuf != NULL)
@@ -122,13 +186,20 @@ hidrd_spec_snk_flush(hidrd_snk *snk)
     if (snk->psize != NULL)
         *snk->psize = 0;
 
-    return hidrd_spec_snk_ent_list_render(snk->pbuf, snk->psize,
-                                          &spec_snk->list,
-                                          spec_snk->indent);
+    result = hidrd_spec_snk_ent_list_render(snk->pbuf, snk->psize,
+                                            &spec_snk->list,
+                                            spec_snk->tabstop,
+                                            spec_snk->dumps,
+                                            spec_snk->comments);
+
+    spec_snk->err = result ? HIDRD_SPEC_SNK_ERR_NONE
+                           : HIDRD_SPEC_SNK_ERR_ALLOC;
+
+    return result;
 }
 
 
-static void
+void
 hidrd_spec_snk_clnp(hidrd_snk *snk)
 {
     hidrd_spec_snk_inst   *spec_snk   = (hidrd_spec_snk_inst *)snk;
@@ -150,12 +221,13 @@ hidrd_spec_snk_clnp(hidrd_snk *snk)
 
 const hidrd_snk_type hidrd_spec_snk = {
     .size       = sizeof(hidrd_spec_snk_inst),
-    .init       = hidrd_spec_snk_init,
+    .initv      = hidrd_spec_snk_initv,
 #ifdef HIDRD_WITH_OPT
     .init_opts  = hidrd_spec_snk_init_opts,
     .opts_spec  = hidrd_spec_snk_opts_spec,
 #endif
     .valid      = hidrd_spec_snk_valid,
+    .errmsg     = hidrd_spec_snk_errmsg,
     .put        = hidrd_spec_snk_put,
     .flush      = hidrd_spec_snk_flush,
     .clnp       = hidrd_spec_snk_clnp,

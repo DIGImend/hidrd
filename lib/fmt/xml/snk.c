@@ -24,83 +24,113 @@
  * @(#) $Id$
  */
 
+#include "hidrd/cfg.h"
+#include "hidrd/fmt/xml/cfg.h"
 #include "hidrd/fmt/xml/prop.h"
 #include "hidrd/fmt/xml/snk.h"
 #include "snk/group.h"
 #include "snk/item.h"
+#include "../xml.h"
 
 
 static bool
-init(hidrd_snk *snk, bool format)
+hidrd_xml_snk_init(hidrd_snk *snk, char **perr, bool format, const char *schema)
 {
-    hidrd_xml_snk_inst     *xml_snk = (hidrd_xml_snk_inst *)snk;
-    hidrd_xml_snk_state    *state   = NULL;
-    xmlDocPtr               doc     = NULL;
-    xmlNodePtr              root    = NULL;
+    bool                    result      = false;
+    hidrd_xml_snk_inst     *xml_snk     = (hidrd_xml_snk_inst *)snk;
+    char                   *own_schema  = NULL;
+    hidrd_xml_snk_state    *state       = NULL;
+    xmlDocPtr               doc         = NULL;
+    xmlNodePtr              root        = NULL;
+    xmlNsPtr                ns;
 
+    XML_ERR_FUNC_BACKUP_DECL;
+
+    if (perr != NULL)
+        *perr = strdup("");
+
+    XML_ERR_FUNC_SET(perr);
+
+    /* Copy schema file path */
+    own_schema = strdup(schema);
+    if (own_schema == NULL)
+        XML_ERR_CLNP("failed to allocate memory for the schema file path");
+        
     /* Create item state table stack */
     state = malloc(sizeof(*state));
     if (state == NULL)
-        goto failure;
+        XML_ERR_CLNP("failed to allocate memory for the state table");
     state->prev         = NULL;
     state->usage_page   = HIDRD_USAGE_PAGE_UNDEFINED;
 
     /* Create the document */
     doc = xmlNewDoc(BAD_CAST "1.0");
     if (doc == NULL)
-        goto failure;
+        goto cleanup;
 
     /* Create root node */
     root = xmlNewNode(NULL, BAD_CAST "descriptor");
     if (root == NULL)
-        goto failure;
+        goto cleanup;
 
-    /*
-     * Set root node properties
-     */
-    if (xmlSetProp(root, BAD_CAST "xmlns",
-                   BAD_CAST HIDRD_XML_PROP_NS) == NULL)
-        goto failure;
+    /* Add and assign our namespace */
+    ns = xmlNewNs(root, BAD_CAST HIDRD_XML_PROP_NS, NULL);
+    if (ns == NULL)
+        goto cleanup;
+    xmlSetNs(root, ns);
 
-    if (xmlSetProp(root, BAD_CAST "xmlns:xsi",
-                   BAD_CAST HIDRD_XML_PROP_NS_XSI) == NULL)
-        goto failure;
+    /* Add XML schema instance namespace */
+    ns = xmlNewNs(root, BAD_CAST HIDRD_XML_PROP_NS_XSI, BAD_CAST "xsi");
+    if (ns == NULL)
+        goto cleanup;
 
-    if (xmlSetProp(root, BAD_CAST "xsi:schemaLocation",
-                   BAD_CAST HIDRD_XML_PROP_XSI_SCHEMA_LOCATION) == NULL)
-        goto failure;
+    /* Add xsi:schemaLocation attribute */
+    if (xmlSetNsProp(root, ns,
+                     BAD_CAST "schemaLocation",
+                     BAD_CAST HIDRD_XML_PROP_XSI_SCHEMA_LOCATION) == NULL)
+        goto cleanup;
 
     /* Set root element */
     xmlDocSetRootElement(doc, root);
 
     /* Initialize the sink */
+    xml_snk->schema = own_schema;
     xml_snk->format = format;
     xml_snk->state  = state;
     xml_snk->doc    = doc;
     xml_snk->prnt   = root;
+    xml_snk->err    = strdup("");
 
-    return true;
+    own_schema  = NULL;
+    state       = NULL;
+    doc         = NULL;
+    root        = NULL;
 
-failure:
+    result = true;
+
+cleanup:
 
     xmlFreeNode(root);
 
     if (doc != NULL)
         xmlFreeDoc(doc);
 
-    if (state != NULL)
-        free(state);
+    free(state);
+    free(own_schema);
 
-    return false;
+    XML_ERR_FUNC_RESTORE;
+
+    return result;
 }
 
 
 static bool
-hidrd_xml_snk_init(hidrd_snk *snk, va_list ap)
+hidrd_xml_snk_initv(hidrd_snk *snk, char **perr, va_list ap)
 {
-    bool    format  = (va_arg(ap, int) != 0);
+    bool        format  = (va_arg(ap, int) != 0);
+    const char *schema  = va_arg(ap, const char *);
 
-    return init(snk, format);
+    return hidrd_xml_snk_init(snk, perr, format, schema);
 }
 
 
@@ -112,14 +142,28 @@ static const hidrd_opt_spec hidrd_xml_snk_opts_spec[] = {
      .dflt  = {
          .boolean = true
      },
-     .desc  = "Format XML output"},
+     .desc  = "format XML output"},
+    {.name  = "schema",
+     .type  = HIDRD_OPT_TYPE_STRING,
+     .req   = false,
+     .dflt  = {
+#ifdef NDEBUG
+         .string = ""
+#else
+         .string = HIDRD_XML_SCHEMA_PATH
+#endif
+     },
+     .desc  = "path to a schema file for output validation"},
     {.name  = NULL}
 };
 
 static bool
-hidrd_xml_snk_init_opts(hidrd_snk *snk, const hidrd_opt *list)
+hidrd_xml_snk_init_opts(hidrd_snk *snk, char **perr, const hidrd_opt *list)
 {
-    return init(snk, hidrd_opt_list_get_boolean(list, "format"));
+    return hidrd_xml_snk_init(
+                snk, perr,
+                hidrd_opt_list_get_boolean(list, "format"),
+                hidrd_opt_list_get_string(list, "schema"));
 }
 #endif /* HIDRD_WITH_OPT */
 
@@ -136,34 +180,57 @@ hidrd_xml_snk_valid(const hidrd_snk *snk)
 }
 
 
+static char *
+hidrd_xml_snk_errmsg(const hidrd_snk *snk)
+{
+    const hidrd_xml_snk_inst   *xml_snk    =
+                                    (const hidrd_xml_snk_inst *)snk;
+
+    return strdup(xml_snk->err);
+}
+
+
 static bool
 hidrd_xml_snk_flush(hidrd_snk *snk)
 {
     bool                result      = false;
     hidrd_xml_snk_inst *xml_snk     = (hidrd_xml_snk_inst *)snk;
+    bool                valid;
     xmlBufferPtr        xml_buf     = NULL;
     xmlOutputBufferPtr  xml_out_buf = NULL;
     void               *new_buf;
     size_t              new_size;
 
+    XML_ERR_FUNC_BACKUP_DECL;
+
+    free(xml_snk->err);
+    xml_snk->err = strdup("");
+
+    XML_ERR_FUNC_SET(&xml_snk->err);
+
     /* Break any unfinished groups */
     if (!xml_snk_group_break_branch(snk))
-        goto finish;
+        goto cleanup;
+
+    /* Validate the document, if the schema is specified */
+    if (*xml_snk->schema != '\0' &&
+        (!xml_validate(&valid, xml_snk->doc, xml_snk->schema) || !valid))
+        goto cleanup;
 
     /* Create an XML buffer */
     xml_buf = xmlBufferCreate();
     if (xml_buf == NULL)
-        goto finish;
+        goto cleanup;
 
     /* Create an XML output buffer from the generic buffer */
     xml_out_buf = xmlOutputBufferCreateBuffer(xml_buf, NULL);
     if (xml_out_buf == NULL)
-        goto finish;
+        goto cleanup;
 
     /* Format XML from the document */
     if (xmlSaveFormatFileTo(xml_out_buf, xml_snk->doc,
                             NULL, xml_snk->format) < 0)
-        goto finish;
+        goto cleanup;
     /* xml_out_buf is closed by xmlSaveFormatFileTo */
     xml_out_buf = NULL;
 
@@ -176,7 +243,7 @@ hidrd_xml_snk_flush(hidrd_snk *snk)
         /* Retension and update the buffer */
         new_buf = realloc(*snk->pbuf, new_size);
         if (new_size > 0 && new_buf == NULL)
-            goto finish;
+            XML_ERR_CLNP("failed to retension the output buffer");
         memcpy(new_buf, xmlBufferContent(xml_buf), new_size);
         /* Update the buffer pointer */
         *snk->pbuf = new_buf;
@@ -188,13 +255,15 @@ hidrd_xml_snk_flush(hidrd_snk *snk)
 
     result = true;
 
-finish:
+cleanup:
 
     if (xml_out_buf != NULL)
         xmlOutputBufferClose(xml_out_buf);
 
     if (xml_buf != NULL)
         xmlBufferFree(xml_buf);
+
+    XML_ERR_FUNC_RESTORE;
 
     return result;
 }
@@ -206,6 +275,10 @@ hidrd_xml_snk_clnp(hidrd_snk *snk)
     hidrd_xml_snk_inst    *xml_snk    = (hidrd_xml_snk_inst *)snk;
     hidrd_xml_snk_state   *state;
     hidrd_xml_snk_state   *prev_state;
+
+    /* Free the error message */
+    free(xml_snk->err);
+    xml_snk->err = NULL;
 
     /* Free the document, if there is any */
     if (xml_snk->doc != NULL)
@@ -221,26 +294,43 @@ hidrd_xml_snk_clnp(hidrd_snk *snk)
         free(state);
     }
     xml_snk->state = NULL;
+
+    /* Free the schema file path */
+    free(xml_snk->schema);
+    xml_snk->schema = NULL;
 }
 
 
 static bool
 hidrd_xml_snk_put(hidrd_snk *snk, const hidrd_item *item)
 {
+    bool                result;
     hidrd_xml_snk_inst *xml_snk = (hidrd_xml_snk_inst *)snk;
 
-    return xml_snk_item_basic(xml_snk, item);
+    XML_ERR_FUNC_BACKUP_DECL;
+
+    free(xml_snk->err);
+    xml_snk->err = strdup("");
+
+    XML_ERR_FUNC_SET(&xml_snk->err);
+
+    result = xml_snk_item_basic(xml_snk, item);
+
+    XML_ERR_FUNC_RESTORE;
+
+    return result;
 }
 
 
 const hidrd_snk_type hidrd_xml_snk = {
     .size       = sizeof(hidrd_xml_snk_inst),
-    .init       = hidrd_xml_snk_init,
+    .initv      = hidrd_xml_snk_initv,
 #ifdef HIDRD_WITH_OPT
     .init_opts  = hidrd_xml_snk_init_opts,
     .opts_spec  = hidrd_xml_snk_opts_spec,
 #endif
     .valid      = hidrd_xml_snk_valid,
+    .errmsg     = hidrd_xml_snk_errmsg,
     .put        = hidrd_xml_snk_put,
     .flush      = hidrd_xml_snk_flush,
     .clnp       = hidrd_xml_snk_clnp,

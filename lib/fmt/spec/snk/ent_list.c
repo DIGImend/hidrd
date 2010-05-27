@@ -98,10 +98,11 @@ hidrd_spec_snk_ent_list_adda(hidrd_spec_snk_ent_list   *list,
 
     hidrd_spec_snk_ent_inita(&(list->ptr[list->len]),
                              ent->depth,
+                             ent->item,
                              ent->name,
                              ent->value,
                              ent->comment);
-    hidrd_spec_snk_ent_init(ent, 0, NULL, NULL, NULL);
+    hidrd_spec_snk_ent_init(ent, 0, NULL, NULL, NULL, NULL);
     hidrd_spec_snk_ent_delete(ent);
 
     list->len++;
@@ -122,6 +123,7 @@ hidrd_spec_snk_ent_list_add(hidrd_spec_snk_ent_list    *list,
 
     hidrd_spec_snk_ent_init(&(list->ptr[list->len]),
                             ent->depth,
+                            ent->item,
                             ent->name,
                             ent->value,
                             ent->comment);
@@ -150,33 +152,45 @@ hidrd_spec_snk_ent_list_min_depth(const hidrd_spec_snk_ent_list    *list)
 
 
 bool
-hidrd_spec_snk_ent_list_render(void                           **pbuf,
-                               size_t                          *psize,
+hidrd_spec_snk_ent_list_to_tbl(hidrd_ttbl                     **ptbl,
                                const hidrd_spec_snk_ent_list   *list,
-                               size_t                           indent)
+                               size_t                           tabstop,
+                               bool                             dumps,
+                               bool                             comments)
 {
     bool                result      = false;
-    hidrd_buf           buf         = HIDRD_BUF_EMPTY;
+    hidrd_ttbl         *tbl         = NULL;
     int                 min_depth;
     hidrd_spec_snk_ent *p;
     size_t              last_l      = 0;
     size_t              l;
+    hidrd_buf           buf         = HIDRD_BUF_EMPTY;
+    uint8_t            *item_p;
+    size_t              item_size;
 
     assert(hidrd_spec_snk_ent_list_valid(list));
+
+    /* Create the table */
+    tbl = hidrd_ttbl_new();
+    if (tbl == NULL)
+        goto cleanup;
 
     /* Find minimum depth */
     min_depth = hidrd_spec_snk_ent_list_min_depth(list);
 
     /* Find the last item */
-    for (p = list->ptr, l = list->len; l > 0; p++, l--)
+    for (p = list->ptr, l = 0; l < list->len; p++, l++)
         if (p->name != NULL)
             last_l = l;
 
     /* Output the entries */
-    for (p = list->ptr, l = list->len; l > 0; p++, l--)
+    for (p = list->ptr, l = 0; l < list->len; p++, l++)
     {
+        /*
+         * Output code cell
+         */
         if (!hidrd_buf_add_span(&buf, ' ',
-                                (p->depth - min_depth) * indent))
+                                (p->depth - min_depth) * tabstop))
             goto cleanup;
 
         if (p->name != NULL && !hidrd_buf_add_str(&buf, p->name))
@@ -195,28 +209,83 @@ hidrd_spec_snk_ent_list_render(void                           **pbuf,
         if (p->name != NULL && l != last_l && !hidrd_buf_add_str(&buf, ","))
             goto cleanup;
 
-        if (p->comment != NULL && *p->comment != '\0')
+        /* Terminate the buffer */
+        if (!hidrd_buf_add_span(&buf, '\0', 1))
+            goto cleanup;
+
+        /* Set the code cell contents */
+        hidrd_ttbl_set(tbl, HIDRD_SPEC_SNK_ENT_LIST_CODE_COL, l,
+                       (const char *)buf.ptr);
+
+        /* Reset the buffer contents */
+        hidrd_buf_reset(&buf);
+
+        /*
+         * Output dump cell
+         */
+        if (dumps && p->item != NULL)
         {
-            if (!hidrd_buf_add_printf(&buf,
-                                      (p->name == NULL &&
-                                       p->value == NULL)
-                                            ? "; %s" : " ; %s",
-                                      p->comment))
+            hidrd_buf_add_str(&buf, "; ");
+            for (item_size = hidrd_item_get_size(p->item), item_p = p->item;
+                 item_size > 0; item_size--, item_p++)
+                if (!hidrd_buf_add_printf(&buf,
+                                          (item_size == 1)
+                                            ? "%.2hhX"
+                                            : "%.2hhX ",
+                                          *item_p))
+            if (!hidrd_buf_add_span(&buf, '\0', 1))
                 goto cleanup;
+            hidrd_ttbl_set(tbl, HIDRD_SPEC_SNK_ENT_LIST_DUMP_COL, l,
+                           (const char *)buf.ptr);
+            hidrd_buf_reset(&buf);
         }
 
-        if (!hidrd_buf_add_str(&buf, "\n"))
-            goto cleanup;
+        /*
+         * Output comment cell
+         */
+        /* Set the comment cell contents */
+        if (comments && p->comment != NULL && *p->comment != '\0' &&
+            !hidrd_ttbl_setf(tbl, HIDRD_SPEC_SNK_ENT_LIST_CMNT_COL, l,
+                             ((dumps && p->item != NULL) ? "- %s" : "; %s"),
+                             p->comment))
+                goto cleanup;
     }
 
-    hidrd_buf_retension(&buf);
-    hidrd_buf_detach(&buf, pbuf, psize);
+    if (ptbl != NULL)
+    {
+        *ptbl = tbl;
+        tbl = NULL;
+    }
 
     result = true;
 
 cleanup:
 
     hidrd_buf_clnp(&buf);
+    hidrd_ttbl_delete(tbl);
+
+    return result;
+}
+
+
+bool
+hidrd_spec_snk_ent_list_render(void                           **pbuf,
+                               size_t                          *psize,
+                               const hidrd_spec_snk_ent_list   *list,
+                               size_t                           tabstop,
+                               bool                             dumps,
+                               bool                             comments)
+{
+    bool        result;
+    hidrd_ttbl *tbl;
+
+    if (!hidrd_spec_snk_ent_list_to_tbl(&tbl, list,
+                                        tabstop, dumps, comments))
+        return false;
+
+    result = hidrd_ttbl_render((char **)pbuf, psize, tbl, tabstop);
+
+    hidrd_ttbl_delete(tbl);
 
     return result;
 }

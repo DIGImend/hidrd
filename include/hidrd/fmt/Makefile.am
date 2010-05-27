@@ -27,11 +27,36 @@ hidrd_fmt_HEADERS = \
     natv.h
 
 if ENABLE_FMT_XML
+WITH_XML_DIRECTIVE = define
 SUBDIRS += xml
 hidrd_fmt_HEADERS += xml.h
+else
+WITH_XML_DIRECTIVE = undef
 endif
 
 if ENABLE_FMT_SPEC
+WITH_SPEC_DIRECTIVE = define
 SUBDIRS += spec
 hidrd_fmt_HEADERS += spec.h
+else
+WITH_SPEC_DIRECTIVE = undef
 endif
+
+if ENABLE_FMT_CODE
+WITH_CODE_DIRECTIVE = define
+SUBDIRS += code
+hidrd_fmt_HEADERS += code.h
+else
+WITH_CODE_DIRECTIVE = undef
+endif
+
+cfg.h: cfg.h.m4
+	m4 -DWITH_XML_DIRECTIVE=$(WITH_XML_DIRECTIVE) \
+       -DWITH_SPEC_DIRECTIVE=$(WITH_SPEC_DIRECTIVE) \
+       -DWITH_CODE_DIRECTIVE=$(WITH_CODE_DIRECTIVE) \
+        $< > $@
+
+dist_noinst_DATA = cfg.h.m4
+BUILT_SOURCES = cfg.h
+CLEANFILES = $(BUILT_SOURCES)
+nodist_hidrd_fmt_HEADERS = $(BUILT_SOURCES)

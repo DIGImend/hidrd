@@ -28,6 +28,7 @@
 #define __HIDRD_FMT_SPEC_SNK_ENT_LIST_H__
 
 #include <stddef.h>
+#include "hidrd/util/ttbl.h"
 #include "hidrd/fmt/spec/snk/ent.h"
 
 #ifdef __cplusplus
@@ -95,22 +96,52 @@ extern bool hidrd_spec_snk_ent_list_valid(
 extern int hidrd_spec_snk_ent_list_min_depth(
                                     const hidrd_spec_snk_ent_list *list);
 
+/** Code column number in table output */
+#define HIDRD_SPEC_SNK_ENT_LIST_CODE_COL    0
+/** Item dump column number in table output */
+#define HIDRD_SPEC_SNK_ENT_LIST_DUMP_COL    1
+/** Comment column number in table output */
+#define HIDRD_SPEC_SNK_ENT_LIST_CMNT_COL    2
+
+/**
+ * Render entry list as a text table.
+ *
+ * @param psize     Location for output text table.
+ * @param list      Entry list to render.
+ * @param tabstop   Number of spaces per tab.
+ * @param dumps     "Output item dumps" flag.
+ * @param comments  "Output item comments" flag.
+ *
+ * @return True if rendered successfully, false otherwise (on memory
+ *         allocation failure).
+ */
+extern bool hidrd_spec_snk_ent_list_to_tbl(
+                                hidrd_ttbl                    **ptbl,
+                                const hidrd_spec_snk_ent_list  *list,
+                                size_t                          tabstop,
+                                bool                            dumps,
+                                bool                            comments);
+
 /**
  * Render entry list text.
  *
  * @param pbuf      Location for output text buffer pointer.
  * @param psize     Location for output text buffer size.
  * @param list      Entry list to render.
- * @param indent    Number of indentation columns per nesting level.
+ * @param tabstop   Number of spaces per tab.
+ * @param dumps     "Output item dumps" flag.
+ * @param comments  "Output item comments" flag.
  *
  * @return True if rendered successfully, false otherwise (on memory
  *         allocation failure).
  */
 extern bool hidrd_spec_snk_ent_list_render(
-                                    void                          **pbuf,
-                                    size_t                         *psize,
-                                    const hidrd_spec_snk_ent_list  *list,
-                                    size_t                          indent);
+                                void                          **pbuf,
+                                size_t                         *psize,
+                                const hidrd_spec_snk_ent_list  *list,
+                                size_t                          tabstop,
+                                bool                            dumps,
+                                bool                            comments);
 
 /**
  * Cleanup an entry list.

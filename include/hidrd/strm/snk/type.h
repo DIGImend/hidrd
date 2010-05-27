@@ -29,6 +29,7 @@
 
 #include <assert.h>
 #include <stdarg.h>
+#include "hidrd/cfg.h"
 #include "hidrd/item.h"
 
 #ifdef HIDRD_WITH_OPT
@@ -45,25 +46,34 @@ typedef struct hidrd_snk hidrd_snk;
 /**
  * Prototype for a sink instance initialization function.
  *
- * @param snk  Sink instance to initialize.
+ * @param snk   Sink instance to initialize.
+ * @param perr  Location for a dynamically allocated error message pointer,
+ *              in case the initialization failed, or for a dynamically
+ *              allocated empty string otherwise; could be NULL.
  * @param ap    Type-specific variable argument list.
  *
  * @return True if the initialization succeeded, false otherwise.
  */
-typedef bool hidrd_snk_type_init_fn(hidrd_snk  *snk,
-                                    va_list     ap);
+typedef bool hidrd_snk_type_initv_fn(hidrd_snk     *snk,
+                                     char         **perr,
+                                     va_list        ap);
 
 #ifdef HIDRD_WITH_OPT
 /**
  * Prototype for a sink initialization function which uses options.
  *
  * @param snk       Sink instance to initialize.
+ * @param perr      Location for a dynamically allocated error message
+ *                  pointer, in case the initialization failed, or for a
+ *                  dynamically allocated empty string otherwise; could be
+ *                  NULL.
  * @param opt_list  Pointer to an option array, terminated with an option
  *                  having name set to NULL.
  *
  * @return  True if initialized successfully, false otherwise.
  */
 typedef bool hidrd_snk_type_init_opts_fn(hidrd_snk         *snk,
+                                         char             **perr,
                                          const hidrd_opt   *opt_list);
 #endif /* HIDRD_WITH_OPT */
 
@@ -75,6 +85,16 @@ typedef bool hidrd_snk_type_init_opts_fn(hidrd_snk         *snk,
  * @return True if the instance is valid, false otherwise.
  */
 typedef bool hidrd_snk_type_valid_fn(const hidrd_snk  *snk);
+
+/**
+ * Prototype for a sink instance error message retrieval function.
+ *
+ * @param snk   Sink instance to retrieve the error message from.
+ *
+ * @return Dynamically allocated error message string, empty string if no
+ *         error occurred, or NULL if failed to allocate memory.
+ */
+typedef char *hidrd_snk_type_errmsg_fn(const hidrd_snk *snk);
 
 /**
  * Prototype for a function used to put an item into a sink instance.
@@ -106,12 +126,13 @@ typedef void hidrd_snk_type_clnp_fn(hidrd_snk  *snk);
 /** Sink type */
 typedef struct hidrd_snk_type {
     size_t                          size;       /**< Instance size */
-    hidrd_snk_type_init_fn         *init;
+    hidrd_snk_type_initv_fn        *initv;
 #ifdef HIDRD_WITH_OPT
     hidrd_snk_type_init_opts_fn    *init_opts;
     const hidrd_opt_spec           *opts_spec;
 #endif
     hidrd_snk_type_valid_fn        *valid;
+    hidrd_snk_type_errmsg_fn       *errmsg;
     hidrd_snk_type_put_fn          *put;
     hidrd_snk_type_flush_fn        *flush;
     hidrd_snk_type_clnp_fn         *clnp;

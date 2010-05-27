@@ -167,3 +167,21 @@ hidrd_item_fits(const hidrd_item   *item,
 }
 
 
+hidrd_item *
+hidrd_item_dup(const hidrd_item *item)
+{
+    size_t      size;
+    hidrd_item *dup;
+
+    assert(hidrd_item_valid(item));
+
+    size = hidrd_item_get_size(item);
+
+    dup = malloc(size);
+    if (dup == NULL)
+        return NULL;
+
+    return (hidrd_item *)memcpy(dup, item, size);
+}
+
+

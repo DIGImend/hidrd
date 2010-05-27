@@ -24,6 +24,7 @@
  * @(#) $Id$
  */
 
+#include "hidrd/cfg.h"
 #include "hidrd/util/dec.h"
 #include "hidrd/util/str.h"
 #include "hidrd/util/tkn.h"

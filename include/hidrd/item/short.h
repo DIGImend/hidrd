@@ -28,6 +28,7 @@
 #define __HIDRD_ITEM_SHORT_H__
 
 #include <assert.h>
+#include "hidrd/cfg.h"
 #include "hidrd/item/basic.h"
 #include "hidrd/util/bit.h"
 

@@ -29,6 +29,7 @@
 
 #include <assert.h>
 #include <stdarg.h>
+#include "hidrd/cfg.h"
 #include "hidrd/item.h"
 
 #ifdef HIDRD_WITH_OPT
@@ -45,26 +46,35 @@ typedef struct hidrd_src hidrd_src;
 /**
  * Prototype for a source instance initialization function.
  *
- * @param src  Source instance to initialize.
+ * @param src   Source instance to initialize.
+ * @param perr  Location for a dynamically allocated error message pointer,
+ *              in case the initialization failed, or for a dynamically
+ *              allocated empty string otherwise; could be NULL.
  * @param ap    Type-specific variable argument list.
  *
  * @return True if the initialization succeeded, false otherwise.
  */
-typedef bool hidrd_src_type_init_fn(hidrd_src *src,
-                                    va_list         ap);
+typedef bool hidrd_src_type_initv_fn(hidrd_src     *src,
+                                     char         **perr,
+                                     va_list        ap);
 
 #ifdef HIDRD_WITH_OPT
 /**
  * Prototype for a source initialization function which uses options.
  *
  * @param src       Source instance to initialize.
+ * @param perr      Location for a dynamically allocated error message
+ *                  pointer, in case the initialization failed, or for a
+ *                  dynamically allocated empty string otherwise; could be
+ *                  NULL.
  * @param opt_list  Pointer to an option array, terminated with an option
  *                  having name set to NULL.
  *
  * @return  True if initialized successfully, false otherwise.
  */
 
-typedef bool hidrd_src_type_init_opts_fn(hidrd_src    *src,
+typedef bool hidrd_src_type_init_opts_fn(hidrd_src         *src,
+                                         char             **perr,
                                          const hidrd_opt   *opt_list);
 #endif /* HIDRD_WITH_OPT */
 
@@ -76,6 +86,37 @@ typedef bool hidrd_src_type_init_opts_fn(hidrd_src    *src,
  * @return True if the instance is valid, false otherwise.
  */
 typedef bool hidrd_src_type_valid_fn(const hidrd_src  *src);
+
+/**
+ * Prototype for a function used to retrieve (abstract) current position in
+ * a source stream.
+ *
+ * @param src   Source instance to retrieve position from.
+ *
+ * @return Abstract position in the source instance stream.
+ */
+typedef size_t hidrd_src_type_getpos_fn(const hidrd_src *src);
+
+/**
+ * Prototype for a function used to format a human-readable description of
+ * an abstract position in a source stream.
+ *
+ * @param src   Source instance to format position description for.
+ * @param pos   Abstract position in the source instance.
+ *
+ * @return Dynamically allocated position description string.
+ */
+typedef char *hidrd_src_type_fmtpos_fn(const hidrd_src *src, size_t pos);
+
+/**
+ * Prototype for a source instance error message retrieval function.
+ *
+ * @param src   Source instance to retrieve the error message from.
+ *
+ * @return Dynamically allocated error message string, empty string if no
+ *         error occurred, or NULL if failed to allocate memory.
+ */
+typedef char *hidrd_src_type_errmsg_fn(const hidrd_src *src);
 
 /**
  * Prototype for a function used to retrieve an item from a source instance.
@@ -96,12 +137,15 @@ typedef void hidrd_src_type_clnp_fn(hidrd_src    *src);
 /** Source type */
 typedef struct hidrd_src_type {
     size_t                          size;       /**< Instance size */
-    hidrd_src_type_init_fn         *init;
+    hidrd_src_type_initv_fn        *initv;
 #ifdef HIDRD_WITH_OPT
     hidrd_src_type_init_opts_fn    *init_opts;
     const hidrd_opt_spec           *opts_spec;
 #endif
     hidrd_src_type_valid_fn        *valid;
+    hidrd_src_type_getpos_fn       *getpos;
+    hidrd_src_type_fmtpos_fn       *fmtpos;
+    hidrd_src_type_errmsg_fn       *errmsg;
     hidrd_src_type_get_fn          *get;
     hidrd_src_type_clnp_fn         *clnp;
 } hidrd_src_type;

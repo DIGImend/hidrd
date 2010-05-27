@@ -27,6 +27,7 @@
 #ifndef __HIDRD_USAGE_ID_DESC_H__
 #define __HIDRD_USAGE_ID_DESC_H__
 
+#include "hidrd/cfg.h"
 #include "hidrd/usage/id.h"
 #include "hidrd/usage/type.h"
 

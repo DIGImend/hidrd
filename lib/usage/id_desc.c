@@ -24,6 +24,7 @@
  * @(#) $Id: id.h 331 2010-04-01 20:05:18Z spb_nick $
  */
 
+#include "hidrd/cfg.h"
 #include "hidrd/util/tkn.h"
 #include "hidrd/usage/id_desc.h"
 

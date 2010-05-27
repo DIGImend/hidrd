@@ -27,9 +27,13 @@
 #ifndef __HIDRD_FMT_H__
 #define __HIDRD_FMT_H__
 
+#include "hidrd/fmt/cfg.h"
 #include "hidrd/fmt/natv.h"
 #ifdef HIDRD_FMT_WITH_XML
 #include "hidrd/fmt/xml.h"
+#endif
+#ifdef HIDRD_FMT_WITH_SPEC
+#include "hidrd/fmt/spec.h"
 #endif
 #include "hidrd/fmt/list.h"
 

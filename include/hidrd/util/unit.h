@@ -33,6 +33,7 @@
 #include <string.h>
 #include <strings.h>
 #include <stdio.h>
+#include "hidrd/cfg.h"
 #ifdef HIDRD_WITH_TOKENS
 #include "hidrd/util/tkn.h"
 #endif

@@ -29,6 +29,7 @@ libhidrd_util_la_SOURCES = \
     hex.c                   \
     num.c                   \
     str.c                   \
+    ttbl.c                  \
     unit.c
 
 if ENABLE_TOKENS
@@ -36,12 +37,15 @@ libhidrd_util_la_SOURCES += tkn.c
 endif
 
 bin_PROGRAMS =
-check_PROGRAMS = hidrd_num_test
+check_PROGRAMS = hidrd_num_test hidrd_ttbl_test
 
 hidrd_num_test_SOURCES = num_test.c
 hidrd_num_test_LDADD = $(lib_LTLIBRARIES)
 
-TESTS = hidrd_num_test
+hidrd_ttbl_test_SOURCES = ttbl_test.c
+hidrd_ttbl_test_LDADD = $(lib_LTLIBRARIES)
+
+TESTS = hidrd_num_test hidrd_ttbl_test
 
 if ENABLE_TESTS_INSTALL
 bin_PROGRAMS += $(check_PROGRAMS)

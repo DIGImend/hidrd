@@ -24,6 +24,8 @@
 set -e -u -o pipefail
 shopt -s nullglob
 
+WRAPPER=${HIDRD_WRITE_TEST_WRAPPER:-}
+
 function run ()
 {
     local cmd="$1"; shift
@@ -46,7 +48,7 @@ function run ()
         local test_output_lines
         local max_lines
 
-        "$cmd" "$format" "$options" "$input" "$test_output"
+        $WRAPPER "$cmd" "$format" "$options" "$input" "$test_output"
 
         output_lines=`wc -l < "$output"`
         test_output_lines=`wc -l < "$test_output"`
@@ -75,14 +77,15 @@ function run ()
 
 function usage_exit ()
 {
-    echo "Usage: `basename \"$0\"` <format> <extension> <data_dir>" >&2
+    echo "Usage: `basename \"$0\"` <format> <options> <extension> <data_dir>" >&2
     echo
     exit 1
 }
 
 FMT=${1:-}
-EXT=${2:-}
-DIR=${3:-${HIDRD_WRITE_TEST_DATA:-}}
+GOPTS=${2:-}
+EXT=${3:-}
+DIR=${4:-${HIDRD_WRITE_TEST_DATA:-}}
 
 if [ -z "$FMT" ]; then
     echo "Format is not specified." >&2
@@ -102,13 +105,16 @@ HIDRD_WRITE="`readlink -f \"\`which hidrd_write\`\"`"
 cd "$DIR"
 
 for OUTPUT_FILE in *.${EXT}; do
-    OPTIONS=""
     INPUT_FILE="${OUTPUT_FILE%.${EXT}}.bin"
-    OPTIONS_FILE="${OUTPUT_FILE}.opt"
-    if [ -e "$OPTIONS_FILE" ]; then
-        OPTIONS=`cat "$OPTIONS_FILE"`
+    OPTS_FILE="${OUTPUT_FILE}.opt"
+    if [ -e "$OPTS_FILE" ]; then
+        SOPTS=`cat "$OPTS_FILE"`
     fi
-    run "$HIDRD_WRITE" "$FMT" "$OPTIONS" "$INPUT_FILE" "$OUTPUT_FILE"
+
+    # Join global and specific options with comma, if necessary
+    OPTS="${GOPTS:-}${GOPTS:+${SOPTS:+,}}${SOPTS:-}"
+
+    run "$HIDRD_WRITE" "$FMT" "$OPTS" "$INPUT_FILE" "$OUTPUT_FILE"
 done
 
 

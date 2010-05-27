@@ -28,6 +28,7 @@
 #define __HIDRD_ITEM_BASIC_H__
 
 #include <assert.h>
+#include "hidrd/cfg.h"
 #include "hidrd/util/dec.h"
 #ifdef HIDRD_WITH_TOKENS
 #include "hidrd/util/tkn.h"

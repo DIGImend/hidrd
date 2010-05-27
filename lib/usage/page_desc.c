@@ -24,7 +24,10 @@
  * @(#) $Id: id.h 331 2010-04-01 20:05:18Z spb_nick $
  */
 
+#include "hidrd/cfg.h"
+#ifdef HIDRD_WITH_TOKENS
 #include "hidrd/util/tkn.h"
+#endif
 #include "hidrd/usage/id_desc_list.h"
 #include "hidrd/usage/page_desc.h"
 

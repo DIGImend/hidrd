@@ -48,10 +48,12 @@ struct hidrd_xml_snk_state {
 typedef struct hidrd_xml_snk_inst {
     hidrd_snk               snk;    /**< Parent structure */
     bool                    format; /**< Format option flag */
+    char                   *schema; /**< Schema file path */
     xmlDocPtr               doc;    /**< Document being built */
     xmlNodePtr              prnt;   /**< Current parent element */
     xmlNodePtr              cur;    /**< Current element */
     hidrd_xml_snk_state    *state;  /**< Item state table stack */
+    char                   *err;    /**< Last error message */
 } hidrd_xml_snk_inst;
 
 #ifdef __cplusplus

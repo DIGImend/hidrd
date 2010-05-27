@@ -161,23 +161,10 @@ hidrd_opt_list_parse_tkns_list(const hidrd_opt_spec    *spec_list,
         if (spec == NULL)
             goto cleanup;
 
-        /* If there is no value */
-        if (*tkns->value == '\0')
-        {
-            /* If value is required */
-            if (spec->req)
-                goto cleanup;
-
-            /* Use default value */
-            opt->value = spec->dflt;
-        }
-        else
-        {
-            /* Parse the value according to the specification type */
-            if (!hidrd_opt_type_parse_value(spec->type, &opt->value,
-                                            tkns->value))
-                goto cleanup;
-        }
+        /* Parse the value according to the specification type */
+        if (!hidrd_opt_type_parse_value(spec->type, &opt->value,
+                                        tkns->value))
+            goto cleanup;
 
         /* Fill-in remaining fields */
         opt->name = spec->name;

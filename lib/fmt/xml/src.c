@@ -24,66 +24,106 @@
  * @(#) $Id$
  */
 
+#include "hidrd/cfg.h"
+#include "hidrd/fmt/xml/cfg.h"
 #include "src/element.h"
 #include "hidrd/fmt/xml/src.h"
+#include "../xml.h"
 
 
 static bool
-init(hidrd_src *src)
+hidrd_xml_src_init(hidrd_src *src, char **perr, const char *schema)
 {
+    bool                    result  = false;
     hidrd_xml_src_inst     *xml_src = (hidrd_xml_src_inst *)src;
     hidrd_xml_src_state    *state   = NULL;
     xmlDocPtr               doc     = NULL;
+    bool                    valid;
     xmlNodePtr              root;
+
+    XML_ERR_FUNC_BACKUP_DECL;
+
+    if (perr != NULL)
+        *perr = strdup("");
+
+    XML_ERR_FUNC_SET(perr);
 
     /* Create item state table stack */
     state = malloc(sizeof(*state));
     if (state == NULL)
-        goto failure;
+        XML_ERR_CLNP("failed to allocate memory for the state table");
     state->prev         = NULL;
     state->usage_page   = HIDRD_USAGE_PAGE_UNDEFINED;
 
     /* Parse the document */
     doc = xmlParseMemory(src->buf, src->size);
     if (doc == NULL)
-        goto failure;
+        goto cleanup;
 
-    /* TODO XML schema validation with xmlSchemaValidateDoc */
+    /* Validate the document, if the schema is specified */
+    if (*schema != '\0' && (!xml_validate(&valid, doc, schema) || !valid))
+        goto cleanup;
 
     /* Retrieve the root element */
     root = xmlDocGetRootElement(doc);
     if (root == NULL)
-        goto failure;
+        XML_ERR_CLNP("root element not found");
 
     /* Initialize the source */
     xml_src->doc    = doc;
     xml_src->prnt   = NULL;
     xml_src->cur    = root;
     xml_src->state  = state;
+    xml_src->err    = strdup("");
 
     /* Own the resources */
     doc = NULL;
     state = NULL;
 
-    return true;
+    /* Success */
+    result = true;
 
-failure:
+cleanup:
 
     if (doc != NULL)
         xmlFreeDoc(doc);
 
     free(state);
 
-    return false;
+    XML_ERR_FUNC_RESTORE;
+
+    return result;
 }
 
 
 static bool
-hidrd_xml_src_init(hidrd_src *src, va_list ap)
+hidrd_xml_src_initv(hidrd_src *src, char **perr, va_list ap)
 {
-    (void)ap;
-    return init(src);
+    const char *schema  = va_arg(ap, const char *);
+
+    return hidrd_xml_src_init(src, perr, schema);
 }
+
+
+#ifdef HIDRD_WITH_OPT
+static const hidrd_opt_spec hidrd_xml_src_opts_spec[] = {
+    {.name  = "schema",
+     .type  = HIDRD_OPT_TYPE_STRING,
+     .req   = false,
+     .dflt  = {
+         .string = HIDRD_XML_SCHEMA_PATH
+     },
+     .desc  = "path to a schema file for input validation"},
+    {.name  = NULL}
+};
+
+static bool
+hidrd_xml_src_init_opts(hidrd_src *src, char **perr, const hidrd_opt *list)
+{
+    return hidrd_xml_src_init(src, perr,
+                              hidrd_opt_list_get_string(list, "schema"));
+}
+#endif /* HIDRD_WITH_OPT */
 
 
 static bool
@@ -97,12 +137,56 @@ hidrd_xml_src_valid(const hidrd_src *src)
            (xml_src->prnt != NULL || xml_src->cur != NULL);
 }
 
+
+static size_t
+hidrd_xml_src_getpos(const hidrd_src *src)
+{
+    const hidrd_xml_src_inst   *xml_src = (hidrd_xml_src_inst *)src;
+
+    return xml_src->cur == NULL
+            ? xml_src->prnt->line
+            : xml_src->cur->line;
+}
+
+
+static char *
+hidrd_xml_src_fmtpos(const hidrd_src *src, size_t pos)
+{
+    char   *str;
+
+    (void)src;
+
+    if (asprintf(&str, "line %zu", pos) < 0)
+        return NULL;
+
+    return str;
+}
+
+
+static char *
+hidrd_xml_src_errmsg(const hidrd_src *src)
+{
+    const hidrd_xml_src_inst   *xml_src    =
+                                    (const hidrd_xml_src_inst *)src;
+
+    return strdup(xml_src->err);
+}
+
+
 static const hidrd_item *
 hidrd_xml_src_get(hidrd_src *src)
 {
+    const hidrd_item   *result      = NULL;
     hidrd_xml_src_inst *xml_src     = (hidrd_xml_src_inst *)src;
     xml_src_element_rc  rc;
     bool                enter;
+
+    XML_ERR_FUNC_BACKUP_DECL;
+
+    free(xml_src->err);
+    xml_src->err = strdup("");
+
+    XML_ERR_FUNC_SET(&xml_src->err);
 
     do {
         /*
@@ -135,9 +219,11 @@ hidrd_xml_src_get(hidrd_src *src)
                 }
                 /* If we have something to return */
                 if (rc != XML_SRC_ELEMENT_RC_NONE)
-                    return (rc == XML_SRC_ELEMENT_RC_ITEM)
-                        ? hidrd_item_validate(xml_src->item)
-                        : NULL;
+                {
+                    if (rc == XML_SRC_ELEMENT_RC_ITEM)
+                        result = hidrd_item_validate(xml_src->item);
+                    goto cleanup;
+                }
             }
 
             /* If this node is an element */
@@ -169,9 +255,14 @@ hidrd_xml_src_get(hidrd_src *src)
         }
     } while (rc == XML_SRC_ELEMENT_RC_NONE); /* While nothing to return */
 
-    return (rc == XML_SRC_ELEMENT_RC_ITEM)
-                ? hidrd_item_validate(xml_src->item)
-                : NULL;
+    if (rc == XML_SRC_ELEMENT_RC_ITEM)
+        result = hidrd_item_validate(xml_src->item);
+
+cleanup:
+
+    XML_ERR_FUNC_RESTORE;
+
+    return result;
 }
 
 
@@ -181,6 +272,10 @@ hidrd_xml_src_clnp(hidrd_src *src)
     hidrd_xml_src_inst    *xml_src    = (hidrd_xml_src_inst *)src;
     hidrd_xml_src_state   *state;
     hidrd_xml_src_state   *prev_state;
+
+    /* Free the error message */
+    free(xml_src->err);
+    xml_src->err = NULL;
 
     /* Free the document, if there is any */
     if (xml_src->doc != NULL)
@@ -201,8 +296,15 @@ hidrd_xml_src_clnp(hidrd_src *src)
 
 const hidrd_src_type hidrd_xml_src = {
     .size       = sizeof(hidrd_xml_src_inst),
-    .init       = hidrd_xml_src_init,
+    .initv      = hidrd_xml_src_initv,
+#ifdef HIDRD_WITH_OPT
+    .init_opts  = hidrd_xml_src_init_opts,
+    .opts_spec  = hidrd_xml_src_opts_spec,
+#endif
     .valid      = hidrd_xml_src_valid,
+    .getpos     = hidrd_xml_src_getpos,
+    .fmtpos     = hidrd_xml_src_fmtpos,
+    .errmsg     = hidrd_xml_src_errmsg,
     .get        = hidrd_xml_src_get,
     .clnp       = hidrd_xml_src_clnp,
 };

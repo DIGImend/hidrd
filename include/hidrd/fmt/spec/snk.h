@@ -34,6 +34,22 @@
 extern "C" {
 #endif
 
+/*
+ * Declarations of the specification example sink type methods and constants
+ */
+extern bool hidrd_spec_snk_init(hidrd_snk *snk, char **perr,
+                                size_t tabstop, bool dumps, bool comments);
+extern bool hidrd_spec_snk_initv(hidrd_snk *snk, char **perr, va_list ap);
+extern const hidrd_opt_spec hidrd_spec_snk_opts_spec[];
+extern bool hidrd_spec_snk_init_opts(hidrd_snk         *snk,
+                                     char             **perr,
+                                     const hidrd_opt   *list);
+extern bool hidrd_spec_snk_valid(const hidrd_snk *snk);
+extern char *hidrd_spec_snk_errmsg(const hidrd_snk *snk);
+extern bool hidrd_spec_snk_put(hidrd_snk *snk, const hidrd_item *item);
+extern bool hidrd_spec_snk_flush(hidrd_snk *snk);
+extern void hidrd_spec_snk_clnp(hidrd_snk *snk);
+
 /** Specification example sink type */
 const hidrd_snk_type    hidrd_spec_snk;
 
@@ -44,15 +60,24 @@ struct hidrd_spec_snk_state {
     hidrd_usage_page        usage_page; /**< Usage page in effect */
 };
 
+/** Specification example sink error code */
+typedef enum hidrd_spec_snk_err {
+    HIDRD_SPEC_SNK_ERR_NONE,    /**< No error */
+    HIDRD_SPEC_SNK_ERR_ALLOC    /**< Memory allocation failure */
+} hidrd_spec_snk_err;
+
 /** Specification example sink instance */
 typedef struct hidrd_spec_snk_inst {
-    hidrd_snk                   snk;    /**< Parent structure */
-    size_t                      indent; /**< Number of indent columns */
+    hidrd_snk                   snk;        /**< Parent structure */
+    size_t                      tabstop;    /**< Number of spaces per tab */
+    bool                        dumps;      /**< "Output item dumps" flag */
+    bool                        comments;   /**< "Output comments" flag */
 
-    int                         depth;  /**< Current nesting depth */
-    hidrd_spec_snk_state       *state;  /**< Item state table stack */
+    int                         depth;      /**< Current nesting depth */
+    hidrd_spec_snk_state       *state;      /**< Item state table stack */
 
-    hidrd_spec_snk_ent_list     list;   /**< Entry list */
+    hidrd_spec_snk_ent_list     list;       /**< Entry list */
+    hidrd_spec_snk_err          err;        /**< Last error code */
 } hidrd_spec_snk_inst;
 
 #ifdef __cplusplus

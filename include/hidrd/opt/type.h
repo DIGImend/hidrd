@@ -51,6 +51,15 @@ typedef enum hidrd_opt_type {
 extern bool hidrd_opt_type_valid(hidrd_opt_type type);
 
 /**
+ * Retrieve a type name.
+ *
+ * @param type  Option type to retrieve the name for.
+ *
+ * @return Constant string describing the type.
+ */
+extern const char *hidrd_opt_type_name(hidrd_opt_type type);
+
+/**
  * Parse a string as a string value (simply reference it).
  *
  * @param pval  Location for resulting string pointer.

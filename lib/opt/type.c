@@ -34,11 +34,11 @@
 #include "hidrd/opt/type.h"
 
 
-#define MAP_LIST \
-    MAP(STRING, string);    \
-    MAP(BOOLEAN, boolean);  \
-    MAP(S32, s32);          \
-    MAP(U32, u32)
+#define MAP_LIST(_M) \
+    _M(STRING, string)      \
+    _M(BOOLEAN, boolean)    \
+    _M(S32, s32)            \
+    _M(U32, u32)
 
 bool
 hidrd_opt_type_valid(hidrd_opt_type type)
@@ -47,12 +47,31 @@ hidrd_opt_type_valid(hidrd_opt_type type)
     {
 #define MAP(_NAME, _name) \
     case HIDRD_OPT_TYPE_##_NAME:
-        MAP_LIST;
+        MAP_LIST(MAP)
             return true;
 #undef MAP
 
         default:
             return false;
+    }
+}
+
+
+const char *
+hidrd_opt_type_name(hidrd_opt_type type)
+{
+    assert(hidrd_opt_type_valid(type));
+
+    switch (type)
+    {
+#define MAP(_NAME, _name) \
+    case HIDRD_OPT_TYPE_##_NAME:    \
+        return #_name;
+        MAP_LIST(MAP)
+#undef MAP
+
+        default:
+            return NULL;
     }
 }
 
@@ -103,8 +122,8 @@ hidrd_opt_type_parse_value(hidrd_opt_type   type,
     {
 #define MAP(_T, _t) \
     case HIDRD_OPT_TYPE_##_T:                               \
-        return hidrd_opt_type_parse_##_t(&pval->_t, str)
-        MAP_LIST;
+        return hidrd_opt_type_parse_##_t(&pval->_t, str);
+        MAP_LIST(MAP)
 #undef MAP
 
         default:
@@ -154,9 +173,9 @@ hidrd_opt_type_format_value(hidrd_opt_type          type,
     switch (type)
     {
 #define MAP(_T, _t) \
-    case HIDRD_OPT_TYPE_##_T:                       \
-        return hidrd_opt_type_format_##_t(pval->_t)
-        MAP_LIST;
+    case HIDRD_OPT_TYPE_##_T:                           \
+        return hidrd_opt_type_format_##_t(pval->_t);
+        MAP_LIST(MAP)
 #undef MAP
 
         default:
@@ -210,8 +229,8 @@ hidrd_opt_type_cmp_value(hidrd_opt_type         type,
     {
 #define MAP(_T, _t) \
     case HIDRD_OPT_TYPE_##_T:                           \
-        return hidrd_opt_type_cmp_##_t(a->_t, b->_t)
-        MAP_LIST;
+        return hidrd_opt_type_cmp_##_t(a->_t, b->_t);
+        MAP_LIST(MAP)
 #undef MAP
 
         default:

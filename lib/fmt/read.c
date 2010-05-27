@@ -73,6 +73,8 @@ main(int argc, char **argv)
                                                &output_name};
     size_t              i;
 
+    char               *err                 = NULL;
+
     /*
      * Collect arguments
      */
@@ -150,19 +152,22 @@ main(int argc, char **argv)
     /*
      * Open input stream
      */
-    input = hidrd_src_new_opts(input_format->src,
+    input = hidrd_src_new_opts(input_format->src, &err,
                                input_buf, input_size, input_options);
     if (input == NULL)
     {
-        fprintf(stderr, "Failed to open input stream\n");
+        fprintf(stderr, "Failed to open input stream:\n%s\n", err);
         goto cleanup;
     }
+    free(err);
+    err = NULL;
 
     while ((item = hidrd_src_get(input)) != NULL)
         if (!hidrd_fd_write_whole(output_fd,
                                   item, hidrd_item_get_size(item)))
         {
-            fprintf(stderr, "Failed to write output file\n");
+            fprintf(stderr, "Failed to write output file\n%s\n",
+                    (err = hidrd_src_errmsg(input)));
             goto cleanup;
         }
     if (hidrd_src_error(input))
@@ -176,6 +181,7 @@ main(int argc, char **argv)
 
 cleanup:
 
+    free(err);
     hidrd_src_delete(input);
     free(input_buf);
     if (input_fd >= 0 && input_fd != STDIN_FILENO)

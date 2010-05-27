@@ -29,6 +29,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include "hidrd/cfg.h"
 #include "hidrd/util/tkn.h"
 
 #ifdef __cplusplus

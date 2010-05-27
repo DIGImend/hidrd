@@ -26,8 +26,6 @@
 
 #include <stdint.h>
 #include <string.h>
-#include <errno.h>
-#include <error.h>
 #include <stdio.h>
 #include "hidrd/fmt/natv.h"
 
@@ -193,27 +191,37 @@ hexdump_cmp(FILE *f, bool ctrl,
 #undef left_bbuf
 }
 
+#define ERR(_fmt, _args...) fprintf(stderr, _fmt "\n", ##_args)
+
+#define ERR_CLNP(_fmt, _args...) \
+    do {                            \
+        ERR(_fmt, ##_args);         \
+        goto cleanup;               \
+    } while (0)
 
 int
 main(int argc, char **argv)
 {
+    int                 result          = 1;
     const item_desc    *orig_item;
-    void               *orig_rd_buf;
+    void               *orig_rd_buf     = NULL;
     size_t              orig_rd_len;
     void               *p;
 
-    hidrd_src          *src         = NULL;
-    hidrd_snk          *snk         = NULL;
-    void               *test_rd_buf = NULL;
-    size_t              test_rd_len = 0;
+    hidrd_src          *src             = NULL;
+    hidrd_snk          *snk             = NULL;
+    void               *test_rd_buf     = NULL;
+    size_t              test_rd_len     = 0;
 
     const hidrd_item   *test_item;
+
+    char               *err             = NULL;
 
     (void)argc;
     (void)argv;
 
     if (!hidrd_fmt_init(&hidrd_natv))
-        error(1, 0, "Failed to initialize native format support");
+        ERR_CLNP("Failed to initialize native format support");
 
     /*
      * Generate original report descriptor
@@ -232,72 +240,87 @@ main(int argc, char **argv)
     /*
      * Write report descriptor to a native sink
      */
-    snk = hidrd_snk_new(hidrd_natv.snk, &test_rd_buf, &test_rd_len);
+    snk = hidrd_snk_new(hidrd_natv.snk, &err, &test_rd_buf, &test_rd_len);
     if (snk == NULL)
-        error(1, errno, "Failed to create native sink");
+        ERR_CLNP("Failed to create native sink:\n%s", err);
+    free(err);
+    err = NULL;
 
     for (orig_item = item_list; orig_item->len != 0; orig_item++)
         if (!hidrd_snk_put(snk, orig_item->buf))
-            error(1, errno, "Failed to put item #%zu",
-                  (orig_item - item_list));
+            ERR_CLNP("Failed to put item #%zu:\n%s",
+                     (orig_item - item_list),
+                     (err = hidrd_snk_errmsg(snk)));
 
-    hidrd_snk_close(snk);
+    if (!hidrd_snk_close(snk))
+        ERR_CLNP("Failed to close native sink:\n%s",
+                 (err = hidrd_snk_errmsg(snk)));
+    snk = NULL;
 
     /*
      * Compare resulting and original descriptor.
      */
     if (test_rd_len != orig_rd_len)
     {
-        fprintf(stderr,
-                "Invalid test resource descriptor length (%zu != %zu)\n\n",
-                test_rd_len, orig_rd_len);
+        ERR("Invalid test resource descriptor length (%zu != %zu)\n\n",
+            test_rd_len, orig_rd_len);
         hexdump_cmp(stderr, true,
                     orig_rd_buf, orig_rd_len, test_rd_buf, test_rd_len);
-        exit(1);
+        goto cleanup;
     }
 
     if (test_rd_buf == NULL)
-        error(1, 0, "Test resource descriptor buffer is NULL");
+        ERR_CLNP("Test resource descriptor buffer is NULL");
 
     if (memcmp(test_rd_buf, orig_rd_buf, orig_rd_len) != 0)
     {
-        fprintf(stderr, "Test resource descriptor doesn't match\n\n");
+        ERR("Test resource descriptor doesn't match\n\n");
         hexdump_cmp(stderr, true,
                     orig_rd_buf, orig_rd_len, test_rd_buf, test_rd_len);
-        exit(1);
+        goto cleanup;
     }
-
-    /* Free original report descriptor buffer as not needed anymore */
-    free(orig_rd_buf);
 
     /*
      * Read test descriptor source and compare it to the items.
      */
-    src = hidrd_src_new(hidrd_natv.src, test_rd_buf, test_rd_len);
+    src = hidrd_src_new(hidrd_natv.src, &err, test_rd_buf, test_rd_len);
+    if (src == NULL)
+        ERR_CLNP("Failed to create the test source:\n%s", err);
+    free(err);
+    err = NULL;
+
     for (orig_item = item_list; orig_item->len != 0; orig_item++)
     {
         if ((test_item = hidrd_src_get(src)) == NULL)
-            error(1, errno,
-                  "Failed to retrieve item #%zu from the test source",
-                  (orig_item - item_list + 1));
+            ERR_CLNP("Failed to retrieve item #%zu "
+                     "from the test source:\n%s", (orig_item - item_list + 1),
+                     (err = hidrd_src_errmsg(src)));
         if (memcmp(test_item, orig_item->buf, orig_item->len) != 0)
-            error(1, 0,
-                  "Item #%zu retrieved from the test source doesn't match "
-                  "original", (orig_item - item_list + 1));
+            ERR_CLNP("Item #%zu retrieved from the test source "
+                     "doesn't match the original",
+                     (orig_item - item_list + 1));
     }
     if (hidrd_src_get(src) != NULL)
-        error(1, 0, "The test source still has items to retrieve");
+        ERR_CLNP("The test source still has items to retrieve");
 
     if (hidrd_src_error(src))
-        error(1, 0, "The test source has unexpected error indicator");
+        ERR_CLNP("The test source has unexpected error indicator");
 
     hidrd_src_delete(src);
+    src = NULL;
 
+    result = 0;
+
+cleanup:
+
+    hidrd_src_delete(src);
+    hidrd_snk_delete(snk);
     free(test_rd_buf);
-
+    free(orig_rd_buf);
+    free(err);
     hidrd_fmt_clnp(&hidrd_natv);
 
-    return 0;
+    return result;
 }
 
 

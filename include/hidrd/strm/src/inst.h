@@ -27,6 +27,7 @@
 #ifndef __HIDRD_STRM_SRC_INST_H__
 #define __HIDRD_STRM_SRC_INST_H__
 
+#include "hidrd/cfg.h"
 #include "hidrd/strm/src/type.h"
 
 #ifdef __cplusplus
@@ -55,6 +56,9 @@ extern bool hidrd_src_valid(const hidrd_src *src);
  * with specified arguments.
  *
  * @param type  Source type to create instance of.
+ * @param perr  Location for a dynamically allocated error message pointer,
+ *              in case the creation failed, or for a dynamically allocated
+ *              empty string otherwise; could be NULL.
  * @param buf   Source buffer pointer.
  * @param size  Source buffer size.
  * @param ...   Source type-specific initialization arguments.
@@ -62,8 +66,11 @@ extern bool hidrd_src_valid(const hidrd_src *src);
  * @return Opened (allocated and initialized) instance of specified source
  *         type, or NULL, if failed to allocate or initialize.
  */
-extern hidrd_src *hidrd_src_new(const hidrd_src_type *type,
-                                const void *buf, size_t size, ...);
+extern hidrd_src *hidrd_src_new(const hidrd_src_type   *type,
+                                char                  **perr,
+                                const void             *buf,
+                                size_t                  size,
+                                ...);
 
 #ifdef HIDRD_WITH_OPT
 /**
@@ -71,6 +78,9 @@ extern hidrd_src *hidrd_src_new(const hidrd_src_type *type,
  * with specified options.
  *
  * @param type  Source type to create instance of.
+ * @param perr  Location for a dynamically allocated error message pointer,
+ *              in case the creation failed, or for a dynamically allocated
+ *              empty string otherwise; could be NULL.
  * @param buf   Source buffer pointer.
  * @param size  Source buffer size.
  * @param opts  Option string: each option is a name/value pair separated by
@@ -80,10 +90,32 @@ extern hidrd_src *hidrd_src_new(const hidrd_src_type *type,
  * @return Opened (allocated and initialized) instance of specified source
  *         type, or NULL, if failed to allocate or initialize.
  */
-extern hidrd_src *hidrd_src_new_opts(const hidrd_src_type *type,
-                                     const void *buf, size_t size,
-                                     const char *opts);
+extern hidrd_src *hidrd_src_new_opts(const hidrd_src_type  *type,
+                                     char                 **perr,
+                                     const void            *buf,
+                                     size_t                 size,
+                                     const char            *opts);
 #endif /* HIDRD_WITH_OPT */
+
+/**
+ * Retrieve (abstract) current position in a source stream.
+ *
+ * @param src   Source instance to retrieve position from.
+ *
+ * @return Abstract position in the source instance stream.
+ */
+extern size_t hidrd_src_getpos(const hidrd_src *src);
+
+/**
+ * Format a human-readable description of an abstract position in a source
+ * stream.
+ *
+ * @param src   Source instance to format position description for.
+ * @param pos   Abstract position in the source instance.
+ *
+ * @return Dynamically allocated position description string.
+ */
+extern char *hidrd_src_fmtpos(const hidrd_src *src, size_t pos);
 
 /**
  * Retrieve an item from a source instance.
@@ -92,7 +124,7 @@ extern hidrd_src *hidrd_src_new_opts(const hidrd_src_type *type,
  *
  * @return The retrieved item, or NULL, if end of source or error.
  *
- * @see hidrd_src_error
+ * @sa hidrd_src_error
  */
 extern const hidrd_item *hidrd_src_get(hidrd_src *src);
 
@@ -104,6 +136,16 @@ extern const hidrd_item *hidrd_src_get(hidrd_src *src);
  * @return True if the error indicator is present, false otherwise.
  */
 extern bool hidrd_src_error(const hidrd_src *src);
+
+/**
+ * Retrieve most recently occurred error message from a source instance.
+ *
+ * @param src   Source instance to retrieve error message from.
+ *
+ * @return Dynamically allocated error message string, empty string if no
+ *         error occurred, or NULL if failed to allocate memory.
+ */
+extern char *hidrd_src_errmsg(const hidrd_src *src);
 
 /**
  * Delete (cleanup and free) a source instance.

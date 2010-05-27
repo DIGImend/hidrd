@@ -39,6 +39,56 @@ hidrd_natv_src_valid(const hidrd_src *src)
 }
 
 
+static char *
+hidrd_natv_src_errmsg(const hidrd_src *src)
+{
+    const hidrd_natv_src_inst  *natv_src    =
+                                    (const hidrd_natv_src_inst *)src;
+    const char                 *msg;
+
+    switch (natv_src->err)
+    {
+        case HIDRD_NATV_SRC_ERR_NONE:
+            msg = "";
+            break;
+        case HIDRD_NATV_SRC_ERR_SHORT:
+            msg = "item buffer ended prematurely";
+            break;
+        case HIDRD_NATV_SRC_ERR_INVALID:
+            msg = "invalid item encountered";
+            break;
+        default:
+            assert(!"Unknown error code");
+            return NULL;
+    }
+
+    return strdup(msg);
+}
+
+
+static size_t
+hidrd_natv_src_getpos(const hidrd_src *src)
+{
+    const hidrd_natv_src_inst  *natv_src    = (hidrd_natv_src_inst *)src;
+
+    return natv_src->pos;
+}
+
+
+static char *
+hidrd_natv_src_fmtpos(const hidrd_src *src, size_t pos)
+{
+    char   *str;
+
+    (void)src;
+
+    if (asprintf(&str, "offset %zu", pos) < 0)
+        return NULL;
+
+    return str;
+}
+
+
 static const hidrd_item *
 hidrd_natv_src_get(hidrd_src *src)
 {
@@ -48,14 +98,21 @@ hidrd_natv_src_get(hidrd_src *src)
 
     item = (hidrd_item *)((uint8_t *)src->buf + natv_src->pos);
 
+    if (natv_src->pos >= src->size)
+        return NULL;
+
     if (!hidrd_item_fits(item,
                          src->size - natv_src->pos, &item_size))
+    {
+        src->error = true;
+        natv_src->err = HIDRD_NATV_SRC_ERR_SHORT;
         return NULL;
+    }
 
     if (!hidrd_item_valid(item))
     {
         src->error = true;
-        errno = EINVAL;
+        natv_src->err = HIDRD_NATV_SRC_ERR_INVALID;
         return NULL;
     }
 
@@ -68,6 +125,9 @@ hidrd_natv_src_get(hidrd_src *src)
 const hidrd_src_type hidrd_natv_src = {
     .size   = sizeof(hidrd_natv_src_inst),
     .valid  = hidrd_natv_src_valid,
+    .getpos = hidrd_natv_src_getpos,
+    .fmtpos = hidrd_natv_src_fmtpos,
+    .errmsg = hidrd_natv_src_errmsg,
     .get    = hidrd_natv_src_get,
 };
 

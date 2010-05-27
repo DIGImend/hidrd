@@ -75,6 +75,8 @@ main(int argc, char **argv)
                                                &output_name};
     size_t              i;
 
+    char               *err                 = NULL;
+
     /*
      * Collect arguments
      */
@@ -152,13 +154,15 @@ main(int argc, char **argv)
     /*
      * Open output stream
      */
-    output = hidrd_snk_new_opts(output_format->snk,
+    output = hidrd_snk_new_opts(output_format->snk, &err,
                                 &output_buf, &output_size, output_options);
     if (output == NULL)
     {
-        fprintf(stderr, "Failed to open output stream\n");
+        fprintf(stderr, "Failed to open output stream\n:%s\n", err);
         goto cleanup;
     }
+    free(err);
+    err = NULL;
 
     /*
      * Transfer items
@@ -168,7 +172,8 @@ main(int argc, char **argv)
          item += hidrd_item_get_size(item))
         if (!hidrd_snk_put(output, item))
         {
-            fprintf(stderr, "Failed to write output stream\n");
+            fprintf(stderr, "Failed to write output stream\n%s\n",
+                    (err = hidrd_snk_errmsg(output)));
             goto cleanup;
         }
 
@@ -177,7 +182,8 @@ main(int argc, char **argv)
      */
     if (!hidrd_snk_close(output))
     {
-        fprintf(stderr, "Failed to close output stream\n");
+        fprintf(stderr, "Failed to close output stream\n%s\n",
+                (err = hidrd_snk_errmsg(output)));
         goto cleanup;
     }
     output = NULL;
@@ -197,6 +203,7 @@ main(int argc, char **argv)
 
 cleanup:
 
+    free(err);
     hidrd_snk_delete(output);
 
     free(output_buf);

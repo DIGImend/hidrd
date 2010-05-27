@@ -22,10 +22,7 @@ set -e -u -o pipefail
 
 declare -a OPTION_LIST=(
 enable-debug
-enable-tests-install
 disable-opt
-disable-streams
-disable-formats
 disable-hidrd-convert
 disable-tokens
 disable-names

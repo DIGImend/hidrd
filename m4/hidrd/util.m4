@@ -27,3 +27,21 @@ define(`uppercase', `translit(`$1', `a-z', `A-Z')')dnl
 dnl
 define(`lowercase', `translit(`$1', `A-Z', `a-z')')dnl
 dnl
+changequote(`[', `]')dnl
+define([xml_attvalue],
+       [patsubst(
+            patsubst(
+                patsubst(
+                    patsubst(
+                        patsubst($1, &, &amp;),
+                        ", &quot;),
+                    ', &apos;),
+                <, &lt;),
+            >, &gt;)])dnl
+define([xml_cdata],
+       [patsubst(
+            patsubst(
+                patsubst($1, &, &amp;),
+                <, &lt;),
+            >, &gt;)])dnl
+changequote([`], ['])dnl

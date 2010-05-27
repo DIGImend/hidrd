@@ -24,6 +24,8 @@
 set -e -u -o pipefail
 shopt -s nullglob
 
+WRAPPER=${HIDRD_READ_TEST_WRAPPER:-}
+
 function hexdump_col ()
 {
     hexdump -v -e '1/1 "%.2X\n"' "$@"
@@ -53,7 +55,7 @@ function run ()
         local test_output_size
         local max_size
 
-        "$cmd" "$format" "$options" "$input" "$test_output"
+        $WRAPPER "$cmd" "$format" "$options" "$input" "$test_output"
 
         output_size=`stat -c %s "$output"`
         test_output_size=`stat -c %s "$test_output"`
@@ -87,14 +89,15 @@ function run ()
 
 function usage_exit ()
 {
-    echo "Usage: `basename \"$0\"` <format> <extension> <data_dir>" >&2
+    echo "Usage: `basename \"$0\"` <format> <options> <extension> <data_dir>" >&2
     echo
     exit 1
 }
 
 FMT=${1:-}
-EXT=${2:-}
-DIR=${3:-${HIDRD_READ_TEST_DATA:-}}
+GOPTS=${2:-}
+EXT=${3:-}
+DIR=${4:-${HIDRD_READ_TEST_DATA:-}}
 
 if [ -z "$FMT" ]; then
     echo "Format is not specified." >&2
@@ -114,13 +117,16 @@ HIDRD_READ="`readlink -f \"\`which hidrd_read\`\"`"
 cd "$DIR"
 
 for INPUT_FILE in *.${EXT}; do
-    OPTIONS=""
     OUTPUT_FILE="${INPUT_FILE%.${EXT}}.bin"
-    OPTIONS_FILE="${INPUT_FILE}.opt"
-    if [ -e "$OPTIONS_FILE" ]; then
-        OPTIONS=`cat "$OPTIONS_FILE"`
+    OPTS_FILE="${INPUT_FILE}.opt"
+    if [ -e "$OPTS_FILE" ]; then
+        SOPTS="`cat \"$OPTS_FILE\"`"
     fi
-    run "$HIDRD_READ" "$FMT" "$OPTIONS" "$INPUT_FILE" "$OUTPUT_FILE"
+
+    # Join global and specific options with comma, if necessary
+    OPTS="${GOPTS:-}${GOPTS:+${SOPTS:+,}}${SOPTS:-}"
+
+    run "$HIDRD_READ" "$FMT" "$OPTS" "$INPUT_FILE" "$OUTPUT_FILE"
 done
 
 

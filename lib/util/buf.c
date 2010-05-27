@@ -47,6 +47,14 @@ hidrd_buf_valid(const hidrd_buf *buf)
 }
 
 
+void hidrd_buf_reset(hidrd_buf *buf)
+{
+    assert(hidrd_buf_valid(buf));
+
+    buf->len = 0;
+}
+
+
 void
 hidrd_buf_clnp(hidrd_buf *buf)
 {

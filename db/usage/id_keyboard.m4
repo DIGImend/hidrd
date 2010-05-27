@@ -65,8 +65,8 @@ ID(`0022', `KB_5_and_percent',               `Sel',   `keyboard 5 and %')dnl
 ID(`0023', `KB_6_and_caret',                 `Sel',   `keyboard 6 and ^')dnl
 ID(`0024', `KB_7_and_amp',                   `Sel',   `keyboard 7 and &')dnl
 ID(`0025', `KB_8_and_star',                  `Sel',   `keyboard 8 and *')dnl
-ID(`0026', `KB_9_and_left_paren',            `Sel',   ``keyboard 9 and ('')dnl
-ID(`0027', `KB_0_and_right_paren',           `Sel',   ``keyboard 0 and )'')dnl
+ID(`0026', `KB_9_and_left_paren',            `Sel',   `keyboard 9 and left parenthesis')dnl
+ID(`0027', `KB_0_and_right_paren',           `Sel',   `keyboard 0 and right parenthesis')dnl
 ID(`0028', `KB_Enter',                       `Sel',   `keyboard Return (ENTER)')dnl
 ID(`0029', `KB_Escape',                      `Sel',   `keyboard Escape')dnl
 ID(`002A', `KB_Delete',                      `Sel',   `keyboard Delete (Backspace)')dnl
@@ -198,8 +198,8 @@ ID(`00B2', `thousands_separator',            `Sel',   `thousands separator')dnl
 ID(`00B3', `decimal_separator',              `Sel',   `decimal separator')dnl
 ID(`00B4', `currency_unit',                  `Sel',   `currency unit')dnl
 ID(`00B5', `currency_subunit',               `Sel',   `currency sub-unit')dnl
-ID(`00B6', `KP_left_paren',                  `Sel',   ``keypad ('')dnl
-ID(`00B7', `KP_right_paren',                 `Sel',   ``keypad )'')dnl
+ID(`00B6', `KP_left_paren',                  `Sel',   `keypad left parenthesis')dnl
+ID(`00B7', `KP_right_paren',                 `Sel',   `keypad right parenthesis')dnl
 ID(`00B8', `KP_left_brace',                  `Sel',   `keypad {')dnl
 ID(`00B9', `KP_right_brace',                 `Sel',   `keypad }')dnl
 ID(`00BA', `KP_Tab',                         `Sel',   `keypad Tab')dnl

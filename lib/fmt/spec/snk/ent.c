@@ -82,32 +82,42 @@ bool
 hidrd_spec_snk_ent_valid(const hidrd_spec_snk_ent *ent)
 {
     return (ent != NULL) &&
+           (ent->item == NULL || hidrd_item_valid(ent->item)) &&
            (ent->name == NULL ||
             hidrd_spec_snk_ent_name_valid(ent->name)) &&
            (ent->value == NULL ||
             hidrd_spec_snk_ent_value_valid(ent->value)) &&
            (ent->comment == NULL ||
             hidrd_spec_snk_ent_comment_valid(ent->comment)) &&
-           /* Value is not allowed without a name */
-           (ent->name != NULL || ent->value == NULL);
+           /* Item and name should be either both present or both missing */
+           ((ent->item != NULL && ent->name != NULL) ||
+            (ent->item == NULL && ent->name == NULL)) &&
+           /* Value is not allowed without an item and a name */
+           (ent->value == NULL || ent->name != NULL);
 }
 
 
 hidrd_spec_snk_ent *
 hidrd_spec_snk_ent_inita(hidrd_spec_snk_ent    *ent,
                          int                    depth,
+                         hidrd_item            *item,
                          char                  *name,
                          char                  *value,
                          char                  *comment)
 {
     assert(ent != NULL);
+    assert(item == NULL || hidrd_item_valid(item));
     assert(name == NULL || hidrd_spec_snk_ent_name_valid(name));
     assert(value == NULL || hidrd_spec_snk_ent_value_valid(value));
     assert(comment == NULL || hidrd_spec_snk_ent_comment_valid(comment));
-    /* Value is not allowed without a name */
-    assert(name != NULL || value == NULL);
+    /* Item and name should be either both present or both missing */
+    assert((item != NULL && name != NULL) ||
+           (item == NULL && name == NULL));
+    /* Value is not allowed without an item and a name */
+    assert(value == NULL || name != NULL);
 
     ent->depth = depth;
+    ent->item = item;
     ent->name = name;
     ent->value = value;
     ent->comment = comment;
@@ -120,30 +130,37 @@ hidrd_spec_snk_ent_inita(hidrd_spec_snk_ent    *ent,
 
 hidrd_spec_snk_ent *
 hidrd_spec_snk_ent_newa(int                 depth,
+                        hidrd_item         *item,
                         char               *name,
                         char               *value,
                         char               *comment)
 {
     return hidrd_spec_snk_ent_inita(malloc(sizeof(hidrd_spec_snk_ent)),
-                                    depth, name, value, comment);
+                                    depth, item, name, value, comment);
 }
 
 
 hidrd_spec_snk_ent *
 hidrd_spec_snk_ent_init(hidrd_spec_snk_ent *ent,
                         int                 depth,
+                        const hidrd_item   *item,
                         const char         *name,
                         const char         *value,
                         const char         *comment)
 {
     assert(ent != NULL);
+    assert(item == NULL || hidrd_item_valid(item));
     assert(name == NULL || hidrd_spec_snk_ent_name_valid(name));
     assert(value == NULL || hidrd_spec_snk_ent_value_valid(value));
     assert(comment == NULL || hidrd_spec_snk_ent_comment_valid(comment));
-    /* Value is not allowed without a name */
-    assert(name != NULL || value == NULL);
+    /* Item and name should be either both present or both missing */
+    assert((item != NULL && name != NULL) ||
+           (item == NULL && name == NULL));
+    /* Value is not allowed without an item and a name */
+    assert(value == NULL || name != NULL);
 
     ent->depth = depth;
+    ent->item = (item == NULL) ? NULL : hidrd_item_dup(item);
     ent->name = (name == NULL) ? NULL : strdup(name);
     ent->value = (value == NULL) ? NULL : strdup(value);
     ent->comment = (comment == NULL) ? NULL : strdup(comment);
@@ -156,12 +173,13 @@ hidrd_spec_snk_ent_init(hidrd_spec_snk_ent *ent,
 
 hidrd_spec_snk_ent *
 hidrd_spec_snk_ent_new(int                  depth,
+                       const hidrd_item    *item,
                        const char          *name,
                        const char          *value,
                        const char          *comment)
 {
     return hidrd_spec_snk_ent_init(malloc(sizeof(hidrd_spec_snk_ent)),
-                                   depth, name, value, comment);
+                                   depth, item, name, value, comment);
 }
 
 
@@ -170,11 +188,12 @@ hidrd_spec_snk_ent_clnp(hidrd_spec_snk_ent *ent)
 {
     assert(hidrd_spec_snk_ent_valid(ent));
 
+    free(ent->item);
     free(ent->name);
     free(ent->value);
     free(ent->comment);
 
-    hidrd_spec_snk_ent_inita(ent, 0, NULL, NULL, NULL);
+    hidrd_spec_snk_ent_inita(ent, 0, NULL, NULL, NULL, NULL);
 }
 
 

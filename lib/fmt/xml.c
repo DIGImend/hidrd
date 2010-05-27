@@ -24,8 +24,101 @@
  * @(#) $Id$
  */
 
+#include <errno.h>
 #include <libxml/parser.h>
+#include <libxml/xmlschemas.h>
 #include "hidrd/fmt/xml.h"
+#include "xml.h"
+
+
+void
+xml_error(void *ctx, const char *fmt, ...)
+{
+    char      **perr    = (char **)ctx;
+    va_list     ap;
+    char       *chunk;
+    char       *new_err;
+
+    if (perr == NULL)
+        return;
+
+    va_start(ap, fmt);
+
+    if (vasprintf(&chunk, fmt, ap) < 0)
+    {
+        if (asprintf(&chunk, "failed to format error message chunk: %s",
+                     strerror(errno)) < 0)
+        {
+            assert(!"Failed to format formatting error message");
+            chunk = NULL;
+            goto cleanup;
+        }
+    }
+
+    if (asprintf(&new_err, "%s%s", *perr,  chunk) < 0)
+    {
+        assert(!"Failed to format new error message");
+        goto cleanup;
+    }
+
+    free(*perr);
+    *perr = new_err;
+
+cleanup:
+
+    free(chunk);
+    va_end(ap);
+}
+
+
+bool
+xml_validate(bool          *pvalid,
+             xmlDocPtr      doc,
+             const char    *schema_path)
+{
+    bool                    result              = false;
+    xmlDocPtr               schema_doc          = NULL;
+    xmlSchemaParserCtxtPtr  schema_parser_ctxt  = NULL;
+    xmlSchemaPtr            schema              = NULL;
+    xmlSchemaValidCtxtPtr   schema_valid_ctxt   = NULL;
+    int                     valid_rc;
+
+    schema_doc = xmlReadFile(schema_path, NULL, XML_PARSE_NONET);
+    if (schema_doc == NULL)
+        goto cleanup;
+
+    schema_parser_ctxt = xmlSchemaNewDocParserCtxt(schema_doc);
+    if (schema_parser_ctxt == NULL)
+        goto cleanup;
+
+    schema = xmlSchemaParse(schema_parser_ctxt);
+    if (schema == NULL)
+        goto cleanup;
+
+    schema_valid_ctxt = xmlSchemaNewValidCtxt(schema);
+    if (schema_valid_ctxt == NULL)
+        goto cleanup;
+
+    valid_rc = xmlSchemaValidateDoc(schema_valid_ctxt, doc);
+    if (valid_rc < 0)
+        goto cleanup;
+
+    if (pvalid != NULL)
+        *pvalid = (valid_rc == 0);
+
+    result = true;
+
+cleanup:
+
+    xmlSchemaFreeValidCtxt(schema_valid_ctxt);
+    xmlSchemaFree(schema);
+    xmlSchemaFreeParserCtxt(schema_parser_ctxt);
+    if (schema_doc != NULL)
+        xmlFreeDoc(schema_doc);
+
+    return result;
+}
+
 
 static bool
 hidrd_xml_init(void)

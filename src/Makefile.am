@@ -26,6 +26,7 @@ bin_PROGRAMS += hidrd-convert
 hidrd_convert_SOURCES = hidrd-convert.c
 hidrd_convert_LDADD = \
     ../lib/util/libhidrd_util.la    \
+    ../lib/opt/libhidrd_opt.la      \
     ../lib/strm/libhidrd_strm.la    \
     ../lib/fmt/libhidrd_fmt.la
 

@@ -33,14 +33,111 @@
 #include <string.h>
 #include <stdio.h>
 #include <getopt.h>
+#include "hidrd/util/str.h"
 #include "hidrd/util/fd.h"
 #include "hidrd/fmt.h"
 
-static int
+
+static bool
+usage_formats(FILE *stream, const char *progname)
+{
+    const hidrd_fmt       **pfmt;
+    size_t                  max_len;
+    size_t                  len;
+    const hidrd_opt_spec   *opt_spec;
+    char                    buf[1]      = {'\0'};
+    hidrd_opt              *opt_list;
+    char                   *dflt_opts;
+
+    if (fprintf(stream, "Formats supported by %s:\n\n", progname) < 0)
+        return false;
+
+    for (max_len = 0, pfmt = hidrd_fmt_list; *pfmt != NULL; pfmt++)
+    {
+        len = strlen((*pfmt)->name);
+        if (len > max_len)
+            max_len = len;
+    }
+
+    for (pfmt = hidrd_fmt_list; *pfmt != NULL; pfmt++)
+    {
+        if (fprintf(stream, "%s%*s [%s%s] - %s format\n\n",
+                    (*pfmt)->name,
+                    (int)(max_len - strlen((*pfmt)->name)), "",
+                    hidrd_fmt_readable(*pfmt) ? "I" : " ",
+                    hidrd_fmt_writable(*pfmt) ? "O" : " ",
+                    (*pfmt)->desc) < 0)
+            return false;
+
+#define FPRINTF_OPTS(_pnt, _dir) \
+    do {                                                                \
+        if ((*pfmt)->_pnt == NULL ||                                    \
+            (*pfmt)->_pnt->opts_spec == NULL ||                         \
+            hidrd_opt_spec_list_len((*pfmt)->_pnt->opts_spec) == 0)     \
+            break;                                                      \
+        if (fprintf(stream, "  %s options:\n", _dir) < 0)               \
+            return false;                                               \
+        for (opt_spec = (*pfmt)->_pnt->opts_spec;                       \
+             opt_spec->name != NULL; opt_spec++)                        \
+        {                                                               \
+            char   *name;                                               \
+                                                                        \
+            name = strdup(hidrd_opt_type_name(opt_spec->type));         \
+            if (name == NULL)                                           \
+                return false;                                           \
+                                                                        \
+            hidrd_str_uc(name);                                         \
+                                                                        \
+            if (fprintf(stream, "  %s [%s] - %s\n",                     \
+                        opt_spec->name, name,                           \
+                        opt_spec->desc) < 0)                            \
+            {                                                           \
+                free(name);                                             \
+                return false;                                           \
+            }                                                           \
+            free(name);                                                 \
+        }                                                               \
+                                                                        \
+        if (fprintf(stream, "  Defaults:\n") < 0)                       \
+            return false;                                               \
+                                                                        \
+        opt_list = hidrd_opt_list_parse((*pfmt)->_pnt->opts_spec, buf); \
+        if (opt_list == NULL)                                           \
+            return false;                                               \
+                                                                        \
+        dflt_opts = hidrd_opt_list_format(opt_list);                    \
+        if (dflt_opts == NULL)                                          \
+        {                                                               \
+            free(opt_list);                                             \
+            return false;                                               \
+        }                                                               \
+        free(opt_list);                                                 \
+                                                                        \
+        if (fprintf(stream, "  %s\n\n", dflt_opts) < 0)                 \
+        {                                                               \
+            free(dflt_opts);                                            \
+            return false;                                               \
+        }                                                               \
+        free(dflt_opts);                                                \
+    } while (0)
+
+        FPRINTF_OPTS(src, "Input");
+        FPRINTF_OPTS(snk, "Output");
+
+    }
+
+    return true;
+}
+
+
+static bool
 usage(FILE *stream, const char *progname)
 {
-    return 
-        fprintf(
+    const hidrd_fmt   **pfmt;
+    size_t              max_len;
+    size_t              len;
+
+    if (fprintf(
             stream, 
             "Usage: %s [OPTION]... [INPUT [OUTPUT]]\n"
             "Convert a HID report descriptor.\n"
@@ -50,6 +147,8 @@ usage(FILE *stream, const char *progname)
             "\n"
             "Options:\n"
             "  -h, --help                       this help message\n"
+            "  --hf, --help-formats             description of formats\n"
+            "                                   and their options\n"
             "  -i, --input-format=FORMAT        use FORMAT for input\n"
             "  --io=LIST, --input-options=LIST  "
                                         "use LIST input format options\n"
@@ -57,9 +156,33 @@ usage(FILE *stream, const char *progname)
             "  --oo=LIST, --output-options=LIST "
                                         "use LIST output format options\n"
             "\n"
-            "Default options are \"-i natv -o natv\".\n"
+            "Formats:\n"
             "\n",
-            progname);
+            progname) < 0)
+        return false;
+
+    for (max_len = 0, pfmt = hidrd_fmt_list; *pfmt != NULL; pfmt++)
+    {
+        len = strlen((*pfmt)->name);
+        if (len > max_len)
+            max_len = len;
+    }
+
+    for (pfmt = hidrd_fmt_list; *pfmt != NULL; pfmt++)
+        if (fprintf(stream, "  %*s [%s%s] - %s\n",
+                    (int)max_len, (*pfmt)->name,
+                    hidrd_fmt_readable(*pfmt) ? "I" : " ",
+                    hidrd_fmt_writable(*pfmt) ? "O" : " ",
+                    (*pfmt)->desc) < 0)
+            return false;
+
+    if (fprintf(stream,
+                "\n" 
+                "Default options are -i natv -o natv.\n"
+                "\n") < 0)
+        return false;
+
+    return true;
 }
 
 
@@ -88,6 +211,10 @@ process(const char *input_name,
 
     const hidrd_item   *item;
 
+    char               *err             = NULL;
+    size_t              pos;
+    char               *posstr          = NULL;
+
     assert(input_name != NULL);
     assert(*input_name != '\0');
     assert(input_fmt_name != NULL);
@@ -106,18 +233,21 @@ process(const char *input_name,
     input_fmt = hidrd_fmt_list_lkp(input_fmt_name);
     if (input_fmt == NULL)
     {
-        fprintf(stderr, "Unknown input format \"%s\"\n", input_fmt_name);
+        fprintf(stderr, "Unknown input format \"%s\".\n\n",
+                input_fmt_name);
+        usage_formats(stderr, program_invocation_short_name);
         goto cleanup;
     }
     if (!hidrd_fmt_readable(input_fmt))
     {
-        fprintf(stderr, "Reading of %s format is not supported",
+        fprintf(stderr, "Reading of %s format is not supported.\n\n",
                 input_fmt->desc);
+        usage_formats(stderr, program_invocation_short_name);
         goto cleanup;
     }
     if (!hidrd_fmt_init(input_fmt))
     {
-        fprintf(stderr, "Failed to initialize %s format library",
+        fprintf(stderr, "Failed to initialize %s format library\n",
                 input_fmt->desc);
         goto cleanup;
     }
@@ -126,18 +256,21 @@ process(const char *input_name,
     output_fmt = hidrd_fmt_list_lkp(output_fmt_name);
     if (output_fmt == NULL)
     {
-        fprintf(stderr, "Unknown output format \"%s\"\n", output_fmt_name);
+        fprintf(stderr, "Unknown output format \"%s\".\n\n",
+                output_fmt_name);
+        usage_formats(stderr, program_invocation_short_name);
         goto cleanup;
     }
     if (!hidrd_fmt_writable(output_fmt))
     {
-        fprintf(stderr, "Writing to %s format is not supported",
+        fprintf(stderr, "Writing to %s format is not supported.\n\n",
                 output_fmt->desc);
+        usage_formats(stderr, program_invocation_short_name);
         goto cleanup;
     }
     if (!hidrd_fmt_init(output_fmt))
     {
-        fprintf(stderr, "Failed to initialize %s format library",
+        fprintf(stderr, "Failed to initialize %s format library\n",
                 output_fmt->desc);
         goto cleanup;
     }
@@ -184,33 +317,43 @@ process(const char *input_name,
     /*
      * Open input and output streams
      */
-    input = hidrd_src_new_opts(input_fmt->src,
+    input = hidrd_src_new_opts(input_fmt->src, &err,
                                input_buf, input_size, input_options);
     if (input == NULL)
     {
-        fprintf(stderr, "Failed to open input stream\n");
+        fprintf(stderr, "Failed to open input stream:\n%s\n", err);
         goto cleanup;
     }
-    output = hidrd_snk_new_opts(output_fmt->snk,
+    free(err);
+    err = NULL;
+
+    output = hidrd_snk_new_opts(output_fmt->snk, &err,
                                 &output_buf, &output_size, output_options);
     if (output == NULL)
     {
-        fprintf(stderr, "Failed to open output stream\n");
+        fprintf(stderr, "Failed to open output stream:\n%s\n", err);
         goto cleanup;
     }
+    free(err);
+    err = NULL;
 
     /*
      * Transfer the stream
      */
-    while ((item = hidrd_src_get(input)) != NULL)
+    while (pos = hidrd_src_getpos(input),
+           ((item = hidrd_src_get(input)) != NULL))
         if (!hidrd_snk_put(output, item))
         {
-            fprintf(stderr, "Failed to write output stream\n");
+            fprintf(stderr, "Failed to write output stream:\n%s\n",
+                    (err = hidrd_snk_errmsg(output)));
             goto cleanup;
         }
+
     if (hidrd_src_error(input))
     {
-        fprintf(stderr, "Failed to read input stream\n");
+        fprintf(stderr, "Failed to read input item at %s:\n%s\n",
+                (posstr = hidrd_src_fmtpos(input, pos)),
+                (err = hidrd_src_errmsg(input)));
         goto cleanup;
     }
 
@@ -221,7 +364,8 @@ process(const char *input_name,
     input = NULL;
     if (!hidrd_snk_close(output))
     {
-        fprintf(stderr, "Failed to close output stream\n");
+        fprintf(stderr, "Failed to close output stream:\n%s\n",
+                (err = hidrd_snk_errmsg(output)));
         goto cleanup;
     }
     output = NULL;
@@ -240,6 +384,9 @@ process(const char *input_name,
     result = 0;
 
 cleanup:
+
+    free(posstr);
+    free(err);
 
     hidrd_src_delete(input);
     hidrd_snk_delete(output);
@@ -268,7 +415,8 @@ typedef enum opt_val {
     OPT_VAL_OUTPUT_FORMAT  = 'o',
 
     /* Long options only */
-    OPT_VAL_INPUT_OPTIONS  = UINT8_MAX + 1,
+    OPT_VAL_HELP_FORMATS  = UINT8_MAX + 1,
+    OPT_VAL_INPUT_OPTIONS,
     OPT_VAL_OUTPUT_OPTIONS,
 } opt_val;
 
@@ -277,38 +425,55 @@ int
 main(int argc, char **argv)
 {
     static const struct option long_opt_list[] = {
-        {.name      = "help",
+        {.val       = OPT_VAL_HELP,
+         .name      = "help",
+         .has_arg   = no_argument,
+         .flag      = NULL},
+
+        {.val       = OPT_VAL_HELP_FORMATS,
+         .name      = "help-formats",
+         .has_arg   = no_argument,
+         .flag      = NULL},
+
+        {.val       = OPT_VAL_HELP_FORMATS,
+         .name      = "hf",
+         .has_arg   = no_argument,
+         .flag      = NULL},
+
+        {.val       = OPT_VAL_INPUT_FORMAT,
+         .name      = "input-format",
+         .has_arg   = required_argument,
+         .flag      = NULL},
+
+        {.val       = OPT_VAL_INPUT_OPTIONS,
+         .name      = "input-options",
+         .has_arg   = required_argument,
+         .flag      = NULL},
+
+        {.val       = OPT_VAL_INPUT_OPTIONS,
+         .name      = "io",
+         .has_arg   = required_argument,
+         .flag      = NULL},
+
+        {.val       = OPT_VAL_OUTPUT_FORMAT,
+         .name      = "output-format",
+         .has_arg   = required_argument,
+         .flag      = NULL},
+
+        {.val       = OPT_VAL_OUTPUT_OPTIONS,
+         .name      = "output-options",
+         .has_arg   = required_argument,
+         .flag      = NULL},
+
+        {.val       = OPT_VAL_OUTPUT_OPTIONS,
+         .name      = "oo",
+         .has_arg   = required_argument,
+         .flag      = NULL},
+
+        {.val       = 0,
+         .name      = NULL,
          .has_arg   = 0,
-         .flag      = NULL,
-         .val       = OPT_VAL_HELP},
-        {.name      = "input-format",
-         .has_arg   = 1,
-         .flag      = NULL,
-         .val       = OPT_VAL_INPUT_FORMAT},
-        {.name      = "input-options",
-         .has_arg   = 1,
-         .flag      = NULL,
-         .val       = OPT_VAL_INPUT_OPTIONS},
-        {.name      = "io",
-         .has_arg   = 1,
-         .flag      = NULL,
-         .val       = OPT_VAL_INPUT_OPTIONS},
-        {.name      = "output-format",
-         .has_arg   = 1,
-         .flag      = NULL,
-         .val       = OPT_VAL_OUTPUT_FORMAT},
-        {.name      = "output-options",
-         .has_arg   = 1,
-         .flag      = NULL,
-         .val       = OPT_VAL_OUTPUT_OPTIONS},
-        {.name      = "oo",
-         .has_arg   = 1,
-         .flag      = NULL,
-         .val       = OPT_VAL_OUTPUT_OPTIONS},
-        {.name      = NULL,
-         .has_arg   = 0,
-         .flag      = NULL,
-         .val       = 0}
+         .flag      = NULL}
     };
     static const char  *short_opt_list = "hi:o:";
 
@@ -330,6 +495,10 @@ main(int argc, char **argv)
         {
             case OPT_VAL_HELP:
                 usage(stdout, program_invocation_short_name);
+                return 0;
+                break;
+            case OPT_VAL_HELP_FORMATS:
+                usage_formats(stdout, program_invocation_short_name);
                 return 0;
                 break;
             case OPT_VAL_INPUT_FORMAT:

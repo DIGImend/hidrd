@@ -28,6 +28,7 @@
 #define __HIDRD_FMT_XML_H__
 
 #include "hidrd/fmt/inst.h"
+#include "hidrd/fmt/xml/cfg.h"
 #include "hidrd/fmt/xml/prop.h"
 #include "hidrd/fmt/xml/src.h"
 #include "hidrd/fmt/xml/snk.h"

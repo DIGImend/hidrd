@@ -25,8 +25,23 @@ hidrd_HEADERS = \
     item.h
 
 if ENABLE_OPT
+WITH_OPT_DIRECTIVE = define
 SUBDIRS += opt
 hidrd_HEADERS += opt.h
+else
+WITH_OPT_DIRECTIVE = undef
+endif
+
+if ENABLE_TOKENS
+WITH_TOKENS_DIRECTIVE = define
+else
+WITH_TOKENS_DIRECTIVE = undef
+endif
+
+if ENABLE_NAMES
+WITH_NAMES_DIRECTIVE = define
+else
+WITH_NAMES_DIRECTIVE = undef
 endif
 
 if ENABLE_STRM
@@ -38,3 +53,14 @@ if ENABLE_FMT
 SUBDIRS += fmt
 hidrd_HEADERS += fmt.h
 endif
+
+cfg.h: cfg.h.m4
+	m4 -DWITH_OPT_DIRECTIVE=$(WITH_OPT_DIRECTIVE) \
+       -DWITH_TOKENS_DIRECTIVE=$(WITH_TOKENS_DIRECTIVE) \
+       -DWITH_NAMES_DIRECTIVE=$(WITH_NAMES_DIRECTIVE) \
+        $< > $@
+
+dist_noinst_DATA = cfg.h.m4
+BUILT_SOURCES = cfg.h
+CLEANFILES = $(BUILT_SOURCES)
+nodist_hidrd_HEADERS = $(BUILT_SOURCES)

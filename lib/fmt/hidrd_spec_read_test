@@ -23,6 +23,6 @@
 
 set -e -u -o pipefail
 
-hidrd_read_test spec spec "$@"
+hidrd_read_test spec "" spec "$@"
 
 

@@ -55,6 +55,7 @@ typedef struct hidrd_xml_src_inst {
     hidrd_item              item[HIDRD_ITEM_MAX_SIZE];  /**< Item
                                                              being
                                                              retrieved */
+    char                   *err;    /**< Last error message */
 } hidrd_xml_src_inst;
 
 #ifdef __cplusplus

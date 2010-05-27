@@ -25,6 +25,7 @@
  */
 
 #include <stdio.h>
+#include "hidrd/cfg.h"
 #include "hidrd/opt/spec_list.h"
 #include "hidrd/strm/src/inst.h"
 
@@ -48,13 +49,22 @@ hidrd_src_error(const hidrd_src *src)
 }
 
 
+char *
+hidrd_src_errmsg(const hidrd_src *src)
+{
+    assert(hidrd_src_valid(src));
+    return (*src->type->errmsg)(src);
+}
+
+
 /**
  * Allocate (an uninitialized, but zeroed) source instance of specified
  * type and set the type field.
  *
- * @param type  Source type to create instance of.
+ * @param type  Source type to allocate instance of.
  *
- * @return Uninitialized instance of the specified source type.
+ * @return Uninitialized instance of the specified source type, or NULL if
+ *         failed to allocate memory.
  */
 static hidrd_src *
 hidrd_src_alloc(const hidrd_src_type *type)
@@ -75,6 +85,9 @@ hidrd_src_alloc(const hidrd_src_type *type)
  * Initialize source instance (va_list version).
  *
  * @param src   Source instance to initialize.
+ * @param perr  Location for a dynamically allocated error message pointer,
+ *              in case the initialization failed, or for a dynamically
+ *              allocated empty string otherwise; could be NULL.
  * @param buf   Source buffer pointer.
  * @param size  Source buffer size.
  * @param ap    Source type-specific arguments.
@@ -82,7 +95,11 @@ hidrd_src_alloc(const hidrd_src_type *type)
  * @return True if initialization succeeded, false otherwise.
  */
 static bool
-hidrd_src_initv(hidrd_src *src, const void *buf, size_t size, va_list ap)
+hidrd_src_initv(hidrd_src      *src,
+                char          **perr,
+                const void     *buf,
+                size_t          size,
+                va_list         ap)
 {
     assert(src != NULL);
     assert(hidrd_src_type_valid(src->type));
@@ -92,9 +109,13 @@ hidrd_src_initv(hidrd_src *src, const void *buf, size_t size, va_list ap)
     src->size   = size;
     src->error  = false;
 
-    if (src->type->init != NULL)
-        if (!(*src->type->init)(src, ap))
+    if (src->type->initv != NULL)
+    {
+        if (!(*src->type->initv)(src, perr, ap))
             return false;
+    }
+    else if (perr != NULL)
+        *perr = strdup("");
 
     assert(hidrd_src_valid(src));
 
@@ -106,6 +127,9 @@ hidrd_src_initv(hidrd_src *src, const void *buf, size_t size, va_list ap)
  * Initialize source instance.
  *
  * @param src   Source instance to initialize.
+ * @param perr  Location for a dynamically allocated error message pointer,
+ *              in case the initialization failed, or for a dynamically
+ *              allocated empty string otherwise; could be NULL.
  * @param buf   Source buffer pointer.
  * @param size  Source buffer size.
  * @param ...   Source type-specific arguments.
@@ -113,13 +137,17 @@ hidrd_src_initv(hidrd_src *src, const void *buf, size_t size, va_list ap)
  * @return True if initialization succeeded, false otherwise.
  */
 static bool
-hidrd_src_init(hidrd_src *src, const void *buf, size_t size, ...)
+hidrd_src_init(hidrd_src   *src,
+               char       **perr,
+               const void  *buf,
+               size_t       size,
+               ...)
 {
     bool    result;
     va_list ap;
 
     va_start(ap, size);
-    result = hidrd_src_initv(src, buf, size, ap);
+    result = hidrd_src_initv(src, perr, buf, size, ap);
     va_end(ap);
 
     return result;
@@ -132,6 +160,10 @@ hidrd_src_init(hidrd_src *src, const void *buf, size_t size, ...)
  * sprintf.
  *
  * @param src       Source instance to initialize.
+ * @param perr      Location for a dynamically allocated error message
+ *                  pointer, in case the initialization failed, or for a
+ *                  dynamically allocated empty string otherwise; could be
+ *                  NULL.
  * @param buf       Source buffer pointer.
  * @param size      Source buffer size.
  * @param opts_fmt  Option format string: each option is a name/value pair
@@ -142,14 +174,20 @@ hidrd_src_init(hidrd_src *src, const void *buf, size_t size, ...)
  * @return True if initialization succeeded, false otherwise.
  */
 static bool
-hidrd_src_init_optsf(hidrd_src *src,
-                     const void *buf, size_t size,
-                     const char *opts_fmt, ...)
-                     __attribute__((format(printf, 4, 5)));
+hidrd_src_init_optsf(hidrd_src     *src,
+                     char         **perr,
+                     const void    *buf,
+                     size_t         size,
+                     const char    *opts_fmt,
+                     ...)
+                     __attribute__((format(printf, 5, 6)));
 static bool
-hidrd_src_init_optsf(hidrd_src *src,
-                     const void *buf, size_t size,
-                     const char *opts_fmt, ...)
+hidrd_src_init_optsf(hidrd_src     *src,
+                     char         **perr,
+                     const void    *buf,
+                     size_t         size,
+                     const char    *opts_fmt,
+                     ...)
 {
     static const hidrd_opt_spec empty_spec_list[] = {{.name = NULL}};
 
@@ -173,12 +211,20 @@ hidrd_src_init_optsf(hidrd_src *src,
 
     /* Format option string */
     if (vasprintf(&opts_buf, opts_fmt, ap) < 0)
+    {
+        if (perr != NULL)
+            *perr = strdup("failed to format options string");
         goto cleanup;
+    }
 
     /* Parse option list */
     opt_list = hidrd_opt_list_parse(spec_list, opts_buf);
     if (opt_list == NULL)
+    {
+        if (perr != NULL)
+            *perr = strdup("failed to parse options string");
         goto cleanup;
+    }
 
     /* If there is init_opts member */
     if (src->type->init_opts != NULL)
@@ -188,13 +234,13 @@ hidrd_src_init_optsf(hidrd_src *src,
         src->size   = size;
         src->error  = false;
 
-        if (!(*src->type->init_opts)(src, opt_list))
+        if (!(*src->type->init_opts)(src, perr, opt_list))
             goto cleanup;
     }
     else
     {
         /* Do the regular initialization */
-        if (!hidrd_src_init(src, buf, size))
+        if (!hidrd_src_init(src, perr, buf, size))
             goto cleanup;
     }
 
@@ -216,6 +262,9 @@ cleanup:
  * Initialize source instance with an option string.
  *
  * @param src   Source instance to initialize.
+ * @param perr  Location for a dynamically allocated error message pointer,
+ *              in case the initialization failed, or for a dynamically
+ *              allocated empty string otherwise; could be NULL.
  * @param buf   Source buffer pointer.
  * @param size  Source buffer size.
  * @param opts  Option string: each option is a name/value pair separated by
@@ -225,17 +274,22 @@ cleanup:
  * @return True if initialization succeeded, false otherwise.
  */
 static bool
-hidrd_src_init_opts(hidrd_src *src,
-                     const void *buf, size_t size, const char *opts)
+hidrd_src_init_opts(hidrd_src      *src,
+                    char          **perr,
+                    const void     *buf,
+                    size_t          size,
+                    const char     *opts)
 {
-    return hidrd_src_init_optsf(src, buf, size, "%s", opts);
+    return hidrd_src_init_optsf(src, perr, buf, size, "%s", opts);
 }
 
 
 hidrd_src *
-hidrd_src_new_opts(const hidrd_src_type *type,
-                   const void *buf, size_t size,
-                   const char *opts)
+hidrd_src_new_opts(const hidrd_src_type    *type,
+                   char                   **perr,
+                   const void              *buf,
+                   size_t                   size,
+                   const char              *opts)
 {
     hidrd_src  *src;
 
@@ -244,10 +298,14 @@ hidrd_src_new_opts(const hidrd_src_type *type,
     /* Allocate */
     src = hidrd_src_alloc(type);
     if (src == NULL)
+    {
+        if (perr != NULL)
+            *perr = strdup("instance allocation failed");
         return NULL;
+    }
 
     /* Initialize */
-    if (!hidrd_src_init_opts(src, buf, size, opts))
+    if (!hidrd_src_init_opts(src, perr, buf, size, opts))
         return NULL;
 
     return src;
@@ -256,8 +314,11 @@ hidrd_src_new_opts(const hidrd_src_type *type,
 
 
 hidrd_src *
-hidrd_src_new(const hidrd_src_type  *type,
-              const void *buf, size_t size, ...)
+hidrd_src_new(const hidrd_src_type     *type,
+              char                    **perr,
+              const void               *buf,
+              size_t                    size,
+              ...)
 {
     hidrd_src *src;
     bool        result;
@@ -266,16 +327,42 @@ hidrd_src_new(const hidrd_src_type  *type,
     /* Allocate */
     src = hidrd_src_alloc(type);
     if (src == NULL)
+    {
+        if (perr != NULL)
+            *perr = strdup("instance allocation failed");
         return NULL;
+    }
 
     /* Initialize */
     va_start(ap, size);
-    result = hidrd_src_initv(src, buf, size, ap);
+    result = hidrd_src_initv(src, perr, buf, size, ap);
     va_end(ap);
     if (!result)
         return NULL;
 
     return src;
+}
+
+
+size_t
+hidrd_src_getpos(const hidrd_src *src)
+{
+    assert(hidrd_src_valid(src));
+
+    return (src->type->getpos == NULL)
+            ? 0
+            : (*src->type->getpos)(src);
+}
+
+
+char *
+hidrd_src_fmtpos(const hidrd_src *src, size_t pos)
+{
+    assert(hidrd_src_valid(src));
+
+    return (src->type->fmtpos == NULL)
+            ? strdup("UNKNOWN POSITION")
+            : (*src->type->fmtpos)(src, pos);
 }
 
 

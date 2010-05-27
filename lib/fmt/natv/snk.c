@@ -27,27 +27,31 @@
 #include "hidrd/fmt/natv/snk.h"
 
 static bool
-init(hidrd_snk *snk)
+hidrd_natv_snk_init(hidrd_snk *snk, char **perr)
 {
     hidrd_natv_snk_inst    *natv_snk    = (hidrd_natv_snk_inst *)snk;
 
     void   *buf     = (snk->pbuf != NULL) ? *snk->pbuf : NULL;
     size_t  size    = (snk->psize != NULL) ? *snk->psize : 0;
 
-    natv_snk->buf      = buf;
-    natv_snk->size     = size;
-    natv_snk->alloc    = size;
-    natv_snk->pos      = 0;
+    natv_snk->buf   = buf;
+    natv_snk->size  = size;
+    natv_snk->alloc = size;
+    natv_snk->pos   = 0;
+    natv_snk->err   = HIDRD_NATV_SNK_ERR_NONE;
+
+    if (perr != NULL)
+        *perr = strdup("");
 
     return true;
 }
 
 
 static bool
-hidrd_natv_snk_init(hidrd_snk *snk, va_list ap)
+hidrd_natv_snk_initv(hidrd_snk *snk, char **perr, va_list ap)
 {
     (void)ap;
-    return init(snk);
+    return hidrd_natv_snk_init(snk, perr);
 }
 
 
@@ -60,6 +64,30 @@ hidrd_natv_snk_valid(const hidrd_snk *snk)
     return (snk->type->size >= sizeof(hidrd_natv_snk_inst)) &&
            (natv_snk->size == 0 || natv_snk->buf != NULL) &&
            (natv_snk->pos <= natv_snk->size);
+}
+
+
+static char *
+hidrd_natv_snk_errmsg(const hidrd_snk *snk)
+{
+    const hidrd_natv_snk_inst  *natv_snk    =
+                                    (const hidrd_natv_snk_inst *)snk;
+    const char                 *msg;
+
+    switch (natv_snk->err)
+    {
+        case HIDRD_NATV_SNK_ERR_NONE:
+            msg = "";
+            break;
+        case HIDRD_NATV_SNK_ERR_ALLOC:
+            msg = "memory allocation failure";
+            break;
+        default:
+            assert(!"Unknown error code");
+            return NULL;
+    }
+
+    return strdup(msg);
 }
 
 
@@ -84,7 +112,10 @@ hidrd_natv_snk_put(hidrd_snk *snk, const hidrd_item *item)
                         : natv_snk->alloc * 2;
         new_buf = realloc(natv_snk->buf, new_alloc);
         if (new_buf == NULL)
+        {
+            natv_snk->err = HIDRD_NATV_SNK_ERR_ALLOC;
             return false;
+        }
         natv_snk->buf = new_buf;
         /* Sync user's buffer pointer */
         if (snk->pbuf != NULL)
@@ -112,7 +143,10 @@ hidrd_natv_snk_flush(hidrd_snk *snk)
     {
         new_buf = realloc(natv_snk->buf, natv_snk->size);
         if (natv_snk->size != 0 && new_buf == NULL)
+        {
+            natv_snk->err = HIDRD_NATV_SNK_ERR_ALLOC;
             return false;
+        }
         natv_snk->buf = new_buf;
         /* Sync user's buffer pointer */
         if (snk->pbuf != NULL)
@@ -147,8 +181,9 @@ hidrd_natv_snk_clnp(hidrd_snk *snk)
 
 const hidrd_snk_type hidrd_natv_snk = {
     .size   = sizeof(hidrd_natv_snk_inst),
-    .init   = hidrd_natv_snk_init,
+    .initv  = hidrd_natv_snk_initv,
     .valid  = hidrd_natv_snk_valid,
+    .errmsg = hidrd_natv_snk_errmsg,
     .put    = hidrd_natv_snk_put,
     .flush  = hidrd_natv_snk_flush,
     .clnp   = hidrd_natv_snk_clnp,
