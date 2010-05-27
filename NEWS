@@ -1,0 +1,5 @@
+2010-05-27: 0.2.0
+    * XML input supported
+    * Specification example output supported
+    * Source code output supported
+    * A lot of other, smaller changes and fixes
