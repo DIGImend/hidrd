@@ -50,9 +50,9 @@
                                                                         \
         if (memcmp(buf, expected, size) != 0)                           \
             ERROR(0, "Unexpected output:\n%.*s\ninstead of:\n%s",       \
-                  size, buf, expected);                                 \
+                  (int)size, buf, expected);                            \
                                                                         \
-        fprintf(stderr, "%.*s", size, buf);                             \
+        fprintf(stderr, "%.*s", (int)size, buf);                        \
                                                                         \
         free(buf);                                                      \
     } while (0)
