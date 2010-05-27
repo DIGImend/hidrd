@@ -298,7 +298,7 @@ hidrd_num_s32_to_str(int32_t num, hidrd_num_bmrk bmrk, hidrd_num_base base)
                             ? "%s%.*Xh"
                             : "%s0x%.*X"),
                      sgn,
-                     ((num == 0 && bmrk == HIDRD_NUM_BMRK_NONE)
+                     (bmrk == HIDRD_NUM_BMRK_NONE
                         ? 1
                         : num <= UINT8_MAX
                             ? 2
