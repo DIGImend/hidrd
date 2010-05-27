@@ -458,9 +458,9 @@ dnl
         GLOBAL ITEM: USAGE PAGE
     - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <xsd:simpleType name="usage_page_hex">
-        <xsd:restriction base="xsd:hexBinary">
-            <xsd:minLength value="1" />
-            <xsd:maxLength value="2" />
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="[0-9a-fA-F]{1,4}"
+                         annotation="unsigned 16-bit hexadecimal integer" />
         </xsd:restriction>
     </xsd:simpleType>
     <xsd:simpleType name="usage_page_token">
@@ -724,9 +724,9 @@ popdef(`PAGE')dnl
                     USAGE MAXIMUM
     - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <xsd:simpleType name="usage_hex">
-        <xsd:restriction base="xsd:hexBinary">
-            <xsd:minLength value="1" />
-            <xsd:maxLength value="4" />
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="[0-9a-fA-F]{1,8}"
+                         annotation="unsigned 32-bit hexadecimal integer" />
         </xsd:restriction>
     </xsd:simpleType>
     <xsd:simpleType name="undefined_usage_token">
