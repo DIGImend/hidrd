@@ -143,7 +143,6 @@ usage(FILE *stream, const char *progname)
             "Convert a HID report descriptor.\n"
             "With no INPUT, or when INPUT is -, read standard input.\n"
             "With no OUTPUT, or when OUTPUT is -, write standard output.\n"
-
             "\n"
             "Options:\n"
             "  -h, --help                       this help message\n"
@@ -520,6 +519,9 @@ main(int argc, char **argv)
         }
     }
 
+    /*
+     * Assign positional parameters
+     */
     if (optind < argc)
     {
         input_name = argv[optind++];
