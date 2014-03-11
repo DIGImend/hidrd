@@ -9,3 +9,9 @@
 /libtool
 /Makefile
 /stamp-h1
+*.o
+*.lo
+*.la
+cscope.out
+*.log
+*.trs
