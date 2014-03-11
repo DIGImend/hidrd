@@ -36,6 +36,24 @@
 
 
 bool
+hidrd_num_type_id_valid(hidrd_num_type_id type_id)
+{
+    switch (type_id)
+    {
+        case HIDRD_NUM_TYPE_ID_S8:
+        case HIDRD_NUM_TYPE_ID_U8:
+        case HIDRD_NUM_TYPE_ID_S16:
+        case HIDRD_NUM_TYPE_ID_U16:
+        case HIDRD_NUM_TYPE_ID_S32:
+        case HIDRD_NUM_TYPE_ID_U32:
+            return true;
+        default:
+            return false;
+    }
+}
+
+
+bool
 hidrd_num_base_valid(hidrd_num_base base)
 {
     switch (base)
@@ -462,7 +480,7 @@ hidrd_num_from_alt_str(void *pnum, const char *str, ...)
 
 
 char *
-hidrd_num_to_alt_str(size_t bits, ...)
+hidrd_num_to_alt_str(hidrd_num_type_id type_id, ...)
 {
     va_list             ap;
     char               *result      = NULL;
@@ -472,9 +490,9 @@ hidrd_num_to_alt_str(size_t bits, ...)
     hidrd_str_proc_fn  *proc_fn;
     char               *proc_str;
 
-    assert(bits == 8 || bits == 16 || bits == 32);
+    assert(hidrd_num_type_id_valid(type_id));
 
-    va_start(ap, bits);
+    va_start(ap, type_id);
 
     /*
      * This should handle smaller types since they are all promoted to int
@@ -485,16 +503,25 @@ hidrd_num_to_alt_str(size_t bits, ...)
     {
         errno = 0;
 
-        switch (bits)
+        switch (type_id)
         {
-            case 8:
-                str = (*(hidrd_num_fmt8_fn *)fmt_fn)(n);
+            case HIDRD_NUM_TYPE_ID_S8:
+                str = (*(hidrd_num_fmt_s8_fn *)fmt_fn)(n);
                 break;
-            case 16:
-                str = (*(hidrd_num_fmt16_fn *)fmt_fn)(n);
+            case HIDRD_NUM_TYPE_ID_U8:
+                str = (*(hidrd_num_fmt_u8_fn *)fmt_fn)(n);
                 break;
-            case 32:
-                str = (*(hidrd_num_fmt32_fn *)fmt_fn)(n);
+            case HIDRD_NUM_TYPE_ID_S16:
+                str = (*(hidrd_num_fmt_s16_fn *)fmt_fn)(n);
+                break;
+            case HIDRD_NUM_TYPE_ID_U16:
+                str = (*(hidrd_num_fmt_u16_fn *)fmt_fn)(n);
+                break;
+            case HIDRD_NUM_TYPE_ID_S32:
+                str = (*(hidrd_num_fmt_s32_fn *)fmt_fn)(n);
+                break;
+            case HIDRD_NUM_TYPE_ID_U32:
+                str = (*(hidrd_num_fmt_u32_fn *)fmt_fn)(n);
                 break;
             default:
                 errno = EINVAL;

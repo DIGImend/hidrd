@@ -35,6 +35,32 @@
 extern "C" {
 #endif
 
+/** Check if a number type is signed */
+#define HIDRD_NUM_TYPE_IS_SIGNED(_type) (!((_type)-1 > 0))
+
+/** Get type ID */
+#define HIDRD_NUM_TYPE_GET_ID(_type) \
+    ((HIDRD_NUM_TYPE_IS_SIGNED(_type) << 7) | sizeof(_type))
+
+/** Number type */
+typedef enum hidrd_num_type_id {
+    HIDRD_NUM_TYPE_ID_S8    = HIDRD_NUM_TYPE_GET_ID(int8_t),
+    HIDRD_NUM_TYPE_ID_U8    = HIDRD_NUM_TYPE_GET_ID(uint8_t),
+    HIDRD_NUM_TYPE_ID_S16   = HIDRD_NUM_TYPE_GET_ID(int16_t),
+    HIDRD_NUM_TYPE_ID_U16   = HIDRD_NUM_TYPE_GET_ID(uint16_t),
+    HIDRD_NUM_TYPE_ID_S32   = HIDRD_NUM_TYPE_GET_ID(int32_t),
+    HIDRD_NUM_TYPE_ID_U32   = HIDRD_NUM_TYPE_GET_ID(uint32_t),
+} hidrd_num_type_id;
+
+/**
+ * Check if a number type ID is valid.
+ *
+ * @param type_id   Type to check.
+ *
+ * @return True if the type ID is valid, false otherwise.
+ */
+extern bool hidrd_num_type_id_valid(hidrd_num_type_id type_id);
+
 /** The type behind convenience type name "u32" (used in macros) */
 #define HIDRD_NUM_u32_TYPE  uint32_t
 /** The type behind convenience type name "s32" (used in macros) */
@@ -571,8 +597,7 @@ extern bool hidrd_num_from_alt_str(void *pnum, const char *str, ...);
 
 
 /**
- * Prototype for a function used to format an 8-bit number string (either
- * signed or unsigned).
+ * Prototype for a function used to format a signed 8-bit number string.
  *
  * This prototype is not meant to be used to define functions, but to
  * describe hidrd_num_to_alt_str function parameters.
@@ -582,11 +607,10 @@ extern bool hidrd_num_from_alt_str(void *pnum, const char *str, ...);
  * @return Dynamically allocated string, or NULL if the match is not found
  *         or an error occurred; check errno for the latter.
  */
-typedef char *hidrd_num_fmt8_fn(uint8_t num);
+typedef char *hidrd_num_fmt_s8_fn(int8_t num);
 
 /**
- * Prototype for a function used to format an 16-bit number string (either
- * signed or unsigned).
+ * Prototype for a function used to format an unsigned 8-bit number string.
  *
  * This prototype is not meant to be used to define functions, but to
  * describe hidrd_num_to_alt_str function parameters.
@@ -596,11 +620,10 @@ typedef char *hidrd_num_fmt8_fn(uint8_t num);
  * @return Dynamically allocated string, or NULL if the match is not found
  *         or an error occurred; check errno for the latter.
  */
-typedef char *hidrd_num_fmt16_fn(uint16_t num);
+typedef char *hidrd_num_fmt_u8_fn(uint8_t num);
 
 /**
- * Prototype for a function used to format an 32-bit number string (either
- * signed or unsigned).
+ * Prototype for a function used to format a signed 16-bit number string.
  *
  * This prototype is not meant to be used to define functions, but to
  * describe hidrd_num_to_alt_str function parameters.
@@ -610,24 +633,63 @@ typedef char *hidrd_num_fmt16_fn(uint16_t num);
  * @return Dynamically allocated string, or NULL if the match is not found
  *         or an error occurred; check errno for the latter.
  */
-typedef char *hidrd_num_fmt32_fn(uint32_t num);
+typedef char *hidrd_num_fmt_s16_fn(int16_t num);
+
+/**
+ * Prototype for a function used to format an unsigned 16-bit number string.
+ *
+ * This prototype is not meant to be used to define functions, but to
+ * describe hidrd_num_to_alt_str function parameters.
+ *
+ * @param num   The number to convert.
+ *
+ * @return Dynamically allocated string, or NULL if the match is not found
+ *         or an error occurred; check errno for the latter.
+ */
+typedef char *hidrd_num_fmt_u16_fn(uint16_t num);
+
+/**
+ * Prototype for a function used to format a signed 32-bit number string.
+ *
+ * This prototype is not meant to be used to define functions, but to
+ * describe hidrd_num_to_alt_str function parameters.
+ *
+ * @param num   The number to convert.
+ *
+ * @return Dynamically allocated string, or NULL if the match is not found
+ *         or an error occurred; check errno for the latter.
+ */
+typedef char *hidrd_num_fmt_s32_fn(int32_t num);
+
+/**
+ * Prototype for a function used to format an unsigned 32-bit number string.
+ *
+ * This prototype is not meant to be used to define functions, but to
+ * describe hidrd_num_to_alt_str function parameters.
+ *
+ * @param num   The number to convert.
+ *
+ * @return Dynamically allocated string, or NULL if the match is not found
+ *         or an error occurred; check errno for the latter.
+ */
+typedef char *hidrd_num_fmt_u32_fn(uint32_t num);
 
 /**
  * Convert a number to a string of alternate formats.
  *
- * @param bits  Size of the number in bits; only 8, 16 and 32 accepted.
- * @param ...   A succession of arguments:
- *              - the number to convert;
- *              - conversion function chains (hidrd_num_fmtX_fn,
- *                hidrd_str_proc_fn..., NULL), terminated by an empty chain
- *                (NULL).
+ * @param type_id   Type ID of the number to convert.
+ * @param ...       A succession of arguments:
+ *                  - the number to convert;
+ *                  - conversion function chains (hidrd_num_fmtX_fn,
+ *                    hidrd_str_proc_fn..., NULL), terminated by an empty
+ *                    chain (NULL).
  *
  * @return Dynamically allocated string, or NULL if failed to find a match,
  *         or an error occurred; check errno for the latter.
  *
  * @note Always resets errno.
  */
-char *hidrd_num_to_alt_str(size_t bits, ...);
+char *hidrd_num_to_alt_str(hidrd_num_type_id type_id, ...);
 
 /**
  * Convert a number to a string of two alternate formats, without additional
@@ -642,9 +704,9 @@ char *hidrd_num_to_alt_str(size_t bits, ...);
  *         or an error occurred; check errno for the latter.
  */
 #define HIDRD_NUM_TO_ALT_STR1_1(_t, _n, _r1, _r2) \
-    hidrd_num_to_alt_str(sizeof(hidrd_##_t) * 8, _n,    \
-                         hidrd_##_t##_to_##_r1, NULL,   \
-                         hidrd_##_t##_to_##_r2, NULL,   \
+    hidrd_num_to_alt_str(HIDRD_NUM_TYPE_GET_ID(hidrd_##_t), _n, \
+                         hidrd_##_t##_to_##_r1, NULL,           \
+                         hidrd_##_t##_to_##_r2, NULL,           \
                          NULL)
 
 /**
@@ -661,7 +723,7 @@ char *hidrd_num_to_alt_str(size_t bits, ...);
  *         or an error occurred; check errno for the latter.
  */
 #define HIDRD_NUM_TO_ALT_STR2_1(_t, _n, _r1, _p1, _r2) \
-    hidrd_num_to_alt_str(sizeof(hidrd_##_t) * 8, _n,                    \
+    hidrd_num_to_alt_str(HIDRD_NUM_TYPE_GET_ID(hidrd_##_t), _n,         \
                          hidrd_##_t##_to_##_r1, hidrd_str_##_p1, NULL,  \
                          hidrd_##_t##_to_##_r2, NULL,                   \
                          NULL)
