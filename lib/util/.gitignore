@@ -1,6 +1,2 @@
-/Makefile.in
-/.deps
-/.libs
-/Makefile
 /hidrd_num_test
 /hidrd_ttbl_test

@@ -1,7 +1,3 @@
-/.deps
-/.libs
-/Makefile
-/Makefile.in
 /hidrd_natv_test
 /hidrd_xml_test
 /hidrd_read

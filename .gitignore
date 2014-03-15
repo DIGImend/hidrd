@@ -1,13 +1,11 @@
 /config.h.in
 /autom4te.cache
 /aclocal.m4
-/Makefile.in
 /configure
 /config.h
 /config.log
 /config.status
 /libtool
-/Makefile
 /stamp-h1
 *.o
 *.lo
@@ -15,3 +13,6 @@
 cscope.out
 *.log
 *.trs
+Makefile.in
+Makefile
+.[^.]*
