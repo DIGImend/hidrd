@@ -3,8 +3,6 @@
  *
  * @author Nikolai Kondrashov <spbnick@gmail.com>
  *
- * @(#) $Id$
- *
  * Copyright (C) 2009 Nikolai Kondrashov
  *
  * This file is part of hidrd.

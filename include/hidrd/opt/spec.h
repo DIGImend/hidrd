@@ -20,7 +20,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @author Nikolai Kondrashov <spbnick@gmail.com>
- *
  * The token pair representation of the option specification is the
  * following:
  *
@@ -33,7 +32,6 @@
  *       option is considered mandatory. DESCRIPTION is the human-readable
  *       option description.
  *
- * @(#) $Id$
  */
 
 #ifndef __HIDRD_OPT_SPEC_H__

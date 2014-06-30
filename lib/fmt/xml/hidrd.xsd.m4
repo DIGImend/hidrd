@@ -19,8 +19,6 @@ dnl You should have received a copy of the GNU General Public License
 dnl along with hidrd; if not, write to the Free Software
 dnl Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 dnl
-dnl @(#) $Id: all.c.m4 420 2010-05-13 19:50:21Z spb_nick $
-dnl
 include(`m4/hidrd/util.m4')dnl
 dnl
 `<?xml version="1.0"?>

@@ -20,8 +20,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @author Nikolai Kondrashov <spbnick@gmail.com>
- *
- * @(#) $Id: id.h 331 2010-04-01 20:05:18Z spb_nick $
  */
 
 #include "hidrd/cfg.h"
