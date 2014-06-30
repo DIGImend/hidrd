@@ -16,3 +16,4 @@ cscope.out
 Makefile.in
 Makefile
 .[^.]*
+*.tar.gz
