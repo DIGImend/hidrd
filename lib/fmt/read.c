@@ -1,7 +1,7 @@
 /** @file
  * @brief HID report descriptor - source test
  *
- * Copyright (C) 2010 Nikolai Kondrashov
+ * Copyright (C) 2010, 2014 Nikolai Kondrashov
  *
  * This file is part of hidrd.
  *
@@ -165,12 +165,13 @@ main(int argc, char **argv)
                                   item, hidrd_item_get_size(item)))
         {
             fprintf(stderr, "Failed to write output file\n%s\n",
-                    (err = hidrd_src_errmsg(input)));
+                    strerror(errno));
             goto cleanup;
         }
     if (hidrd_src_error(input))
     {
-        fprintf(stderr, "Failed to read input stream\n");
+        fprintf(stderr, "Failed to read input stream\n%s\n",
+                        (err = hidrd_src_errmsg(input)));
         goto cleanup;
     }
 
