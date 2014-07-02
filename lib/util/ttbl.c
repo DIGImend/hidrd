@@ -360,7 +360,7 @@ hidrd_ttbl_print(char **pbuf, size_t *psize,
             goto cleanup;
     }
 
-    hidrd_buf_retension(&buf);
+    hidrd_buf_retention(&buf);
     hidrd_buf_detach(&buf, (void **)pbuf, psize);
 
     result = true;

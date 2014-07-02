@@ -152,7 +152,7 @@ spec_snk_item_main_bitmap(hidrd_spec_snk_inst  *spec_snk,
         }
 
     hidrd_buf_add_span(&buf, '\0', 1);
-    hidrd_buf_retension(&buf);
+    hidrd_buf_retention(&buf);
 
     token = hidrd_item_main_tag_to_token(hidrd_item_main_get_tag(item));
     if (token == NULL)

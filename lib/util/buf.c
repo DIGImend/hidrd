@@ -67,7 +67,7 @@ hidrd_buf_clnp(hidrd_buf *buf)
 
 
 void
-hidrd_buf_retension(hidrd_buf *buf)
+hidrd_buf_retention(hidrd_buf *buf)
 {
     assert(hidrd_buf_valid(buf));
 

@@ -78,11 +78,11 @@ extern void hidrd_buf_clnp(hidrd_buf *buf);
 extern bool hidrd_buf_valid(const hidrd_buf *buf);
 
 /**
- * Retension a buffer: reallocate to contents size.
+ * Retention a buffer: reallocate to contents size.
  *
- * @param buf   Buffer to retension.
+ * @param buf   Buffer to retention.
  */
-extern void hidrd_buf_retension(hidrd_buf *buf);
+extern void hidrd_buf_retention(hidrd_buf *buf);
 
 /**
  * Detach contents from the buffer.

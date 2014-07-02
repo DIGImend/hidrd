@@ -238,10 +238,10 @@ hidrd_xml_snk_flush(hidrd_snk *snk)
     /* If we have a location for the buffer pointer */
     if (snk->pbuf != NULL)
     {
-        /* Retension and update the buffer */
+        /* Retention and update the buffer */
         new_buf = realloc(*snk->pbuf, new_size);
         if (new_size > 0 && new_buf == NULL)
-            XML_ERR_CLNP("failed to retension the output buffer");
+            XML_ERR_CLNP("failed to retention the output buffer");
         memcpy(new_buf, xmlBufferContent(xml_buf), new_size);
         /* Update the buffer pointer */
         *snk->pbuf = new_buf;

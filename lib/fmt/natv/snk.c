@@ -136,7 +136,7 @@ hidrd_natv_snk_flush(hidrd_snk *snk)
     hidrd_natv_snk_inst    *natv_snk   = (hidrd_natv_snk_inst *)snk;
     void                   *new_buf;
 
-    /* Retension buffer, if needed */
+    /* Retention buffer, if needed */
     if (natv_snk->alloc != natv_snk->size)
     {
         new_buf = realloc(natv_snk->buf, natv_snk->size);
