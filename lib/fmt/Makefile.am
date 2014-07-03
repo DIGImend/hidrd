@@ -17,13 +17,14 @@
 # along with hidrd; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-SUBDIRS = natv read_test_data write_test_data
+SUBDIRS = hex natv read_test_data write_test_data
 
 lib_LTLIBRARIES = libhidrd_fmt.la
 
 noinst_HEADERS =
 
 libhidrd_fmt_la_SOURCES = \
+    hex.c                   \
     inst.c                  \
     list.c                  \
     natv.c
@@ -31,9 +32,10 @@ libhidrd_fmt_la_SOURCES = \
 libhidrd_fmt_la_LIBADD = \
     ../strm/libhidrd_strm.la    \
     ../util/libhidrd_util.la    \
+    hex/libhidrd_hex.la         \
     natv/libhidrd_natv.la
 
-TESTS = hidrd_natv_test
+TESTS = hidrd_natv_test hidrd_hex_read_test hidrd_hex_write_test
 TESTS_ENVIRONMENT = PATH="$$PATH:$(builddir):$(srcdir)" \
 					HIDRD_READ_TEST_DATA="$(srcdir)/read_test_data" \
 					HIDRD_WRITE_TEST_DATA="$(srcdir)/write_test_data" \
@@ -42,7 +44,8 @@ TESTS_ENVIRONMENT = PATH="$$PATH:$(builddir):$(srcdir)" \
 bin_PROGRAMS =
 bin_SCRIPTS =
 check_PROGRAMS = hidrd_natv_test hidrd_read hidrd_write
-check_SCRIPTS = hidrd_read_test hidrd_write_test
+check_SCRIPTS = hidrd_read_test hidrd_write_test \
+                hidrd_hex_read_test hidrd_hex_write_test
 dist_noinst_SCRIPTS = $(check_SCRIPTS)
 
 hidrd_natv_test_SOURCES = natv_test.c

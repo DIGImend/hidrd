@@ -25,6 +25,7 @@
 #include <strings.h>
 #include "hidrd/fmt/cfg.h"
 #include "hidrd/fmt/natv.h"
+#include "hidrd/fmt/hex.h"
 #ifdef HIDRD_FMT_WITH_XML
 #include "hidrd/fmt/xml.h"
 #endif
@@ -39,6 +40,7 @@
 /** Supported format list, terminated by NULL */
 const hidrd_fmt *hidrd_fmt_list[]  = {
     &hidrd_natv,
+    &hidrd_hex,
 #ifdef HIDRD_FMT_WITH_XML
     &hidrd_xml,
 #endif

@@ -18,6 +18,16 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 check_DATA = \
+    1byte.bin       \
+    1byte.hex       \
+    2bytes.bin      \
+    2bytes.hex      \
+    2items.bin      \
+    2items.hex      \
+    3bytes.bin      \
+    3bytes.hex      \
+    5bytes.bin      \
+    5bytes.hex      \
     SET.bin         \
     SET.spec        \
     SET.xml         \
@@ -31,6 +41,7 @@ check_DATA = \
     collection.spec \
     collection.xml  \
     empty.bin       \
+    empty.hex       \
     empty.spec      \
     empty.xml       \
     global.bin      \

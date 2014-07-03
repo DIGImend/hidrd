@@ -266,6 +266,7 @@ AC_CONFIG_FILES([Makefile
                  include/hidrd/strm/src/Makefile
                  include/hidrd/strm/snk/Makefile
                  include/hidrd/fmt/Makefile
+                 include/hidrd/fmt/hex/Makefile
                  include/hidrd/fmt/natv/Makefile
                  include/hidrd/fmt/xml/Makefile
                  include/hidrd/fmt/spec/Makefile
@@ -281,6 +282,7 @@ AC_CONFIG_FILES([Makefile
                  lib/strm/src/Makefile
                  lib/strm/snk/Makefile
                  lib/fmt/Makefile
+                 lib/fmt/hex/Makefile
                  lib/fmt/natv/Makefile
                  lib/fmt/xml/Makefile
                  lib/fmt/xml/snk/Makefile

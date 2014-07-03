@@ -17,11 +17,12 @@
 # along with hidrd; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-SUBDIRS = natv
+SUBDIRS = hex natv
 
 hidrd_fmtdir = $(includedir)/hidrd/fmt
 
 hidrd_fmt_HEADERS = \
+    hex.h           \
     inst.h          \
     list.h          \
     natv.h
