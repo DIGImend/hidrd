@@ -44,7 +44,7 @@ fi
 #
 AC_PROG_CC
 AC_PROG_INSTALL
-AC_PROG_LIBTOOL
+LT_INIT
 
 #
 # Checks for libraries.
