@@ -361,7 +361,7 @@ hidrd_ttbl_print(char **pbuf, size_t *psize,
     }
 
     hidrd_buf_retention(&buf);
-    hidrd_buf_detach(&buf, (void **)pbuf, psize);
+    hidrd_buf_disown(&buf, (void **)pbuf, psize, NULL);
 
     result = true;
 

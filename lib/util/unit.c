@@ -153,7 +153,7 @@ hidrd_unit_to_expr(hidrd_unit unit, hidrd_tkn_hmnz_cap cap)
 
     hidrd_buf_add_span(&buf, '\0', 1);
     hidrd_buf_retention(&buf);
-    hidrd_buf_detach(&buf, &result, NULL);
+    hidrd_buf_disown(&buf, &result, NULL, NULL);
 
 cleanup:
 

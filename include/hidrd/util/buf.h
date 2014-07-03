@@ -96,14 +96,16 @@ extern bool hidrd_buf_valid(const hidrd_buf *buf);
 extern void hidrd_buf_retention(hidrd_buf *buf);
 
 /**
- * Detach contents from the buffer.
+ * Disown buffer contents.
  *
- * @param buf   Buffer to detach contents from.
- * @param pptr  Location for buffer contents pointer; could be NULL, in this
+ * @param buf   Buffer to disown contents from.
+ * @param pptr  Location for buffer contents pointer; can be NULL, in that
  *              case the buffer contents will be freed.
- * @param plen  Location for buffer contents length; could be NULL.
+ * @param plen  Location for buffer contents length; can be NULL.
+ * @param psize Location for buffer allocated length; can be NULL.
  */
-extern void hidrd_buf_detach(hidrd_buf *buf, void **pptr, size_t *plen);
+extern void hidrd_buf_disown(hidrd_buf *buf,
+                             void **pptr, size_t *plen, size_t *psize);
 
 /**
  * Grow a buffer memory to fit specified contents length.

@@ -93,7 +93,7 @@ hidrd_buf_retention(hidrd_buf *buf)
 
 
 void
-hidrd_buf_detach(hidrd_buf *buf, void **pptr, size_t *plen)
+hidrd_buf_disown(hidrd_buf *buf, void **pptr, size_t *plen, size_t *psize)
 {
     if (pptr != NULL)
         *pptr = buf->ptr;
@@ -102,6 +102,9 @@ hidrd_buf_detach(hidrd_buf *buf, void **pptr, size_t *plen)
 
     if (plen != NULL)
         *plen = buf->len;
+
+    if (psize != NULL)
+        *psize = buf->size;
 
     hidrd_buf_init(buf);
 }
