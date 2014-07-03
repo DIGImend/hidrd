@@ -55,6 +55,17 @@ typedef struct hidrd_buf {
 extern void hidrd_buf_init(hidrd_buf *buf);
 
 /**
+ * Initialize a buffer, taking ownership of a dynamically-allocated memory
+ * chunk.
+ *
+ * @param buf   Buffer to initialize.
+ * @param ptr   Memory chunk to own.
+ * @param len   Memory chunk used length.
+ * @param size  Memory chunk allocated size.
+ */
+extern void hidrd_buf_own(hidrd_buf *buf, void *ptr, size_t len, size_t size);
+
+/**
  * Reset buffer contents
  *
  * @param buf   Buffer to reset.

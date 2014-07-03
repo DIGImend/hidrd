@@ -36,6 +36,18 @@ hidrd_buf_init(hidrd_buf *buf)
 }
 
 
+void
+hidrd_buf_own(hidrd_buf *buf, void *ptr, size_t len, size_t size)
+{
+    assert(buf != NULL);
+    assert(ptr != NULL || size == 0);
+    assert(len <= size);
+    buf->ptr = ptr;
+    buf->len = len;
+    buf->size = size;
+}
+
+
 bool
 hidrd_buf_valid(const hidrd_buf *buf)
 {
