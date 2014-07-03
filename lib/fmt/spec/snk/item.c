@@ -151,7 +151,8 @@ spec_snk_item_main_bitmap(hidrd_spec_snk_inst  *spec_snk,
             first = false;
         }
 
-    hidrd_buf_add_char(&buf, '\0');
+    if (!hidrd_buf_add_char(&buf, '\0'))
+        goto cleanup;
     hidrd_buf_retention(&buf);
 
     token = hidrd_item_main_tag_to_token(hidrd_item_main_get_tag(item));
