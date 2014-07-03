@@ -189,6 +189,15 @@ extern bool hidrd_buf_add_ptr(hidrd_buf    *buf,
  */
 extern bool hidrd_buf_add_str(hidrd_buf *buf, const char *str);
 
+/**
+ * Remove specified number of bytes from the end of the buffer.
+ *
+ * @param buf   Buffer to remove from.
+ * @param len   Number of bytes to remove, cannot be higher than the buffer
+ *              contents length.
+ */
+extern void hidrd_buf_del(hidrd_buf *buf, size_t len);
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif

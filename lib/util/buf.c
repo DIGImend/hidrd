@@ -238,3 +238,11 @@ hidrd_buf_add_str(hidrd_buf *buf, const char *str)
 }
 
 
+void
+hidrd_buf_del(hidrd_buf *buf, size_t len)
+{
+    assert(hidrd_buf_valid(buf));
+    assert(len <= buf->len);
+
+    buf->len -= len;
+}
