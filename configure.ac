@@ -26,6 +26,8 @@ AM_INIT_AUTOMAKE([1.9 -Wall foreign])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_MACRO_DIR([m4/autoconf])
 
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
+
 # To have empty CFLAGS instead of undefined and '-g -O2' by default
 CFLAGS=$CFLAGS
 CFLAGS="-Os -Wall -Wextra -Werror $CFLAGS"
