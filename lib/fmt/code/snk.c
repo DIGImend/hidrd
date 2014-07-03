@@ -28,13 +28,15 @@
 
 static bool
 hidrd_code_snk_init(hidrd_snk *snk, char **perr,
-                    size_t tabstop, bool comments, bool comments_comments)
+                    size_t tabstop, bool indent,
+                    bool comments, bool comments_comments)
 {
     hidrd_code_snk_inst    *code_snk    = (hidrd_code_snk_inst *)snk;
 
     if (!hidrd_spec_snk_init(snk, perr, tabstop, false, comments_comments))
         return false;
 
+    code_snk->indent = indent;
     code_snk->comments = comments;
 
     return true;
@@ -45,11 +47,12 @@ static bool
 hidrd_code_snk_initv(hidrd_snk *snk, char **perr, va_list ap)
 {
     size_t  tabstop             = va_arg(ap, size_t);
+    bool    indent              = (va_arg(ap, int) != 0);
     bool    comments            = (va_arg(ap, int) != 0);
     bool    comments_comments   = (va_arg(ap, int) != 0);
 
     return hidrd_code_snk_init(snk, perr,
-                               tabstop, comments, comments_comments);
+                               tabstop, indent, comments, comments_comments);
 }
 
 
@@ -60,6 +63,11 @@ static const hidrd_opt_spec hidrd_code_snk_opts_spec[] = {
      .req   = false,
      .dflt  = {.u32 = 4},
      .desc  = "number of spaces per tab"},
+    {.name  = "indent",
+     .type  = HIDRD_OPT_TYPE_BOOLEAN,
+     .req   = false,
+     .dflt  = {.boolean = false},
+     .desc  = "indent item data according to descriptor structure"},
     {.name  = "comments",
      .type  = HIDRD_OPT_TYPE_BOOLEAN,
      .req   = false,
@@ -79,6 +87,7 @@ hidrd_code_snk_init_opts(hidrd_snk *snk, char **perr, const hidrd_opt *list)
     return hidrd_code_snk_init(
                 snk, perr,
                 hidrd_opt_list_get_u32(list, "tabstop"),
+                hidrd_opt_list_get_boolean(list, "indent"),
                 hidrd_opt_list_get_boolean(list, "comments"),
                 hidrd_opt_list_get_boolean(list, "comments_comments"));
 }
@@ -101,6 +110,7 @@ hidrd_code_snk_flush(hidrd_snk *snk)
                                                     snk;
     hidrd_spec_snk_inst            *spec_snk    = &code_snk->spec_snk;
     const hidrd_spec_snk_ent_list  *list        = &spec_snk->list;
+    int                             min_depth;
     hidrd_spec_snk_ent             *p;
     size_t                          last_l      = 0;
     size_t                          l;
@@ -151,11 +161,19 @@ hidrd_code_snk_flush(hidrd_snk *snk)
         hidrd_ttbl_ins_cols(tbl, 0, 1);
     }
 
+    /* Find minimum depth */
+    min_depth = hidrd_spec_snk_ent_list_min_depth(list);
+
     /* Output the code */
     for (p = list->ptr, l = 0; l < list->len; p++, l++)
     {
         if (p->item == NULL)
             continue;
+
+        if (code_snk->indent &&
+            !hidrd_buf_add_span(&buf, ' ',
+                                (p->depth - min_depth) * spec_snk->tabstop))
+            goto cleanup;
 
         for (item_size = hidrd_item_get_size(p->item), item_p = p->item;
              item_size > 0; item_size--, item_p++)

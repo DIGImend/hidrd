@@ -37,6 +37,7 @@ const hidrd_snk_type    hidrd_code_snk;
 /** Source code sink instance */
 typedef struct hidrd_code_snk_inst {
     hidrd_spec_snk_inst     spec_snk;   /**< Parent structure */
+    bool                    indent;     /**< "Indent enabled" flag */
     bool                    comments;   /**< "Comments enabled" flag */
 } hidrd_code_snk_inst;
 
