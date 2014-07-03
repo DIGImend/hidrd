@@ -356,7 +356,7 @@ hidrd_ttbl_print(char **pbuf, size_t *psize,
             /* Move on to the next strip */
             strip = strip->next;
         }
-        if (got_text && !hidrd_buf_add_span(&buf, '\n', 1))
+        if (got_text && !hidrd_buf_add_char(&buf, '\n'))
             goto cleanup;
     }
 

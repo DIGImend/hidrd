@@ -208,7 +208,7 @@ hidrd_spec_snk_ent_list_to_tbl(hidrd_ttbl                     **ptbl,
             goto cleanup;
 
         /* Terminate the buffer */
-        if (!hidrd_buf_add_span(&buf, '\0', 1))
+        if (!hidrd_buf_add_char(&buf, '\0'))
             goto cleanup;
 
         /* Set the code cell contents */
@@ -231,7 +231,7 @@ hidrd_spec_snk_ent_list_to_tbl(hidrd_ttbl                     **ptbl,
                                             ? "%.2hhX"
                                             : "%.2hhX ",
                                           *item_p))
-            if (!hidrd_buf_add_span(&buf, '\0', 1))
+            if (!hidrd_buf_add_char(&buf, '\0'))
                 goto cleanup;
             hidrd_ttbl_set(tbl, HIDRD_SPEC_SNK_ENT_LIST_DUMP_COL, l,
                            (const char *)buf.ptr);

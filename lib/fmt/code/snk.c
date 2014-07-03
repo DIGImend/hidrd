@@ -168,7 +168,7 @@ hidrd_code_snk_flush(hidrd_snk *snk)
                                       *item_p))
                 goto cleanup;
 
-        if (!hidrd_buf_add_span(&buf, '\0', 1))
+        if (!hidrd_buf_add_char(&buf, '\0'))
             goto cleanup;
         hidrd_ttbl_set(tbl, 0, l, (const char *)buf.ptr);
         hidrd_buf_reset(&buf);

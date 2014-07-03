@@ -129,6 +129,19 @@ extern bool hidrd_buf_grow(hidrd_buf *buf, size_t len);
 extern bool hidrd_buf_add_span(hidrd_buf *buf, uint8_t val, size_t len);
 
 /**
+ * Append a character to a buffer.
+ *
+ * @param buf   Buffer to append to.
+ * @param c     Character to append.
+ *
+ * @return True if added successfully, false otherwise.
+ */
+static inline bool hidrd_buf_add_char(hidrd_buf *buf, uint8_t c)
+{
+    return hidrd_buf_add_span(buf, c, 1);
+}
+
+/**
  * Append a printf-formatted string to a buffer.
  *
  * @param buf   Buffer to add to.
