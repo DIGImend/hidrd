@@ -42,10 +42,10 @@ define(`PAGE_SET_RANGE_CHECK',
 `pushdef(`PAGE_SET_RANGE',
 `ifelse('`$'`1, `$1',
         ifelse(eval(0x'`$'`2), eval(0x'`$'`3),dnl
-    if (page == 0x'`$'`2)
+    if ((int)page == 0x'`$'`2)
         return true;
 ,dnl
-    if (page >= 0x'`$'`2 && page <= 0x'`$'`3)
+    if ((int)page >= 0x'`$'`2 && (int)page <= 0x'`$'`3)
         return true;
 ))')dnl
 include(`db/usage/page_set_range.m4')dnl

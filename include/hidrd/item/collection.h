@@ -61,7 +61,7 @@ typedef enum hidrd_item_collection_type {
 static inline bool
 hidrd_item_collection_type_valid(hidrd_item_collection_type type)
 {
-    return (type <= HIDRD_ITEM_COLLECTION_TYPE_MAX);
+    return ((int)type <= HIDRD_ITEM_COLLECTION_TYPE_MAX);
 }
 
 
@@ -85,8 +85,8 @@ static inline bool
 hidrd_item_collection_type_reserved(hidrd_item_collection_type type)
 {
     assert(hidrd_item_collection_type_valid(type));
-    return (type >= HIDRD_ITEM_COLLECTION_TYPE_RESERVED_MIN) &&
-           (type <= HIDRD_ITEM_COLLECTION_TYPE_RESERVED_MAX);
+    return ((int)type >= HIDRD_ITEM_COLLECTION_TYPE_RESERVED_MIN) &&
+           ((int)type <= HIDRD_ITEM_COLLECTION_TYPE_RESERVED_MAX);
 }
 
 
@@ -94,8 +94,8 @@ static inline bool
 hidrd_item_collection_type_vendor(hidrd_item_collection_type type)
 {
     assert(hidrd_item_collection_type_valid(type));
-    return (type >= HIDRD_ITEM_COLLECTION_TYPE_VENDOR_MIN) &&
-           (type <= HIDRD_ITEM_COLLECTION_TYPE_VENDOR_MAX);
+    return ((int)type >= HIDRD_ITEM_COLLECTION_TYPE_VENDOR_MIN) &&
+           ((int)type <= HIDRD_ITEM_COLLECTION_TYPE_VENDOR_MAX);
 }
 
 
