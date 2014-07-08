@@ -86,7 +86,7 @@ static char *
 hidrd_hex_src_fmtpos(const hidrd_src *src, size_t pos)
 {
     char       *str;
-    size_t      line    = (pos >> 16) && 0xFFFF;
+    size_t      line    = (pos >> 16) & 0xFFFF;
     size_t      col     = pos & 0xFFFF;
     char        line_buf[16];
     char        col_buf[16];
