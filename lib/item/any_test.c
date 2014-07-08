@@ -118,7 +118,7 @@ item_error(const char *file, unsigned int line,
         if (test_value != _orig_value)                                  \
             ITEM_ERROR("value is invalid "                              \
                        "(" V_##_type##_FMT " != " V_##_type##_FMT ")",  \
-                       test_value, _orig_value);                        \
+                       test_value, (V_##_type##_TYPE)_orig_value);      \
         if (!hidrd_item_##_name##_value_valid(test_value))              \
             ITEM_ERROR("value %u is considered invalid", test_value);   \
                                                                         \

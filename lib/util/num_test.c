@@ -47,7 +47,8 @@
                   "unexpectedly", _s);                          \
         if (num != _v)                                          \
             ERROR("Unexpected parsing result: "                 \
-                  FMT_##_t " instead of " FMT_##_t, num, _v);   \
+                  FMT_##_t " instead of " FMT_##_t, num,        \
+                  (HIDRD_NUM_##_t##_TYPE)_v);                   \
     } while (0)
 
 
