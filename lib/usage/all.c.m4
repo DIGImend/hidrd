@@ -235,7 +235,7 @@ hidrd_usage_desc_id_str(hidrd_usage usage)
 
     if (asprintf(&result,
 'changequote([,])[
-                 (*type_set_desc == '\0') ? "%s (%s)" : "%s (%s, %s)",
+                 (*type_set_desc == '\0') ? "%s (%s)%.0s" : "%s (%s, %s)",
 ]changequote(`,')`
                  desc->name, shex, type_set_desc) < 0)
     {

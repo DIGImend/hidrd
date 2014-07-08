@@ -74,7 +74,7 @@
         if (asprintf(&value,                                        \
                      ((hidrd_item_short_get_data_size(item) ==      \
                         HIDRD_ITEM_SHORT_DATA_SIZE_0B)              \
-                            ? "tag:%Xh"                             \
+                            ? "tag:%Xh%.0s"                         \
                             : "tag:%Xh data:%sh"),                  \
                      hidrd_item_##_type##_get_tag(item),            \
                      data_str) < 0)                                 \
@@ -445,7 +445,7 @@ spec_snk_item_short(hidrd_spec_snk_inst    *spec_snk,
                 if (asprintf(&value,
                              ((hidrd_item_short_get_data_size(item) == 
                                 HIDRD_ITEM_SHORT_DATA_SIZE_0B)
-                                    ? "type:%Xh tag:%Xh"
+                                    ? "type:%Xh tag:%Xh%.0s"
                                     : "type:%Xh tag:%Xh data:%sh"),
                              hidrd_item_short_get_type(item),
                              hidrd_item_short_get_tag(item),
@@ -480,7 +480,7 @@ spec_snk_item_long(hidrd_spec_snk_inst *spec_snk,
 
     if (asprintf(&value,
                  ((hidrd_item_long_get_data_size(item) == 0)
-                    ? "tag:%.2hhXh"
+                    ? "tag:%.2hhXh%.0s"
                     : "tag:%.2hhXh data:%sh"),
                  hidrd_item_long_get_tag(item),
                  data_str) < 0)
