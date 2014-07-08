@@ -27,6 +27,7 @@
 
 #include "hidrd/fmt/cfg.h"
 #include "hidrd/fmt/natv.h"
+#include "hidrd/fmt/hex.h"
 #ifdef HIDRD_FMT_WITH_XML
 #include "hidrd/fmt/xml.h"
 #endif
