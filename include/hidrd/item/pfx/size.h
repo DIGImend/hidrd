@@ -55,7 +55,7 @@ extern hidrd_item_pfx_bytes hidrd_item_pfx_size_to_bytes(
                                     hidrd_item_pfx_size size);
 
 static inline bool
-hidrd_item_pfx_bytes_valid(hidrd_item_pfx_size bytes)
+hidrd_item_pfx_bytes_valid(hidrd_item_pfx_bytes bytes)
 {
     return (bytes <= 2) || (bytes == 4);
 }
