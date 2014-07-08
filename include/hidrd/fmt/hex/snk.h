@@ -32,9 +32,6 @@
 extern "C" {
 #endif
 
-/** Number of columns in hex dump */
-#define HIDRD_HEX_SNK_COL_NUM   16
-
 /** Hex sink type */
 const hidrd_snk_type    hidrd_hex_snk;
 
@@ -48,7 +45,8 @@ typedef enum hidrd_hex_snk_err {
 typedef struct hidrd_hex_snk_inst {
     hidrd_snk           snk;    /**< Parent structure */
     hidrd_buf           buf;    /**< Output buffer */
-    size_t              bytes;  /**< Number of output bytes */
+    size_t              width;  /**< Number of output bytes per line */
+    size_t              bytes;  /**< Number of output bytes, if width != 0 */
     hidrd_hex_snk_err   err;    /**< Last error code */
 } hidrd_hex_snk_inst;
 

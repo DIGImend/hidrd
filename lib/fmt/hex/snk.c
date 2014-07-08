@@ -25,11 +25,12 @@
 #include "hidrd/fmt/hex/snk.h"
 
 static bool
-hidrd_hex_snk_init(hidrd_snk *snk, char **perr)
+hidrd_hex_snk_init(hidrd_snk *snk, char **perr, size_t width)
 {
     hidrd_hex_snk_inst    *hex_snk    = (hidrd_hex_snk_inst *)snk;
 
     hidrd_buf_init(&hex_snk->buf);
+    hex_snk->width = width;
     hex_snk->bytes = 0;
     hex_snk->err   = HIDRD_HEX_SNK_ERR_NONE;
 
@@ -43,9 +44,29 @@ hidrd_hex_snk_init(hidrd_snk *snk, char **perr)
 static bool
 hidrd_hex_snk_initv(hidrd_snk *snk, char **perr, va_list ap)
 {
-    (void)ap;
-    return hidrd_hex_snk_init(snk, perr);
+    size_t  width       = va_arg(ap, size_t);
+    return hidrd_hex_snk_init(snk, perr, width);
 }
+
+
+#ifdef HIDRD_WITH_OPT
+const hidrd_opt_spec hidrd_hex_snk_opts_spec[] = {
+    {.name  = "width",
+     .type  = HIDRD_OPT_TYPE_U32,
+     .req   = false,
+     .dflt  = {.u32 = 16},
+     .desc  = "number of bytes per line"},
+    {.name  = NULL}
+};
+
+bool
+hidrd_hex_snk_init_opts(hidrd_snk *snk, char **perr, const hidrd_opt *list)
+{
+    return hidrd_hex_snk_init(
+                snk, perr,
+                hidrd_opt_list_get_u32(list, "width"));
+}
+#endif /* HIDRD_WITH_OPT */
 
 
 static bool
@@ -94,7 +115,8 @@ hidrd_hex_snk_put(hidrd_snk *snk, const hidrd_item *item)
 
     for (p = item, n = hidrd_item_get_size(item); n > 0; p++, n--) {
         if (!hidrd_buf_add_printf(&hex_snk->buf, " %.2hhx", *p) ||
-            ((++hex_snk->bytes % HIDRD_HEX_SNK_COL_NUM == 0) &&
+            (hex_snk->width != 0 &&
+             (++hex_snk->bytes % hex_snk->width == 0) &&
              !hidrd_buf_add_str(&hex_snk->buf, "\n"))) {
             hex_snk->err = HIDRD_HEX_SNK_ERR_ALLOC;
             return false;
@@ -114,7 +136,7 @@ hidrd_hex_snk_flush(hidrd_snk *snk)
     size_t new_size;
     void *new_buf               = NULL;
 
-    if (hex_snk->bytes % HIDRD_HEX_SNK_COL_NUM != 0) {
+    if (hex_snk->width == 0 || hex_snk->bytes % hex_snk->width != 0) {
         if (hidrd_buf_add_char(&hex_snk->buf, '\n'))
             terminated = true;
         else {
@@ -167,13 +189,17 @@ hidrd_hex_snk_clnp(hidrd_snk *snk)
 
 
 const hidrd_snk_type hidrd_hex_snk = {
-    .size   = sizeof(hidrd_hex_snk_inst),
-    .initv  = hidrd_hex_snk_initv,
-    .valid  = hidrd_hex_snk_valid,
-    .errmsg = hidrd_hex_snk_errmsg,
-    .put    = hidrd_hex_snk_put,
-    .flush  = hidrd_hex_snk_flush,
-    .clnp   = hidrd_hex_snk_clnp,
+    .size       = sizeof(hidrd_hex_snk_inst),
+    .initv      = hidrd_hex_snk_initv,
+#ifdef HIDRD_WITH_OPT
+    .init_opts  = hidrd_hex_snk_init_opts,
+    .opts_spec  = hidrd_hex_snk_opts_spec,
+#endif
+    .valid      = hidrd_hex_snk_valid,
+    .errmsg     = hidrd_hex_snk_errmsg,
+    .put        = hidrd_hex_snk_put,
+    .flush      = hidrd_hex_snk_flush,
+    .clnp       = hidrd_hex_snk_clnp,
 };
 
 
