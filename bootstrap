@@ -21,8 +21,4 @@
 # Fail on any error
 set -e
 
-aclocal -I m4/autoconf
-libtoolize
-autoheader
-automake --add-missing
-autoconf
+autoreconf -f -i
