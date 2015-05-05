@@ -29,7 +29,7 @@ dnl     * ID description (non-capitalized)
 dnl
 ID(`0001',  `pointer',                  `CP',       `pointer')dnl
 ID(`0002',  `mouse',                    `CA',       `mouse')dnl
-ID(`0004',  `joystik',                  `CA',       `joystik')dnl
+ID(`0004',  `joystick',                 `CA',       `joystick')dnl
 ID(`0005',  `gamepad',                  `CA',       `gamepad')dnl
 ID(`0006',  `keyboard',                 `CA',       `keyboard')dnl
 ID(`0007',  `keypad',                   `CA',       `keypad')dnl
