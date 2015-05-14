@@ -66,3 +66,6 @@ ID(`0043', `secondary_tip_switch',        `MC',   `secondary tip switch')dnl
 ID(`0044', `barrel_switch',               `MC',   `barrel switch')dnl
 ID(`0045', `eraser',                      `MC',   `eraser')dnl
 ID(`0046', `tablet_pick',                 `MC',   `tablet pick')dnl
+ID(`0047', `touch_valid',                 `MC',   `touch valid')dnl
+ID(`0048', `width',                       `DV',   `width')dnl
+ID(`0049', `height',                      `DV',   `height')dnl
