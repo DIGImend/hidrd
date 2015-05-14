@@ -76,5 +76,6 @@ ID(`0052', `device_mode',                 `DV',   `device input mode')dnl
 ID(`0053', `device_identifier',           `DV',   `device identifier')dnl
 ID(`0054', `contact_count',               `DV',   `contact count')dnl
 ID(`0055', `contact_count_maximum',       `SV',   `contact count maximum')dnl
+ID(`0056', `scan_time',                   `DV',   `scan time')dnl
 ID(`005A', `secondary_barrel_switch',     `MC',   `secondary barrel switch')dnl
 ID(`005B', `transducer_serial_number',    `SV',   `transducer serial number')dnl
