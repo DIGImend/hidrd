@@ -40,9 +40,11 @@ ID(`000A', `articulated_arm',             `CA',   `articulated arm')dnl
 ID(`000B', `armature',                    `CA',   `armature')dnl
 ID(`000C', `multipoint_digitizer',        `CA',   `multiple point digitizer')dnl
 ID(`000D', `free_space_wand',             `CA',   `free space wand')dnl
+ID(`000E', `configuration',               `CA',   `configuration')dnl
 ID(`0020', `stylus',                      `CL',   `stylus')dnl
 ID(`0021', `puck',                        `CL',   `puck')dnl
 ID(`0022', `finger',                      `CL',   `finger')dnl
+ID(`0023', `device_settings',             `CL',   `device settings')dnl
 ID(`0030', `tip_pressure',                `DV',   `tip pressure')dnl
 ID(`0031', `barrel_pressure',             `DV',   `barrel pressure')dnl
 ID(`0032', `in_range',                    `MC',   `in range')dnl
@@ -69,3 +71,8 @@ ID(`0046', `tablet_pick',                 `MC',   `tablet pick')dnl
 ID(`0047', `touch_valid',                 `MC',   `touch valid')dnl
 ID(`0048', `width',                       `DV',   `width')dnl
 ID(`0049', `height',                      `DV',   `height')dnl
+ID(`0051', `contact_identifier',          `DV',   `contact identifier')dnl
+ID(`0052', `device_mode',                 `DV',   `device input mode')dnl
+ID(`0053', `device_identifier',           `DV',   `device identifier')dnl
+ID(`0054', `contact_count',               `DV',   `contact count')dnl
+ID(`0055', `contact_count_maximum',       `SV',   `contact count maximum')dnl
