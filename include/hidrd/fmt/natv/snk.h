@@ -32,7 +32,7 @@ extern "C" {
 #endif
 
 /** Native sink type */
-const hidrd_snk_type    hidrd_natv_snk;
+extern const hidrd_snk_type hidrd_natv_snk;
 
 /** Native sink error code */
 typedef enum hidrd_natv_snk_err {
