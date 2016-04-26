@@ -79,3 +79,4 @@ ID(`0055', `contact_count_maximum',       `SV',   `contact count maximum')dnl
 ID(`0056', `scan_time',                   `DV',   `scan time')dnl
 ID(`005A', `secondary_barrel_switch',     `MC',   `secondary barrel switch')dnl
 ID(`005B', `transducer_serial_number',    `SV',   `transducer serial number')dnl
+ID(`005C', `preferred_color',             `DV',   `preferred color')dnl
