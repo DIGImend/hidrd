@@ -33,6 +33,8 @@ dnl     * Set token (non-capitalized, underscores for spaces)
 dnl     * Minimum hexadecimal usage ID (four digits, uppercase)
 dnl     * Maximum hexadecimal usage ID (four digits, uppercase)
 dnl
-ID_SET_RANGE(`reserved',    `000E', `001F')dnl
-ID_SET_RANGE(`reserved',    `0023', `002F')dnl
-ID_SET_RANGE(`reserved',    `0047', `FFFF')dnl
+ID_SET_RANGE(`reserved',    `000F', `001F')dnl
+ID_SET_RANGE(`reserved',    `0024', `002F')dnl
+ID_SET_RANGE(`reserved',    `004A', `0050')dnl
+ID_SET_RANGE(`reserved',    `0057', `0059')dnl
+ID_SET_RANGE(`reserved',    `005C', `FFFF')dnl
