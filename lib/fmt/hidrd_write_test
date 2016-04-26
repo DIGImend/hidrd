@@ -34,7 +34,7 @@ function run ()
     local input="$1"; shift
     local output="$1"; shift
     local output_basename="`basename \"$output\"`"
-    local test_output="`tempfile -s\"_$output_basename.test\"`"
+    local test_output="`mktemp --suffix=\"_$output_basename.test\"`"
     local status
 
     echo "Checking \"$format\" writing of \"$input\"" \
