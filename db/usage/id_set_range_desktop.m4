@@ -39,4 +39,5 @@ ID_SET_POINT(`reserved',    `003F')dnl
 ID_SET_RANGE(`reserved',    `0049', `007F')dnl
 ID_SET_RANGE(`reserved',    `0094', `009F')dnl
 ID_SET_RANGE(`reserved',    `00A9', `00AF')dnl
-ID_SET_RANGE(`reserved',    `00B8', `FFFF')dnl
+ID_SET_RANGE(`reserved',    `00B8', `00C8')dnl
+ID_SET_RANGE(`reserved',    `00CB', `FFFF')dnl

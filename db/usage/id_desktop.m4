@@ -96,3 +96,5 @@ ID(`00B4',  `sys_dspl_dual',            `OSC',      `system display dual')dnl
 ID(`00B5',  `sys_dspl_toggle_int_ext',  `OSC',      `system display toggle int/ext')dnl
 ID(`00B6',  `sys_dspl_swap_1_2',        `OSC',      `system display swap primary/secondary')dnl
 ID(`00B7',  `sys_dspl_LCD_autoscale',   `OSC',      `system display LCD autoscale')dnl
+ID(`00C9',  `sys_dspl_rot_lock_btn',    `OOC',      `system display rotation lock button')dnl
+ID(`00CA',  `sys_dspl_rot_lock_sld',    `OOC',      `system display rotation lock slider switch')dnl
