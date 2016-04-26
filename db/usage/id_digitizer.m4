@@ -80,3 +80,20 @@ ID(`0056', `scan_time',                   `DV',   `scan time')dnl
 ID(`005A', `secondary_barrel_switch',     `MC',   `secondary barrel switch')dnl
 ID(`005B', `transducer_serial_number',    `SV',   `transducer serial number')dnl
 ID(`005C', `preferred_color',             `DV',   `preferred color')dnl
+ID(`005D', `preferred_color_locked',      `MC',   `preferred color is locked')dnl
+ID(`005E', `preferred_line_width',        `DV',   `preferred line width')dnl
+ID(`005F', `preferred_line_width_locked', `MC',   `preferred line width is locked')dnl
+ID(`0070', `preferred_line_style',        `NAry', `preferred line style')dnl
+ID(`0071', `preferred_line_style_locked', `MC',   `preferred line style is locked')dnl
+ID(`0072', `ink',                         `Sel',  `ink')dnl
+ID(`0073', `pencil',                      `Sel',  `pencil')dnl
+ID(`0074', `highlighter',                 `Sel',  `highlighter')dnl
+ID(`0075', `chisel_marker',               `Sel',  `chisel marker')dnl
+ID(`0076', `brush',                       `Sel',  `brush')dnl
+ID(`0077', `no_preference',               `Sel',  `no preference')dnl
+ID(`0080', `digitizer_diagnostic',        `CL',   `digitizer diagnostic')dnl
+ID(`0081', `digitizer_error',             `NAry', `digitizer error')dnl
+ID(`0082', `err_normal_status',           `Sel',  `err normal status')dnl
+ID(`0083', `err_transducers_exceeded',    `Sel',  `err transducers exceeded')dnl
+ID(`0084', `err_full_trans_ft_unavail',   `Sel',  `err full transducer features unavailable')dnl
+ID(`0085', `err_charge_low',              `Sel',  `err charge low')dnl
