@@ -44,7 +44,7 @@ hidrd_usage_type_valid(hidrd_usage_type type)
          idx++)
     {
         if (type == 1)
-            break;
+            return ((type >> 1) == 0);
         type >>= 1;
     }
 
