@@ -65,18 +65,18 @@ extern "C" {
 
 typedef enum hidrd_usage_page {
     /** Undefined */
-    HIDRD_USAGE_PAGE_UNDEFINED = 0x0000,
+    HIDRD_USAGE_PAGE_UNDEFINED = 0x0000U,
 'dnl Delegated pages
 pushdef(PAGE,dnl
     `/** capitalize_first(`$3') */'
-    `HIDRD_USAGE_PAGE_`'uppercase($2) = 0x$1,
+    `HIDRD_USAGE_PAGE_`'uppercase($2) = 0x$1U,
 ')dnl
 include(`db/usage/page.m4')dnl
 popdef(`PAGE')dnl
 `} hidrd_usage_page;
 
-#define HIDRD_USAGE_PAGE_MIN    0x0000
-#define HIDRD_USAGE_PAGE_MAX    0xFFFF
+#define HIDRD_USAGE_PAGE_MIN    0x0000U
+#define HIDRD_USAGE_PAGE_MAX    0xFFFFU
 
 /**
  * Check if a page is valid.

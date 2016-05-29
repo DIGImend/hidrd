@@ -68,13 +68,13 @@ extern "C" {
 typedef enum hidrd_usage {
 #define _U(_page, _id) (((HIDRD_USAGE_PAGE_##_page) << 16) | (_id))
 
-    HIDRD_USAGE_UNDEFINED = _U(UNDEFINED, 0x0000),
+    HIDRD_USAGE_UNDEFINED = _U(UNDEFINED, 0x0000U),
 
 'pushdef(`PAGE',
 `ifelse(eval(PAGE_ID_NUM(`$2') > 0), 1,
 `pushdef(`ID',
 `    /** capitalize_first('$`4) ('$`3) */
-    HIDRD_USAGE_`'uppercase($2)_`'uppercase('$`2) = _PU(0x'$`1),
+    HIDRD_USAGE_`'uppercase($2)_`'uppercase('$`2) = _PU(0x'$`1U),
 ')dnl
     /*
      * capitalize_first(`$3') page
