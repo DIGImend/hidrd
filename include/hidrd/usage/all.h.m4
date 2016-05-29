@@ -89,11 +89,21 @@ popdef(`ID')dnl
 ')')dnl
 include(`db/usage/page.m4')dnl
 popdef(`PAGE')dnl
-`#undef _U
+`     /*
+     * Vendor-defined page FFFF (last possible)
+     */
+#define _PU(_id) _U(VENDOR_FFFF, _id)
+
+    /** Usage FFFF (last possible) */
+    HIDRD_USAGE_VENDOR_FFFF_FFFF = _PU(0xFFFFU)
+
+#undef _PU
+
+#undef _U
 } hidrd_usage;
 
-#define HIDRD_USAGE_MIN 0
-#define HIDRD_USAGE_MAX UINT32_MAX
+#define HIDRD_USAGE_MIN HIDRD_USAGE_UNDEFINED
+#define HIDRD_USAGE_MAX HIDRD_USAGE_VENDOR_FFFF_FFFF
 
 /**
  * Check if a usage is valid.

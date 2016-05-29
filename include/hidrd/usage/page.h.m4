@@ -73,10 +73,12 @@ pushdef(PAGE,dnl
 ')dnl
 include(`db/usage/page.m4')dnl
 popdef(`PAGE')dnl
-`} hidrd_usage_page;
+`    /** Vendor-defined page FFFF (last possible) */
+    HIDRD_USAGE_PAGE_VENDOR_FFFF = 0xFFFFU
+} hidrd_usage_page;
 
-#define HIDRD_USAGE_PAGE_MIN    0x0000U
-#define HIDRD_USAGE_PAGE_MAX    0xFFFFU
+#define HIDRD_USAGE_PAGE_MIN    HIDRD_USAGE_PAGE_UNDEFINED
+#define HIDRD_USAGE_PAGE_MAX    HIDRD_USAGE_PAGE_VENDOR_FFFF
 
 /**
  * Check if a page is valid.
