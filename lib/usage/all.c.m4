@@ -95,10 +95,11 @@ lookup_id_desc(hidrd_usage usage)
 bool
 hidrd_usage_valid(hidrd_usage usage)
 {
-    hidrd_usage min = HIDRD_USAGE_MIN;
-    hidrd_usage max = HIDRD_USAGE_MAX;
+    uint32_t min = (uint32_t)HIDRD_USAGE_MIN;
+    uint32_t max = (uint32_t)HIDRD_USAGE_MAX;
+    uint32_t u = (uint32_t)usage;
 
-    return (usage >= min) && (usage <= max);
+    return (u >= min) && (u <= max);
 }
 
 
