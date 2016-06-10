@@ -34,6 +34,9 @@
 #ifdef HIDRD_FMT_WITH_SPEC
 #include "hidrd/fmt/spec.h"
 #endif
+#ifdef HIDRD_FMT_WITH_CODE
+#include "hidrd/fmt/code.h"
+#endif
 #include "hidrd/fmt/list.h"
 
 #endif /* __HIDRD_FMT_H__ */
