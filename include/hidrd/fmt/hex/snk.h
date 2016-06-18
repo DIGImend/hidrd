@@ -33,7 +33,7 @@ extern "C" {
 #endif
 
 /** Hex sink type */
-const hidrd_snk_type    hidrd_hex_snk;
+extern const hidrd_snk_type    hidrd_hex_snk;
 
 /** Hex sink error code */
 typedef enum hidrd_hex_snk_err {

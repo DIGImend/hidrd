@@ -78,7 +78,7 @@ popdef(`page_num')dnl
  *
  * @return Page description or NULL, if not found.
  */
-const hidrd_usage_page_desc *hidrd_usage_page_desc_list_lkp_by_value(
+extern const hidrd_usage_page_desc *hidrd_usage_page_desc_list_lkp_by_value(
                                                 hidrd_usage_page    value);
 
 #ifdef HIDRD_WITH_TOKENS
@@ -89,7 +89,7 @@ const hidrd_usage_page_desc *hidrd_usage_page_desc_list_lkp_by_value(
  *
  * @return Page description or NULL, if not found.
  */
-const hidrd_usage_page_desc *hidrd_usage_page_desc_list_lkp_by_token(
+extern const hidrd_usage_page_desc *hidrd_usage_page_desc_list_lkp_by_token(
                                                 const char         *token);
 #endif /* HIDRD_WITH_TOKENS */
 

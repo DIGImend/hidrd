@@ -66,13 +66,13 @@ extern "C" {
 extern bool hidrd_usage_id_desc_list_valid(const hidrd_usage_id_desc *list,
                                            size_t                     num);
 
-const hidrd_usage_id_desc *hidrd_usage_id_desc_list_lkp_by_value(
+extern const hidrd_usage_id_desc *hidrd_usage_id_desc_list_lkp_by_value(
                                         const hidrd_usage_id_desc  *list,
                                         size_t                      num,
                                         hidrd_usage_id              value);
 
 #ifdef HIDRD_WITH_TOKENS
-const hidrd_usage_id_desc *hidrd_usage_id_desc_list_lkp_by_token(
+extern const hidrd_usage_id_desc *hidrd_usage_id_desc_list_lkp_by_token(
                                         const hidrd_usage_id_desc  *list,
                                         size_t                      num,
                                         const char                 *token);

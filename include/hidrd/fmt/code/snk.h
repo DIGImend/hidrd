@@ -32,7 +32,7 @@ extern "C" {
 #endif
 
 /** Source code sink type */
-const hidrd_snk_type    hidrd_code_snk;
+extern const hidrd_snk_type hidrd_code_snk;
 
 /** Source code sink instance */
 typedef struct hidrd_code_snk_inst {

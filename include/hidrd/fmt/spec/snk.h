@@ -49,7 +49,7 @@ extern bool hidrd_spec_snk_flush(hidrd_snk *snk);
 extern void hidrd_spec_snk_clnp(hidrd_snk *snk);
 
 /** Specification example sink type */
-const hidrd_snk_type    hidrd_spec_snk;
+extern const hidrd_snk_type hidrd_spec_snk;
 
 /** Specification example sink item state table */
 typedef struct hidrd_spec_snk_state hidrd_spec_snk_state;
