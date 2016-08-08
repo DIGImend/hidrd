@@ -36,6 +36,10 @@ libhidrd_item_la_LIBADD = \
 
 TESTS = hidrd_item_any_test
 
+if ENABLE_MINGW_OSTACK
+libhidrd_item_la_LDFLAGS = -no-undefined
+endif
+
 hidrd_item_any_test_SOURCES = any_test.c
 hidrd_item_any_test_LDADD = ../usage/libhidrd_usage.la $(lib_LTLIBRARIES)
 

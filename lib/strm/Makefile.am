@@ -31,6 +31,10 @@ libhidrd_strm_la_LIBADD = \
 
 TESTS = 
 
+if ENABLE_MINGW_OSTACK
+libhidrd_strm_la_LDFLAGS = -no-undefined
+endif
+
 bin_PROGRAMS =
 check_PROGRAMS = $(TESTS)
 

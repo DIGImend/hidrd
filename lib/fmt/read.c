@@ -30,6 +30,10 @@
 #include "hidrd/util/fd.h"
 #include "hidrd/fmt/list.h"
 
+#if defined __MINGW32__
+const char * program_invocation_short_name = "program_invocation_short_name";
+#endif
+
 static int
 usage(FILE *stream, const char *progname)
 {
