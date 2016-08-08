@@ -139,7 +139,7 @@ usage(FILE *stream, const char *progname)
     size_t              len;
 
     if (fprintf(
-            stream,
+            stream, 
             "Usage: %s [OPTION]... [INPUT [OUTPUT]]\n"
             "Convert a HID report descriptor.\n"
             "With no INPUT, or when INPUT is -, read standard input.\n"
@@ -177,7 +177,7 @@ usage(FILE *stream, const char *progname)
             return false;
 
     if (fprintf(stream,
-                "\n"
+                "\n" 
                 "Default options are -i natv -o natv.\n"
                 "\n") < 0)
         return false;
