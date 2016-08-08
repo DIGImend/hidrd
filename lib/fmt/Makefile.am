@@ -35,6 +35,8 @@ libhidrd_fmt_la_LIBADD = \
     hex/libhidrd_hex.la         \
     natv/libhidrd_natv.la
 
+libhidrd_fmt_la_LDFLAGS = -no-undefined	
+	
 TESTS = hidrd_natv_test hidrd_hex_read_test hidrd_hex_write_test
 TESTS_ENVIRONMENT = PATH="$$PATH:$(builddir):$(srcdir)" \
 					HIDRD_READ_TEST_DATA="$(srcdir)/read_test_data" \

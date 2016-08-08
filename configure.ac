@@ -29,8 +29,8 @@ AC_CONFIG_MACRO_DIR([m4/autoconf])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 # To have empty CFLAGS instead of undefined and '-g -O2' by default
-CFLAGS=$CFLAGS
-CFLAGS="-Os -Wall -Wextra -Werror $CFLAGS"
+CFLAGS=$CFLAGS 
+CFLAGS="-g -g3 -Os -Wall -Wextra -std=c99 -Wformat $CFLAGS"
 ABS_SRCDIR=`cd ${srcdir} ; pwd`
 ABS_BUILDDIR=`pwd`
 CPPFLAGS="-I${ABS_BUILDDIR} -I${ABS_BUILDDIR}/include -D_GNU_SOURCE -DNDEBUG $CPPFLAGS"
@@ -45,7 +45,7 @@ fi
 AC_PROG_CC
 AC_PROG_INSTALL
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
-LT_INIT
+LT_INIT([win32-dll])
 
 #
 # Checks for libraries.

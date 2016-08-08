@@ -37,6 +37,8 @@ dist_noinst_DATA = \
     page.c.m4           \
     page_desc_list.c.m4
 
+libhidrd_usage_la_LDFLAGS = -no-undefined
+	
 BUILT_SOURCES = \
     all.c               \
     id_desc_list.c      \

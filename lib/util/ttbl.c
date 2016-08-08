@@ -21,11 +21,12 @@
  *
  * @author Nikolai Kondrashov <spbnick@gmail.com>
  */
-
+//#define _FORTIFY_SOURCE 2
 #include <assert.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
+//#include <ssp/string.h>
 #include "hidrd/util/buf.h"
 #include "hidrd/util/ttbl.h"
 

@@ -29,12 +29,18 @@ libhidrd_util_la_SOURCES = \
     hex.c                   \
     num.c                   \
     str.c                   \
+	obstack.c				\
     ttbl.c                  \
     unit.c
 
+ 
+	
 if ENABLE_TOKENS
 libhidrd_util_la_SOURCES += tkn.c
+
 endif
+
+libhidrd_util_la_LDFLAGS = -no-undefined
 
 bin_PROGRAMS =
 check_PROGRAMS = hidrd_num_test hidrd_ttbl_test
