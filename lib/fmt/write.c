@@ -30,6 +30,11 @@
 #include "hidrd/util/fd.h"
 #include "hidrd/fmt/list.h"
 
+#if defined __MINGW32__
+const char * program_invocation_short_name = "program_invocation_short_name";
+#endif
+
+
 static int
 usage(FILE *stream, const char *progname)
 {
@@ -84,11 +89,9 @@ main(int argc, char **argv)
         *argp_list[i] = *argv;
     if (argc > 0)
     {
-#ifdef __MINGW32__	
-        usage(stderr, "program_invocation_short_name");
-#else
+ 
 		usage(stderr, program_invocation_short_name);
-#endif		
+ 
         goto cleanup;
     }
 

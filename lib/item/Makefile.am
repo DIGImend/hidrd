@@ -36,7 +36,7 @@ libhidrd_item_la_LIBADD = \
 
 TESTS = hidrd_item_any_test
 
-libhidrd_item_la_LDFLAGS = -no-undefined	
+#libhidrd_item_la_LDFLAGS = -no-undefined	
 
 hidrd_item_any_test_SOURCES = any_test.c
 hidrd_item_any_test_LDADD = ../usage/libhidrd_usage.la $(lib_LTLIBRARIES)

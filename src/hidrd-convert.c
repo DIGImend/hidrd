@@ -35,6 +35,9 @@
 #include "hidrd/util/fd.h"
 #include "hidrd/fmt.h"
 
+#if defined __MINGW32__
+const char * program_invocation_short_name = "program_invocation_short_name";
+#endif
 
 static bool
 usage_formats(FILE *stream, const char *progname)

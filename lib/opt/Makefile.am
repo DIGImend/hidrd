@@ -39,7 +39,7 @@ TESTS = hidrd_opt_test
 hidrd_opt_test_SOURCES = test.c
 hidrd_opt_test_LDADD = $(lib_LTLIBRARIES)
 
-libhidrd_opt_la_LDFLAGS = -no-undefined
+#libhidrd_opt_la_LDFLAGS = -no-undefined
 
 bin_PROGRAMS =
 check_PROGRAMS = $(TESTS)

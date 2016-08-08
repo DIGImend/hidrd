@@ -76,6 +76,23 @@ fi
 AC_SUBST(LIBXML2_LIBS)
 AC_SUBST(LIBXML2_CFLAGS)
 
+### HOST FOR CROSS-COMPILING
+target_os=`uname -s`
+
+case "$target_os" in
+	MINGW* | cygwin* | msys* | mingw* | cegcc*)
+	target_os=mingw
+    AC_DEFINE_UNQUOTED(MINGW_BUILD,1,[This is a MinGW system])
+    CFLAGS="$CFLAGS -g -g3 -Os -Wall -Wextra -std=c99 -Wformat"
+    LDFLAGS="$LDFLAGS -no-undefined"
+    ;;
+	*)
+		target_os=linux
+	;;
+esac
+
+AM_CONDITIONAL(ENABLE_MINGW_OSTACK, [test $target_os = mingw])
+
 #
 # Checks for features
 #
