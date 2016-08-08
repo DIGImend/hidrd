@@ -28,6 +28,11 @@ libhidrd_usage_la_SOURCES = \
 libhidrd_usage_la_LIBADD = \
     ../util/libhidrd_util.la
 
+if ENABLE_MINGW_OSTACK
+libhidrd_usage_la_LDFLAGS = -no-undefined
+endif
+
+
 %.c: %.c.m4 @top_srcdir@/m4/hidrd/*.m4 @top_srcdir@/db/usage/*.m4
 	m4 -I "@top_srcdir@" $< > $@
 
@@ -37,7 +42,6 @@ dist_noinst_DATA = \
     page.c.m4           \
     page_desc_list.c.m4
 
-	
 BUILT_SOURCES = \
     all.c               \
     id_desc_list.c      \

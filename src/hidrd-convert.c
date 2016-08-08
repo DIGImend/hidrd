@@ -36,7 +36,7 @@
 #include "hidrd/fmt.h"
 
 #if defined __MINGW32__
-const char * program_invocation_short_name = "program_invocation_short_name";
+ char * program_invocation_short_name;
 #endif
 
 static bool
@@ -139,7 +139,7 @@ usage(FILE *stream, const char *progname)
     size_t              len;
 
     if (fprintf(
-            stream, 
+            stream,
             "Usage: %s [OPTION]... [INPUT [OUTPUT]]\n"
             "Convert a HID report descriptor.\n"
             "With no INPUT, or when INPUT is -, read standard input.\n"
@@ -177,7 +177,7 @@ usage(FILE *stream, const char *progname)
             return false;
 
     if (fprintf(stream,
-                "\n" 
+                "\n"
                 "Default options are -i natv -o natv.\n"
                 "\n") < 0)
         return false;
@@ -424,6 +424,10 @@ typedef enum opt_val {
 int
 main(int argc, char **argv)
 {
+
+ #if defined __MINGW32__
+program_invocation_short_name = argv[0];
+#endif
     static const struct option long_opt_list[] = {
         {.val       = OPT_VAL_HELP,
          .name      = "help",

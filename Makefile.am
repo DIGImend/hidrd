@@ -21,4 +21,3 @@ SUBDIRS = m4 db include lib src
 dist_noinst_SCRIPTS = bootstrap distcheck-all
 
 ACLOCAL_AMFLAGS = -I m4/autoconf
-

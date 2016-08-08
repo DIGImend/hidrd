@@ -28,9 +28,28 @@ AC_CONFIG_MACRO_DIR([m4/autoconf])
 
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
+CFLAGS=$CFLAGS
 # To have empty CFLAGS instead of undefined and '-g -O2' by default
-CFLAGS=$CFLAGS 
-CFLAGS="-g -g3 -Os -Wall -Wextra -std=c99 -Wformat $CFLAGS"
+
+### HOST FOR CROSS-COMPILING
+target_os=`uname -s`
+
+case "$target_os" in
+	MINGW* | cygwin* | msys* | mingw* | cegcc*)
+		target_os=mingw
+		AC_DEFINE_UNQUOTED(MINGW_BUILD,1,[This is a MinGW system])
+		CFLAGS="-g -g3 -Os -Wall -Wextra -std=c99 -Wformat $CFLAGS"
+		LDFLAGS="$LDFLAGS -Wl,--no-undefined"
+    ;;
+	*)
+		target_os=linux
+		CFLAGS="-Os -Wall -Wextra -Werror $CFLAGS"
+	;;
+esac
+
+AM_CONDITIONAL(ENABLE_MINGW_OSTACK, [test $target_os = mingw])
+
+
 ABS_SRCDIR=`cd ${srcdir} ; pwd`
 ABS_BUILDDIR=`pwd`
 CPPFLAGS="-I${ABS_BUILDDIR} -I${ABS_BUILDDIR}/include -D_GNU_SOURCE -DNDEBUG $CPPFLAGS"
@@ -45,7 +64,11 @@ fi
 AC_PROG_CC
 AC_PROG_INSTALL
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
-LT_INIT([win32-dll])
+#if test "$target_os" = "mingw"; then
+	LT_INIT(shared static [win32-dll])
+#else
+#	LT_INIT
+#fi
 
 #
 # Checks for libraries.
@@ -76,22 +99,7 @@ fi
 AC_SUBST(LIBXML2_LIBS)
 AC_SUBST(LIBXML2_CFLAGS)
 
-### HOST FOR CROSS-COMPILING
-target_os=`uname -s`
 
-case "$target_os" in
-	MINGW* | cygwin* | msys* | mingw* | cegcc*)
-	target_os=mingw
-    AC_DEFINE_UNQUOTED(MINGW_BUILD,1,[This is a MinGW system])
-    CFLAGS="$CFLAGS -g -g3 -Os -Wall -Wextra -std=c99 -Wformat"
-    LDFLAGS="$LDFLAGS -no-undefined"
-    ;;
-	*)
-		target_os=linux
-	;;
-esac
-
-AM_CONDITIONAL(ENABLE_MINGW_OSTACK, [test $target_os = mingw])
 
 #
 # Checks for features

@@ -26,16 +26,12 @@
         #define _FORTIFY_SOURCE 2
 		#include <ssp/string.h>
 #endif	
- 
 #include <assert.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
-
 #include "hidrd/util/buf.h"
 #include "hidrd/util/ttbl.h"
-
-
 
 #define obstack_chunk_alloc malloc
 #define obstack_chunk_free  free

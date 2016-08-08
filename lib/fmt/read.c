@@ -86,9 +86,8 @@ main(int argc, char **argv)
         *argp_list[i] = *argv;
     if (argc > 0)
     {
-		usage(stderr, program_invocation_short_name);
+        usage(stderr, program_invocation_short_name);
         goto cleanup;
-
     }
 
     /*

@@ -21,7 +21,7 @@ SUBDIRS = src snk
 
 lib_LTLIBRARIES = libhidrd_strm.la
 
-libhidrd_strm_la_SOURCES = 
+libhidrd_strm_la_SOURCES =
 
 libhidrd_strm_la_LIBADD = \
     ../item/libhidrd_item.la    \
@@ -29,11 +29,14 @@ libhidrd_strm_la_LIBADD = \
     snk/libhidrd_strm_snk.la    \
     src/libhidrd_strm_src.la
 
-TESTS = 
+TESTS =
+
+if ENABLE_MINGW_OSTACK
+libhidrd_strm_la_LDFLAGS = -no-undefined
+endif
 
 bin_PROGRAMS =
 check_PROGRAMS = $(TESTS)
-
 
 if ENABLE_TESTS_INSTALL
 bin_PROGRAMS += $(TESTS)
