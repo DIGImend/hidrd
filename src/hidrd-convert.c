@@ -35,6 +35,9 @@
 #include "hidrd/util/fd.h"
 #include "hidrd/fmt.h"
 
+#if defined __MINGW32__
+ char * program_invocation_short_name;
+#endif
 
 static bool
 usage_formats(FILE *stream, const char *progname)
@@ -421,6 +424,10 @@ typedef enum opt_val {
 int
 main(int argc, char **argv)
 {
+
+ #if defined __MINGW32__
+program_invocation_short_name = argv[0];
+#endif
     static const struct option long_opt_list[] = {
         {.val       = OPT_VAL_HELP,
          .name      = "help",

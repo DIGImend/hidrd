@@ -32,6 +32,11 @@ libhidrd_util_la_SOURCES = \
     ttbl.c                  \
     unit.c
 
+if ENABLE_MINGW_OSTACK
+libhidrd_util_la_SOURCES += obstack.c
+libhidrd_util_la_LDFLAGS = -no-undefined
+endif
+
 if ENABLE_TOKENS
 libhidrd_util_la_SOURCES += tkn.c
 endif

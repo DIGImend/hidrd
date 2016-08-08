@@ -34,6 +34,10 @@ libhidrd_opt_la_SOURCES = \
 libhidrd_opt_la_LIBADD = \
     ../util/libhidrd_util.la
 
+if ENABLE_MINGW_OSTACK
+libhidrd_opt_la_LDFLAGS = -no-undefined
+endif
+
 TESTS = hidrd_opt_test
 
 hidrd_opt_test_SOURCES = test.c

@@ -22,6 +22,10 @@
  * @author Nikolai Kondrashov <spbnick@gmail.com>
  */
 
+#ifdef __MINGW32__	
+        #define _FORTIFY_SOURCE 2
+		#include <ssp/string.h>
+#endif	
 #include <assert.h>
 #include <stdint.h>
 #include <stdlib.h>
