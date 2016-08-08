@@ -34,7 +34,6 @@ TESTS =
 bin_PROGRAMS =
 check_PROGRAMS = $(TESTS)
 
-#libhidrd_strm_la_LDFLAGS = -no-undefined
 
 if ENABLE_TESTS_INSTALL
 bin_PROGRAMS += $(TESTS)
