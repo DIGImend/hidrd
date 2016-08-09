@@ -33,6 +33,10 @@ hidrd_util_HEADERS = \
     ttbl.h              \
     unit.h
 
+if ADD_OBSTACK
+hidrd_util_HEADERS  += obstack.h
+endif
+
 if ENABLE_TOKENS
 hidrd_util_HEADERS += tkn.h
 endif

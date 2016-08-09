@@ -128,6 +128,9 @@ Summary:
 #define __need_ptrdiff_t
 #endif
 #endif
+#ifdef __MINGW32__
+#include <ssp/string.h> //A.Campbell
+#endif
 #include <stddef.h>
 #endif
 

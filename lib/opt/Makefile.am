@@ -34,7 +34,7 @@ libhidrd_opt_la_SOURCES = \
 libhidrd_opt_la_LIBADD = \
     ../util/libhidrd_util.la
 
-if ENABLE_MINGW_OSTACK
+if ADD_OBSTACK
 libhidrd_opt_la_LDFLAGS = -no-undefined
 endif
 

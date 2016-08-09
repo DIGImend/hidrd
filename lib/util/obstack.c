@@ -14,8 +14,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
-
-#include "obstack.h"
+#if HAVE_CONFIG_H
+# include <config.h>
+#if !defined HAVE_OBSTACK_H
+#include "hidrd/util/obstack.h"
+#endif
+#endif
 
 /* This is just to get __GNU_LIBRARY__ defined.  */
 #include <stdio.h>

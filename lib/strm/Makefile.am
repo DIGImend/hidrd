@@ -31,7 +31,7 @@ libhidrd_strm_la_LIBADD = \
 
 TESTS = 
 
-if ENABLE_MINGW_OSTACK
+if ADD_OBSTACK
 libhidrd_strm_la_LDFLAGS = -no-undefined
 endif
 

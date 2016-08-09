@@ -27,7 +27,13 @@
 
 #include <stdbool.h>
 #include <stdarg.h>
-#include <obstack.h>
+#if defined HAVE_CONFIG_H
+#include "config.h"
+#if !defined HAVE_OBSTACK_H
+#include "hidrd/util/obstack.h"
+#endif
+#endif
+
 
 #ifdef __cplusplus
 extern "C" {

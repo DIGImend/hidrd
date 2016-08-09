@@ -36,7 +36,7 @@ libhidrd_item_la_LIBADD = \
 
 TESTS = hidrd_item_any_test
 
-if ENABLE_MINGW_OSTACK
+if ADD_OBSTACK
 libhidrd_item_la_LDFLAGS = -no-undefined
 endif
 

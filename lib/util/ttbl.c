@@ -21,11 +21,15 @@
  *
  * @author Nikolai Kondrashov <spbnick@gmail.com>
  */
-
-#ifdef __MINGW32__	
-        #define _FORTIFY_SOURCE 2
-		#include <ssp/string.h>
-#endif	
+#if defined HAVE_CONFIG_H
+#include "config.h"
+#if !defined HAVE_OBSTACK_H
+#define _FORTIFY_SOURCE 2
+#endif
+#endif
+#ifdef __MINGW32__
+#include <ssp/string.h>
+#endif
 #include <assert.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -52,7 +56,7 @@ hidrd_ttbl_new(void)
     row = obstack_alloc(&tbl->obstack, sizeof(*row));
     row->skip = 0;
     row->next = NULL;
-    
+
     cell = obstack_alloc(&tbl->obstack, sizeof(*cell));
     cell->skip = 0;
     cell->next = NULL;
@@ -148,7 +152,7 @@ hidrd_ttbl_set(hidrd_ttbl  *tbl,
                size_t       line,
                const char  *text)
 {
-    hidrd_ttbl_seta(tbl, col, line, 
+    hidrd_ttbl_seta(tbl, col, line,
                     (text == NULL)
                         ? NULL
                         : obstack_copy(&tbl->obstack, text,

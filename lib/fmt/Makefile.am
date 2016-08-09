@@ -35,7 +35,7 @@ libhidrd_fmt_la_LIBADD = \
     hex/libhidrd_hex.la         \
     natv/libhidrd_natv.la
 
-if ENABLE_MINGW_OSTACK
+if ADD_OBSTACK
 libhidrd_fmt_la_LDFLAGS = -no-undefined
 endif
 

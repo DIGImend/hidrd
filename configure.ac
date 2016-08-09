@@ -34,20 +34,40 @@ CFLAGS=$CFLAGS
 ### HOST FOR CROSS-COMPILING
 target_os=`uname -s`
 
+AC_MSG_CHECKING([target os])
+
 case "$target_os" in
 	MINGW* | cygwin* | msys* | mingw* | cegcc*)
-		target_os=mingw
-		AC_DEFINE_UNQUOTED(MINGW_BUILD,1,[This is a MinGW system])
 		CFLAGS="-g -g3 -Os -Wall -Wextra -std=c99 -Wformat $CFLAGS"
 		LDFLAGS="$LDFLAGS -Wl,--no-undefined"
+		target_os=mingw
     ;;
-	*)
+	ANDROID*)
+		target_os=android
+		CFLAGS="-Os -Wall -Wextra  $CFLAGS"
+    ;;
+	    *)
 		target_os=linux
 		CFLAGS="-Os -Wall -Wextra -Werror $CFLAGS"
-	;;
+AC_MSG_RESULT([$target_os])
+    ;;
 esac
+AC_MSG_RESULT([$target_os])
 
-AM_CONDITIONAL(ENABLE_MINGW_OSTACK, [test $target_os = mingw])
+AC_MSG_CHECKING([checking for obstack_header])
+AC_CHECK_HEADERS([obstack.h],
+        [found_obstack_headers=yes; break;])
+AS_IF([test "x$found_obstack_headers=yes" != "xyes"],
+[AC_MSG_RESULT([Unable to find the obstack headers])])
+AM_CONDITIONAL(ADD_OBSTACK, [test x$found_obstack_headers != xyes])
+
+AC_MSG_CHECKING(whether program_invocation_short_name is defined)
+AC_TRY_COMPILE([#include <argp.h>],
+               [program_invocation_short_name = "test";],
+               AC_DEFINE(HAVE_PROGRAM_INVOCATION_SHORT_NAME, 1,
+                [Define if program_invocation_short_name is defined])
+                AC_MSG_RESULT(yes),
+               AC_MSG_RESULT(no))
 
 
 ABS_SRCDIR=`cd ${srcdir} ; pwd`
@@ -64,12 +84,8 @@ fi
 AC_PROG_CC
 AC_PROG_INSTALL
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
-#if test "$target_os" = "mingw"; then
-	LT_INIT(shared static [win32-dll])
-#else
-#	LT_INIT
-#fi
 
+LT_INIT(shared static [win32-dll])
 #
 # Checks for libraries.
 #
