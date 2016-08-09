@@ -27,11 +27,10 @@ libhidrd_util_la_SOURCES = \
     fd.c                    \
     fmt.c                   \
     hex.c                   \
-   obstack.c	          \
     num.c
 
 if ADD_OBSTACK
-# libhidrd_util_la_SOURCES += obstack.c
+libhidrd_util_la_SOURCES += obstack.c
 libhidrd_util_la_LDFLAGS = -no-undefined
 endif
 

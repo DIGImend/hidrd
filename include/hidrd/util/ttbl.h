@@ -31,7 +31,11 @@
 #include "config.h"
 #if !defined HAVE_OBSTACK_H
 #include "hidrd/util/obstack.h"
+#else
+#include <obstack.h>
 #endif
+#else
+#include <obstack.h>
 #endif
 
 

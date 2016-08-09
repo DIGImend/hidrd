@@ -30,16 +30,20 @@
 #include "hidrd/util/fd.h"
 #include "hidrd/fmt/list.h"
 
-#if defined __MINGW32__
+#if HAVE_CONFIG_H
+# include <config.h>
+#if !defined HAVE_PROGRAM_INVOCATION_SHORT_NAME
 const char * program_invocation_short_name = "program_invocation_short_name";
 #endif
+#endif
+
 
 static int
 usage(FILE *stream, const char *progname)
 {
-    return 
+    return
         fprintf(
-            stream, 
+            stream,
             "Usage: %s [INPUT_FORMAT [INPUT_OPTS [INPUT [OUTPUT]]]]\n"
             "Convert a HID report descriptor from "
             "INPUT_FORMAT to native format.\n"

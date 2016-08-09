@@ -44,7 +44,8 @@ case "$target_os" in
     ;;
 	ANDROID*)
 		target_os=android
-		CFLAGS="-Os -Wall -Wextra  $CFLAGS"
+		CFLAGS="-Os -fPIE  -Wall -Wextra  $CFLAGS"
+		LDFLAGS="$LDFLAGS -pie"
     ;;
 	    *)
 		target_os=linux
