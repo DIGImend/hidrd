@@ -34,7 +34,7 @@ hidrd_util_HEADERS = \
     unit.h
 
 if ADD_OBSTACK
-hidrd_util_HEADERS  += obstack.h
+hidrd_util_HEADERS  += obstacklocal.h
 endif
 
 if ENABLE_TOKENS

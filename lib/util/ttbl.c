@@ -21,14 +21,9 @@
  *
  * @author Nikolai Kondrashov <spbnick@gmail.com>
  */
-#if defined HAVE_CONFIG_H
-#include "config.h"
-#if !defined HAVE_OBSTACK_H
-#define _FORTIFY_SOURCE 2
-#endif
-#endif
+
 #ifdef __MINGW32__
-#include <ssp/string.h>
+#include <string.h>
 #endif
 #include <assert.h>
 #include <stdint.h>
@@ -36,6 +31,17 @@
 #include <stdio.h>
 #include "hidrd/util/buf.h"
 #include "hidrd/util/ttbl.h"
+
+#if defined HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#if defined HAVE_OBSTACK_H
+#include <obstack.h>
+#else
+#include "hidrd/util/obstacklocal.h"
+#endif
+
 
 #define obstack_chunk_alloc malloc
 #define obstack_chunk_free  free
@@ -155,8 +161,8 @@ hidrd_ttbl_set(hidrd_ttbl  *tbl,
     hidrd_ttbl_seta(tbl, col, line,
                     (text == NULL)
                         ? NULL
-                        : obstack_copy(&tbl->obstack, text,
-                                       strlen(text) + 1));
+                        : obstack_copy(&tbl->obstack, (void *)text,
+                                       strlen(text) + 1)); //causes error in MinGW
 }
 
 

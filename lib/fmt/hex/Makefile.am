@@ -20,3 +20,7 @@
 noinst_LTLIBRARIES = libhidrd_hex.la
 
 libhidrd_hex_la_SOURCES = src.c snk.c
+
+if ADD_OBSTACK
+libhidrd_hex_la_LDFLAGS = -no-undefined
+endif

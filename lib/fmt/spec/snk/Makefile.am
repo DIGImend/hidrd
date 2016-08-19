@@ -23,6 +23,10 @@ noinst_HEADERS = \
     item.h          \
     item_ent.h
 
+if ADD_OBSTACK
+libhidrd_spec_snk_la_LDFLAGS = -no-undefined
+endif
+
 libhidrd_spec_snk_la_SOURCES = \
     ent.c                       \
     ent_list.c                  \

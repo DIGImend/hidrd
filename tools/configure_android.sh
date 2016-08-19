@@ -1,12 +1,20 @@
 #!/bin/sh
 
-echo running: "$0" "$1"
+if [[ $# -eq 0 ]] ; then
+    echo 'please provide prefix=<YOUR_TOOLCHAIN>'
+    exit 0
+fi
 
-export CROSS_COMPILE=arm-linux-androideabi
+case "$1" in
+    prefix=/android64) echo 'welcome home:' "$1" ;;
+    *) echo 'your prefix is: ' "$1" ;;
+esac
 
-#gcc-4.7 toolchain
+
+SDIR=$(dirname $0)
+export CROSS_COMPILE=aarch64-linux-android
+#prefix
 export  "$1"
-
 # Apparently android-8 works fine, there are other versions, look them up
 export SYSROOT=${prefix}/sysroot/usr
 export CFLAGS="-fPIE -I${ANDROID_PREFIX}/include/python2.7 -DHAVE_IEEEFP_H=0 -DHAVE_SSIZE_T -DPY_FORMAT_SIZE_T=l -DPY_FORMAT_LONG_LONG=ll"
@@ -14,7 +22,7 @@ export CROSS_PATH=${prefix}/bin/${CROSS_COMPILE}
 export PYTHON_INCLUDES=${prefix}/include/python2.7
 export PYTHON_LIBS="-L${prefix}/lib/python2.7 -L${prefix}/lib"
 
-# Non-exhaustive lists of compiler + binutils	
+# Non-exhaustive lists of compiler + binutils
 # Depending on what you compile, you might need more binutils than that
 export CPP=${CROSS_PATH}-cpp
 export AR=${CROSS_PATH}-ar
@@ -41,4 +49,6 @@ export CFLAGS="${CFLAGS} --sysroot=${SYSROOT} -I${SYSROOT}/include -I${prefix}/i
 export CPPFLAGS="${CFLAGS}"
 export LDFLAGS="${LDFLAGS} -L${SYSROOT}/lib -L${prefix}/lib"
 
-./configure  --without-python $* --host=${CROSS_COMPILE} --with-sysroot=${SYSROOT} --prefix=${prefix} "$@"  --build=x86_64-pc-linux-gnu 
+echo  "configure  --host=${CROSS_COMPILE} --prefix=${prefix} --build=x86_64-pc-linux-gnu --enable-android  --enable-debug "$2""
+
+./$SDIR/../configure  --without-python $* --host=${CROSS_COMPILE} --with-sysroot=${SYSROOT} --prefix=${prefix} "$@"  --build=x86_64-pc-linux-gnu   --enable-android  $2

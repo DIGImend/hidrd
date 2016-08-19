@@ -28,7 +28,9 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stddef.h>
-
+#if HAVE_CONFIG_H
+# include <config.h>
+#endif
 #ifdef __cplusplus
 extern "C" {
 #endif

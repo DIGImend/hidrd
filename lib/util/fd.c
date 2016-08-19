@@ -26,6 +26,14 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "hidrd/util/fd.h"
+#include <stdio.h>
+
+#if HAVE_CONFIG_H
+# include <config.h>
+#if defined HAVE_ANDROID
+#include "hidrd/adr/adr.h"
+#endif
+#endif
 
 bool
 hidrd_fd_read_whole(int fd, void **pbuf, size_t *psize)
@@ -60,8 +68,10 @@ hidrd_fd_read_whole(int fd, void **pbuf, size_t *psize)
     }
 
     if (errno != 0)
+    {
+     //   fprintf(stderr, "fd.c before cleanup : %s\n", strerror(errno));
         goto cleanup;
-
+    }
     new_buf = realloc(buf, size);
     if (size > 0 && new_buf == NULL)
         goto cleanup;
@@ -76,7 +86,7 @@ hidrd_fd_read_whole(int fd, void **pbuf, size_t *psize)
 
     if (psize != NULL)
         *psize = size;
-
+ //   fprintf(stderr, "fd.c Failed to read input: %s\n", strerror(errno));
     result = true;
 
 cleanup:

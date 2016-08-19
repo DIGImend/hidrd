@@ -54,6 +54,8 @@ check_DATA = \
     whitespace.bin  \
     whitespace.hex
 
+
+
 if ENABLE_TESTS_INSTALL
 read_test_datadir = $(pkgdatadir)/read_test_data
 read_test_data_DATA = $(check_DATA)

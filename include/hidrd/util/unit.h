@@ -32,6 +32,10 @@
 #include <strings.h>
 #include <stdio.h>
 #include "hidrd/cfg.h"
+#if HAVE_CONFIG_H
+# include <config.h>
+#endif
+
 #ifdef HIDRD_WITH_TOKENS
 #include "hidrd/util/tkn.h"
 #endif
@@ -329,7 +333,7 @@ hidrd_unit_get_nibble(hidrd_unit unit, hidrd_unit_nibble_index i)
  * @param value Nibble value to set.
  *
  * @return The unit with the nibble set.
- */ 
+ */
 static inline hidrd_unit
 hidrd_unit_set_nibble(hidrd_unit unit, uint8_t i, uint8_t value)
 {

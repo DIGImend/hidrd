@@ -20,3 +20,7 @@
 noinst_LTLIBRARIES = libhidrd_natv.la
 
 libhidrd_natv_la_SOURCES = src.c snk.c
+
+if ADD_OBSTACK
+libhidrd_natv_la_LDFLAGS = -no-undefined
+endif

@@ -31,7 +31,7 @@
 #include <strings.h>
 #include "hidrd/util/str.h"
 #include "hidrd/util/num.h"
-
+ 
 
 bool
 hidrd_num_type_id_valid(hidrd_num_type_id type_id)

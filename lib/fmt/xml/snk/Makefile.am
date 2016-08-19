@@ -25,6 +25,12 @@ noinst_HEADERS = \
     group.h         \
     item.h
 
+libhidrd_xml_snk_la_LDFLAGS =
+
+if ADD_OBSTACK
+libhidrd_xml_snk_la_LDFLAGS += -no-undefined
+endif
+
 libhidrd_xml_snk_la_SOURCES = \
     element.c                   \
     element_break.c             \
@@ -35,4 +41,4 @@ libhidrd_xml_snk_la_LIBADD = \
     ../../../util/libhidrd_util.la
 
 libhidrd_xml_snk_la_CFLAGS = @LIBXML2_CFLAGS@
-libhidrd_xml_snk_la_LDFLAGS = @LIBXML2_LIBS@
+libhidrd_xml_snk_la_LDFLAGS += @LIBXML2_LIBS@

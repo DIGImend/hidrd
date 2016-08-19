@@ -24,6 +24,12 @@ noinst_HEADERS = \
     element_bitmap.h    \
     element_unit.h
 
+libhidrd_xml_src_la_LDFLAGS =
+
+if ADD_OBSTACK
+libhidrd_xml_src_la_LDFLAGS += -no-undefined
+endif
+
 libhidrd_xml_src_la_SOURCES = \
     element.c           \
     element_bitmap.c    \
@@ -33,4 +39,4 @@ libhidrd_xml_src_la_LIBADD = \
     ../../../util/libhidrd_util.la
 
 libhidrd_xml_src_la_CFLAGS = @LIBXML2_CFLAGS@
-libhidrd_xml_src_la_LDFLAGS = @LIBXML2_LIBS@
+libhidrd_xml_src_la_LDFLAGS += @LIBXML2_LIBS@

@@ -29,7 +29,9 @@
 #include <stdint.h>
 #include "hidrd/cfg.h"
 #include "hidrd/util/tkn.h"
-
+#if HAVE_CONFIG_H
+# include <config.h>
+#endif
 #ifdef __cplusplus
 extern "C" {
 #endif

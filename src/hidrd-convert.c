@@ -41,6 +41,13 @@
  char * program_invocation_short_name;
 #endif
 #endif
+#if defined __MINGW32__   &! defined  __x86_64__   
+#define      S_IRGRP 0
+#define	S_IWGRP 0
+#define 	S_IROTH 0
+#define 	S_IWGRP 0
+#define 	S_IWOTH 0
+#endif
 
 
 static bool
@@ -429,9 +436,11 @@ int
 main(int argc, char **argv)
 {
 
- #if defined __MINGW32__
-program_invocation_short_name = argv[0];
+#if !defined HAVE_PROGRAM_INVOCATION_SHORT_NAME
+  program_invocation_short_name =
+	  strrchr(argv[0], '/') ;
 #endif
+
     static const struct option long_opt_list[] = {
         {.val       = OPT_VAL_HELP,
          .name      = "help",

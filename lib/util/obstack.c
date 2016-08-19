@@ -14,17 +14,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
-#if HAVE_CONFIG_H
-# include <config.h>
-#if !defined HAVE_OBSTACK_H
-#include "hidrd/util/obstack.h"
-#endif
-#endif
+
+#include "hidrd/util/obstacklocal.h"
 
 /* This is just to get __GNU_LIBRARY__ defined.  */
 #include <stdio.h>
 #include <stdlib.h>  //added A.Campbell contact@claydonkey.com fix implicit call to abort()
-
 /* Comment out all this code if we are using the GNU C Library, and are not
    actually compiling the library itself.  This code is part of the GNU C
    Library, but also included in many other GNU distributions.  Compiling
@@ -371,120 +366,5 @@ obstack_free (h, obj)
     /* obj is not in any of the chunks! */
     abort ();
 }
-
-#if 0
-/* These are now turned off because the applications do not use it
-   and it uses bcopy via obstack_grow, which causes trouble on sysV.  */
-
-/* Now define the functional versions of the obstack macros.
-   Define them to simply use the corresponding macros to do the job.  */
-
-#if defined (__STDC__) && __STDC__
-/* These function definitions do not work with non-ANSI preprocessors;
-   they won't pass through the macro names in parentheses.  */
-
-/* The function names appear in parentheses in order to prevent
-   the macro-definitions of the names from being expanded there.  */
-
-POINTER (obstack_base) (obstack)
-     struct obstack *obstack;
-{
-  return obstack_base (obstack);
-}
-
-POINTER (obstack_next_free) (obstack)
-     struct obstack *obstack;
-{
-  return obstack_next_free (obstack);
-}
-
-int (obstack_object_size) (obstack)
-     struct obstack *obstack;
-{
-  return obstack_object_size (obstack);
-}
-
-int (obstack_room) (obstack)
-     struct obstack *obstack;
-{
-  return obstack_room (obstack);
-}
-
-void (obstack_grow) (obstack, pointer, length)
-     struct obstack *obstack;
-     POINTER pointer;
-     int length;
-{
-  obstack_grow (obstack, pointer, length);
-}
-
-void (obstack_grow0) (obstack, pointer, length)
-     struct obstack *obstack;
-     POINTER pointer;
-     int length;
-{
-  obstack_grow0 (obstack, pointer, length);
-}
-
-void (obstack_1grow) (obstack, character)
-     struct obstack *obstack;
-     int character;
-{
-  obstack_1grow (obstack, character);
-}
-
-void (obstack_blank) (obstack, length)
-     struct obstack *obstack;
-     int length;
-{
-  obstack_blank (obstack, length);
-}
-
-void (obstack_1grow_fast) (obstack, character)
-     struct obstack *obstack;
-     int character;
-{
-  obstack_1grow_fast (obstack, character);
-}
-
-void (obstack_blank_fast) (obstack, length)
-     struct obstack *obstack;
-     int length;
-{
-  obstack_blank_fast (obstack, length);
-}
-
-POINTER (obstack_finish) (obstack)
-     struct obstack *obstack;
-{
-  return obstack_finish (obstack);
-}
-
-POINTER (obstack_alloc) (obstack, length)
-     struct obstack *obstack;
-     int length;
-{
-  return obstack_alloc (obstack, length);
-}
-
-POINTER (obstack_copy) (obstack, pointer, length)
-     struct obstack *obstack;
-     POINTER pointer;
-     int length;
-{
-  return obstack_copy (obstack, pointer, length);
-}
-
-POINTER (obstack_copy0) (obstack, pointer, length)
-     struct obstack *obstack;
-     POINTER pointer;
-     int length;
-{
-  return obstack_copy0 (obstack, pointer, length);
-}
-
-#endif /* __STDC__ */
-
-#endif /* 0 */
-
+ 
 #endif	/* _LIBC or not __GNU_LIBRARY__.  */

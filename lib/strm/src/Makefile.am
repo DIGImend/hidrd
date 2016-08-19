@@ -19,4 +19,8 @@
 
 noinst_LTLIBRARIES = libhidrd_strm_src.la
 
+if ADD_OBSTACK
+libhidrd_strm_src_la_LDFLAGS = -no-undefined
+endif
+
 libhidrd_strm_src_la_SOURCES = type.c inst.c

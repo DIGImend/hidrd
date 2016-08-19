@@ -32,8 +32,11 @@
 
 #if HAVE_CONFIG_H
 # include <config.h>
+#if defined HAVE_ANDROID
+#include "hidrd/adr/adr.h"
+#endif
 #if !defined HAVE_PROGRAM_INVOCATION_SHORT_NAME
-const char * program_invocation_short_name = "program_invocation_short_name";
+ #define program_invocation_short_name   strrchr(argv[0], '/')
 #endif
 #endif
 

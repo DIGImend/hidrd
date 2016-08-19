@@ -25,12 +25,18 @@ libhidrd_xml_la_SOURCES = \
     snk.c                   \
     src.c
 
+libhidrd_xml_la_LDFLAGS =
+
+if ADD_OBSTACK
+libhidrd_xml_la_LDFLAGS += -no-undefined
+endif
+
 libhidrd_xml_la_LIBADD = \
     snk/libhidrd_xml_snk.la \
     src/libhidrd_xml_src.la
 
 libhidrd_xml_la_CFLAGS = @LIBXML2_CFLAGS@
-libhidrd_xml_la_LDFLAGS = @LIBXML2_LIBS@
+libhidrd_xml_la_LDFLAGS += @LIBXML2_LIBS@
 
 dist_noinst_DATA = hidrd.xsd.m4
 
