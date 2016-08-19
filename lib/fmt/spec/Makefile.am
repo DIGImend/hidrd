@@ -21,6 +21,10 @@ SUBDIRS = snk
 
 noinst_LTLIBRARIES = libhidrd_spec.la
 
+if ADD_OBSTACK
+libhidrd_spec_la_LDFLAGS = -no-undefined
+endif
+
 libhidrd_spec_la_LIBADD = \
     snk/libhidrd_spec_snk.la
 

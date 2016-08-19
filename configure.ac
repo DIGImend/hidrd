@@ -28,9 +28,30 @@ AC_CONFIG_MACRO_DIR([m4/autoconf])
 
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
-# To have empty CFLAGS instead of undefined and '-g -O2' by default
 CFLAGS=$CFLAGS
-CFLAGS="-Os -Wall -Wextra -Werror $CFLAGS"
+# To have empty CFLAGS instead of undefined and '-g -O2' by default
+
+target_os=`uname -s`
+AC_MSG_RESULT([$target_os])
+
+CFLAGS="-Os -Wall -Wextra -Werror -DHAVE_CONFIG_H $CFLAGS"
+
+AC_CHECK_HEADERS([obstack.h],
+        [found_obstack_headers=yes; break;])
+AM_CONDITIONAL(ADD_OBSTACK, [test x$found_obstack_headers != xyes])
+
+  AC_HEADER_STDC
+AC_CHECK_FUNC([bcopy],AC_DEFINE([HAVE_BCOPY], [], [ mingw32has no poix bcopy use memcopy instead]) ,)
+
+AC_MSG_CHECKING(whether program_invocation_short_name is defined)
+AC_TRY_COMPILE([#include <argp.h>],
+               [program_invocation_short_name = "test";],
+               AC_DEFINE(HAVE_PROGRAM_INVOCATION_SHORT_NAME, 1,
+                [Define if program_invocation_short_name is defined])
+                AC_MSG_RESULT(yes),
+               AC_MSG_RESULT(no))
+
+
 ABS_SRCDIR=`cd ${srcdir} ; pwd`
 ABS_BUILDDIR=`pwd`
 CPPFLAGS="-I${ABS_BUILDDIR} -I${ABS_BUILDDIR}/include -D_GNU_SOURCE -DNDEBUG $CPPFLAGS"
@@ -38,15 +59,27 @@ if test "$ABS_SRCDIR" != "$ABS_BUILDDIR"; then
     CPPFLAGS="-I${ABS_SRCDIR}/include $CPPFLAGS"
 fi
 
-
+AH_BOTTOM([
+/* Temporary fix to allow Mingw32 to compile
+*   @author Anthony Campbell <contact@claydonkey.com>
+*   Android is Assumed to be Cross compilation and as such will not test for bcopy locally
+*/
+#if  !defined(HAVE_BCOPY) && !defined(HAVE_ANDROID)
+#define bcopy(s1, s2, n) memcpy((s2), (s1), (n))
+#endif
+#if  !defined(HAVE_ASPRINTF)
+#define asprintf(strp,fmt,...) sprintf(*strp,fmt,__VA_ARGS__)
+#define vasprintf(strp,fmt,va_list ) vsprintf(*strp,fmt,va_list )
+#endif
+])
 #
 # Checks for programs.
 #
 AC_PROG_CC
 AC_PROG_INSTALL
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
-LT_INIT
 
+LT_INIT(shared static [win32-dll])
 #
 # Checks for libraries.
 #
@@ -75,6 +108,8 @@ if [test -n "$XML2_CONFIG"]; then
 fi
 AC_SUBST(LIBXML2_LIBS)
 AC_SUBST(LIBXML2_CFLAGS)
+
+
 
 #
 # Checks for features
@@ -143,6 +178,37 @@ AC_ARG_ENABLE(
         [disable building source code format support (requires specification example format)]),
     [], [enable_code_format="yes"])
 
+AC_CANONICAL_HOST
+
+case $host_os in
+     linux-androideabi)
+		enable_android=yes
+		;;
+     linux-android)
+		enable_android=yes
+		;;
+     '')
+		enable_android=no
+		;;
+     *)
+		AC_MSG_NOTICE([android not present])
+		;;
+esac
+
+
+#AC_ARG_ENABLE(
+ #android,
+ #AS_HELP_STRING([--disable-android], [disable android native interop demo]),
+ #[], [enable_android=$enable_android])
+
+if test "$enable_android" == "yes"; then
+  AC_MSG_WARN([android  library is enabled])
+   AC_DEFINE(HAVE_ANDROID,1,[Define android])
+fi
+
+#check for asprintf and vasprintf
+AC_CHECK_FUNC([asprintf],AC_DEFINE([HAVE_ASPRINTF], [], [Caution mingw32 will have no overflow protection]) ,)
+
 # Check for stream library dependencies
 if test "$enable_streams" = "yes"; then
     if test "$enable_opt" != "yes"; then
@@ -206,11 +272,16 @@ if test "$enable_hidrd_convert" = "yes"; then
     fi
 fi
 
+
+
+
+
 # Output features to automake
 AM_CONDITIONAL([ENABLE_TESTS_INSTALL], [test "$enable_tests_install" = "yes"])
 AM_CONDITIONAL([ENABLE_OPT], [test "$enable_opt" = "yes"])
 AM_CONDITIONAL([ENABLE_STRM], [test "$enable_streams" = "yes"])
 AM_CONDITIONAL([ENABLE_FMT], [test "$enable_formats" = "yes"])
+AM_CONDITIONAL([ENABLE_ADR], [test "$enable_android" == "yes"])
 AM_CONDITIONAL([ENABLE_HIDRD_CONVERT], [test "$enable_hidrd_convert" = "yes"])
 AM_CONDITIONAL([ENABLE_TOKENS], [test "$enable_tokens" = "yes"])
 AM_CONDITIONAL([ENABLE_NAMES], [test "$enable_names" = "yes"])
@@ -276,6 +347,8 @@ AC_CONFIG_FILES([Makefile
                  include/hidrd/fmt/spec/snk/Makefile
                  include/hidrd/fmt/code/Makefile
                  include/hidrd/usage/Makefile
+                 include/hidrd/adr/Makefile
+
 
                  lib/Makefile
                  lib/util/Makefile
@@ -295,6 +368,7 @@ AC_CONFIG_FILES([Makefile
                  lib/fmt/spec/Makefile
                  lib/fmt/spec/snk/Makefile
                  lib/fmt/code/Makefile
+                 lib/adr/Makefile
                  lib/usage/Makefile
 
                  src/Makefile])

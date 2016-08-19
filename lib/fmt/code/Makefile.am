@@ -21,3 +21,6 @@ noinst_LTLIBRARIES = libhidrd_code.la
 
 libhidrd_code_la_SOURCES = snk.c
 
+if ADD_OBSTACK
+libhidrd_code_la_LDFLAGS = -no-undefined
+endif

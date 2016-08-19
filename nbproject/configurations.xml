@@ -1,0 +1,503 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="97">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <df root="." name="0">
+      <df name="include">
+        <df name="hidrd">
+          <df name="adr">
+            <in>Makefile.am</in>
+            <in>adr.h</in>
+          </df>
+        </df>
+      </df>
+      <df name="lib">
+        <df name="adr">
+          <in>Makefile.am</in>
+          <in>adr.c</in>
+        </df>
+        <df name="fmt">
+          <df name="code">
+            <in>snk.c</in>
+          </df>
+          <df name="hex">
+            <in>snk.c</in>
+            <in>src.c</in>
+          </df>
+          <df name="natv">
+            <in>snk.c</in>
+            <in>src.c</in>
+          </df>
+          <df name="spec">
+            <df name="snk">
+              <in>ent.c</in>
+              <in>ent_list.c</in>
+              <in>item.c</in>
+              <in>item_ent.c</in>
+            </df>
+            <in>snk.c</in>
+          </df>
+          <df name="xml">
+            <df name="snk">
+              <in>element.c</in>
+              <in>element_break.c</in>
+              <in>group.c</in>
+              <in>item.c</in>
+            </df>
+            <df name="src">
+              <in>element.c</in>
+              <in>element_bitmap.c</in>
+              <in>element_unit.c</in>
+            </df>
+            <in>snk.c</in>
+            <in>src.c</in>
+          </df>
+          <in>code.c</in>
+          <in>hex.c</in>
+          <in>inst.c</in>
+          <in>list.c</in>
+          <in>natv.c</in>
+          <in>natv_test.c</in>
+          <in>read.c</in>
+          <in>spec.c</in>
+          <in>write.c</in>
+          <in>xml.c</in>
+          <in>xml_test.c</in>
+        </df>
+        <df name="item">
+          <in>any.c</in>
+          <in>any_test.c</in>
+          <in>basic.c</in>
+          <in>collection.c</in>
+          <in>global.c</in>
+          <in>local.c</in>
+          <in>long.c</in>
+          <in>main.c</in>
+          <in>pfx.c</in>
+          <in>short.c</in>
+        </df>
+        <df name="opt">
+          <in>inst.c</in>
+          <in>list.c</in>
+          <in>name_tkn.c</in>
+          <in>spec.c</in>
+          <in>spec_list.c</in>
+          <in>test.c</in>
+          <in>tkn.c</in>
+          <in>tkns.c</in>
+          <in>tkns_list.c</in>
+          <in>type.c</in>
+          <in>value_tkn.c</in>
+        </df>
+        <df name="strm">
+          <df name="snk">
+            <in>inst.c</in>
+            <in>type.c</in>
+          </df>
+          <df name="src">
+            <in>inst.c</in>
+            <in>type.c</in>
+          </df>
+        </df>
+        <df name="usage">
+          <in>id.c</in>
+          <in>id_desc.c</in>
+          <in>page_desc.c</in>
+          <in>type.c</in>
+        </df>
+        <df name="util">
+          <in>bool.c</in>
+          <in>buf.c</in>
+          <in>char.c</in>
+          <in>dec.c</in>
+          <in>fd.c</in>
+          <in>fmt.c</in>
+          <in>hex.c</in>
+          <in>num.c</in>
+          <in>num_test.c</in>
+          <in>obstack.c</in>
+          <in>str.c</in>
+          <in>tkn.c</in>
+          <in>ttbl.c</in>
+          <in>ttbl_test.c</in>
+          <in>unit.c</in>
+        </df>
+      </df>
+      <df name="src">
+        <in>hidrd-convert.c</in>
+      </df>
+    </df>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>lib/.gdbinit</itemPath>
+      <itemPath>configure</itemPath>
+      <itemPath>nbproject/private/launcher.properties</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceFolderFilter>^(nbproject)$</sourceFolderFilter>
+  <sourceRootList>
+    <Elem>.</Elem>
+  </sourceRootList>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="MinGW64" type="0">
+      <toolsSet>
+        <compilerSet>x86_64-w64-mingw32|MinGW</compilerSet>
+        <dependencyChecking>false</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <codeAssistance>
+      </codeAssistance>
+      <makefileType>
+        <makeTool>
+          <buildCommandWorkingDir>.</buildCommandWorkingDir>
+          <buildCommand>${MAKE} -f Makefile</buildCommand>
+          <cleanCommand>${MAKE} -f Makefile clean</cleanCommand>
+          <executablePath>src\.libs\hidrd-convert.exe</executablePath>
+        </makeTool>
+        <preBuild>
+          <preBuildCommandWorkingDir>.</preBuildCommandWorkingDir>
+          <preBuildCommand>./configure CC=${IDE_CC} CXX=${IDE_CXX} CFLAGS="-g3 -gdwarf-2" CXXFLAGS="-g3 -gdwarf-2"</preBuildCommand>
+        </preBuild>
+      </makefileType>
+      <item path="include/hidrd/adr/Makefile.am" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/hidrd/adr/adr.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/adr/Makefile.am" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/adr/adr.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/fmt/code.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/fmt/code/snk.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/fmt/hex.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/fmt/hex/snk.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/fmt/hex/src.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/fmt/inst.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/fmt/list.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/fmt/natv.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/fmt/natv/snk.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/fmt/natv/src.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/fmt/natv_test.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/fmt/read.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/fmt/spec.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/fmt/spec/snk.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/fmt/spec/snk/ent.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/fmt/spec/snk/ent_list.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/fmt/spec/snk/item.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/fmt/spec/snk/item_ent.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/fmt/write.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/fmt/xml.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/fmt/xml/snk.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/fmt/xml/snk/element.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/fmt/xml/snk/element_break.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/fmt/xml/snk/group.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/fmt/xml/snk/item.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/fmt/xml/src.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/fmt/xml/src/element.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/fmt/xml/src/element_bitmap.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/fmt/xml/src/element_unit.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/fmt/xml_test.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/item/any.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/item/any_test.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/item/basic.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/item/collection.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/item/global.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/item/local.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/item/long.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/item/main.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/item/pfx.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/item/short.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/opt/inst.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/opt/list.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/opt/name_tkn.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/opt/spec.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/opt/spec_list.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/opt/test.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/opt/tkn.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/opt/tkns.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/opt/tkns_list.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/opt/type.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/opt/value_tkn.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/strm/snk/inst.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/strm/snk/type.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/strm/src/inst.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/strm/src/type.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/usage/id.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/usage/id_desc.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/usage/page_desc.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/usage/type.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/util/bool.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/util/buf.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/util/char.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/util/dec.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/util/fd.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/util/fmt.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/util/hex.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/util/num.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/util/num_test.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/util/obstack.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/util/str.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/util/tkn.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/util/ttbl.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/util/ttbl_test.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="lib/util/unit.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/hidrd-convert.c" ex="false" tool="0" flavor2="0">
+      </item>
+    </conf>
+    <conf name="Android64" type="0">
+      <toolsSet>
+        <compilerSet>aarch64-linux-android|MinGW</compilerSet>
+        <dependencyChecking>false</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <codeAssistance>
+      </codeAssistance>
+      <makefileType>
+        <makeTool>
+          <buildCommandWorkingDir>.</buildCommandWorkingDir>
+          <buildCommand>${MAKE} -f Makefile</buildCommand>
+          <cleanCommand>${MAKE} -f Makefile clean</cleanCommand>
+          <executablePath>D:\\Users\\anthony\\Documents\\Minnow\\Source\\Convolve\\hidrd-master\\tools\\System\\app_process64</executablePath>
+        </makeTool>
+        <preBuild>
+          <preBuildCommandWorkingDir>.</preBuildCommandWorkingDir>
+          <preBuildCommand>tools/android64_configure.sh /android64</preBuildCommand>
+        </preBuild>
+      </makefileType>
+      <item path="include/hidrd/adr/Makefile.am" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/hidrd/adr/adr.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/adr/Makefile.am" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/adr/adr.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/fmt/code.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/fmt/code/snk.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/fmt/hex.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/fmt/hex/snk.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/fmt/hex/src.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/fmt/inst.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/fmt/list.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/fmt/natv.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/fmt/natv/snk.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/fmt/natv/src.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/fmt/natv_test.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/fmt/read.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/fmt/spec.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/fmt/spec/snk.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/fmt/spec/snk/ent.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/fmt/spec/snk/ent_list.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/fmt/spec/snk/item.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/fmt/spec/snk/item_ent.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/fmt/write.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/fmt/xml.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/fmt/xml/snk.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/fmt/xml/snk/element.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/fmt/xml/snk/element_break.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/fmt/xml/snk/group.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/fmt/xml/snk/item.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/fmt/xml/src.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/fmt/xml/src/element.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/fmt/xml/src/element_bitmap.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/fmt/xml/src/element_unit.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/fmt/xml_test.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/item/any.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/item/any_test.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/item/basic.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/item/collection.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/item/global.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/item/local.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/item/long.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/item/main.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/item/pfx.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/item/short.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/opt/inst.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/opt/list.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/opt/name_tkn.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/opt/spec.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/opt/spec_list.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/opt/test.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/opt/tkn.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/opt/tkns.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/opt/tkns_list.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/opt/type.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/opt/value_tkn.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/strm/snk/inst.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/strm/snk/type.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/strm/src/inst.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/strm/src/type.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/usage/id.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/usage/id_desc.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/usage/page_desc.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/usage/type.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/util/bool.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/util/buf.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/util/char.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/util/dec.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/util/fd.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/util/fmt.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/util/hex.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/util/num.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/util/num_test.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/util/obstack.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/util/str.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/util/tkn.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/util/ttbl.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/util/ttbl_test.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="lib/util/unit.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="src/hidrd-convert.c" ex="false" tool="0" flavor2="9">
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>

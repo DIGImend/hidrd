@@ -35,7 +35,7 @@ bool
 hidrd_usage_type_valid(hidrd_usage_type type)
 {
     uint8_t idx;
-    
+
     if (type == 0)
         return false;
 

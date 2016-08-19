@@ -28,6 +28,11 @@ libhidrd_usage_la_SOURCES = \
 libhidrd_usage_la_LIBADD = \
     ../util/libhidrd_util.la
 
+if ADD_OBSTACK
+libhidrd_usage_la_LDFLAGS = -no-undefined
+endif
+
+
 %.c: %.c.m4 @top_srcdir@/m4/hidrd/*.m4 @top_srcdir@/db/usage/*.m4
 	m4 -I "@top_srcdir@" $< > $@
 

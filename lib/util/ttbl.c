@@ -22,12 +22,26 @@
  * @author Nikolai Kondrashov <spbnick@gmail.com>
  */
 
+#ifdef __MINGW32__
+#include <string.h>
+#endif
 #include <assert.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include "hidrd/util/buf.h"
 #include "hidrd/util/ttbl.h"
+
+#if defined HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#if defined HAVE_OBSTACK_H
+#include <obstack.h>
+#else
+#include "hidrd/util/obstacklocal.h"
+#endif
+
 
 #define obstack_chunk_alloc malloc
 #define obstack_chunk_free  free
@@ -48,7 +62,7 @@ hidrd_ttbl_new(void)
     row = obstack_alloc(&tbl->obstack, sizeof(*row));
     row->skip = 0;
     row->next = NULL;
-    
+
     cell = obstack_alloc(&tbl->obstack, sizeof(*cell));
     cell->skip = 0;
     cell->next = NULL;
@@ -144,11 +158,11 @@ hidrd_ttbl_set(hidrd_ttbl  *tbl,
                size_t       line,
                const char  *text)
 {
-    hidrd_ttbl_seta(tbl, col, line, 
+    hidrd_ttbl_seta(tbl, col, line,
                     (text == NULL)
                         ? NULL
-                        : obstack_copy(&tbl->obstack, text,
-                                       strlen(text) + 1));
+                        : obstack_copy(&tbl->obstack, (void *)text,
+                                       strlen(text) + 1)); //causes error in MinGW
 }
 
 

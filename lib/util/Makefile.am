@@ -27,10 +27,19 @@ libhidrd_util_la_SOURCES = \
     fd.c                    \
     fmt.c                   \
     hex.c                   \
-    num.c                   \
+    num.c
+
+if ADD_OBSTACK
+libhidrd_util_la_SOURCES += obstack.c
+libhidrd_util_la_LDFLAGS = -no-undefined
+endif
+
+libhidrd_util_la_SOURCES += \
     str.c                   \
     ttbl.c                  \
     unit.c
+
+
 
 if ENABLE_TOKENS
 libhidrd_util_la_SOURCES += tkn.c

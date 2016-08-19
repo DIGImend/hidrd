@@ -28,7 +28,7 @@ hidrd_convert_LDADD = \
     ../lib/util/libhidrd_util.la    \
     ../lib/opt/libhidrd_opt.la      \
     ../lib/strm/libhidrd_strm.la    \
-    ../lib/fmt/libhidrd_fmt.la
+    ../lib/fmt/libhidrd_fmt.la  
 
 if ENABLE_FMT_XML
 hidrd_convert_CFLAGS = @LIBXML2_CFLAGS@

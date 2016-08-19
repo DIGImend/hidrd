@@ -35,6 +35,13 @@ libhidrd_fmt_la_LIBADD = \
     hex/libhidrd_hex.la         \
     natv/libhidrd_natv.la
 
+libhidrd_fmt_la_LDFLAGS =
+
+if ADD_OBSTACK
+libhidrd_fmt_la_LDFLAGS += -no-undefined
+endif
+
+
 TESTS = hidrd_natv_test hidrd_hex_read_test hidrd_hex_write_test
 TESTS_ENVIRONMENT = PATH="$$PATH:$(builddir):$(srcdir)" \
 					HIDRD_READ_TEST_DATA="$(srcdir)/read_test_data" \
@@ -74,7 +81,7 @@ noinst_HEADERS += xml.h
 
 libhidrd_fmt_la_SOURCES += xml.c
 libhidrd_fmt_la_CFLAGS = @LIBXML2_CFLAGS@
-libhidrd_fmt_la_LDFLAGS = @LIBXML2_LIBS@
+libhidrd_fmt_la_LDFLAGS += @LIBXML2_LIBS@
 libhidrd_fmt_la_LIBADD += xml/libhidrd_xml.la
 
 check_SCRIPTS += hidrd_xml_read_test hidrd_xml_write_test

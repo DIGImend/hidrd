@@ -35,6 +35,20 @@
 #include "hidrd/util/fd.h"
 #include "hidrd/fmt.h"
 
+#if HAVE_CONFIG_H
+# include <config.h>
+#if !defined HAVE_PROGRAM_INVOCATION_SHORT_NAME
+ char * program_invocation_short_name;
+#endif
+#endif
+#if defined __MINGW32__   &! defined  __x86_64__   
+#define      S_IRGRP 0
+#define	S_IWGRP 0
+#define 	S_IROTH 0
+#define 	S_IWGRP 0
+#define 	S_IWOTH 0
+#endif
+
 
 static bool
 usage_formats(FILE *stream, const char *progname)
@@ -136,7 +150,7 @@ usage(FILE *stream, const char *progname)
     size_t              len;
 
     if (fprintf(
-            stream, 
+            stream,
             "Usage: %s [OPTION]... [INPUT [OUTPUT]]\n"
             "Convert a HID report descriptor.\n"
             "With no INPUT, or when INPUT is -, read standard input.\n"
@@ -174,7 +188,7 @@ usage(FILE *stream, const char *progname)
             return false;
 
     if (fprintf(stream,
-                "\n" 
+                "\n"
                 "Default options are -i natv -o natv.\n"
                 "\n") < 0)
         return false;
@@ -421,6 +435,12 @@ typedef enum opt_val {
 int
 main(int argc, char **argv)
 {
+
+#if !defined HAVE_PROGRAM_INVOCATION_SHORT_NAME
+  program_invocation_short_name =
+	  strrchr(argv[0], '/') ;
+#endif
+
     static const struct option long_opt_list[] = {
         {.val       = OPT_VAL_HELP,
          .name      = "help",

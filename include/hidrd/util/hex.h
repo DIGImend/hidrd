@@ -28,6 +28,10 @@
 #include <stddef.h>
 #include <assert.h>
 #include "hidrd/util/num.h"
+#if HAVE_CONFIG_H
+# include <config.h>
+#endif
+
 
 #ifdef __cplusplus
 extern "C" {

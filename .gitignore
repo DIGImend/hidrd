@@ -17,3 +17,5 @@ Makefile.in
 Makefile
 .[^.]*
 *.tar.gz
+/android/bin/
+/android/gen/

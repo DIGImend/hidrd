@@ -1,0 +1,6 @@
+execute both from src
+
+javah -jni -classpath "%ANDROID_SDK_HOME%/platforms/android-21/android.jar";%SOURCECODE%\Convolve\hidrd-master\android\bin\classes  com.claydonkey.hidrd.FilePicker
+
+javac  -classpath "%ANDROID_SDK_HOME%/platforms/android-21/android.jar" com\claydonkey\hidrd\FilePicker.java
+

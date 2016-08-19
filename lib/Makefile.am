@@ -30,3 +30,8 @@ endif
 if ENABLE_FMT
 SUBDIRS += fmt
 endif
+
+if ENABLE_ADR
+SUBDIRS += adr
+endif
+

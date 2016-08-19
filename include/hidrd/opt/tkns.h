@@ -28,7 +28,9 @@
 #include <stddef.h>
 #include "hidrd/opt/name_tkn.h"
 #include "hidrd/opt/value_tkn.h"
-
+#if HAVE_CONFIG_H
+# include <config.h>
+#endif
 #ifdef __cplusplus
 extern "C" {
 #endif
