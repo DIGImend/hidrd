@@ -227,6 +227,7 @@ xml_snk_element_addpv(hidrd_xml_snk_inst   *xml_snk,
             case XML_SNK_ELEMENT_NT_ATTR:
                 /* Retrieve name */
                 (void)va_arg(*pap, const char *);
+                /* FALLTHROUGH */
             case XML_SNK_ELEMENT_NT_COMMENT:
             case XML_SNK_ELEMENT_NT_CONTENT:
                 fmt =  va_arg(*pap, hidrd_fmt_type);
