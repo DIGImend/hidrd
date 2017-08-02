@@ -64,7 +64,7 @@ static bool parse_bitmap_element(uint32_t                  *pbitmap,
     bool        data;
     bool        matched;
     size_t      i;
-    char        i_name[6]   = "bit";
+    char        i_name[24]   = "bit";
 
     for (i = 0, e = e->children; e != NULL; e = e->next)
     {
