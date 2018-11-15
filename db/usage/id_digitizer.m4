@@ -45,6 +45,7 @@ ID(`0020', `stylus',                      `CL',   `stylus')dnl
 ID(`0021', `puck',                        `CL',   `puck')dnl
 ID(`0022', `finger',                      `CL',   `finger')dnl
 ID(`0023', `device_settings',             `CL',   `device settings')dnl
+ID(`0024', `character_gesture',           `CL',   `character gesture')dnl
 ID(`0030', `tip_pressure',                `DV',   `tip pressure')dnl
 ID(`0031', `barrel_pressure',             `DV',   `barrel pressure')dnl
 ID(`0032', `in_range',                    `MC',   `in range')dnl
@@ -83,6 +84,16 @@ ID(`005C', `preferred_color',             `DV',   `preferred color')dnl
 ID(`005D', `preferred_color_locked',      `MC',   `preferred color is locked')dnl
 ID(`005E', `preferred_line_width',        `DV',   `preferred line width')dnl
 ID(`005F', `preferred_line_width_locked', `MC',   `preferred line width is locked')dnl
+ID(`0061', `gesture_char_quality',        `DV',   `gesture character quality')dnl
+ID(`0062', `char_gesture_data_len',       `DV',   `character gesture data length')dnl
+ID(`0063', `char_gesture_data',           `DV',   `character gesture data')dnl
+ID(`0064', `gesture_char_encoding',       `NAry', `gesture character encoding')dnl
+ID(`0065', `utf8_char_gesture_enc',       `Sel',  `utf8 character gesture encoding')dnl
+ID(`0066', `utf16le_char_gesture_enc',    `Sel',  `utf16 little endian character gesture encoding')dnl
+ID(`0067', `utf16be_char_gesture_enc',    `Sel',  `utf16 big endian character gesture encoding')dnl
+ID(`0068', `utf32le_char_gesture_enc',    `Sel',  `utf32 little endian character gesture encoding')dnl
+ID(`0069', `utf32be_char_gesture_enc',    `Sel',  `utf32 big endian character gesture encoding')dnl
+ID(`006A', `gesture_char_enable',         `DF',   `gesture character enable')dnl
 ID(`0070', `preferred_line_style',        `NAry', `preferred line style')dnl
 ID(`0071', `preferred_line_style_locked', `MC',   `preferred line style is locked')dnl
 ID(`0072', `ink',                         `Sel',  `ink')dnl
