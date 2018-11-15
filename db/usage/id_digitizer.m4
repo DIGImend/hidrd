@@ -97,3 +97,17 @@ ID(`0082', `err_normal_status',           `Sel',  `err normal status')dnl
 ID(`0083', `err_transducers_exceeded',    `Sel',  `err transducers exceeded')dnl
 ID(`0084', `err_full_trans_ft_unavail',   `Sel',  `err full transducer features unavailable')dnl
 ID(`0085', `err_charge_low',              `Sel',  `err charge low')dnl
+ID(`0090', `transducer_software_info',    `CL',   `transducer software info')dnl
+ID(`0091', `transducer_vendor_id',        `SV',   `transducer vendor id')dnl
+ID(`0092', `transducer_product_id',       `SV',   `transducer product id')dnl
+ID(`0093', `device_support_protos',       `NAry,CL', `device supported protocols')dnl
+ID(`0094', `transducer_support_protos',   `NAry,CL', `transducer supported protocols')dnl
+ID(`0095', `no_protocol',                 `Sel',  `no protocol')dnl
+ID(`0096', `wacom_aes_protocol',          `Sel',  `wacom aes protocol')dnl
+ID(`0097', `usi_protocol',                `Sel',  `usi protocol')dnl
+ID(`00a0', `supported_report_rates',      `SV,CL', `supported report rates')dnl
+ID(`00a1', `report_rate',                 `DV',   `report rate')dnl
+ID(`00a2', `transducer_connected',        `SF',   `transducer connected')dnl
+ID(`00a3', `switch_disabled',             `Sel',  `switch disabled')dnl
+ID(`00a4', `switch_unimplemented',        `Sel',  `switch unimplemented')dnl
+ID(`00a5', `transducer_switches',         `CL',   `transducer switches')dnl

@@ -39,4 +39,6 @@ ID_SET_RANGE(`reserved',    `004A', `0050')dnl
 ID_SET_RANGE(`reserved',    `0057', `0059')dnl
 ID_SET_RANGE(`reserved',    `0060', `006F')dnl
 ID_SET_RANGE(`reserved',    `0078', `007F')dnl
-ID_SET_RANGE(`reserved',    `0086', `FFFF')dnl
+ID_SET_RANGE(`reserved',    `0086', `008F')dnl
+ID_SET_RANGE(`reserved',    `0098', `009F')dnl
+ID_SET_RANGE(`reserved',    `00A6', `FFFF')dnl
