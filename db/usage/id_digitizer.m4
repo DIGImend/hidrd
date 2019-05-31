@@ -42,7 +42,7 @@ ID(`000C', `multipoint_digitizer',        `CA',   `multiple point digitizer')dnl
 ID(`000D', `free_space_wand',             `CA',   `free space wand')dnl
 ID(`000E', `configuration',               `CA',   `configuration')dnl
 ID(`000F', `capacitive_hm_digitizer',     `CA',   `capacitive heat map digitizer')dnl
-ID(`0020', `stylus',                      `CL',   `stylus')dnl
+ID(`0020', `stylus',                      `CA,CL',`stylus')dnl
 ID(`0021', `puck',                        `CL',   `puck')dnl
 ID(`0022', `finger',                      `CL',   `finger')dnl
 ID(`0023', `device_settings',             `CL',   `device settings')dnl
@@ -124,6 +124,7 @@ ID(`0094', `transducer_support_protos',   `NAry,CL', `transducer supported proto
 ID(`0095', `no_protocol',                 `Sel',  `no protocol')dnl
 ID(`0096', `wacom_aes_protocol',          `Sel',  `wacom aes protocol')dnl
 ID(`0097', `usi_protocol',                `Sel',  `usi protocol')dnl
+ID(`0098', `microsoft_pen_protocol',      `Sel',  `microsoft pen protocol')dnl
 ID(`00a0', `supported_report_rates',      `SV,CL', `supported report rates')dnl
 ID(`00a1', `report_rate',                 `DV',   `report rate')dnl
 ID(`00a2', `transducer_connected',        `SF',   `transducer connected')dnl
