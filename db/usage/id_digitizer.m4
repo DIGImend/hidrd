@@ -41,6 +41,7 @@ ID(`000B', `armature',                    `CA',   `armature')dnl
 ID(`000C', `multipoint_digitizer',        `CA',   `multiple point digitizer')dnl
 ID(`000D', `free_space_wand',             `CA',   `free space wand')dnl
 ID(`000E', `configuration',               `CA',   `configuration')dnl
+ID(`000F', `capacitive_hm_digitizer',     `CA',   `capacitive heat map digitizer')dnl
 ID(`0020', `stylus',                      `CL',   `stylus')dnl
 ID(`0021', `puck',                        `CL',   `puck')dnl
 ID(`0022', `finger',                      `CL',   `finger')dnl
@@ -97,7 +98,10 @@ ID(`0066', `utf16le_char_gesture_enc',    `Sel',  `utf16 little endian character
 ID(`0067', `utf16be_char_gesture_enc',    `Sel',  `utf16 big endian character gesture encoding')dnl
 ID(`0068', `utf32le_char_gesture_enc',    `Sel',  `utf32 little endian character gesture encoding')dnl
 ID(`0069', `utf32be_char_gesture_enc',    `Sel',  `utf32 big endian character gesture encoding')dnl
-ID(`006A', `gesture_char_enable',         `DF',   `gesture character enable')dnl
+dnl NOTE: Usage 006A Currently in conflict with HUTRR87 "Capacitive Heat Map Protocol Vendor ID"
+ID(`006A', `gesture_char_enable',         `DF',   `gesture character enable')
+ID(`006B', `capacitive_hm_proto_ver',     `SV',   `capacitive heat map protocol version')dnl
+ID(`006C', `capacitive_hm_frame_data',    `DV',   `capacitive heat map frame data')dnl
 ID(`0070', `preferred_line_style',        `NAry', `preferred line style')dnl
 ID(`0071', `preferred_line_style_locked', `MC',   `preferred line style is locked')dnl
 ID(`0072', `ink',                         `Sel',  `ink')dnl
