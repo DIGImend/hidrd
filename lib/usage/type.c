@@ -131,7 +131,7 @@ hidrd_usage_type_set_desc_str(hidrd_usage_type_set set)
                 if (new_str == NULL)
                     goto failure;
             }
-            else if (asprintf(&new_str, "%s, %s", str, new_str) < 0)
+            else if (asprintf(&new_str, "%s, %s", str, hidrd_usage_type_idx_name(i)) < 0)
                 goto failure;
             free(str);
             str = new_str;
