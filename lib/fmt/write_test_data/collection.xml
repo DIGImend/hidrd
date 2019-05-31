@@ -4,7 +4,7 @@
   <usage>digitizer_pen<!-- Pen (02h, application collection) --></usage>
   <COLLECTION type="application">
     <report_id>7</report_id>
-    <usage>digitizer_stylus<!-- Stylus (20h, logical collection) --></usage>
+    <usage>digitizer_stylus<!-- Stylus (20h, application collection, logical collection) --></usage>
     <COLLECTION type="physical">
       <usage>digitizer_tip_switch<!-- Tip switch (42h, momentary control) --></usage>
     </COLLECTION>
