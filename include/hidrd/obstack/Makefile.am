@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2009-2010 Nikolai Kondrashov
+# Copyright (C) 2020 Shahar Hadas
 #
 # This file is part of hidrd.
 #
@@ -17,20 +17,8 @@
 # along with hidrd; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-SUBDIRS = util usage item
+hidrd_obstackdir = $(includedir)/hidrd/obstack
 
-if ENABLE_OPT
-SUBDIRS += opt
-endif
-
-if ENABLE_STRM
-SUBDIRS += strm
-endif
-
-if ENABLE_FMT
-SUBDIRS += fmt
-endif
-
-if ENABLE_OBSTACK
-SUBDIRS += obstack
-endif
+hidrd_obstack_HEADERS = \
+    obstack.h
+    
