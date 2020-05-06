@@ -117,6 +117,12 @@ AC_ARG_ENABLE(
     [], [enable_tokens="yes"])
 
 AC_ARG_ENABLE(
+    obstack,
+    AS_HELP_STRING([--enable-obstack],
+                   [enable internal obstack (required on OS X)]),
+    [enable_obstack="yes"], [])
+
+AC_ARG_ENABLE(
     names,
     AS_HELP_STRING([--disable-names],
                    [disable names (required by XML format)]),
@@ -213,6 +219,7 @@ AM_CONDITIONAL([ENABLE_STRM], [test "$enable_streams" = "yes"])
 AM_CONDITIONAL([ENABLE_FMT], [test "$enable_formats" = "yes"])
 AM_CONDITIONAL([ENABLE_HIDRD_CONVERT], [test "$enable_hidrd_convert" = "yes"])
 AM_CONDITIONAL([ENABLE_TOKENS], [test "$enable_tokens" = "yes"])
+AM_CONDITIONAL([ENABLE_OBSTACK], [test "$enable_obstack" = "yes"])
 AM_CONDITIONAL([ENABLE_NAMES], [test "$enable_names" = "yes"])
 AM_CONDITIONAL([ENABLE_FMT_XML], [test "$enable_xml_format" = "yes"])
 AM_CONDITIONAL([ENABLE_FMT_SPEC], [test "$enable_spec_format" = "yes"])
@@ -276,6 +283,7 @@ AC_CONFIG_FILES([Makefile
                  include/hidrd/fmt/spec/snk/Makefile
                  include/hidrd/fmt/code/Makefile
                  include/hidrd/usage/Makefile
+                 include/hidrd/obstack/Makefile
 
                  lib/Makefile
                  lib/util/Makefile
@@ -296,6 +304,7 @@ AC_CONFIG_FILES([Makefile
                  lib/fmt/spec/snk/Makefile
                  lib/fmt/code/Makefile
                  lib/usage/Makefile
+                 lib/obstack/Makefile
 
                  src/Makefile])
 AC_OUTPUT

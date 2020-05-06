@@ -34,4 +34,8 @@ if ENABLE_FMT_XML
 hidrd_convert_CFLAGS = @LIBXML2_CFLAGS@
 endif
 
+if ENABLE_OBSTACK
+hidrd_convert_LDADD += ../lib/obstack/libhidrd_obstack.la
+endif
+
 endif	# ENABLE_HIDRD_CONVERT

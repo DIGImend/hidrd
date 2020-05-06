@@ -59,6 +59,9 @@ dnl
 /** Defined if tokens should be supported across all relevant libraries */
 #'WITH_TOKENS_DIRECTIVE()` HIDRD_WITH_TOKENS
 
+/** Defined if to use included obstack rather than the system provided one, a workaround for OS X */
+#'WITH_OBSTACK_DIRECTIVE()` HIDRD_WITH_INTERNAL_OBSTACK
+
 /** Defined if names should be supported across all relevant libraries */
 #'WITH_NAMES_DIRECTIVE()` HIDRD_WITH_NAMES
 
