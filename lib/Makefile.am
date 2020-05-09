@@ -30,7 +30,3 @@ endif
 if ENABLE_FMT
 SUBDIRS += fmt
 endif
-
-if ENABLE_OBSTACK
-SUBDIRS += obstack
-endif
