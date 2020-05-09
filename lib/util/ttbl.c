@@ -26,11 +26,10 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "hidrd/util/buf.h"
 #include "hidrd/util/ttbl.h"
 
-#define obstack_chunk_alloc malloc
-#define obstack_chunk_free  free
 
 hidrd_ttbl *
 hidrd_ttbl_new(void)
@@ -43,13 +42,11 @@ hidrd_ttbl_new(void)
     if (tbl == NULL)
         return NULL;
 
-    obstack_init(&tbl->obstack);
-
-    row = obstack_alloc(&tbl->obstack, sizeof(*row));
+    row = malloc(sizeof(*row));
     row->skip = 0;
     row->next = NULL;
-    
-    cell = obstack_alloc(&tbl->obstack, sizeof(*cell));
+
+    cell = malloc(sizeof(*cell));
     cell->skip = 0;
     cell->next = NULL;
     cell->text = NULL;
@@ -92,7 +89,7 @@ hidrd_ttbl_seta(hidrd_ttbl  *tbl,
     if (line > row_line)
     {
         /* Insert a new row after the found one */
-        new_row = obstack_alloc(&tbl->obstack, sizeof(*new_row));
+        new_row = malloc(sizeof(*new_row));
         new_row->next = row->next;
         row->next = new_row;
 
@@ -102,7 +99,7 @@ hidrd_ttbl_seta(hidrd_ttbl  *tbl,
         row->skip = line - row_line - 1;
 
         /* Create the cell */
-        new_cell = obstack_alloc(&tbl->obstack, sizeof(*new_cell));
+        new_cell = malloc(sizeof(*new_cell));
         new_cell->next = NULL;
         new_cell->skip = 0;
         new_cell->text = NULL;
@@ -120,7 +117,7 @@ hidrd_ttbl_seta(hidrd_ttbl  *tbl,
     if (col > cell_col)
     {
         /* Insert a new cell after the found one */
-        new_cell = obstack_alloc(&tbl->obstack, sizeof(*new_cell));
+        new_cell = malloc(sizeof(*new_cell));
         new_cell->next = cell->next;
         cell->next = new_cell;
 
@@ -144,11 +141,15 @@ hidrd_ttbl_set(hidrd_ttbl  *tbl,
                size_t       line,
                const char  *text)
 {
-    hidrd_ttbl_seta(tbl, col, line, 
-                    (text == NULL)
-                        ? NULL
-                        : obstack_copy(&tbl->obstack, text,
-                                       strlen(text) + 1));
+    char *text_copy = NULL;
+
+    if (text != NULL)
+    {
+        text_copy = malloc(strlen(text) + 1);
+        strcpy(text_copy, text);
+    }
+
+    hidrd_ttbl_seta(tbl, col, line, text_copy);
 }
 
 
@@ -171,7 +172,7 @@ hidrd_ttbl_setvf(hidrd_ttbl    *tbl,
         return false;
 
     size = rc + 1;
-    text = obstack_alloc(&tbl->obstack, size);
+    text = malloc(size);
 
     vsnprintf(text, size, fmt, ap);
 
@@ -228,13 +229,47 @@ hidrd_ttbl_get(const hidrd_ttbl *tbl,
 }
 
 
+static void
+ttbl_cell_free_recursive(hidrd_ttbl_cell *cell)
+{
+    if (cell == NULL)
+        return;
+
+    if (cell->text != NULL)
+    {
+        free(cell->text);
+        cell->text = NULL;
+    }
+
+    ttbl_cell_free_recursive(cell->next);
+    cell->next = NULL;
+
+    free(cell);
+}
+
+static void
+ttbl_row_free_recursive(hidrd_ttbl_row *row)
+{
+    if (row == NULL)
+        return;
+
+    ttbl_cell_free_recursive(row->cell);
+    row->cell = NULL;
+    
+    ttbl_row_free_recursive(row->next);
+    row->next = NULL;
+
+    free(row);
+}
+
+
 void
 hidrd_ttbl_delete(hidrd_ttbl *tbl)
 {
     if (tbl == NULL)
         return;
 
-    obstack_free(&tbl->obstack, NULL);
+    ttbl_row_free_recursive(tbl->row);
     tbl->row = NULL;
 
     free(tbl);
@@ -252,7 +287,7 @@ struct hidrd_ttbl_strip {
 
 
 static hidrd_ttbl_strip *
-hidrd_ttbl_measure(struct obstack *obstack, const hidrd_ttbl *tbl)
+hidrd_ttbl_measure(const hidrd_ttbl *tbl)
 {
     hidrd_ttbl_strip       *markup  = NULL;
     const hidrd_ttbl_row   *row;
@@ -285,7 +320,7 @@ hidrd_ttbl_measure(struct obstack *obstack, const hidrd_ttbl *tbl)
             }
             else
             {
-                strip = obstack_alloc(obstack, sizeof(*strip));
+                strip = malloc(sizeof(*strip));
                 strip->next = *pprev_next;
                 *pprev_next = strip;
                 strip->col = col;
@@ -295,6 +330,19 @@ hidrd_ttbl_measure(struct obstack *obstack, const hidrd_ttbl *tbl)
     }
 
     return markup;
+}
+
+
+static void
+ttbl_strip_free_recursive(hidrd_ttbl_strip *strip)
+{
+    if (strip == NULL)
+        return;
+
+    ttbl_strip_free_recursive(strip->next);
+    strip->next = NULL;
+
+    free(strip);
 }
 
 
@@ -377,18 +425,16 @@ bool
 hidrd_ttbl_render(char **pbuf, size_t *psize,
                   const hidrd_ttbl *tbl, size_t tabstop)
 {
-    struct obstack      obstack;
     hidrd_ttbl_strip   *markup;
     bool                result;
 
     assert(tbl != NULL);
     assert(tabstop > 0);
 
-    obstack_init(&obstack);
-    markup = hidrd_ttbl_measure(&obstack, tbl);
+    markup = hidrd_ttbl_measure(tbl);
     hidrd_ttbl_distribute(markup, tabstop);
     result = hidrd_ttbl_print(pbuf, psize, tbl, markup);
-    obstack_free(&obstack, NULL);
+    ttbl_strip_free_recursive(markup);
     return result;
 }
 
@@ -429,7 +475,7 @@ hidrd_ttbl_ins_cols(hidrd_ttbl *tbl, size_t col, size_t span)
         else
         {
             /* Insert a new first cell */
-            cell = obstack_alloc(&tbl->obstack, sizeof(*cell));
+            cell = malloc(sizeof(*cell));
             cell->next = row->cell;
             row->cell = cell;
             cell->skip = span - 1;
@@ -472,13 +518,13 @@ hidrd_ttbl_ins_rows(hidrd_ttbl *tbl, size_t line, size_t span)
     else
     {
         /* Insert a new first row */
-        row = obstack_alloc(&tbl->obstack, sizeof(*row));
+        row = malloc(sizeof(*row));
         row->next = tbl->row;
         tbl->row = row;
         row->skip = span - 1;
 
         /* Create the cell */
-        cell = obstack_alloc(&tbl->obstack, sizeof(*cell));
+        cell = malloc(sizeof(*cell));
         cell->next = NULL;
         cell->skip = 0;
         cell->text = NULL;

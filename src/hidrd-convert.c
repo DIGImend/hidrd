@@ -35,6 +35,10 @@
 #include "hidrd/util/fd.h"
 #include "hidrd/fmt.h"
 
+#ifdef __APPLE__ // Workaround for OS X
+#   include <stdlib.h>
+#   define program_invocation_short_name (const char *)getprogname
+#endif
 
 static bool
 usage_formats(FILE *stream, const char *progname)

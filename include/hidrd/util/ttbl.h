@@ -27,7 +27,6 @@
 
 #include <stdbool.h>
 #include <stdarg.h>
-#include <obstack.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -53,7 +52,6 @@ struct hidrd_ttbl_row {
 
 /** Text table */
 typedef struct hidrd_ttbl {
-    struct obstack  obstack;    /**< Table data obstack */
     hidrd_ttbl_row *row;        /**< First row; could be NULL */
 } hidrd_ttbl;
 
