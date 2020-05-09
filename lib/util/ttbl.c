@@ -241,11 +241,8 @@ ttbl_cell_free_recursive(hidrd_ttbl_cell *cell)
         cell->text = NULL;
     }
 
-    if (cell->next != NULL)
-    {
-        ttbl_cell_free_recursive(cell->next);
-        cell->next = NULL;
-    }
+    ttbl_cell_free_recursive(cell->next);
+    cell->next = NULL;
 
     free(cell);
 }
@@ -259,11 +256,8 @@ ttbl_row_free_recursive(hidrd_ttbl_row *row)
     ttbl_cell_free_recursive(row->cell);
     row->cell = NULL;
     
-    if (row->next != NULL)
-    {
-        ttbl_row_free_recursive(row->next);
-        row->next = NULL;
-    }
+    ttbl_row_free_recursive(row->next);
+    row->next = NULL;
 
     free(row);
 }
@@ -345,11 +339,8 @@ ttbl_strip_free_recursive(hidrd_ttbl_strip *strip)
     if (strip == NULL)
         return;
 
-    if (strip->next != NULL)
-    {
-        ttbl_strip_free_recursive(strip->next);
-        strip->next = NULL;
-    }
+    ttbl_strip_free_recursive(strip->next);
+    strip->next = NULL;
 
     free(strip);
 }
