@@ -27,12 +27,6 @@
 
 #include <stdbool.h>
 #include <stdarg.h>
-#include "hidrd/cfg.h"
-#ifdef HIDRD_WITH_INTERNAL_OBSTACK
-#include "hidrd/obstack/obstack.h"
-#else
-#include <obstack.h>
-#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -58,7 +52,6 @@ struct hidrd_ttbl_row {
 
 /** Text table */
 typedef struct hidrd_ttbl {
-    struct obstack  obstack;    /**< Table data obstack */
     hidrd_ttbl_row *row;        /**< First row; could be NULL */
 } hidrd_ttbl;
 
