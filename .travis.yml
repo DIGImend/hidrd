@@ -1,0 +1,17 @@
+language: c
+compiler:
+    - gcc
+matrix:
+    include:
+        - os: linux
+          dist: xenial
+        - os: linux
+          dist: trusty
+        - os: linux
+          dist: bionic
+        - os: osx
+script:
+    - autoreconf -i -f
+    - ./configure --enable-debug
+    - make
+    - make check
