@@ -23,9 +23,10 @@
  */
 
 #include <assert.h>
-#include <error.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
+#include <stdio.h>
 #include "hidrd/util/num.h"
 
 #define FMT_u32 "%u"
@@ -36,7 +37,12 @@
 #define FMT_s8  "%hhd"
 
 #define ERROR(_fmt, _args...) \
-    error_at_line(1, 0, __FILE__, __LINE__, _fmt, ##_args)
+    do {                                                        \
+        fprintf(stderr, "%s:%s:%u: " _fmt "\n",                 \
+                program_invocation_name, __FILE__, __LINE__,    \
+                ##_args);                                       \
+        exit(1);                                                \
+    } while (0)
 
 #define PASS_FROM_STR(_t, _v, _s, _m, _b) \
     do {                                                        \
