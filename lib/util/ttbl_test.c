@@ -24,14 +24,22 @@
 
 #include <assert.h>
 #include <errno.h>
-#include <error.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include "hidrd/util/ttbl.h"
 
 #define ERROR(_errno, _fmt, _args...) \
-    error_at_line(1, _errno, __FILE__, __LINE__, _fmt, ##_args)
+    do {                                                        \
+        fprintf(stderr, "%s:%s:%u: " _fmt,                      \
+                program_invocation_name, __FILE__, __LINE__,    \
+                ##_args);                                       \
+        if ((_errno) != 0) {                                    \
+            fprintf(stderr, ": %s", strerror(_errno));          \
+        }                                                       \
+        fprintf(stderr, "\n");                                  \
+        exit(1);                                                \
+    } while (0)
 
 #define CHECK_RENDER(_expected) \
     do {                                                                \
