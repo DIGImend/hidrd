@@ -18,6 +18,15 @@ Advantages over the official tool include:
 * smaller native descriptor output,
 * non-interactive report descriptor generation, allowing for use in software/firmware builds.
 
+Installation
+------------
+
+    ./bootstrap
+    ./configure
+    make
+    sudo make install
+    sudo ldconfig
+
 Usage
 -----
 
